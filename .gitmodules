@@ -1,0 +1,6 @@
+[submodule "sdk"]
+	path = sdk
+	url = https://github.com/openmultiplayer/open.mp-sdk
+[submodule "network"]
+	path = network
+	url = https://github.com/openmultiplayer/open.mp-network
