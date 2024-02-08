@@ -2,23 +2,13 @@
 
 //#define NETHOST_USE_AS_STATIC true
 
-#ifdef WIN32
-#define WINDOWS true
-#endif
-
 #ifdef WINDOWS
-#include <Windows.h>
-
-#define STR(s) L ## s
 #define CH(c) L ## c
 #define DIR_SEPARATOR L'\\'
-
-
 #else
 #include <dlfcn.h>
 #include <limits.h>
 
-#define STR(s) s
 #define CH(c) c
 #define DIR_SEPARATOR '/'
 #define MAX_PATH PATH_MAX
@@ -27,11 +17,9 @@
 
 #include <cassert>
 #include <iostream>
-#include <string>
 
 #include "dotnet/nethost.h"
 
-using string_t = std::basic_string<char_t>;
 
 bool ManagedHost::initialize(){
     if(_isReady) {
@@ -55,34 +43,29 @@ bool ManagedHost::isReady() const {
 
 bool ManagedHost::loadFor(const char_t * root_path, const char_t * assembly_name) {
 
-    const string_t config_path =  root_path + string_t() + assembly_name + STR(".runtimeconfig.json");
-    const auto load_assembly_and_get_function_pointer = get_dotnet_load_assembly(config_path.c_str());
+    const string_t config_path = root_path + string_t() + assembly_name + STR(".runtimeconfig.json");
+    load_assembly_and_get_function_pointer = get_dotnet_load_assembly(config_path.c_str());
     assert(load_assembly_and_get_function_pointer != nullptr && "Failure: get_dotnet_load_assembly()");
 
-    const string_t dotnetlib_path = root_path + string_t() + assembly_name + STR(".dll");
-    const auto dotnet_type = STR("SashManaged.Interop, SashManaged"); // namespace.class, assembly
-    const auto dotnet_method = STR("EntryPoint");
-
-    custom_entry_point_fn custom = nullptr;
-    const int rc = load_assembly_and_get_function_pointer(
-        dotnetlib_path.c_str(),
-        dotnet_type,
-        dotnet_method,
-        UNMANAGEDCALLERSONLY_METHOD,
-        nullptr,
-        (void**)&custom);
-
-    entry_point = custom;
-    
+    assem_path_ = root_path + string_t() + assembly_name + STR(".dll");
+ 
     return true;
 }
 
-void ManagedHost::test(lib_args args) const {
-    if(_isReady) {
-        entry_point(args);
-    }
-}
+bool ManagedHost::getEntryPoint(const char_t *name, void **delegate_ptr) const {
+    
+    const auto dotnet_type = STR("SashManaged.Interop, SashManaged"); // namespace.class, assembly
 
+    const int rc = load_assembly_and_get_function_pointer(
+        assem_path_.c_str(),
+        dotnet_type,
+        name,
+        UNMANAGEDCALLERSONLY_METHOD,
+        nullptr,
+        delegate_ptr);
+
+    return rc == 0;
+}
 
 // private
 

@@ -9,6 +9,8 @@
 
 using namespace Impl;
 
+typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *);
+
 class SampSharpComponent final
 	: public ISampSharpComponent
 	, public PawnEventHandler
@@ -20,6 +22,7 @@ private:
 	ManagedHost managed_host_;
 	inline static SampSharpComponent* instance_ = nullptr;
 
+	on_init_fn on_init_ = nullptr;
 public:
 	// Required component methods.
 	StringView componentName() const override;
