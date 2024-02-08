@@ -45,14 +45,9 @@ public class Interop
         } 
     }
 
-    public struct Size
+    public struct Size(nint value)
     {
-        public nint Value;
-
-        public Size(nint value)
-        {
-            Value = value;
-        }
+        public nint Value = value;
     }
 
     [UnmanagedCallersOnly]
