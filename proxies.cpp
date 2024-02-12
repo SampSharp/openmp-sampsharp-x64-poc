@@ -1,12 +1,13 @@
 #include <sdk.hpp>
-
 #include <Server/Components/Actors/actors.hpp>
 #include <Server/Components/Checkpoints/checkpoints.hpp>
 #include <Server/Components/Classes/classes.hpp>
 #include <Server/Components/Console/console.hpp>
+#include <Server/Components/CustomModels/custommodels.hpp>
 #include <Server/Components/Dialogs/dialogs.hpp>
 #include <Server/Components/Fixes/fixes.hpp>
 #include <Server/Components/GangZones/gangzones.hpp>
+#include <Server/Components/LegacyConfig/legacyconfig.hpp>
 #include <Server/Components/Menus/menus.hpp>
 #include <Server/Components/Objects/objects.hpp>
 #include <Server/Components/Pickups/pickups.hpp>
@@ -14,16 +15,12 @@
 #include <Server/Components/TextDraws/textdraws.hpp>
 #include <Server/Components/TextLabels/textlabels.hpp>
 #include <Server/Components/Vehicles/vehicles.hpp>
-#include <Server/Components/CustomModels/custommodels.hpp>
-
-#include "Server/Components/LegacyConfig/legacyconfig.hpp"
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 
-// macros
-//
+// macros for definition of exported proxy functions
 #define _EXPAND_PARAM1(type, ...) type _1
 #define _EXPAND_PARAM2(type, ...) type _2, _EXPAND_PARAM1(__VA_ARGS__)
 #define _EXPAND_PARAM3(type, ...) type _3, _EXPAND_PARAM2(__VA_ARGS__)
@@ -52,23 +49,16 @@
 #define _EXPAND_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, n, ...) _EXPAND_ARG ## n
 #define _EXPAND_ARG(...) _EXPAND_ARG_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
 
-#define PROXY(type, ret, method, ...); \
-    extern "C" SDK_EXPORT ret __CDECL \
-    type##_##method ( type * __x __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
+#define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...); \
+    extern "C" SDK_EXPORT type_return __CDECL \
+    type_subject##_##method##overload(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
     { \
-        return __x -> method ( \
+        return subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(__VA_ARGS__)) \
         ); \
     }
 
-#define PROXY_OVERLOAD(type, ret, method, overload, ...); \
-    extern "C" SDK_EXPORT ret __CDECL \
-    type##_##method##overload(type * __x __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
-    { \
-        return __x -> method ( \
-            __VA_OPT__(_EXPAND_ARG(__VA_ARGS__)) \
-        ); \
-    }
+#define PROXY(type_subject, type_return, method, ...) PROXY_OVERLOAD(type_subject, type_return, method,, __VA_ARGS__)
 
 // Type aliases to prevent them from breaking proxy macros
 using IntPair = Pair<int, int>;
@@ -79,7 +69,7 @@ using CarriagesArray = StaticArray<IVehicle*, MAX_VEHICLE_CARRIAGES>;
 using VehicleModelArray = StaticArray<uint8_t, MAX_VEHICLE_MODELS>;
 using SkillsArray = StaticArray<uint16_t, NUM_SKILL_LEVELS>;
 
-// (^(\s*\/\/\/?.*|\s*)\r?\n| const = 0| = 0| ?\w+(?=[),]))
+// regex for stripping most text from struct definitions: (^(\s*\/\/\/?.*|\s*)\r?\n| const = 0| = 0| ?\w+(?=[),]))
 
 // include/Server/Components/Actors
 PROXY(IActor, void, setSkin, int);
