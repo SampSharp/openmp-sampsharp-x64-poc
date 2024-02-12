@@ -23,8 +23,6 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "D:/projects/openmp_dev/x64/components"
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "D:/projects/openmp_dev/x64/components")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "D:/projects/openmp_dev/x64/components")
 
-set(CMAKE_ENABLE_EXPORTS true)
-
 link_directories(${NETHOST_LIB_DIR})
 
 add_library(${PROJECT_NAME} SHARED
