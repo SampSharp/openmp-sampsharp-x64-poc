@@ -1,3 +1,4 @@
+#include <complex.h>
 #include <sdk.hpp>
 #include <Server/Components/Actors/actors.hpp>
 #include <Server/Components/Checkpoints/checkpoints.hpp>
@@ -49,16 +50,27 @@
 #define _EXPAND_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, n, ...) _EXPAND_ARG ## n
 #define _EXPAND_ARG(...) _EXPAND_ARG_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
 
-#define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...); \
+#define __PROXY_IMPL(type_subject, type_return, type_return_cast, method, proxy_name, ...) \
     extern "C" SDK_EXPORT type_return __CDECL \
-    type_subject##_##method##overload(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
     { \
-        return subject -> method ( \
+        return type_return_cast subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(__VA_ARGS__)) \
         ); \
     }
 
-#define PROXY(type_subject, type_return, method, ...) PROXY_OVERLOAD(type_subject, type_return, method,, __VA_ARGS__)
+#define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...) __PROXY_IMPL(type_subject, type_return,, method, type_subject##_##method##overload, __VA_ARGS__)
+#define PROXY(type_subject, type_return, method, ...) __PROXY_IMPL(type_subject, type_return,, method, type_subject##_##method, __VA_ARGS__)
+
+#define __PROXY_EVENT_DISPATCHER_IMPL(type_handler) \
+    __PROXY_IMPL(IEventDispatcher<type_handler>, bool, , addEventHandler, IEventDispatcher_##type_handler##_addEventHandler, type_handler*, event_order_t); \
+    __PROXY_IMPL(IEventDispatcher<type_handler>, bool,, removeEventHandler, IEventDispatcher_##type_handler##_removeEventHandler, type_handler*); \
+    __PROXY_IMPL(IEventDispatcher<type_handler>, bool,, hasEventHandler, IEventDispatcher_##type_handler##_hasEventHandler, type_handler*, event_order_t); \
+    __PROXY_IMPL(IEventDispatcher<type_handler>, size_t,, count, IEventDispatcher_##type_handler##_count);
+
+#define PROXY_EVENT_DISPATCHER(type_subject, type_handler, method) \
+	PROXY(type_subject, IEventDispatcher<type_handler>&, method); \
+	__PROXY_EVENT_DISPATCHER_IMPL(type_handler)
 
 // Type aliases to prevent them from breaking proxy macros
 using IntPair = Pair<int, int>;
@@ -86,8 +98,10 @@ PROXY(IActor, void, streamInForPlayer, IPlayer&);
 PROXY(IActor, void, streamOutForPlayer, IPlayer&);
 PROXY(IActor, const ActorSpawnData&, getSpawnData);
 
-// todo: getEventDispatcher
+
 PROXY(IActorsComponent, IActor*, create, int, Vector3, float);
+PROXY_EVENT_DISPATCHER(IActorsComponent, ActorEventHandler, getEventDispatcher);
+// todo: getEventDispatcher
 
 // include/Server/Components/Checkpoints
 PROXY(ICheckpointDataBase, Vector3, getPosition);
@@ -108,6 +122,7 @@ PROXY(IRaceCheckpointData, void, setNextPosition, Vector3&);
 PROXY(IPlayerCheckpointData, IRaceCheckpointData&, getRaceCheckpoint);
 PROXY(IPlayerCheckpointData, ICheckpointData&, getCheckpoint);
 
+PROXY_EVENT_DISPATCHER(ICheckpointsComponent, PlayerCheckpointEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 // include/Server/Components/Classes
@@ -115,15 +130,14 @@ PROXY(IClass, const PlayerClass&, getClass);
 PROXY(IClass, void, setClass, PlayerClass&);
 
 PROXY(IClassesComponent, IClass*, create, int, int, Vector3, float, WeaponSlots&);
-
+PROXY_EVENT_DISPATCHER(IClassesComponent, ClassEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 // include/Server/Components/Console
-
-// todo: getEventDispatcher
-
 PROXY(IConsoleComponent, void, send, StringView, ConsoleCommandSenderData&);
 PROXY(IConsoleComponent, void, sendMessage, ConsoleCommandSenderData&, StringView);
+PROXY_EVENT_DISPATCHER(IConsoleComponent, ConsoleEventHandler, getEventDispatcher);
+// todo: getEventDispatcher
 
 PROXY(IPlayerConsoleData, bool, hasConsoleAccess);
 PROXY(IPlayerConsoleData, void, setConsoleAccessibility, bool);
@@ -133,12 +147,13 @@ PROXY(IPlayerCustomModelsData, uint32_t, getCustomSkin);
 PROXY(IPlayerCustomModelsData, void, setCustomSkin, uint32_t);
 PROXY(IPlayerCustomModelsData, bool, sendDownloadUrl, StringView);
 
-// todo: getEventDispatcher
 PROXY(ICustomModelsComponent, bool, addCustomModel, ModelType, int32_t, int32_t, StringView, StringView, int32_t, uint8_t, uint8_t);
 PROXY(ICustomModelsComponent, bool, getBaseModel, uint32_t&, uint32_t&);
 PROXY(ICustomModelsComponent, StringView, getModelNameFromChecksum, uint32_t);
 PROXY(ICustomModelsComponent, bool, isValidCustomModel, int32_t);
 PROXY(ICustomModelsComponent, bool, getCustomModelPath, int32_t, StringView&, StringView&);
+PROXY_EVENT_DISPATCHER(ICustomModelsComponent, PlayerModelsEventHandler, getEventDispatcher);
+// todo: getEventDispatcher
 
 // include/Server/Components/Databases
 // @skip
@@ -147,8 +162,9 @@ PROXY(ICustomModelsComponent, bool, getCustomModelPath, int32_t, StringView&, St
 PROXY(IPlayerDialogData, void, hide, IPlayer&);
 PROXY(IPlayerDialogData, void, show, IPlayer&, int, DialogStyle, StringView, StringView, StringView, StringView);
 PROXY(IPlayerDialogData, void, get, int&, DialogStyle&, StringView&, StringView&, StringView&, StringView&);
-PROXY(IPlayerDialogData, int, getActiveID) 
+PROXY(IPlayerDialogData, int, getActiveID)
 
+PROXY_EVENT_DISPATCHER(IDialogsComponent, PlayerDialogEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 // include/Server/Components/Fixes
@@ -186,6 +202,8 @@ PROXY(IGangZonesComponent, int, fromLegacyID, int);
 PROXY(IGangZonesComponent, void, releaseLegacyID, int);
 PROXY(IGangZonesComponent, int, reserveLegacyID);
 PROXY(IGangZonesComponent, void, setLegacyID, int, int);
+PROXY_EVENT_DISPATCHER(IGangZonesComponent, GangZoneEventHandler, getEventDispatcher);
+// todo: getEventDispatcher
 
 PROXY(IPlayerGangZoneData, int, toLegacyID, int);
 PROXY(IPlayerGangZoneData, int, fromLegacyID, int);
@@ -197,8 +215,6 @@ PROXY(IPlayerGangZoneData, int, fromClientID, int);
 PROXY(IPlayerGangZoneData, void, releaseClientID, int);
 PROXY(IPlayerGangZoneData, int, reserveClientID);
 PROXY(IPlayerGangZoneData, void, setClientID, int, int);
-
-// todo: getEventDispatcher
 
 // include/Server/Components/LegacyConfig
 PROXY(ILegacyConfigComponent, StringView, getConfig, StringView);
@@ -225,7 +241,7 @@ PROXY(IPlayerMenuData, uint8_t, getMenuID);
 PROXY(IPlayerMenuData, void, setMenuID, uint8_t);
 
 PROXY(IMenusComponent, IMenu*, create, StringView, Vector2, uint8_t, float, float);
-
+PROXY_EVENT_DISPATCHER(IMenusComponent, MenuEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 // include/Server/Components/Objects
@@ -255,7 +271,7 @@ PROXY(IPlayerObject, void, attachToPlayer, IPlayer&, Vector3, Vector3);
 PROXY(IObjectsComponent, void, setDefaultCameraCollision, bool);
 PROXY(IObjectsComponent, bool, getDefaultCameraCollision);
 PROXY(IObjectsComponent, IObject*, create, int, Vector3, Vector3, float);
-
+PROXY_EVENT_DISPATCHER(IObjectsComponent, ObjectEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 PROXY(IPlayerObjectData, IPlayerObject*, create, int, Vector3, Vector3, float);
@@ -295,6 +311,7 @@ PROXY(IPickupsComponent, int, fromLegacyID, int);
 PROXY(IPickupsComponent, void, releaseLegacyID, int);
 PROXY(IPickupsComponent, int, reserveLegacyID);
 PROXY(IPickupsComponent, void, setLegacyID, int, int);
+PROXY_EVENT_DISPATCHER(IPickupsComponent, PickupEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 PROXY(IPlayerPickupData, int, toLegacyID, int);
@@ -362,6 +379,7 @@ PROXY(IPlayerTextDraw, bool, isShown);
 
 PROXY(ITextDrawsComponent, ITextDraw*, create, Vector2, StringView);
 PROXY_OVERLOAD(ITextDrawsComponent, ITextDraw*, create, _model, Vector2, int);
+PROXY_EVENT_DISPATCHER(ITextDrawsComponent, TextDrawEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 PROXY(IPlayerTextDrawData, void, beginSelection, Colour);
@@ -474,6 +492,8 @@ PROXY(IVehicle, int, getLastDriverPoolID);
 
 PROXY(IVehiclesComponent, VehicleModelArray&, models);
 PROXY(IVehiclesComponent, IVehicle*, create, bool, int, Vector3, float, int, int, Seconds, bool);
+PROXY_EVENT_DISPATCHER(IVehiclesComponent, VehicleEventHandler, getEventDispatcher);
+// todo: getEventDispatcher
 
 PROXY(IPlayerVehicleData, IVehicle*, getVehicle);
 PROXY(IPlayerVehicleData, void, resetVehicle);
@@ -532,7 +552,7 @@ PROXY(ICore, StringView, getWeaponName, PlayerWeapon);
 PROXY(ICore, void, connectBot, StringView, StringView);
 PROXY(ICore, unsigned, tickRate);
 PROXY(ICore, StringView, getVersionHash);
-
+PROXY_EVENT_DISPATCHER(ICore, CoreEventHandler, getEventDispatcher);
 // todo: getEventDispatcher
 
 // include/entity
@@ -713,6 +733,16 @@ PROXY(IPlayerPool, void, allowNickNameCharacter, char, bool);
 PROXY(IPlayerPool, bool, isNickNameCharacterAllowed, char);
 PROXY(IPlayerPool, Colour, getDefaultColour, int);
 
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerSpawnEventHandler, getPlayerSpawnDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerConnectEventHandler, getPlayerConnectDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerStreamEventHandler, getPlayerStreamDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerTextEventHandler, getPlayerTextDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerShotEventHandler, getPlayerShotDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerChangeEventHandler, getPlayerChangeDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerDamageEventHandler, getPlayerDamageDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerClickEventHandler, getPlayerClickDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerCheckEventHandler, getPlayerCheckDispatcher);
+PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerUpdateEventHandler, getPlayerUpdateDispatcher);
 // todo: getXDispatcher
 
 
