@@ -1,4 +1,3 @@
-#include <complex.h>
 #include <sdk.hpp>
 #include <Server/Components/Actors/actors.hpp>
 #include <Server/Components/Checkpoints/checkpoints.hpp>
@@ -17,24 +16,26 @@
 #include <Server/Components/TextLabels/textlabels.hpp>
 #include <Server/Components/Vehicles/vehicles.hpp>
 
+#include "dotnet/coreclr_delegates.h"
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 
 // macros for definition of exported proxy functions
-#define _EXPAND_PARAM1(type, ...) type _1
-#define _EXPAND_PARAM2(type, ...) type _2, _EXPAND_PARAM1(__VA_ARGS__)
-#define _EXPAND_PARAM3(type, ...) type _3, _EXPAND_PARAM2(__VA_ARGS__)
-#define _EXPAND_PARAM4(type, ...) type _4, _EXPAND_PARAM3(__VA_ARGS__)
-#define _EXPAND_PARAM5(type, ...) type _5, _EXPAND_PARAM4(__VA_ARGS__)
-#define _EXPAND_PARAM6(type, ...) type _6, _EXPAND_PARAM5(__VA_ARGS__)
-#define _EXPAND_PARAM7(type, ...) type _7, _EXPAND_PARAM6(__VA_ARGS__)
-#define _EXPAND_PARAM8(type, ...) type _8, _EXPAND_PARAM7(__VA_ARGS__)
-#define _EXPAND_PARAM9(type, ...) type _9, _EXPAND_PARAM8(__VA_ARGS__)
-#define _EXPAND_PARAM10(type, ...) type _10, _EXPAND_PARAM9(__VA_ARGS__)
+#define _EXPAND_PARAM1(prefix, postfix, type, ...) prefix##type##postfix _1
+#define _EXPAND_PARAM2(prefix, postfix, type, ...) prefix##type##postfix _2, _EXPAND_PARAM1(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM3(prefix, postfix, type, ...) prefix##type##postfix _3, _EXPAND_PARAM2(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM4(prefix, postfix, type, ...) prefix##type##postfix _4, _EXPAND_PARAM3(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM5(prefix, postfix, type, ...) prefix##type##postfix _5, _EXPAND_PARAM4(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM6(prefix, postfix, type, ...) prefix##type##postfix _6, _EXPAND_PARAM5(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM7(prefix, postfix, type, ...) prefix##type##postfix _7, _EXPAND_PARAM6(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM8(prefix, postfix, type, ...) prefix##type##postfix _8, _EXPAND_PARAM7(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM9(prefix, postfix, type, ...) prefix##type##postfix _9, _EXPAND_PARAM8(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM10(prefix, postfix, type, ...) prefix##type##postfix _10, _EXPAND_PARAM9(prefix, postfix, __VA_ARGS__)
 
 #define _EXPAND_PARAM_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, n, ...) _EXPAND_PARAM ## n
-#define _EXPAND_PARAM(...) _EXPAND_PARAM_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
+#define _EXPAND_PARAM(prefix,postfix,...) _EXPAND_PARAM_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(prefix,postfix,__VA_ARGS__)
 
 #define _EXPAND_ARG1(type, ...) _1
 #define _EXPAND_ARG2(type, ...) _2, _EXPAND_ARG1(__VA_ARGS__)
@@ -50,9 +51,23 @@
 #define _EXPAND_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, n, ...) _EXPAND_ARG ## n
 #define _EXPAND_ARG(...) _EXPAND_ARG_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
 
+#define _EXPAND_INIT1(type, ...) type##_(_1)
+#define _EXPAND_INIT2(type, ...) type##_(_2), _EXPAND_INIT1(__VA_ARGS__)
+#define _EXPAND_INIT3(type, ...) type##_(_3), _EXPAND_INIT2(__VA_ARGS__)
+#define _EXPAND_INIT4(type, ...) type##_(_4), _EXPAND_INIT3(__VA_ARGS__)
+#define _EXPAND_INIT5(type, ...) type##_(_5), _EXPAND_INIT4(__VA_ARGS__)
+#define _EXPAND_INIT6(type, ...) type##_(_6), _EXPAND_INIT5(__VA_ARGS__)
+#define _EXPAND_INIT7(type, ...) type##_(_7), _EXPAND_INIT6(__VA_ARGS__)
+#define _EXPAND_INIT8(type, ...) type##_(_8), _EXPAND_INIT7(__VA_ARGS__)
+#define _EXPAND_INIT9(type, ...) type##_(_9), _EXPAND_INIT8(__VA_ARGS__)
+#define _EXPAND_INIT10(type, ...) type##_(_10), _EXPAND_INIT9(__VA_ARGS__)
+
+#define _EXPAND_INIT_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, n, ...) _EXPAND_INIT ## n
+#define _EXPAND_INIT(...) _EXPAND_INIT_N(__VA_ARGS__,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
+
 #define __PROXY_IMPL(type_subject, type_return, type_return_cast, method, proxy_name, ...) \
     extern "C" SDK_EXPORT type_return __CDECL \
-    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(__VA_ARGS__))) \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__))) \
     { \
         return type_return_cast subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(__VA_ARGS__)) \
@@ -71,6 +86,32 @@
 #define PROXY_EVENT_DISPATCHER(type_subject, type_handler, method) \
 	PROXY(type_subject, IEventDispatcher<type_handler>&, method); \
 	__PROXY_EVENT_DISPATCHER_IMPL(type_handler)
+
+#define PROXY_EVENT_HANDLER_BEGIN(handler_type) \
+class handler_type##Impl final : handler_type { \
+    public:
+
+#define PROXY_EVENT_HANDLER_END(handler_type, ...) \
+public: \
+    handler_type##Impl(_EXPAND_PARAM(, _fn, __VA_ARGS__)) : \
+        _EXPAND_INIT(__VA_ARGS__) { } \
+}; \
+extern "C" SDK_EXPORT handler_type##Impl* __CDECL handler_type##Impl_create(_EXPAND_PARAM(handler_type##Impl::, _fn, __VA_ARGS__)) \
+{ \
+    return new handler_type##Impl(_EXPAND_ARG(__VA_ARGS__)); \
+} \
+extern "C" SDK_EXPORT void __CDECL handler_type##Impl_delete(handler_type##Impl* handler) \
+{ \
+    delete handler; \
+}
+
+#define PROXY_EVENT_HANDLER_EVENT(type_return, name, ...); \
+typedef void(CORECLR_DELEGATE_CALLTYPE * name##_fn)(_EXPAND_PARAM(, , __VA_ARGS__)); \
+name##_fn name##_ = nullptr; \
+type_return name(_EXPAND_PARAM(, , __VA_ARGS__)) override \
+{ \
+    return name##_(_EXPAND_ARG(__VA_ARGS__)); \
+}
 
 // Type aliases to prevent them from breaking proxy macros
 using IntPair = Pair<int, int>;
@@ -101,7 +142,12 @@ PROXY(IActor, const ActorSpawnData&, getSpawnData);
 
 PROXY(IActorsComponent, IActor*, create, int, Vector3, float);
 PROXY_EVENT_DISPATCHER(IActorsComponent, ActorEventHandler, getEventDispatcher);
-// todo: getEventDispatcher
+
+PROXY_EVENT_HANDLER_BEGIN(ActorEventHandler)
+PROXY_EVENT_HANDLER_EVENT(void, onPlayerGiveDamageActor, IPlayer&, IActor&, float, unsigned, BodyPart)
+PROXY_EVENT_HANDLER_EVENT(void, onActorStreamOut, IActor&, IPlayer&)
+PROXY_EVENT_HANDLER_EVENT(void, onActorStreamIn, IActor&, IPlayer&)
+PROXY_EVENT_HANDLER_END(ActorEventHandler, onPlayerGiveDamageActor, onActorStreamOut, onActorStreamIn)
 
 // include/Server/Components/Checkpoints
 PROXY(ICheckpointDataBase, Vector3, getPosition);
