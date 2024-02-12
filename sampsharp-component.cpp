@@ -1,6 +1,3 @@
-
-#include <Server/Components/Pawn/Impl/pawn_impl.hpp>
-
 #include "sampsharp-component.hpp"
 
 void Test(IPlayer *x)
@@ -29,18 +26,11 @@ void SampSharpComponent::onLoad(ICore* c)
 
 void SampSharpComponent::onInit(IComponentList* components)
 {
-	pawn_ = components->queryComponent<IPawnComponent>();
-	
 	core_->printLn("onInit");
 
 	for (auto player : core_->getPlayers().players())
 	{
 	    player->allowTeleport(true);
-	}
-	if (pawn_)
-	{
-		setAmxFunctions(pawn_->getAmxFunctions());
-		pawn_->getEventDispatcher().addEventHandler(this);
 	}
     
 	core_->printLn("<demo-net>");
@@ -59,11 +49,6 @@ void SampSharpComponent::onReady()
 
 void SampSharpComponent::onFree(IComponent* component)
 {
-	if (component == pawn_)
-	{
-		pawn_ = nullptr;
-		setAmxFunctions();
-	}
 }
 
 void SampSharpComponent::free()
@@ -72,14 +57,6 @@ void SampSharpComponent::free()
 }
 
 void SampSharpComponent::reset()
-{
-}
-
-void SampSharpComponent::onAmxLoad(IPawnScript& script)
-{
-}
-
-void SampSharpComponent::onAmxUnload(IPawnScript& script)
 {
 }
 
@@ -98,10 +75,6 @@ SampSharpComponent* SampSharpComponent::getInstance()
 
 SampSharpComponent::~SampSharpComponent()
 {
-	if (pawn_)
-	{
-		pawn_->getEventDispatcher().removeEventHandler(this);
-	}
 	if (core_)
 	{
 		core_->getEventDispatcher().removeEventHandler(this);
