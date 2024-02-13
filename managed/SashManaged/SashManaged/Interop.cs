@@ -31,7 +31,9 @@ public class Interop
     [UnmanagedCallersOnly]
     public static void OnInit(ICore core)
     {
+        // Testing123.TestClass.HelloFrom("me");
         Console.WriteLine("OnInit from managed c# code!");
+        Console.WriteLine($"Network bit stream version: {core.GetNetworkBitStreamVersion()}");
 
         Console.WriteLine($"core version: {core.GetVersion()}");
 
@@ -47,4 +49,10 @@ public class Interop
     
     // need an entry point to build runtime config for this application
     public static void Main(){/*nop*/}
+}
+
+[AttributeUsage(AttributeTargets.Struct)]
+public class OpenMpAttribute : Attribute
+{
+
 }

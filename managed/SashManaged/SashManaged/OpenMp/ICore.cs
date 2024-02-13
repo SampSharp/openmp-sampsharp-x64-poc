@@ -2,32 +2,14 @@
 
 namespace SashManaged.OpenMp;
 
-[StructLayout(LayoutKind.Sequential)]
-public readonly struct ICore
+[OpenMp]
+public readonly partial struct ICore
 {
-    private readonly nint _data;
+    public partial SemanticVersion GetVersion();
 
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern SemanticVersion ICore_getVersion(ICore core);
+    public partial void SetData(SettableCoreDataType type, StringView data);
 
-    public SemanticVersion GetVersion()
-    {
-        return ICore_getVersion(this);
-    }
+    public partial IPlayerPool GetPlayers();
 
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern void ICore_setData(ICore core, SettableCoreDataType type, StringView data);
-
-    public void SetData(SettableCoreDataType type, StringView data)
-    {
-        ICore_setData(this, type, data);
-    }
-
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IPlayerPool ICore_getPlayers(ICore core);
-
-    public IPlayerPool GetPlayers()
-    {
-        return ICore_getPlayers(this);
-    }
+    public partial int GetNetworkBitStreamVersion();
 }
