@@ -40,7 +40,8 @@ public class Interop
         // activate PlayerConnectEventHandler and set handler to test implementation
         var players = core.GetPlayers();
         var dispatcher = players.GetPlayerConnectDispatcher();
-        var handler = PlayerConnectEventHandler.Activate(new TestingPlayerConnectEventHandler());
+
+        var handler = new TestingPlayerConnectEventHandler();
         dispatcher.AddEventHandler(handler);
     }
     

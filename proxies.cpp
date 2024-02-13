@@ -704,7 +704,7 @@ PROXY(IPlayer, void, kick);
 PROXY(IPlayer, void, ban, StringView);
 PROXY(IPlayer, bool, isBot);
 PROXY(IPlayer, PeerNetworkData,  getNetworkData);
-PROXY(IPlayer, unsigned, getPing, ) ;
+PROXY(IPlayer, unsigned, getPing);
 PROXY(IPlayer, bool, sendPacket, Span<uint8_t>, int, bool);
 PROXY(IPlayer, bool, sendRPC, int, Span<uint8_t>, int, bool);
 PROXY(IPlayer, void, broadcastRPCToStreamed, int, Span<uint8_t>, int, bool);

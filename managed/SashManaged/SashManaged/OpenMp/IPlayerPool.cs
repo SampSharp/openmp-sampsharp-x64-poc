@@ -8,9 +8,9 @@ public readonly struct IPlayerPool
     private readonly nint _data;
 
     [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]
-    private static extern IEventDispatcherPlayerConnectEventHandler IPlayerPool_getPlayerConnectDispatcher(IPlayerPool pool);
+    private static extern IEventDispatcher_PlayerConnectEventHandler IPlayerPool_getPlayerConnectDispatcher(IPlayerPool pool);
 
-    public IEventDispatcherPlayerConnectEventHandler GetPlayerConnectDispatcher()
+    public IEventDispatcher_PlayerConnectEventHandler GetPlayerConnectDispatcher()
     {
         return IPlayerPool_getPlayerConnectDispatcher(this);
     }
