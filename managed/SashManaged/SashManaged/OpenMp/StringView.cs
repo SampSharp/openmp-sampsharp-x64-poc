@@ -43,22 +43,3 @@ public readonly unsafe ref struct StringView
         return Encoding.UTF8.GetString(AsSpan());
     }
 }
-
-[StructLayout(LayoutKind.Sequential)]
-public readonly unsafe ref struct StringViewX(byte* data, Size size)
-{
-    public static StringViewX Create(byte* data, Size length)
-    {
-        return new StringViewX(data, length);
-    }
-
-    public Span<byte> AsSpan()
-    {
-        return new Span<byte>(data, size.Value.ToInt32());
-    }
-
-    public override string ToString()
-    {
-        return Encoding.UTF8.GetString(AsSpan());
-    }
-}

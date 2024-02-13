@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp;
 
 [OpenMp]
 public readonly partial struct ICore
