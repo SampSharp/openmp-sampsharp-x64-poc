@@ -32,6 +32,7 @@ namespace SashManaged.SourceGenerator
         private static string Process(StructDecl node)
         {
             // TODO: visibility
+            // TODO: inheritance
             var sb = new StringBuilder();
 
             sb.Append($$"""
@@ -103,7 +104,7 @@ namespace SashManaged.SourceGenerator
             if (ctx.SemanticModel.GetDeclaredSymbol(declaration, cancellationToken) is not { } symbol)
                 return null;
 
-            return HasAttribute(symbol, "SashManaged.OpenMpAttribute") ? new StructDecl(symbol, declaration) : null;
+            return HasAttribute(symbol, "SashManaged.OpenMpApiAttribute") ? new StructDecl(symbol, declaration) : null;
         }
 
         private static bool IsVoid(TypeSyntax type)

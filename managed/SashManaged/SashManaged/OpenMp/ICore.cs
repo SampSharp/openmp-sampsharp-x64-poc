@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMp]
+[OpenMpApi]
 public readonly partial struct ICore
 {
     public partial SemanticVersion GetVersion();

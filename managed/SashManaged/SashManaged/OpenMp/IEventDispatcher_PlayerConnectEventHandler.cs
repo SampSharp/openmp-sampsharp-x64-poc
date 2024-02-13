@@ -2,9 +2,11 @@
 
 namespace SashManaged.OpenMp;
 
+[OpenMpEventDispatcher]
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct IEventDispatcher_PlayerConnectEventHandler
 {
+    // TODO: generate source
     private readonly nint _data;
     
     [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]

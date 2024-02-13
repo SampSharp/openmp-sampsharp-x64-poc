@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace SashManaged.OpenMp;
 
+[OpenMpEventHandler]
 public interface IPlayerConnectEventHandler
 {
     void OnIncomingConnection(IPlayer player, StringView ipAddress, ushort port);
@@ -11,6 +12,7 @@ public interface IPlayerConnectEventHandler
     void OnPlayerClientInit(IPlayer player);
 }
 
+// TODO: generate source
 internal class IPlayerConnectEventHandler_Handler : BaseEventHandler<IPlayerConnectEventHandler>
 {
     private IPlayerConnectEventHandler_Handler(IPlayerConnectEventHandler handler, nint handle) : base(handler, handle)
