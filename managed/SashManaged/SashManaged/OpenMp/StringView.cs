@@ -23,7 +23,7 @@ public readonly unsafe struct StringView : ISpanFormattable
     {
         fixed (byte* pin = &span[0])
         {
-            // making the dangerous assumption that the span is pinnable
+            // making the dangerous assumption that the span is permanently pinned (utf-8 literal)
             _reference = pin;
             _size = span.Length;
         }
