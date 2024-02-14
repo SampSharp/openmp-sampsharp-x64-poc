@@ -1,4 +1,6 @@
-﻿namespace SashManaged.OpenMp;
+﻿using SashManaged.Chrono;
+
+namespace SashManaged.OpenMp;
 
 [OpenMpApi]
 public readonly partial struct ICore

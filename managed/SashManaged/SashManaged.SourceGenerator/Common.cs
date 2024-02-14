@@ -33,7 +33,7 @@ public static class Common
 
     private static string ToParameterText(IParameterSymbol x, bool marshal)
     {
-        if (marshal)
+        if (marshal && x.HasAttribute(Constants.MarshallAttributeFQN))
         {
             return $"nint {x.Name}";
         }

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SashManaged.OpenMp;
+namespace SashManaged.Chrono;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct TimePoint

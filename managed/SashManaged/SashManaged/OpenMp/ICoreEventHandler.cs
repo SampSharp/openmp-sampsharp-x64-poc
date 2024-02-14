@@ -1,4 +1,6 @@
-﻿namespace SashManaged.OpenMp;
+﻿using SashManaged.Chrono;
+
+namespace SashManaged.OpenMp;
 
 [OpenMpEventHandler]
 public interface ICoreEventHandler
