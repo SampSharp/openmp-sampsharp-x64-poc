@@ -1,9 +1,10 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
+
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly unsafe ref struct StringView
+public readonly unsafe struct StringView : ISpanFormattable
 {
     private readonly byte* _reference;
     private readonly Size _size;
@@ -18,7 +19,7 @@ public readonly unsafe ref struct StringView
     {
     }
 
-    public StringView(ReadOnlySpan<byte> span)
+    private StringView(ReadOnlySpan<byte> span)
     {
         fixed (byte* pin = &span[0])
         {
@@ -41,5 +42,26 @@ public readonly unsafe ref struct StringView
     public override string ToString()
     {
         return Encoding.UTF8.GetString(AsSpan());
+    }
+
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        return ToString();
+    }
+
+    public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
+    {
+        return Encoding.UTF8.TryGetChars(AsSpan(), destination, out charsWritten);
+    }
+
+    public static implicit operator string(StringView view)
+    {
+        return view.ToString();
+    }
+
+    public static implicit operator StringView(ReadOnlySpan<byte> span)
+    {
+        // this is terrible but will do for now.
+        return new StringView(span);
     }
 }

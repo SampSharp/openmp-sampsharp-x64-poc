@@ -1,22 +1,13 @@
 #include "managed-host.hpp"
 
-//#define NETHOST_USE_AS_STATIC true
-
-#ifdef WINDOWS
-#define CH(c) L ## c
-#define DIR_SEPARATOR L'\\'
-#else
+#if !defined WINDOWS
 #include <dlfcn.h>
 #include <limits.h>
 
-#define CH(c) c
-#define DIR_SEPARATOR '/'
 #define MAX_PATH PATH_MAX
-
 #endif
 
 #include <cassert>
-#include <iostream>
 
 #include "dotnet/nethost.h"
 
@@ -52,10 +43,8 @@ bool ManagedHost::loadFor(const char_t * root_path, const char_t * assembly_name
     return true;
 }
 
-bool ManagedHost::getEntryPoint(const char_t *name, void **delegate_ptr) const {
+bool ManagedHost::getEntryPoint(const char_t *dotnet_type, const char_t *name, void **delegate_ptr) const {
     
-    const auto dotnet_type = STR("SashManaged.Interop, SashManaged"); // namespace.class, assembly
-
     const int rc = load_assembly_and_get_function_pointer(
         assem_path_.c_str(),
         dotnet_type,
@@ -66,8 +55,6 @@ bool ManagedHost::getEntryPoint(const char_t *name, void **delegate_ptr) const {
 
     return rc == 0;
 }
-
-// private
 
 void *ManagedHost::load_library(const char_t *path) {
 #ifdef WINDOWS
@@ -82,8 +69,8 @@ void *ManagedHost::load_library(const char_t *path) {
 }
 
 void *ManagedHost::get_export(void *h, const char *name) {
-    #ifdef WINDOWS
-    void *f = ::GetProcAddress((HMODULE)h, name);  // NOLINT(clang-diagnostic-microsoft-cast)
+#ifdef WINDOWS
+    void *f = ::GetProcAddress(static_cast<HMODULE>(h), name);  // NOLINT(clang-diagnostic-microsoft-cast)
     assert(f != nullptr);
     return f;
 #else
@@ -94,11 +81,11 @@ void *ManagedHost::get_export(void *h, const char *name) {
 }
 
 bool ManagedHost::load_hostfxr(const char_t *assembly_path) {
-    get_hostfxr_parameters params { sizeof(get_hostfxr_parameters), assembly_path, nullptr };
+    const get_hostfxr_parameters params { sizeof(get_hostfxr_parameters), assembly_path, nullptr };
     // Pre-allocate a large buffer for the path to hostfxr
     char_t buffer[MAX_PATH];
     size_t buffer_size = sizeof(buffer) / sizeof(char_t);
-    int rc = get_hostfxr_path(buffer, &buffer_size, &params);
+    const int rc = get_hostfxr_path(buffer, &buffer_size, &params);
     if (rc != 0)
         return false;
 
@@ -113,12 +100,11 @@ bool ManagedHost::load_hostfxr(const char_t *assembly_path) {
 
 load_assembly_and_get_function_pointer_fn ManagedHost::get_dotnet_load_assembly(const char_t *config_path) const {
     // Load .NET Core
-    void *load_assembly_and_get_function_pointer = nullptr;
+    void *ptr = nullptr;
     hostfxr_handle cxt = nullptr;
     int rc = init_for_config_fptr(config_path, nullptr, &cxt);
     if (rc != 0 || cxt == nullptr)
     {
-        std::cerr << "Init failed: " << std::hex << std::showbase << rc << std::endl;
         close_fptr(cxt);
         return nullptr;
     }
@@ -127,10 +113,12 @@ load_assembly_and_get_function_pointer_fn ManagedHost::get_dotnet_load_assembly(
     rc = get_delegate_fptr(
         cxt,
         hdt_load_assembly_and_get_function_pointer,
-        &load_assembly_and_get_function_pointer);
-    if (rc != 0 || load_assembly_and_get_function_pointer == nullptr)
-        std::cerr << "Get delegate failed: " << std::hex << std::showbase << rc << std::endl;
+        &ptr);
+    if (rc != 0 || ptr == nullptr)
+    {
+        // fail
+    }
 
     close_fptr(cxt);
-    return (load_assembly_and_get_function_pointer_fn)load_assembly_and_get_function_pointer;
+    return (load_assembly_and_get_function_pointer_fn)ptr;
 }

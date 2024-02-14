@@ -9,37 +9,38 @@ using namespace Impl;
 
 typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *);
 
+struct ISampSharpComponent : IComponent
+{
+	PROVIDE_UID(0x0B61929D1E94A319);
+};
+
 class SampSharpComponent final
 	: public ISampSharpComponent
-	, public CoreEventHandler
 {
 private:
 	ICore* core_ = nullptr;
 	ManagedHost managed_host_;
 	inline static SampSharpComponent* instance_ = nullptr;
-
 	on_init_fn on_init_ = nullptr;
+
 public:
-	// Required component methods.
 	StringView componentName() const override;
 
 	SemanticVersion componentVersion() const override;
 
 	void onLoad(ICore* c) override;
 
+	void provideConfiguration(ILogger& logger, IEarlyConfig& config, bool defaults) override;
+	
 	void onInit(IComponentList* components) override;
 
 	void onReady() override;
-
-	void onFree(IComponent* component) override;
 
 	void free() override;
 
 	void reset() override;
 	
-	void onTick(Microseconds elapsed, TimePoint now) override;
-	
 	static SampSharpComponent* getInstance();
 
-	~SampSharpComponent();
+	~SampSharpComponent() = default;
 };

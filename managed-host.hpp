@@ -39,5 +39,5 @@ public:
     bool isReady() const;
     bool initialize();
     bool loadFor(const char_t * root_path, const char_t * assembly_name);
-    bool getEntryPoint(const char_t *name, void**delegate_ptr) const;
+    bool getEntryPoint(const char_t *entry_type_name, const char_t *name, void**delegate_ptr) const;
 };

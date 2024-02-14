@@ -3,5 +3,5 @@
 [OpenMpApi]
 public readonly partial struct IPlayerPool
 {
-    public partial IEventDispatcher_PlayerConnectEventHandler GetPlayerConnectDispatcher();
+    public partial IEventDispatcher<IPlayerConnectEventHandler> GetPlayerConnectDispatcher();
 }
