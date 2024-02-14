@@ -56,6 +56,8 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler
         cfg.AddBan(ban);
         cfg.WriteBans();
 
+        
+
         // test handlers
         var players = core.GetPlayers();
 

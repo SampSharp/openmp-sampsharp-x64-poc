@@ -9,7 +9,7 @@ public readonly partial struct IConfig
 
     public partial ref float GetFloat(StringView key);
 
-    // public partial Size getStrings(StringView key, Span<StringView> output); // TODO: span
+    // public partial Size getStrings(StringView key, Span<StringView> output); // span not available
 
     public partial Size GetStringsCount(StringView key);
 
@@ -17,14 +17,15 @@ public readonly partial struct IConfig
 
     public partial Size GetBansCount();
 
-    [return:Marshall]
+    [return:OpenMpApiMarshall]
     public partial BanEntry GetBan(Size index);
 
-    public partial void AddBan([Marshall]BanEntry entry);
+    public partial void AddBan([OpenMpApiMarshall]BanEntry entry);
 
-    //public partial void RemoveBan(Size index); // TODO: overloads
+    [OpenMpApiOverload("_index")]
+    public partial void RemoveBan(Size index);
 
-    public partial void RemoveBan([Marshall]BanEntry entry);
+    public partial void RemoveBan([OpenMpApiMarshall]BanEntry entry);
 
     public partial void WriteBans();
 
@@ -32,11 +33,11 @@ public readonly partial struct IConfig
 
     public partial void ClearBans();
 
-    public partial bool IsBanned([Marshall]BanEntry entry);
+    public partial bool IsBanned([OpenMpApiMarshall]BanEntry entry);
 
     public partial PairBoolString GetNameFromAlias(StringView alias);
 
-    // public partial void enumOptions(OptionEnumeratorCallback& callback);
+    // public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 
     public partial ref bool GetBool(StringView key);
 }

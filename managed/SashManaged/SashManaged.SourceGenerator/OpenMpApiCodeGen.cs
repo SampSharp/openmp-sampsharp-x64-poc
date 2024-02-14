@@ -7,7 +7,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using CSharpExtensions = Microsoft.CodeAnalysis.CSharpExtensions;
 
 namespace SashManaged.SourceGenerator;
 
@@ -48,31 +47,20 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                                 
                         """);
 
-        foreach (var member in node.TypeDeclaration.Members)
+        foreach (var (methodDeclaration, methodSymbol) in node.Methods)
         {
-            if (member is not MethodDeclarationSyntax memberDeclaration || 
-                !member.Modifiers.Any(x => x.IsKind(SyntaxKind.PartialKeyword)))
-            {
-                continue;
-            }
-
-            var methodName = memberDeclaration.Identifier.ToString();
-            var proxyName = $"{node.Symbol.Name}_{FirstLower(methodName)}";
-
-            var methodSymbols = node.Members.Where(x => x.Name == methodName).ToList();
-            if (methodSymbols.Count != 1)
-            {
-                continue;
-            }
-            var methodSymbol = methodSymbols.First();
+            var methodName = methodDeclaration.Identifier.ToString();
+;
+            var overload = methodSymbol.GetAttributes(Constants.OverloadAttributeFQN).FirstOrDefault()?.ConstructorArguments[0].Value as string;
+            var proxyName = $"{node.Symbol.Name}_{FirstLower(methodName)}{overload}";
             
             var returnType = methodSymbol.ReturnType.ToDisplayString();
             var returnTypeNative = returnType;
             var isVoidReturn = methodSymbol.ReturnsVoid;
-            var isUnsafe = memberDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.UnsafeKeyword));
+            var isUnsafe = methodDeclaration.Modifiers.Any(x => x.IsKind(SyntaxKind.UnsafeKeyword));
             
-            var requiresReturnMarshalling = !methodSymbol.ReturnsVoid && methodSymbol.GetReturnTypeAttributes().HasAttribute("SashManaged.MarshallAttribute");
-            var requiresMarshalling = methodSymbol.Parameters.Any(x => x.HasAttribute("SashManaged.MarshallAttribute"));
+            var requiresReturnMarshalling = !methodSymbol.ReturnsVoid && methodSymbol.GetReturnTypeAttributes().HasAttribute(Constants.MarshallAttributeFQN);
+            var requiresMarshalling = methodSymbol.Parameters.Any(x => x.HasAttribute(Constants.MarshallAttributeFQN));
             var requiresUnsafeWrapper = methodSymbol.ReturnsByRef || requiresMarshalling || requiresReturnMarshalling;
 
             var parametersString = Common.ParameterAsString(methodSymbol.Parameters);
@@ -105,7 +93,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                                 private static {{(methodSymbol.ReturnsByRef || isUnsafe ? "unsafe " : "")}}extern {{returnTypeNative}}{{(methodSymbol.ReturnsByRef ? "*" : "")}} {{proxyName}}({{node.Symbol.Name}} ptr
                         """);
 
-            if (memberDeclaration.ParameterList.Parameters.Count > 0)
+            if (methodDeclaration.ParameterList.Parameters.Count > 0)
             {
                 sb.Append($", {parametersStringMarshalled}");
             }
@@ -127,7 +115,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                 // marshalling
                 foreach (var parameter in methodSymbol.Parameters)
                 {
-                    if (parameter.HasAttribute("SashManaged.MarshallAttribute"))
+                    if (parameter.HasAttribute(Constants.MarshallAttributeFQN))
                     {
                         sb.AppendLine($$"""
                                         var {{parameter.Name}}_ = System.Runtime.InteropServices.Marshal.AllocHGlobal(System.Runtime.InteropServices.Marshal.SizeOf(typeof({{parameter.Type.ToDisplayString()}})));
@@ -147,7 +135,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                 // call to extern
                 sb.Append($"                {(methodSymbol.ReturnsVoid ? "" : "var returnValue = ")}{proxyName}(this");
 
-                if (memberDeclaration.ParameterList.Parameters.Count > 0)
+                if (methodDeclaration.ParameterList.Parameters.Count > 0)
                 {
                     sb.Append(", ");
 
@@ -183,7 +171,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
 
                     foreach (var parameter in methodSymbol.Parameters)
                     {
-                        if (parameter.HasAttribute("SashManaged.MarshallAttribute"))
+                        if (parameter.HasAttribute(Constants.MarshallAttributeFQN))
                         {
                             sb.AppendLine($$"""
                                                     System.Runtime.InteropServices.Marshal.FreeHGlobal({{parameter.Name}}_);
@@ -200,7 +188,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                 sb.AppendLine();
                 
                 sb.AppendLine($$"""
-                                    {{member.Modifiers}} {{refModifier}}{{returnType}} {{methodName}}({{parametersString}})
+                                    {{methodDeclaration.Modifiers}} {{refModifier}}{{returnType}} {{methodName}}({{parametersString}})
                                     {
                                         {{(methodSymbol.ReturnsVoid ? "" : "return ")}}{{refModifier}}{{methodName}}_unsafe({{Common.GetForwardArguments(methodSymbol)}});
                                     }
@@ -211,7 +199,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
             {
                 // method declaration
                 sb.Append($$"""
-                                    {{member.Modifiers}} {{returnType}} {{methodName}}({{parametersString}})
+                                    {{methodDeclaration.Modifiers}} {{returnType}} {{methodName}}({{parametersString}})
                                     {
                                         
                             """);
@@ -224,7 +212,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
 
                 sb.Append($"{proxyName}(this");
 
-                if (memberDeclaration.ParameterList.Parameters.Count > 0)
+                if (methodDeclaration.ParameterList.Parameters.Count > 0)
                 {
                     sb.Append(", ");
 
@@ -261,25 +249,31 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
 
     private static StructDecl GetStructDeclaration(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)
     {
-        var declaration = (StructDeclarationSyntax)ctx.Node;
-        if (ctx.SemanticModel.GetDeclaredSymbol(declaration, cancellationToken) is not { } symbol)
+        var structDeclaration = (StructDeclarationSyntax)ctx.Node;
+        if (ctx.SemanticModel.GetDeclaredSymbol(structDeclaration, cancellationToken) is not { } structSymbol)
             return null;
             
-        if (!symbol.HasAttribute("SashManaged.OpenMpApiAttribute"))
+        if (!structSymbol.HasAttribute(Constants.ApiAttributeFQN))
             return null;
 
-        var members = symbol.GetMembers()
-            .OfType<IMethodSymbol>()
-            .Where(x => x.IsPartialDefinition)
+        var methods = structDeclaration.Members.OfType<MethodDeclarationSyntax>()
+            .Where(x => x.Modifiers.Any(y => y.IsKind(SyntaxKind.PartialKeyword)))
+            .Select(methodDeclaration =>
+            {
+                if (ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol)
+                    return (null, null);
+
+                return (methodDeclaration, methodSymbol);
+            })
             .ToList();
 
-        return new StructDecl(symbol, declaration, members);
+        return new StructDecl(structSymbol, structDeclaration, methods);
     }
 
-    private class StructDecl(ISymbol symbol, StructDeclarationSyntax typeDeclaration, List<IMethodSymbol> members)
+    private class StructDecl(ISymbol symbol, StructDeclarationSyntax typeDeclaration, List<(MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol)> methods)
     {
         public ISymbol Symbol { get; } = symbol;
         public StructDeclarationSyntax TypeDeclaration { get; } = typeDeclaration;
-        public List<IMethodSymbol> Members { get; } = members;
+        public List<(MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol)> Methods { get; } = methods;
     }
 }

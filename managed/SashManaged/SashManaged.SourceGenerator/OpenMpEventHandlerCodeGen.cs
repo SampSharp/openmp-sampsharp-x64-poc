@@ -39,7 +39,7 @@ namespace SashManaged.SourceGenerator
             if (ctx.SemanticModel.GetDeclaredSymbol(declaration, cancellationToken) is not { } symbol)
                 return null;
             
-            if (!symbol.HasAttribute("SashManaged.OpenMpEventHandlerAttribute"))
+            if (!symbol.HasAttribute(Constants.EventHandlerAttributeFQN))
                 return null;
             
             var members = symbol.GetMembers()
@@ -132,7 +132,7 @@ namespace SashManaged.SourceGenerator
 
             sb.AppendLine($$"""
                                 {{Constants.SequentialStructLayoutAttribute}}
-                                {{node.TypeDeclaration.Modifiers.ToFullString()}} struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
+                                {{node.TypeDeclaration.Modifiers}} struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
                                 {
                                     private readonly nint _data;
                                     

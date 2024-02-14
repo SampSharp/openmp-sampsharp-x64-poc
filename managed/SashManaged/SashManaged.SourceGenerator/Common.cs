@@ -18,7 +18,7 @@ public static class Common
 
     private static string ToArgumentText(IParameterSymbol x, bool marshall)
     {
-        if (marshall && x.HasAttribute("SashManaged.MarshallAttribute"))
+        if (marshall && x.HasAttribute(Constants.MarshallAttributeFQN))
         {
             return $"{x.Name}_";
         }
