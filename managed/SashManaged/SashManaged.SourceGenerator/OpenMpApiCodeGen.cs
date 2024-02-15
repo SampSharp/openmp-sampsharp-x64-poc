@@ -87,11 +87,21 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
 
         foreach (var method in methods)
         {
+            var typeArguments = string.Empty;
+            var typeConstraint = string.Empty;
+            if (method.IsGenericMethod)
+            {
+                
+                typeConstraint = string.Join(" ", method.TypeParameters.Select(x => $"where {x.Name} : {string.Join(", ", x.ConstraintTypes.Select(y => y.ToDisplayString()))}"));
+
+                typeArguments = $"<{string.Join(", ", method.TypeArguments.Select(x => x.Name))}>";
+            }
+
             sb.AppendLine($$"""
-                                    public {{(method.ReturnsByRef ? "ref " : "")}}{{method.ReturnType.ToDisplayString()}} {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
+                                    public {{(method.ReturnsByRef ? "ref " : "")}}{{method.ReturnType.ToDisplayString()}} {{method.Name}}{{typeArguments}}({{Common.ParameterAsString(method.Parameters)}}) {{typeConstraint}}
                                     {
                                         var _target = new {{implementingType.ToDisplayString()}}(_data);
-                                        {{(method.ReturnsVoid ? "" : "return ")}}{{(method.ReturnsByRef ? "ref " : "")}}_target.{{method.Name}}({{Common.GetForwardArguments(method)}});
+                                        {{(method.ReturnsVoid ? "" : "return ")}}{{(method.ReturnsByRef ? "ref " : "")}}_target.{{method.Name}}{{typeArguments}}({{Common.GetForwardArguments(method)}});
                                     }
                                     
                             """);
