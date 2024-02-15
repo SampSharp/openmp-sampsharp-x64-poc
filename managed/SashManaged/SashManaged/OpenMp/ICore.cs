@@ -6,9 +6,9 @@ namespace SashManaged.OpenMp;
 public readonly partial struct ICore
 {
     public partial SemanticVersion GetVersion();
-    
+
     public partial int GetNetworkBitStreamVersion();
-    
+
     public partial IPlayerPool GetPlayers();
 
     public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
@@ -20,7 +20,7 @@ public readonly partial struct ICore
     public partial void SetGravity(float gravity);
 
     public partial float GetGravity();
-    
+
     public partial void SetWeather(int weather);
 
     public partial void SetWorldTime(Hours time);

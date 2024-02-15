@@ -17,15 +17,15 @@ public readonly partial struct IConfig
 
     public partial Size GetBansCount();
 
-    [return:OpenMpApiMarshall]
+    [return: OpenMpApiMarshall]
     public partial BanEntry GetBan(Size index);
 
-    public partial void AddBan([OpenMpApiMarshall]BanEntry entry);
+    public partial void AddBan([OpenMpApiMarshall] BanEntry entry);
 
     [OpenMpApiOverload("_index")]
     public partial void RemoveBan(Size index);
 
-    public partial void RemoveBan([OpenMpApiMarshall]BanEntry entry);
+    public partial void RemoveBan([OpenMpApiMarshall] BanEntry entry);
 
     public partial void WriteBans();
 
@@ -33,7 +33,7 @@ public readonly partial struct IConfig
 
     public partial void ClearBans();
 
-    public partial bool IsBanned([OpenMpApiMarshall]BanEntry entry);
+    public partial bool IsBanned([OpenMpApiMarshall] BanEntry entry);
 
     public partial PairBoolString GetNameFromAlias(StringView alias);
 

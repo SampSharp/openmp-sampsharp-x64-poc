@@ -8,4 +8,4 @@ public enum DialogStyle
     DialogStyle_PASSWORD,
     DialogStyle_TABLIST,
     DialogStyle_TABLIST_HEADERS
-};
+}

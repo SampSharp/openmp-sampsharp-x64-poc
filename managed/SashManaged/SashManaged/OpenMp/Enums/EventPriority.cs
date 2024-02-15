@@ -7,4 +7,4 @@ public enum EventPriority : sbyte
     Default = 0,
     Lowest = sbyte.MaxValue,
     FairlyLow = Lowest / 2
-};
+}

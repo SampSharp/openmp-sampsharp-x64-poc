@@ -14,4 +14,4 @@ public enum TextDrawStyle
     FontPricedown, //< Font type
     Sprite, //< TXD sprite
     Preview //< Model preview
-};
+}

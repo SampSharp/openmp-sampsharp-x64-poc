@@ -18,5 +18,5 @@ public enum VehicleComponentSlot
     VentRight = 12,
     VentLeft = 13,
     FrontBullbar = 14,
-    RearBullbar = 15,
+    RearBullbar = 15
 }

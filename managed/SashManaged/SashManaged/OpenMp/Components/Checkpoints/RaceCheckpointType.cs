@@ -11,5 +11,5 @@ public enum RaceCheckpointType
     AIR_TWO,
     AIR_THREE,
     AIR_FOUR,
-    NONE,
-};
+    NONE
+}

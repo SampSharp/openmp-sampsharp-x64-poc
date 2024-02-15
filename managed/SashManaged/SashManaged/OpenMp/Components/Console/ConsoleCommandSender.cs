@@ -5,4 +5,4 @@ public enum ConsoleCommandSender
     Console,
     Player,
     Custom
-};
+}

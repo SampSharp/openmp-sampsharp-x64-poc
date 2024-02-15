@@ -8,6 +8,9 @@ namespace SashManaged;
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler
 {
+    private static ICore _core;
+    private static IVehiclesComponent _vehicles;
+
     public void OnTick(Microseconds micros, TimePoint now)
     {
         //Console.WriteLine($"micros: {micros.AsTimeSpan()}, now: {now}");
@@ -20,19 +23,18 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public unsafe void OnPlayerConnect(IPlayer player)
     {
         var view = player.GetName();
-        
+
         Console.WriteLine($"Player {view} connected!");
-     
-        
+
+
         var col = new Colour(255, 255, 255, 255);
 
         var bytes = Encoding.UTF8.GetBytes($"Welcome, {view}!");
-        
+
         fixed (byte* pin = bytes)
         {
             player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
         }
-
     }
 
     public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)
@@ -43,9 +45,69 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     {
     }
 
+    public unsafe bool OnPlayerShotMissed(IPlayer player, PlayerBulletDataPtr bulletData)
+    {
+        var col = new Colour(255, 255, 255, 255);
 
-    private static ICore _core;
-    private static IVehiclesComponent _vehicles;
+        var msg =
+            $"Your shot missed @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+
+        Console.WriteLine(msg);
+        var bytes = Encoding.UTF8.GetBytes(msg);
+
+        fixed (byte* pin = bytes)
+        {
+            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
+        }
+
+        return true;
+    }
+
+    public bool OnPlayerShotPlayer(IPlayer player, IPlayer target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
+
+    public unsafe bool OnPlayerShotVehicle(IPlayer player, IVehicle target, PlayerBulletDataPtr bulletData)
+    {
+        var col = new Colour(255, 255, 255, 255);
+
+        var msg =
+            $"Your shot vehicle @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+        var bytes = Encoding.UTF8.GetBytes(msg.Substring(0, 143));
+
+        Console.WriteLine(msg);
+        fixed (byte* pin = bytes)
+        {
+            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
+        }
+
+        return true;
+    }
+
+    public bool OnPlayerShotObject(IPlayer player, IObject target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
+
+    public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
+
+    public byte OnPlayerRequestSpawn(IPlayer player)
+    {
+        return 1;
+    }
+
+    public void OnPlayerSpawn(IPlayer player)
+    {
+        var pos = new Vector3(0, 0, 10);
+        player.SetPosition(pos);
+
+        player.GiveWeapon(new WeaponSlotData((int)PlayerWeapon.AK47, 200));
+        _vehicles.Create(false, 401, new Vector3(5, 0, 10));
+    }
 
     [UnmanagedCallersOnly]
     public static void OnInit(ICore core, IComponentList componentList)
@@ -85,65 +147,8 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     }
 
     // need an entry point to build runtime config for this application
-    public static void Main(){/*nop*/}
-    public byte OnPlayerRequestSpawn(IPlayer player)
+    public static void Main()
     {
-        return 1;
-    }
-
-    public void OnPlayerSpawn(IPlayer player)
-    {  
-        var pos = new Vector3(0, 0, 10);
-        player.SetPosition(pos);
-
-        player.GiveWeapon(new WeaponSlotData((int)PlayerWeapon.AK47, 200));
-        _vehicles.Create(false, 401, new Vector3(5, 0, 10));
-    }
-
-    public unsafe bool OnPlayerShotMissed(IPlayer player, PlayerBulletDataPtr bulletData)
-    {
-        var col = new Colour(255, 255, 255, 255);
-
-        var msg = $"Your shot missed @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
-
-        Console.WriteLine(msg);
-        var bytes = Encoding.UTF8.GetBytes(msg);
-        
-        fixed (byte* pin = bytes)
-        {
-            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
-        }
-
-        return true;
-    }
-
-    public bool OnPlayerShotPlayer(IPlayer player, IPlayer target, PlayerBulletDataPtr bulletData)
-    {
-        return true;
-    }
-
-    public unsafe bool OnPlayerShotVehicle(IPlayer player, IVehicle target, PlayerBulletDataPtr bulletData)
-    {
-        var col = new Colour(255, 255, 255, 255);
-
-        var msg = $"Your shot vehicle @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
-        var bytes = Encoding.UTF8.GetBytes(msg.Substring(0, 143));
-
-        Console.WriteLine(msg);
-        fixed (byte* pin = bytes)
-        {
-            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
-        }
-        return true;
-    }
-
-    public bool OnPlayerShotObject(IPlayer player, IObject target, PlayerBulletDataPtr bulletData)
-    {
-        return true;
-    }
-
-    public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, PlayerBulletDataPtr bulletData)
-    {
-        return true;
+        /*nop*/
     }
 }

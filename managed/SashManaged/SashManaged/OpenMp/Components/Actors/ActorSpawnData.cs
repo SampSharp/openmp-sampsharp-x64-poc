@@ -2,9 +2,9 @@
 
 namespace SashManaged.OpenMp;
 
-public struct ActorSpawnData
+public readonly struct ActorSpawnData
 {
-    Vector3 Position;
-    float FacingAngle;
-    int Skin;
-};
+    public readonly Vector3 Position;
+    public readonly float FacingAngle;
+    public readonly int Skin;
+}

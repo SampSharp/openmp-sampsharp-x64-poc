@@ -4,17 +4,15 @@ using System.Text;
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Explicit)]
-public readonly unsafe struct HybridString46
+public readonly struct HybridString46
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
-    [FieldOffset(0)]
-    private readonly Size _lenDynamic;
+    [FieldOffset(0)] private readonly Size _lenDynamic;
 
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 46)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 46)]
     private readonly byte[]? _static;
 
     public HybridString46(string inp)
@@ -28,9 +26,7 @@ public readonly unsafe struct HybridString46
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
-        {
             _static = null;
-        }
     }
 
     public Span<byte> AsSpan()
@@ -52,18 +48,17 @@ public readonly unsafe struct HybridString46
         return Encoding.UTF8.GetString(AsSpan());
     }
 }
+
 [StructLayout(LayoutKind.Explicit)]
-public readonly unsafe struct HybridString16
+public readonly struct HybridString16
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
-    [FieldOffset(0)]
-    private readonly Size _lenDynamic;
+    [FieldOffset(0)] private readonly Size _lenDynamic;
 
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
     private readonly byte[]? _static;
 
     public HybridString16(string inp)
@@ -77,9 +72,7 @@ public readonly unsafe struct HybridString16
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
-        {
             _static = null;
-        }
     }
 
     public Span<byte> AsSpan()
@@ -101,18 +94,17 @@ public readonly unsafe struct HybridString16
         return Encoding.UTF8.GetString(AsSpan());
     }
 }
+
 [StructLayout(LayoutKind.Explicit)]
-public readonly unsafe struct HybridString24
+public readonly struct HybridString24
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
-    [FieldOffset(0)]
-    private readonly Size _lenDynamic;
+    [FieldOffset(0)] private readonly Size _lenDynamic;
 
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
     private readonly byte[]? _static;
 
     public HybridString24(string inp)
@@ -126,9 +118,7 @@ public readonly unsafe struct HybridString24
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
-        {
             _static = null;
-        }
     }
 
     public Span<byte> AsSpan()

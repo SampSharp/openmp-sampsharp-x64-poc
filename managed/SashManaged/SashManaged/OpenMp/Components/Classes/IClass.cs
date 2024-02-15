@@ -4,5 +4,5 @@
 public readonly partial struct IClass
 {
     public partial ref PlayerClass GetClass();
-    public partial void SetClass(ref PlayerClass data) ;
+    public partial void SetClass(ref PlayerClass data);
 }

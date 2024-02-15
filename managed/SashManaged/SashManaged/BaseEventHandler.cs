@@ -2,9 +2,9 @@
 
 public abstract class BaseEventHandler<T> : IDisposable where T : class
 {
+    private static BaseEventHandler<T>? _active;
     private readonly T _handler;
     private bool _disposed;
-    private static BaseEventHandler<T>? _active;
 
     protected BaseEventHandler(T handler, nint handle)
     {
@@ -23,6 +23,12 @@ public abstract class BaseEventHandler<T> : IDisposable where T : class
 
     protected static bool IsActive => _active != null;
 
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     public event EventHandler? Disposing;
 
     ~BaseEventHandler()
@@ -32,35 +38,20 @@ public abstract class BaseEventHandler<T> : IDisposable where T : class
 
     protected static void ThrowIfActive()
     {
-        if (IsActive)
-        {
-            throw new InvalidOperationException("Already active");
-        }
+        if (IsActive) throw new InvalidOperationException("Already active");
     }
 
     protected abstract void Delete();
 
     protected virtual void Dispose(bool disposing)
     {
-        if (_disposed)
-        {
-            return;
-        }
+        if (_disposed) return;
 
         Disposing?.Invoke(this, EventArgs.Empty);
 
         Delete();
         _disposed = true;
 
-        if (_active == this)
-        {
-            _active = null;
-        }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        if (_active == this) _active = null;
     }
 }

@@ -6,4 +6,4 @@ public enum TextDrawAlignmentTypes
     TextDrawAlignment_Left,
     TextDrawAlignment_Center,
     TextDrawAlignment_Right
-};
+}

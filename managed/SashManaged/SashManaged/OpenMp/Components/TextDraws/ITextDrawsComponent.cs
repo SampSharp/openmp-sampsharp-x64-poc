@@ -12,4 +12,4 @@ public readonly partial struct ITextDrawsComponent
 
     [OpenMpApiOverload("_model")]
     public partial ITextDraw Create(Vector2 position, int model);
-};
+}

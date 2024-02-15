@@ -7,5 +7,5 @@ public enum ConfigOptionType
     String = 1,
     Float = 2,
     Strings = 3,
-    Bool = 4,
-};
+    Bool = 4
+}

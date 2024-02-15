@@ -5,4 +5,4 @@ public enum PlayerRecordingType
     None,
     Driver,
     OnFoot
-};
+}

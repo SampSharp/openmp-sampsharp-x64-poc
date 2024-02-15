@@ -42,4 +42,4 @@ public readonly partial struct ITextDrawBase
     public partial ref ITextDrawBase SetPreviewZoom(float zoom);
     public partial float GetPreviewZoom();
     public partial void Restream();
-};
+}

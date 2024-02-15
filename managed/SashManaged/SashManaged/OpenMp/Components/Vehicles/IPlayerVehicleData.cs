@@ -7,8 +7,8 @@ public readonly partial struct IPlayerVehicleData
 
     public partial IVehicle GetVehicle();
     public partial void ResetVehicle();
-    public partial int GetSeat() ;
-    public partial bool IsInModShop() ;
-    public partial bool IsInDriveByMode() ;
-    public partial bool IsCuffed() ;
+    public partial int GetSeat();
+    public partial bool IsInModShop();
+    public partial bool IsInDriveByMode();
+    public partial bool IsCuffed();
 }

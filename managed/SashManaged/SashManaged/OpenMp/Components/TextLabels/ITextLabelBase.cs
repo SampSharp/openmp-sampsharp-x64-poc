@@ -3,7 +3,7 @@
 namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IExtensible), typeof(IEntity))]
-public readonly partial struct ITextLabelBase 
+public readonly partial struct ITextLabelBase
 {
     public partial void SetText(StringView text);
     public partial StringView GetText();

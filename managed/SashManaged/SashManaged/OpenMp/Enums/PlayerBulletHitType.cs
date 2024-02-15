@@ -6,5 +6,5 @@ public enum PlayerBulletHitType : byte
     Player = 1,
     Vehicle = 2,
     Object = 3,
-    PlayerObject = 4,
+    PlayerObject = 4
 }

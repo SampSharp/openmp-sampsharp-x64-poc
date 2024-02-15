@@ -7,4 +7,4 @@ public enum PeerDisconnectReason
     Kicked,
     Custom,
     ModeEnd
-};
+}

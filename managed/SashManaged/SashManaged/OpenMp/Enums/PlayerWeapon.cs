@@ -52,4 +52,4 @@ public enum PlayerWeapon
     Drown = 53,
     Collision,
     End
-};
+}

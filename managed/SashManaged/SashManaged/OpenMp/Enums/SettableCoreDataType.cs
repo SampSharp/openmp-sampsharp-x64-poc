@@ -8,5 +8,5 @@ public enum SettableCoreDataType
     Language,
     URL,
     Password,
-    AdminPassword,
-};
+    AdminPassword
+}

@@ -5,17 +5,15 @@ namespace SashManaged.OpenMp;
 
 // TODO: Better way of handling HybridStrings
 [StructLayout(LayoutKind.Explicit)]
-public readonly unsafe struct HybridString25
+public readonly struct HybridString25
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
-    [FieldOffset(0)]
-    private readonly Size _lenDynamic;
+    [FieldOffset(0)] private readonly Size _lenDynamic;
 
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 25)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 25)]
     private readonly byte[]? _static;
 
     public HybridString25(string inp)
@@ -29,9 +27,7 @@ public readonly unsafe struct HybridString25
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
-        {
             _static = null;
-        }
     }
 
     public Span<byte> AsSpan()

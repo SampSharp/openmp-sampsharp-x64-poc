@@ -20,5 +20,7 @@ public readonly partial struct IBaseObject
     public partial ref ObjectAttachmentData GetAttachmentData();
     public partial bool GetMaterialData(uint materialIndex, out ObjectMaterialData output); // TODO: was ObjectMaterialData*& out; was this a pointer pointer?
     public partial void SetMaterial(uint materialIndex, int model, StringView textureLibrary, StringView textureName, Colour colour);
-    public partial void SetMaterialText(uint materialIndex, StringView text, ObjectMaterialSize materialSize, StringView fontFace, int fontSize, bool bold, Colour fontColour, Colour backgroundColour, ObjectMaterialTextAlign align);
+
+    public partial void SetMaterialText(uint materialIndex, StringView text, ObjectMaterialSize materialSize, StringView fontFace, int fontSize, bool bold, Colour fontColour,
+        Colour backgroundColour, ObjectMaterialTextAlign align);
 }

@@ -4,17 +4,15 @@ using System.Text;
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Explicit)]
-public readonly unsafe struct HybridString32
+public readonly struct HybridString32
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
-    [FieldOffset(0)]
-    private readonly Size _lenDynamic;
+    [FieldOffset(0)] private readonly Size _lenDynamic;
 
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)]
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
     private readonly byte[]? _static;
 
     public HybridString32(string inp)
@@ -28,9 +26,7 @@ public readonly unsafe struct HybridString32
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
-        {
             _static = null;
-        }
     }
 
     public Span<byte> AsSpan()
