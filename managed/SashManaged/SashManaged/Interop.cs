@@ -95,9 +95,9 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         return true;
     }
 
-    public byte OnPlayerRequestSpawn(IPlayer player)
+    public bool OnPlayerRequestSpawn(IPlayer player)
     {
-        return 1;
+        return true;
     }
 
     public void OnPlayerSpawn(IPlayer player)

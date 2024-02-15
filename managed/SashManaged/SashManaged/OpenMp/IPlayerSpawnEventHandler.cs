@@ -3,6 +3,6 @@
 [OpenMpEventHandler]
 public interface IPlayerSpawnEventHandler
 {
-    byte OnPlayerRequestSpawn(IPlayer player);
+    bool OnPlayerRequestSpawn(IPlayer player);
     void OnPlayerSpawn(IPlayer player);
 }
