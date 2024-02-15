@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using SashManaged.Chrono;
+using SashManaged.RobinHood;
 
 namespace SashManaged.OpenMp;
 
@@ -21,10 +22,9 @@ public readonly partial struct IVehicle
     // TODO: virtual bool updateFromPassengerSync( VehiclePassengerSyncPacket& passengerSync, IPlayer player);
     // TODO: virtual bool updateFromUnoccupied( VehicleUnoccupiedSyncPacket& unoccupiedSync, IPlayer player);
     // TODO: virtual bool updateFromTrailerSync( VehicleTrailerSyncPacket& unoccupiedSync, IPlayer player);
-    // TODO: virtual  FlatPtrHashSet<IPlayer>& streamedForPlayers() ;
+    public partial FlatPtrHashSet<IPlayer> StreamedForPlayers();
     public partial IPlayer getDriver();
-
-    // TODO: virtual  FlatHashSet<IPlayer*>& getPassengers();
+    public partial FlatPtrHashSet<IPlayer> GetPassengers();
     public partial void SetPlate(StringView plate);
     public partial StringView GetPlate();
     public partial void SetDamageStatus(int PanelStatus, int DoorStatus, byte LightStatus, byte TyreStatus, IPlayer vehicleUpdater = default);

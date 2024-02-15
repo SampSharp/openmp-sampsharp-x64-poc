@@ -1,5 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
+[OpenMpEventHandler]
 public interface IPlayerModelsEventHandler
 {
     void OnPlayerFinishedDownloading(IPlayer player);

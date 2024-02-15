@@ -1,15 +1,15 @@
 ﻿using System.Numerics;
 using SashManaged.Chrono;
+using SashManaged.RobinHood;
 
 namespace SashManaged.OpenMp;
 
 [OpenMpApi]
 public readonly partial struct IPlayerPool
 {
-    // TODO: public partial FlatPtrHashSet<IPlayer>& entries()    ;
-    // TODO: public partial FlatPtrHashSet<IPlayer>& players()    ;
-    // TODO: public partial FlatPtrHashSet<IPlayer>& bots()    ;
-
+    public partial FlatPtrHashSet<IPlayer> Entries();
+    public partial FlatPtrHashSet<IPlayer> Players();
+    public partial FlatPtrHashSet<IPlayer> Bots();
     public partial IEventDispatcher<IPlayerSpawnEventHandler> GetPlayerSpawnDispatcher();
     public partial IEventDispatcher<IPlayerConnectEventHandler> GetPlayerConnectDispatcher();
     public partial IEventDispatcher<IPlayerStreamEventHandler> GetPlayerStreamDispatcher();

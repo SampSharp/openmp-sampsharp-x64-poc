@@ -1,4 +1,6 @@
-﻿namespace SashManaged.OpenMp;
+﻿using SashManaged.RobinHood;
+
+namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct IGangZonesComponent
@@ -9,7 +11,7 @@ public readonly partial struct IGangZonesComponent
 
     public partial IGangZone create(GangZonePos pos);
 
-    // TODO: public partial FlatHashSet<IGangZone*>& getCheckingGangZones() ;
+    public partial FlatPtrHashSet<IGangZone> GetCheckingGangZones();
     public partial void UseGangZoneCheck(IGangZone zone, bool enable);
     public partial int ToLegacyID(int real);
     public partial int FromLegacyID(int legacy);

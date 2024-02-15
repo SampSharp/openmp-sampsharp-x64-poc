@@ -933,6 +933,25 @@ PROXY_EVENT_HANDLER_BEGIN(PlayerUpdateEventHandler)
 	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerUpdate, IPlayer&, TimePoint)
 PROXY_EVENT_HANDLER_END(PlayerUpdateEventHandler, onPlayerUpdate)
 
+extern "C" SDK_EXPORT FlatPtrHashSet<void*>::iterator __CDECL FlatPtrHashSet_begin(FlatPtrHashSet<void*>& set)
+{
+    return set.begin();
+}
 
+extern "C" SDK_EXPORT FlatPtrHashSet<void*>::iterator __CDECL FlatPtrHashSet_end(FlatPtrHashSet<void*>& set)
+{
+    return set.end();
+}
+
+extern "C" SDK_EXPORT FlatPtrHashSet<void*>::iterator __CDECL FlatPtrHashSet_inc(FlatPtrHashSet<void*>::iterator value)
+{
+    value++;
+    return value;
+}
+
+extern "C" SDK_EXPORT size_t  __CDECL FlatPtrHashSet_size(FlatPtrHashSet<void*>& set)
+{
+    return set.size();
+}
 
 #pragma clang diagnostic pop

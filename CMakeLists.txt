@@ -30,6 +30,7 @@ add_library(${PROJECT_NAME} SHARED
 	managed-host.cpp
 	sampsharp-component.cpp
 	proxies.cpp
+	testing.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

@@ -1,5 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
+[OpenMpEventHandler]
 public interface IGangZoneEventHandler
 {
     void OnPlayerEnterGangZone(IPlayer player, IGangZone zone);

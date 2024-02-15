@@ -1,4 +1,6 @@
-﻿namespace SashManaged.OpenMp;
+﻿using SashManaged.RobinHood;
+
+namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct IBaseGangZone
@@ -14,7 +16,7 @@ public readonly partial struct IBaseGangZone
 
     public partial bool IsPlayerInside(IPlayer player);
 
-    // TODO: virtual FlatHashSet<IPlayer*>& getShownFor();
+    public partial FlatPtrHashSet<IPlayer> GetShownFor();
     public partial Colour GetFlashingColourForPlayer(IPlayer player);
     public partial Colour GetColourForPlayer(IPlayer player);
     public partial void SetLegacyPlayer(IPlayer player);

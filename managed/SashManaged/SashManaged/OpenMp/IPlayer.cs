@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using SashManaged.Chrono;
+using SashManaged.RobinHood;
 
 namespace SashManaged.OpenMp;
 
@@ -104,10 +105,8 @@ public readonly partial struct IPlayer
     public partial PlayerSurfingData GetSurfingData();
     public partial void StreamInForPlayer(IPlayer other);
     public partial bool IsStreamedInForPlayer(IPlayer other);
-
     public partial void StreamOutForPlayer(IPlayer other);
-
-    // TODO: public partial FlatPtrHashSet<IPlayer>& streamedForPlayers()    ;
+    public partial FlatPtrHashSet<IPlayer> StreamedForPlayers();
     public partial PlayerState GetState();
     public partial void SetTeam(int team);
     public partial int GetTeam();

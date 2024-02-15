@@ -35,6 +35,13 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         {
             player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
         }
+
+        Console.WriteLine("iter players...");
+        foreach (var player1 in _players.Players())
+        {
+            Console.WriteLine($"Name: {player1.GetName()}");
+        }
+        Console.WriteLine("...iter players");
     }
 
     public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)
@@ -109,6 +116,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         _vehicles.Create(false, 401, new Vector3(5, 0, 10));
     }
 
+    private static IPlayerPool _players;
     [UnmanagedCallersOnly]
     public static void OnInit(ICore core, IComponentList componentList)
     {
@@ -138,12 +146,20 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         // test handlers
         var players = core.GetPlayers();
+        _players = players;
         var handler = new Interop();
 
         players.GetPlayerSpawnDispatcher().AddEventHandler(handler);
         players.GetPlayerConnectDispatcher().AddEventHandler(handler);
         players.GetPlayerShotDispatcher().AddEventHandler(handler);
         core.GetEventDispatcher().AddEventHandler(handler);
+        
+        Console.WriteLine("iter players...");
+        foreach (var player1 in _players.Players())
+        {
+            Console.WriteLine($"Name: {player1.GetName()}");
+        }
+        Console.WriteLine("...iter players");
     }
 
     // need an entry point to build runtime config for this application

@@ -91,7 +91,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                                     public {{(method.ReturnsByRef ? "ref " : "")}}{{method.ReturnType.ToDisplayString()}} {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
                                     {
                                         var _target = new {{implementingType.ToDisplayString()}}(_data);
-                                        {{(method.ReturnsVoid ? "" : "return ")}}_target.{{method.Name}}({{Common.GetForwardArguments(method)}});
+                                        {{(method.ReturnsVoid ? "" : "return ")}}{{(method.ReturnsByRef ? "ref " : "")}}_target.{{method.Name}}({{Common.GetForwardArguments(method)}});
                                     }
                                     
                             """);
