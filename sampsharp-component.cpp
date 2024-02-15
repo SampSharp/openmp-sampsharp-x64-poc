@@ -72,7 +72,7 @@ void SampSharpComponent::onInit(IComponentList* components)
     managed_host_.loadFor(folder_w.c_str(), assembly_w.c_str());
 	managed_host_.getEntryPoint(full_entry_point_w.c_str(), entry_point_method_w.c_str(), (void**)&on_init_);
 
-	on_init_(core_);
+	on_init_(core_, components);
 }
 
 void SampSharpComponent::onReady()

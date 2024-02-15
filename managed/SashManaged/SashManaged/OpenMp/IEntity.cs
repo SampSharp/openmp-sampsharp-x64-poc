@@ -1,11 +1,13 @@
-﻿namespace SashManaged.OpenMp;
+﻿using System.Numerics;
+
+namespace SashManaged.OpenMp;
 
 [OpenMpApi]
 public readonly partial struct IEntity
 {
-    public partial GtaVector3 GetPosition();
+    public partial Vector3 GetPosition();
 
-    public partial void SetPosition(GtaVector3 position);
+    public partial void SetPosition(Vector3 position);
 
     public partial GTAQuat GetRotation();
 

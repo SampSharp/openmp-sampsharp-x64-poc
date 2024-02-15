@@ -70,14 +70,31 @@ namespace SashManaged.SourceGenerator
             // all members...
             foreach (var method in node.Members)
             {
-                sb.AppendLine($$"""
-                                        [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
-                                        private static {{method.ReturnType.ToDisplayString()}} {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
-                                        {
-                                            {{(!method.ReturnsVoid ? "return " : "")}}Active?.{{method.Name}}({{Common.GetForwardArguments(method)}});
-                                        }
-                                        
-                                """);
+                if (method.ReturnType.SpecialType == SpecialType.System_Boolean)
+                {
+                    // booleans are non-blittable
+                    // TODO: convert booleans in arguments to byte
+                    sb.AppendLine($$"""
+                                            [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+                                            private static byte {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
+                                            {
+                                                return (Active?.{{method.Name}}({{Common.GetForwardArguments(method)}})) == true ? (byte)1 : (byte)0;
+                                            }
+                                            
+                                    """);
+                }
+                else
+                {
+                    sb.AppendLine($$"""
+                                            [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+                                            private static {{method.ReturnType.ToDisplayString()}} {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
+                                            {
+                                                {{(!method.ReturnsVoid ? "return " : "")}}Active?.{{method.Name}}({{Common.GetForwardArguments(method)}}){{(!method.ReturnsVoid ? " ?? default" : "")}};
+                                            }
+                                            
+                                    """);
+                }
+
             }
 
             sb.AppendLine($$"""
@@ -90,14 +107,14 @@ namespace SashManaged.SourceGenerator
             {
                 sb.Append("delegate* unmanaged[Stdcall]<");
 
-                sb.Append(string.Join(", ", method.Parameters.Select(x => $"{Common.RefArgumentString(x.RefKind)}{x.Type.ToDisplayString()}")));
+                sb.Append(string.Join(", ", method.Parameters.Select(GetBlittableTypeStringForDelegate)));
 
                 if (method.Parameters.Length > 0)
                 {
                     sb.Append(", ");
                 }
 
-                sb.AppendLine($"{method.ReturnType.ToDisplayString()}> _{method.Name}{(++count != node.Members.Count ? ", " : "")}");
+                sb.AppendLine($"{GetBlittableTypeStringForDelegate(method.ReturnType)}> _{method.Name}{(++count != node.Members.Count ? ", " : "")}");
             }
 
             sb.AppendLine($$"""
@@ -132,7 +149,7 @@ namespace SashManaged.SourceGenerator
 
             sb.AppendLine($$"""
                                 {{Constants.SequentialStructLayoutAttribute}}
-                                {{node.TypeDeclaration.Modifiers}} struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
+                                internal struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
                                 {
                                     private readonly nint _data;
                                     
@@ -186,6 +203,16 @@ namespace SashManaged.SourceGenerator
 
 
             return sb.ToString();
+        }
+        
+        private static string GetBlittableTypeStringForDelegate(IParameterSymbol x)
+        {
+            return $"{Common.RefArgumentString(x.RefKind)}{GetBlittableTypeStringForDelegate(x.Type)}";
+        }
+
+        private static string GetBlittableTypeStringForDelegate(ITypeSymbol x)
+        {
+            return x.SpecialType == SpecialType.System_Boolean ? "byte" : x.ToDisplayString();
         }
 
         private class EventHandlerDecl(ISymbol symbol, InterfaceDeclarationSyntax typeDeclaration, List<IMethodSymbol> members)

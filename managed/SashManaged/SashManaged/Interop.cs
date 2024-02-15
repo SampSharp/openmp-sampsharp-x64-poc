@@ -1,11 +1,12 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 using SashManaged.Chrono;
 using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler
+public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler
 {
     public void OnTick(Microseconds micros, TimePoint now)
     {
@@ -16,11 +17,22 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler
     {
     }
 
-    public void OnPlayerConnect(IPlayer player)
+    public unsafe void OnPlayerConnect(IPlayer player)
     {
         var view = player.GetName();
         
-        Console.WriteLine($"Player {view.ToString()} connected!");
+        Console.WriteLine($"Player {view} connected!");
+     
+        
+        var col = new Colour(255, 255, 255, 255);
+
+        var bytes = Encoding.UTF8.GetBytes($"Welcome, {view}!");
+        
+        fixed (byte* pin = bytes)
+        {
+            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
+        }
+
     }
 
     public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)
@@ -30,11 +42,15 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler
     public void OnPlayerClientInit(IPlayer player)
     {
     }
-    
+
+
+    private static ICore _core;
+    private static IVehiclesComponent _vehicles;
 
     [UnmanagedCallersOnly]
-    public static unsafe void OnInit(ICore core)
+    public static void OnInit(ICore core, IComponentList componentList)
     {
+        _core = core;
         Console.WriteLine("OnInit from managed c# code!");
         Console.WriteLine($"Network bit stream version: {core.GetNetworkBitStreamVersion()}");
 
@@ -56,18 +72,78 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler
 
         cfg.AddBan(ban);
         cfg.WriteBans();
-
-        
+        _vehicles = componentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
         var players = core.GetPlayers();
-
         var handler = new Interop();
 
+        players.GetPlayerSpawnDispatcher().AddEventHandler(handler);
         players.GetPlayerConnectDispatcher().AddEventHandler(handler);
+        players.GetPlayerShotDispatcher().AddEventHandler(handler);
         core.GetEventDispatcher().AddEventHandler(handler);
     }
-    
+
     // need an entry point to build runtime config for this application
     public static void Main(){/*nop*/}
+    public byte OnPlayerRequestSpawn(IPlayer player)
+    {
+        return 1;
+    }
+
+    public void OnPlayerSpawn(IPlayer player)
+    {  
+        var pos = new Vector3(0, 0, 10);
+        player.SetPosition(pos);
+
+        player.GiveWeapon(new WeaponSlotData((int)PlayerWeapon.AK47, 200));
+        _vehicles.Create(false, 401, new Vector3(5, 0, 10));
+    }
+
+    public unsafe bool OnPlayerShotMissed(IPlayer player, PlayerBulletDataPtr bulletData)
+    {
+        var col = new Colour(255, 255, 255, 255);
+
+        var msg = $"Your shot missed @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+
+        Console.WriteLine(msg);
+        var bytes = Encoding.UTF8.GetBytes(msg);
+        
+        fixed (byte* pin = bytes)
+        {
+            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
+        }
+
+        return true;
+    }
+
+    public bool OnPlayerShotPlayer(IPlayer player, IPlayer target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
+
+    public unsafe bool OnPlayerShotVehicle(IPlayer player, IVehicle target, PlayerBulletDataPtr bulletData)
+    {
+        var col = new Colour(255, 255, 255, 255);
+
+        var msg = $"Your shot vehicle @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+        var bytes = Encoding.UTF8.GetBytes(msg.Substring(0, 143));
+
+        Console.WriteLine(msg);
+        fixed (byte* pin = bytes)
+        {
+            player.SendClientMessage(ref col, new StringView(pin, bytes.Length));
+        }
+        return true;
+    }
+
+    public bool OnPlayerShotObject(IPlayer player, IObject target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
+
+    public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, PlayerBulletDataPtr bulletData)
+    {
+        return true;
+    }
 }

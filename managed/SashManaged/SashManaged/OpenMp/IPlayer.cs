@@ -1,4 +1,5 @@
-﻿using SashManaged.Chrono;
+﻿using System.Numerics;
+using SashManaged.Chrono;
 
 namespace SashManaged.OpenMp;
 
@@ -22,14 +23,14 @@ public readonly partial struct IPlayer
     public partial void Spawn();
     public partial ClientVersion GetClientVersion();
     public partial StringView GetClientVersionName();
-    public partial void SetPositionFindZ(GtaVector3 pos);
-    public partial void SetCameraPosition(GtaVector3 pos);
-    public partial GtaVector3 GetCameraPosition();
-    public partial void SetCameraLookAt(GtaVector3 pos, int cutType);
-    public partial GtaVector3 GetCameraLookAt();
+    public partial void SetPositionFindZ(Vector3 pos);
+    public partial void SetCameraPosition(Vector3 pos);
+    public partial Vector3 GetCameraPosition();
+    public partial void SetCameraLookAt(Vector3 pos, int cutType);
+    public partial Vector3 GetCameraLookAt();
     public partial void SetCameraBehind();
-    public partial void InterpolateCameraPosition(GtaVector3 from, GtaVector3 to, int time, PlayerCameraCutType cutType);
-    public partial void InterpolateCameraLookAt(GtaVector3 from, GtaVector3 to, int time, PlayerCameraCutType cutType);
+    public partial void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType);
+    public partial void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, PlayerCameraCutType cutType);
     public partial void AttachCameraToObject(IObject obj);
 
     [OpenMpApiOverload("_player")]
@@ -63,22 +64,22 @@ public readonly partial struct IPlayer
     public partial void SetSpectating(bool spectating);
     public partial void SetWantedLevel(uint level);
     public partial uint GetWantedLevel();
-    public partial void PlaySound(int sound, GtaVector3 pos);
+    public partial void PlaySound(int sound, Vector3 pos);
     public partial int LastPlayedSound();
-    public partial void PlayAudio(StringView url, bool usePos = false, GtaVector3 pos = default, float distance = 0); // TODO: GtaVector3
+    public partial void PlayAudio(StringView url, bool usePos = false, Vector3 pos = default, float distance = 0);
     public partial bool PlayerCrimeReport(IPlayer suspect, int crime);
     public partial void StopAudio();
     public partial StringView LastPlayedAudio();
-    public partial void CreateExplosion(GtaVector3 vec, int type, float radius);
+    public partial void CreateExplosion(Vector3 vec, int type, float radius);
     public partial void SendDeathMessage(IPlayer player, IPlayer killer, int weapon);
     public partial void SendEmptyDeathMessage();
-    public partial void RemoveDefaultObjects(uint model, GtaVector3 pos, float radius);
+    public partial void RemoveDefaultObjects(uint model, Vector3 pos, float radius);
     public partial void ForceClassSelection();
     public partial void SetMoney(int money);
     public partial void GiveMoney(int money);
     public partial void ResetMoney();
     public partial int GetMoney();
-    public partial void SetMapIcon(int id, GtaVector3 pos, int type, Colour colour, MapIconStyle style);
+    public partial void SetMapIcon(int id, Vector3 pos, int type, Colour colour, MapIconStyle style);
     public partial void UnsetMapIcon(int id);
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
@@ -123,15 +124,15 @@ public readonly partial struct IPlayer
     public partial bool GetGameText(int style, ref StringView message, ref Milliseconds time, ref Milliseconds remaining);
     public partial void SetWeather(int weatherID);
     public partial int GetWeather();
-    public partial void SetWorldBounds(GtaVector4 coords);
-    public partial GtaVector4 GetWorldBounds();
+    public partial void SetWorldBounds(Vector4 coords);
+    public partial Vector4 GetWorldBounds();
     public partial void SetFightingStyle(PlayerFightingStyle style);
     public partial PlayerFightingStyle GetFightingStyle();
     public partial void SetSkillLevel(PlayerWeaponSkill skill, int level);
     public partial void SetAction(PlayerSpecialAction action);
     public partial PlayerSpecialAction GetAction();
-    public partial void SetVelocity(GtaVector3 velocity);
-    public partial GtaVector3 GetVelocity();
+    public partial void SetVelocity(Vector3 velocity);
+    public partial Vector3 GetVelocity();
     public partial void SetInterior(uint interior);
     public partial uint GetInterior();
 

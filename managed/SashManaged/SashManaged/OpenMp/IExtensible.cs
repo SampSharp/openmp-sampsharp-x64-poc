@@ -3,5 +3,5 @@
 [OpenMpApi]
 public readonly partial struct IExtensible
 {
-    public partial IExtension GetExtension(Uid id);
+    public partial IExtension GetExtension(UID id);
 }
