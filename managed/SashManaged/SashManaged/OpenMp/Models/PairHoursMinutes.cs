@@ -6,7 +6,6 @@ namespace SashManaged.OpenMp;
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct PairHoursMinutes
 {
-    // Pair<Hours, Minutes>
-    public readonly Hours hours;
-    public readonly Minutes minutes;
+    public readonly Hours Hours;
+    public readonly Minutes Minutes;
 }

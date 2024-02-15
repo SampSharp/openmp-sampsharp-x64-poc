@@ -14,14 +14,4 @@
     <ProjectReference Include="..\SashManaged.SourceGenerator\SashManaged.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OpenMp\Components\Menus\" />
-    <Folder Include="OpenMp\Components\Vehicles\" />
-    <Folder Include="OpenMp\Components\TextLabels\" />
-    <Folder Include="OpenMp\Components\TextDraws\" />
-    <Folder Include="OpenMp\Components\Recordings\" />
-    <Folder Include="OpenMp\Components\Pickups\" />
-    <Folder Include="OpenMp\Components\Objects\" />
-  </ItemGroup>
-
 </Project>
