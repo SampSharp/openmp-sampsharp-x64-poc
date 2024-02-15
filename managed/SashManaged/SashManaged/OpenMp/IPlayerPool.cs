@@ -7,9 +7,9 @@ namespace SashManaged.OpenMp;
 [OpenMpApi]
 public readonly partial struct IPlayerPool
 {
-    // public partial FlatPtrHashSet<IPlayer>& entries()    ;
-    // public partial FlatPtrHashSet<IPlayer>& players()    ;
-    // public partial FlatPtrHashSet<IPlayer>& bots()    ;
+    // TODO: public partial FlatPtrHashSet<IPlayer>& entries()    ;
+    // TODO: public partial FlatPtrHashSet<IPlayer>& players()    ;
+    // TODO: public partial FlatPtrHashSet<IPlayer>& bots()    ;
 
     public partial IEventDispatcher<IPlayerSpawnEventHandler> GetPlayerSpawnDispatcher();
     public partial IEventDispatcher<IPlayerConnectEventHandler> GetPlayerConnectDispatcher();
@@ -21,7 +21,7 @@ public readonly partial struct IPlayerPool
     public partial IEventDispatcher<IPlayerClickEventHandler> GetPlayerClickDispatcher();
     public partial IEventDispatcher<IPlayerCheckEventHandler> GetPlayerCheckDispatcher();
     public partial IEventDispatcher<IPlayerUpdateEventHandler> GetPlayerUpdateDispatcher();
-    // public partial IEventDispatcher<PoolEventHandler<IPlayer>> GetPoolEventDispatcher()    ;
+    // TODO: public partial IEventDispatcher<PoolEventHandler<IPlayer>> GetPoolEventDispatcher()    ;
 
     public partial bool IsNameTaken(StringView name, IPlayer skip);
     public partial void SendClientMessageToAll(ref Colour colour, StringView message);
@@ -32,9 +32,9 @@ public readonly partial struct IPlayerPool
     public partial void SendEmptyDeathMessageToAll();
     public partial void CreateExplosionForAll(Vector3 vec, int type, float radius);
 
-    // public partial Pair<NewConnectionResult, IPlayer*> requestPlayer(const PeerNetworkData& netData, const PeerRequestParams& params)    ;
-    // public partial void broadcastPacket(Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
-    // public partial void broadcastRPC(int id, Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
+    // TODO: public partial Pair<NewConnectionResult, IPlayer*> requestPlayer(const PeerNetworkData& netData, const PeerRequestParams& params)    ;
+    // TODO: public partial void broadcastPacket(Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
+    // TODO: public partial void broadcastRPC(int id, Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
     public partial bool IsNameValid(StringView name);
     public partial void AllowNickNameCharacter(char character, bool allow);
     public partial bool IsNickNameCharacterAllowed(char character);

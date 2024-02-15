@@ -12,7 +12,7 @@ public readonly partial struct IBaseGangZone
     public partial GangZonePos GetPosition() ;
     public partial void SetPosition(ref GangZonePos position);
     public partial bool IsPlayerInside(IPlayer player) ;
-    // TODO virtual FlatHashSet<IPlayer*>& getShownFor();
+    // TODO: virtual FlatHashSet<IPlayer*>& getShownFor();
     public partial Colour GetFlashingColourForPlayer(IPlayer player) ;
     public partial Colour GetColourForPlayer(IPlayer player) ;
     public partial void SetLegacyPlayer(IPlayer player);

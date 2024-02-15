@@ -9,7 +9,7 @@ public readonly partial struct IConfig
 
     public partial ref float GetFloat(StringView key);
 
-    // public partial Size getStrings(StringView key, Span<StringView> output); // span not available
+    // TODO: public partial Size getStrings(StringView key, Span<StringView> output); // span not available
 
     public partial Size GetStringsCount(StringView key);
 
@@ -37,7 +37,7 @@ public readonly partial struct IConfig
 
     public partial PairBoolString GetNameFromAlias(StringView alias);
 
-    // public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
+    // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 
     public partial ref bool GetBool(StringView key);
 }

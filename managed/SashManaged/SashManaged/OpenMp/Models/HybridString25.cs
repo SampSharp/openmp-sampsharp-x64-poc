@@ -3,6 +3,7 @@ using System.Text;
 
 namespace SashManaged.OpenMp;
 
+// TODO: Better way of handling HybridStrings
 [StructLayout(LayoutKind.Explicit)]
 public readonly unsafe struct HybridString25
 {

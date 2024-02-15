@@ -11,14 +11,13 @@ public readonly partial struct IPlayer
 
     public partial bool IsBot();
 
-    //public partial const PeerNetworkData& getNetworkData()    ;
+    // TODO: public partial const PeerNetworkData& getNetworkData()    ;
     public partial uint GetPing();
-    //bool sendPacket(Span<byte> data, int channel, bool dispatchEvents = true);
-    //bool sendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true);
-
-    //virtual void broadcastRPCToStreamed(int id, Span<byte> data, int channel, bool skipFrom = false)    ;
-    //virtual void broadcastPacketToStreamed(Span<byte> data, int channel, bool skipFrom = true)    ;
-    //virtual void broadcastSyncPacket(Span<byte> data, int channel)    ;
+    // TODO: bool sendPacket(Span<byte> data, int channel, bool dispatchEvents = true);
+    // TODO: bool sendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true);
+    // TODO: virtual void broadcastRPCToStreamed(int id, Span<byte> data, int channel, bool skipFrom = false)    ;
+    // TODO: virtual void broadcastPacketToStreamed(Span<byte> data, int channel, bool skipFrom = true)    ;
+    // TODO: virtual void broadcastSyncPacket(Span<byte> data, int channel)    ;
 
     public partial void Spawn();
     public partial ClientVersion GetClientVersion();
@@ -108,7 +107,7 @@ public readonly partial struct IPlayer
 
     public partial void StreamOutForPlayer(IPlayer other);
 
-    // public partial FlatPtrHashSet<IPlayer>& streamedForPlayers()    ;
+    // TODO: public partial FlatPtrHashSet<IPlayer>& streamedForPlayers()    ;
     public partial PlayerState GetState();
     public partial void SetTeam(int team);
     public partial int GetTeam();

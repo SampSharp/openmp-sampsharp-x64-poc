@@ -15,13 +15,13 @@ public readonly partial struct IVehicle
     public partial PairInt GetColour() ;
     public partial void SetHealth(float Health);
     public partial float GetHealth();
-    // virtual bool updateFromDriverSync( VehicleDriverSyncPacket& vehicleSync, IPlayer player);
-    // virtual bool updateFromPassengerSync( VehiclePassengerSyncPacket& passengerSync, IPlayer player);
-    // virtual bool updateFromUnoccupied( VehicleUnoccupiedSyncPacket& unoccupiedSync, IPlayer player);
-    // virtual bool updateFromTrailerSync( VehicleTrailerSyncPacket& unoccupiedSync, IPlayer player);
-    // virtual  FlatPtrHashSet<IPlayer>& streamedForPlayers() ;
+    // TODO: virtual bool updateFromDriverSync( VehicleDriverSyncPacket& vehicleSync, IPlayer player);
+    // TODO: virtual bool updateFromPassengerSync( VehiclePassengerSyncPacket& passengerSync, IPlayer player);
+    // TODO: virtual bool updateFromUnoccupied( VehicleUnoccupiedSyncPacket& unoccupiedSync, IPlayer player);
+    // TODO: virtual bool updateFromTrailerSync( VehicleTrailerSyncPacket& unoccupiedSync, IPlayer player);
+    // TODO: virtual  FlatPtrHashSet<IPlayer>& streamedForPlayers() ;
     public partial IPlayer getDriver();
-    // virtual  FlatHashSet<IPlayer*>& getPassengers();
+    // TODO: virtual  FlatHashSet<IPlayer*>& getPassengers();
     public partial void SetPlate(StringView plate);
     public partial  StringView GetPlate();
     public partial void SetDamageStatus(int PanelStatus, int DoorStatus, byte LightStatus, byte TyreStatus, IPlayer vehicleUpdater = default);
@@ -52,7 +52,7 @@ public readonly partial struct IVehicle
     public partial void Repair();
     public partial void AddCarriage(IVehicle carriage, int pos);
     public partial void UpdateCarriage(Vector3 pos, Vector3 veloc);
-    // virtual  StaticArray<IVehicle*, MAX_VEHICLE_CARRIAGES>& getCarriages();
+    // TODO: virtual  StaticArray<IVehicle*, MAX_VEHICLE_CARRIAGES>& getCarriages();
     public partial void SetVelocity(Vector3 velocity);
     public partial Vector3 GetVelocity();
     public partial void SetAngularVelocity(Vector3 velocity);
