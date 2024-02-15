@@ -1,6 +1,4 @@
-﻿using SashManaged.RobinHood;
-
-namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct IBaseGangZone

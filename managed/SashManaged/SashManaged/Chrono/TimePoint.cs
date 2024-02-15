@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SashManaged.Chrono;
+namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct TimePoint

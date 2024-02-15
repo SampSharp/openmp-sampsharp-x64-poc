@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using SashManaged.OpenMp;
 
-namespace SashManaged.RobinHood;
+namespace SashManaged;
 
 internal static class FlatPtrHashSetInterop
 {

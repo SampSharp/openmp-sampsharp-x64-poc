@@ -1,6 +1,4 @@
-﻿using SashManaged.RobinHood;
-
-namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct IGangZonesComponent

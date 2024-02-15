@@ -1,6 +1,4 @@
-﻿using SashManaged.Chrono;
-
-namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp;
 
 [OpenMpEventHandler]
 public interface IPlayerUpdateEventHandler

@@ -263,7 +263,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
         // call to extern
         if (!ctx.IsVoidReturn)
         {
-            sb.Append($"return ");
+            sb.Append("return ");
         }
 
         sb.Append($"{ctx.ProxyMethodName}(this");

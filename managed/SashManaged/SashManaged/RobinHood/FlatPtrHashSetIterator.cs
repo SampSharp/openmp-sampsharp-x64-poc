@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SashManaged.RobinHood;
+namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
 internal readonly struct FlatPtrHashSetIterator

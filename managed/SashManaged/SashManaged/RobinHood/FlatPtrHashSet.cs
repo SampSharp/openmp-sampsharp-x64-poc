@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.InteropServices;
 
-namespace SashManaged.RobinHood;
+namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct FlatPtrHashSet<T> : IEnumerable<T> where T : unmanaged
