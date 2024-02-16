@@ -84,30 +84,14 @@ namespace SashManaged.SourceGenerator
             // all members...
             foreach (var method in node.Members)
             {
-                if (method.ReturnType.SpecialType == SpecialType.System_Boolean)
-                {
-                    // booleans are non-blittable
-                    // TODO: convert booleans in arguments to byte
-                    sb.AppendLine($$"""
-                                            [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
-                                            private static byte {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
-                                            {
-                                                return (Active?.{{method.Name}}({{Common.GetForwardArguments(method)}})) == true ? (byte)1 : (byte)0;
-                                            }
-                                            
-                                    """);
-                }
-                else
-                {
-                    sb.AppendLine($$"""
-                                            [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
-                                            private static {{method.ReturnType.ToDisplayString()}} {{method.Name}}({{Common.ParameterAsString(method.Parameters)}})
-                                            {
-                                                {{(!method.ReturnsVoid ? "return " : "")}}Active?.{{method.Name}}({{Common.GetForwardArguments(method)}}){{(!method.ReturnsVoid ? " ?? default" : "")}};
-                                            }
-                                            
-                                    """);
-                }
+                sb.AppendLine($$"""
+                                        [System.Runtime.InteropServices.UnmanagedCallersOnly(CallConvs = new[] { typeof(System.Runtime.CompilerServices.CallConvStdcall) })]
+                                        private static {{Common.ToBlittableTypeString(method.ReturnType)}} {{method.Name}}({{Common.ParameterAsString(method.Parameters, blittable: true)}})
+                                        {
+                                            {{(!method.ReturnsVoid ? "return " : "")}}Active?.{{method.Name}}({{Common.GetForwardArguments(method, blittable: true)}}){{(!method.ReturnsVoid ? " ?? default" : "")}};
+                                        }
+                                        
+                                """);
 
             }
 
@@ -128,7 +112,7 @@ namespace SashManaged.SourceGenerator
                     sb.Append(", ");
                 }
 
-                sb.AppendLine($"{GetBlittableTypeStringForDelegate(method.ReturnType)}> _{method.Name}{(++count != node.Members.Count ? ", " : "")}");
+                sb.AppendLine($"{Common.ToBlittableTypeString(method.ReturnType)}> _{method.Name}{(++count != node.Members.Count ? ", " : "")}");
             }
 
             sb.AppendLine($$"""
@@ -221,12 +205,11 @@ namespace SashManaged.SourceGenerator
         
         private static string GetBlittableTypeStringForDelegate(IParameterSymbol x)
         {
-            return $"{Common.RefArgumentString(x.RefKind)}{GetBlittableTypeStringForDelegate(x.Type)}";
-        }
-
-        private static string GetBlittableTypeStringForDelegate(ITypeSymbol x)
-        {
-            return x.SpecialType == SpecialType.System_Boolean ? "byte" : x.ToDisplayString();
+            if (x.RefKind == RefKind.Ref)
+            {
+                return "nint";
+            }
+            return $"{Common.RefArgumentString(x.RefKind)}{Common.ToBlittableTypeString(x.Type)}";
         }
 
         private class EventHandlerDecl(INamedTypeSymbol symbol, List<IMethodSymbol> members, string handlerName)

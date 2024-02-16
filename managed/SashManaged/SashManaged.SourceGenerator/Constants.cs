@@ -19,4 +19,8 @@ public static class Constants
     public const string ExtensionFQN = "SashManaged.OpenMp.IExtension";
 
     public const string ExtensionInterfaceFQN = "SashManaged.OpenMp.IExtensionInterface";
+    
+    public const string BlittableBooleanFQN = "SashManaged.BlittableBoolean";
+
+    public const string BlittableRefFQN = "SashManaged.BlittableRef";
 }

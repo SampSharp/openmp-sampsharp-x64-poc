@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using SashManaged.OpenMp;
@@ -52,12 +51,12 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     {
     }
 
-    public unsafe bool OnPlayerShotMissed(IPlayer player, PlayerBulletDataPtr bulletData)
+    public unsafe bool OnPlayerShotMissed(IPlayer player, ref PlayerBulletData bulletData)
     {
         var col = new Colour(255, 255, 255, 255);
 
         var msg =
-            $"Your shot missed @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+            $"Your shot missed @ hit {bulletData.hitPos}, from {bulletData.origin}, offset {bulletData.offset}, weapon {bulletData.weapon} type {bulletData.hitType} id {bulletData.hitID}";
 
         Console.WriteLine(msg);
         var bytes = Encoding.UTF8.GetBytes(msg);
@@ -70,17 +69,17 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         return true;
     }
 
-    public bool OnPlayerShotPlayer(IPlayer player, IPlayer target, PlayerBulletDataPtr bulletData)
+    public bool OnPlayerShotPlayer(IPlayer player, IPlayer target, ref PlayerBulletData bulletData)
     {
         return true;
     }
 
-    public unsafe bool OnPlayerShotVehicle(IPlayer player, IVehicle target, PlayerBulletDataPtr bulletData)
+    public unsafe bool OnPlayerShotVehicle(IPlayer player, IVehicle target, ref PlayerBulletData bulletData)
     {
         var col = new Colour(255, 255, 255, 255);
 
         var msg =
-            $"Your shot vehicle @ hit {bulletData.Value.hitPos}, from {bulletData.Value.origin}, offset {bulletData.Value.offset}, weapon {bulletData.Value.weapon} type {bulletData.Value.hitType} id {bulletData.Value.hitID}";
+            $"Your shot vehicle @ hit {bulletData.hitPos}, from {bulletData.origin}, offset {bulletData.offset}, weapon {bulletData.weapon} type {bulletData.hitType} id {bulletData.hitID}";
         var bytes = Encoding.UTF8.GetBytes(msg.Substring(0, 143));
 
         Console.WriteLine(msg);
@@ -92,12 +91,12 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         return true;
     }
 
-    public bool OnPlayerShotObject(IPlayer player, IObject target, PlayerBulletDataPtr bulletData)
+    public bool OnPlayerShotObject(IPlayer player, IObject target, ref PlayerBulletData bulletData)
     {
         return true;
     }
 
-    public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, PlayerBulletDataPtr bulletData)
+    public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, ref PlayerBulletData bulletData)
     {
         return true;
     }
