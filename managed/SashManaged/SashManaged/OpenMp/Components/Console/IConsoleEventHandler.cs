@@ -3,8 +3,8 @@
 [OpenMpEventHandler]
 public interface IConsoleEventHandler
 {
-    // TODO: no ref bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender);
+    bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender);
 
     void OnRconLoginAttempt(IPlayer player, StringView password, bool success);
-    // TODO: void OnConsoleCommandListRequest(FlatHashSet<StringView>& commands);
+    void OnConsoleCommandListRequest(FlatHashSetStringView commands); // TODO: test; does this work?
 }

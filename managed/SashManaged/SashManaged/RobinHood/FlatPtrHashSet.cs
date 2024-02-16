@@ -13,16 +13,16 @@ public readonly struct FlatPtrHashSet<T> : IEnumerable<T> where T : unmanaged
         return *(T*)iterator._keyVals;
     }
 
-    public int Count => FlatPtrHashSetInterop.FlatPtrHashSet_size(_data).Value.ToInt32();
+    public int Count => RobinHood.FlatPtrHashSet_size(_data).Value.ToInt32();
 
     public IEnumerator<T> GetEnumerator()
     {
-        var iter = FlatPtrHashSetInterop.FlatPtrHashSet_begin(_data);
+        var iter = RobinHood.FlatPtrHashSet_begin(_data);
 
-        while (iter != FlatPtrHashSetInterop.FlatPtrHashSet_end(_data))
+        while (iter != RobinHood.FlatPtrHashSet_end(_data))
         {
             yield return Dereference(ref iter);
-            iter = FlatPtrHashSetInterop.FlatPtrHashSet_inc(iter);
+            iter = RobinHood.FlatPtrHashSet_inc(iter);
         }
     }
 

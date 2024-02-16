@@ -5,7 +5,7 @@ using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler
+public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
@@ -154,6 +154,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         players.GetPlayerShotDispatcher().AddEventHandler(handler);
         core.GetEventDispatcher().AddEventHandler(handler);
 
+        componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
         players.GetPoolEventDispatcher().AddEventHandler(handler);
         Console.WriteLine("iter players...");
         foreach (var player1 in _players.Players())
@@ -177,5 +178,26 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public void OnPoolEntryDestroyed(IPlayer entry)
     {
         Console.WriteLine($"Pool entry removed for player {entry.GetName()}");
+    }
+
+    public bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender)
+    {
+        Console.WriteLine($"on console text {command} || {parameters}");
+        return false;
+    }
+
+    public void OnRconLoginAttempt(IPlayer player, StringView password, bool success)
+    {
+        Console.WriteLine("rcon login attempt");
+    }
+
+    public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
+    {
+        Console.WriteLine("command list request");
+        commands.Emplace("banana"u8);
+        foreach (var txt in commands)
+        {
+            Console.WriteLine("SASH> " + txt);
+        }
     }
 }

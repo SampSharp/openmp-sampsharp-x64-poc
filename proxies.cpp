@@ -990,5 +990,30 @@ extern "C" SDK_EXPORT size_t  __CDECL FlatPtrHashSet_size(FlatPtrHashSet<void*>&
 {
     return set.size();
 }
+extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_begin(FlatHashSet<StringView>& set)
+{
+    return set.begin();
+}
+
+extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_end(FlatHashSet<StringView>& set)
+{
+    return set.end();
+}
+
+extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_inc(FlatHashSet<StringView>::iterator value)
+{
+    value++;
+    return value;
+}
+
+extern "C" SDK_EXPORT size_t  __CDECL FlatHashSetStringView_size(FlatHashSet<StringView>& set)
+{
+    return set.size();
+}
+
+extern "C" SDK_EXPORT void __CDECL FlatHashSetStringView_emplace(FlatHashSet<StringView>& set, StringView value)
+{
+    set.emplace(value);
+}
 
 #pragma clang diagnostic pop
