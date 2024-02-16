@@ -1,11 +1,12 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler
+public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
@@ -116,6 +117,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     }
 
     private static IPlayerPool _players;
+
     [UnmanagedCallersOnly]
     public static void OnInit(ICore core, IComponentList componentList)
     {
@@ -152,7 +154,8 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         players.GetPlayerConnectDispatcher().AddEventHandler(handler);
         players.GetPlayerShotDispatcher().AddEventHandler(handler);
         core.GetEventDispatcher().AddEventHandler(handler);
-        
+
+        players.GetPoolEventDispatcher().AddEventHandler(handler);
         Console.WriteLine("iter players...");
         foreach (var player1 in _players.Players())
         {
@@ -165,5 +168,15 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public static void Main()
     {
         /*nop*/
+    }
+
+    public void OnPoolEntryCreated(IPlayer entry)
+    {
+        Console.WriteLine($"Pool entry created for player {entry.GetName()}");
+    }
+
+    public void OnPoolEntryDestroyed(IPlayer entry)
+    {
+        Console.WriteLine($"Pool entry removed for player {entry.GetName()}");
     }
 }

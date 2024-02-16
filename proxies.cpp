@@ -97,16 +97,20 @@
 #define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...) __PROXY_IMPL(type_subject, type_return, method, type_subject##_##method##overload, __VA_ARGS__)
 
 
-#define __PROXY_EVENT_DISPATCHER_IMPL(type_handler) \
-    __PROXY_IMPL(IEventDispatcher<type_handler>, bool, addEventHandler, IEventDispatcher_##type_handler##_addEventHandler, type_handler *, event_order_t); \
-    __PROXY_IMPL(IEventDispatcher<type_handler>, bool, removeEventHandler, IEventDispatcher_##type_handler##_removeEventHandler, type_handler *); \
-    __PROXY_IMPL(IEventDispatcher<type_handler>, bool, hasEventHandler, IEventDispatcher_##type_handler##_hasEventHandler, type_handler *, event_order_t); \
-    __PROXY_IMPL(IEventDispatcher<type_handler>, size_t, count, IEventDispatcher_##type_handler##_count);
+#define __PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
+    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, addEventHandler, IEventDispatcher_##handler_name##_addEventHandler, handler_type *, event_order_t); \
+    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, removeEventHandler, IEventDispatcher_##handler_name##_removeEventHandler, handler_type *); \
+    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, hasEventHandler, IEventDispatcher_##handler_name##_hasEventHandler, handler_type *, event_order_t); \
+    __PROXY_IMPL(IEventDispatcher<handler_type>, size_t, count, IEventDispatcher_##handler_name##_count);
 
 /// proxy for event dispatcher functions and function to get the event dispatcher
 #define PROXY_EVENT_DISPATCHER(type_subject, type_handler, method) \
 	PROXY(type_subject, IEventDispatcher<type_handler>&, method); \
-	__PROXY_EVENT_DISPATCHER_IMPL(type_handler)
+	__PROXY_EVENT_DISPATCHER_IMPL(type_handler, type_handler)
+
+#define PROXY_EVENT_DISPATCHER_TYPE(type_subject, handler_type, handler_name, method) \
+	PROXY(type_subject, IEventDispatcher<handler_type>&, method); \
+	__PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type)
 
 /// start of event handler proxy class 
 #define PROXY_EVENT_HANDLER_BEGIN(handler_type) \
@@ -932,6 +936,39 @@ PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerUpdateEventHandler, getPlayerUpdateDis
 PROXY_EVENT_HANDLER_BEGIN(PlayerUpdateEventHandler)
 	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerUpdate, IPlayer&, TimePoint)
 PROXY_EVENT_HANDLER_END(PlayerUpdateEventHandler, onPlayerUpdate)
+
+PROXY_EVENT_DISPATCHER_TYPE(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHandler, getPoolEventDispatcher);
+
+class PoolEventHandlerImpl final : PoolEventHandler<void*>
+{
+    typedef void(CORECLR_DELEGATE_CALLTYPE * handle_fn)(void*&);
+
+    handle_fn onPoolEntryCreated_;
+    handle_fn onPoolEntryDestroyed_;
+public: 
+    PoolEventHandlerImpl(void** onPoolEntryCreated, void** onPoolEntryDestroyed) :
+        onPoolEntryCreated_(reinterpret_cast<handle_fn>(onPoolEntryCreated)),
+        onPoolEntryDestroyed_(reinterpret_cast<handle_fn>(onPoolEntryDestroyed)) { }
+
+    void onPoolEntryCreated(void*& entry) override
+    {
+        onPoolEntryCreated_(entry);
+    }
+    void onPoolEntryDestroyed(void*& entry) override
+    {
+        onPoolEntryDestroyed_(entry);
+    }
+};
+
+extern "C" SDK_EXPORT PoolEventHandlerImpl* __CDECL PoolEventHandlerImpl_create(void** a, void** b)
+{
+    return new PoolEventHandlerImpl(a, b);
+}
+
+extern "C" SDK_EXPORT void __CDECL PoolEventHandlerImpl_delete(const PoolEventHandlerImpl* handler)
+{
+    delete handler;
+}
 
 extern "C" SDK_EXPORT FlatPtrHashSet<void*>::iterator __CDECL FlatPtrHashSet_begin(FlatPtrHashSet<void*>& set)
 {
