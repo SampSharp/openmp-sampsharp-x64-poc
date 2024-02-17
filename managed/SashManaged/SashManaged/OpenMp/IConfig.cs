@@ -9,7 +9,7 @@ public readonly partial struct IConfig
 
     public partial ref float GetFloat(StringView key);
 
-    // TODO: public partial Size getStrings(StringView key, Span<StringView> output); // span not available
+    public partial Size GetStrings(StringView key, SpanLite<StringView> output);
 
     public partial Size GetStringsCount(StringView key);
     
@@ -36,7 +36,7 @@ public readonly partial struct IConfig
 
     public partial bool IsBanned([OpenMpApiMarshall] BanEntry entry);
 
-    public partial PairBoolString GetNameFromAlias(StringView alias);
+    public partial Pair<BlittableBoolean, StringView> GetNameFromAlias(StringView alias);
 
     // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 

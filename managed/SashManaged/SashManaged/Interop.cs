@@ -142,6 +142,10 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         cfg.AddBan(ban);
         cfg.WriteBans();
+
+        var alias = cfg.GetNameFromAlias("minconnectiontime"u8);
+
+        Console.WriteLine($"alias: {alias.First} {alias.Second}");
         _vehicles = componentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
@@ -162,6 +166,12 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
             Console.WriteLine($"Name: {player1.GetName()}");
         }
         Console.WriteLine("...iter players");
+
+        var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
+        v.SetColour(1, 2);
+        var vcol = v.GetColour();
+
+        Console.WriteLine(vcol);
     }
 
     // need an entry point to build runtime config for this application

@@ -7,17 +7,14 @@ public readonly partial struct IPlayer
 {
     public partial void Kick();
     public partial void Ban(StringView reason);
-
     public partial bool IsBot();
-
     public partial ref PeerNetworkData GetNetworkData();
     public partial uint GetPing();
-    // TODO: bool sendPacket(Span<byte> data, int channel, bool dispatchEvents = true);
-    // TODO: bool sendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true);
-    // TODO: virtual void broadcastRPCToStreamed(int id, Span<byte> data, int channel, bool skipFrom = false)    ;
-    // TODO: virtual void broadcastPacketToStreamed(Span<byte> data, int channel, bool skipFrom = true)    ;
-    // TODO: virtual void broadcastSyncPacket(Span<byte> data, int channel)    ;
-
+    public partial bool SendPacket(SpanLite<byte> data, int channel, bool dispatchEvents = true);
+    public partial bool SendRPC(int id, SpanLite<byte> data, int channel, bool dispatchEvents = true);
+    public partial void BroadcastRPCToStreamed(int id, SpanLite<byte> data, int channel, bool skipFrom = false)    ;
+    public partial void BroadcastPacketToStreamed(SpanLite<byte> data, int channel, bool skipFrom = true)    ;
+    public partial void BroadcastSyncPacket(SpanLite<byte> data, int channel)    ;
     public partial void Spawn();
     public partial ClientVersion GetClientVersion();
     public partial StringView GetClientVersionName();
@@ -82,7 +79,7 @@ public readonly partial struct IPlayer
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
     public partial void SetTime(Hours hr, Minutes min);
-    public partial PairHoursMinutes getTime();
+    public partial Pair<Hours, Minutes> getTime();
     public partial void UseClock(bool enable);
     public partial bool HasClock();
     public partial void UseWidescreen(bool enable);
@@ -131,10 +128,8 @@ public readonly partial struct IPlayer
     public partial Vector3 GetVelocity();
     public partial void SetInterior(uint interior);
     public partial uint GetInterior();
-
     public partial ref PlayerKeyData GetKeyData();
-
-    // TODO: public partial StaticArray<uint16_t, NUM_SKILL_LEVELS>& getSkillLevels()    ;
+    public partial ref SkillsArray GetSkillLevels();
     public partial PlayerAimData GetAimData();
     public partial ref PlayerBulletData GetBulletData();
     public partial void UseCameraTargeting(bool enable);

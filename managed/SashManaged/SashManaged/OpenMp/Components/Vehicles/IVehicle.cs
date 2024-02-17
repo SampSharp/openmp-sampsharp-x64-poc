@@ -11,7 +11,7 @@ public readonly partial struct IVehicle
     public partial void StreamInForPlayer(IPlayer player);
     public partial void StreamOutForPlayer(IPlayer player);
     public partial void SetColour(int col1, int col2);
-    public partial PairInt GetColour();
+    public partial Pair<int, int> GetColour();
     public partial void SetHealth(float Health);
 
     public partial float GetHealth();
@@ -52,10 +52,8 @@ public readonly partial struct IVehicle
     public partial IVehicle GetCab();
     public partial void Repair();
     public partial void AddCarriage(IVehicle carriage, int pos);
-
     public partial void UpdateCarriage(Vector3 pos, Vector3 veloc);
-
-    // TODO: virtual  StaticArray<IVehicle*, MAX_VEHICLE_CARRIAGES>& getCarriages();
+    public partial  ref CarriagesArray GetCarriages();
     public partial void SetVelocity(Vector3 velocity);
     public partial Vector3 GetVelocity();
     public partial void SetAngularVelocity(Vector3 velocity);

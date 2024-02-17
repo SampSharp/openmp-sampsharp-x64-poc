@@ -40,4 +40,9 @@ public readonly struct BlittableBoolean(bool value) : IEquatable<BlittableBoolea
     {
         return new BlittableBoolean(b);
     }
+
+    public override string ToString()
+    {
+        return AsBool.ToString();
+    }
 }

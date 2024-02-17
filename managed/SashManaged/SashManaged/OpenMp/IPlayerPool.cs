@@ -29,9 +29,9 @@ public readonly partial struct IPlayerPool
     public partial void SendEmptyDeathMessageToAll();
     public partial void CreateExplosionForAll(Vector3 vec, int type, float radius);
 
-    // TODO: public partial Pair<NewConnectionResult, IPlayer*> requestPlayer(const PeerNetworkData& netData, const PeerRequestParams& params)    ;
-    // TODO: public partial void broadcastPacket(Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
-    // TODO: public partial void broadcastRPC(int id, Span<uint8_t> data, int channel, const IPlayer* skipFrom = nullptr, bool dispatchEvents = true)    ;
+    // TODO: public partial Pair<NewConnectionResult, IPlayer> RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms)    ;
+    public partial void BroadcastPacket(SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
+    public partial void BroadcastRPC(int id, SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial bool IsNameValid(StringView name);
     public partial void AllowNickNameCharacter(char character, bool allow);
     public partial bool IsNickNameCharacterAllowed(char character);
