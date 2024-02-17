@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using SashManaged.OpenMp;
+using IComponentList = SashManaged.OpenMp.IComponentList;
 
 namespace SashManaged;
 

@@ -3,5 +3,5 @@
 [OpenMpEventHandler]
 public interface ISingleNetworkInEventHandler
 {
-    bool OnReceive(IPlayer peer, NetworkBitStream bs) ;
+    bool OnReceive(IPlayer peer, NetworkBitStream bs);
 }

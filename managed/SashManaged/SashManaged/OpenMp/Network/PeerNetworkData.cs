@@ -12,6 +12,6 @@ public readonly struct PeerNetworkData
         public readonly ushort port;
     }
 
-    public readonly INetwork network; 
-    public readonly NetworkID networkID; 
+    public readonly INetwork network;
+    public readonly NetworkID networkID;
 }

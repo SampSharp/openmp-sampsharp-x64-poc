@@ -63,4 +63,6 @@ public static class OpenMpConstants
     public const int MAX_CUSTOM_SKIN_ID = 30000;
     public const int MIN_CUSTOM_OBJECT_ID = -30000;
     public const int MAX_CUSTOM_OBJECT_ID = -1000;
+    public const ushort INVALID_MODEL_ID = 65535;
+    public const int QUESTION_MARK_MODEL_ID = 18631;
 }
