@@ -96,7 +96,6 @@
 /// proxy function macro for an overload. output is similar to PROXY macro, except the function name is post-fixed by overload argument
 #define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...) __PROXY_IMPL(type_subject, type_return, method, type_subject##_##method##overload, __VA_ARGS__)
 
-
 #define __PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
     __PROXY_IMPL(IEventDispatcher<handler_type>, bool, addEventHandler, IEventDispatcher_##handler_name##_addEventHandler, handler_type *, event_order_t); \
     __PROXY_IMPL(IEventDispatcher<handler_type>, bool, removeEventHandler, IEventDispatcher_##handler_name##_removeEventHandler, handler_type *); \
@@ -111,6 +110,18 @@
 #define PROXY_EVENT_DISPATCHER_TYPE(type_subject, handler_type, handler_name, method) \
 	PROXY(type_subject, IEventDispatcher<handler_type>&, method); \
 	__PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type)
+
+#define __PROXY_INDEXED_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
+    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, addEventHandler, IIndexedEventDispatcher_##handler_name##_addEventHandler, handler_type *, size_t, event_order_t); \
+    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, removeEventHandler, IIndexedEventDispatcher_##handler_name##_removeEventHandler, handler_type *, size_t); \
+    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, hasEventHandler, IIndexedEventDispatcher_##handler_name##_hasEventHandler, handler_type *, size_t, event_order_t); \
+    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, size_t, count, IIndexedEventDispatcher_##handler_name##_count_index, size_t); \
+    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, size_t, count, IIndexedEventDispatcher_##handler_name##_count);
+
+/// proxy for event dispatcher functions and function to get the event dispatcher
+#define PROXY_INDEXED_EVENT_DISPATCHER(type_subject, type_handler, method) \
+	PROXY(type_subject, IIndexedEventDispatcher<type_handler>&, method); \
+	__PROXY_INDEXED_EVENT_DISPATCHER_IMPL(type_handler, type_handler)
 
 /// start of event handler proxy class 
 #define PROXY_EVENT_HANDLER_BEGIN(handler_type) \
@@ -728,11 +739,11 @@ PROXY_EVENT_HANDLER_END(SingleNetworkOutEventHandler, onSend)
 PROXY(INetwork, ENetworkType, getNetworkType);
 PROXY(INetwork, IEventDispatcher<NetworkEventHandler>&, getEventDispatcher);
 PROXY(INetwork, IEventDispatcher<NetworkInEventHandler>&, getInEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerRPCInEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerPacketInEventDispatcher);
-PROXY(INetwork, IEventDispatcher<NetworkOutEventHandler>&, getOutEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerRPCOutEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerPacketOutEventDispatcher);
+PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkInEventHandler, getPerRPCInEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerPacketInEventDispatcher); // same dispatcher as getPerRPCInEventDispatcher
+PROXY_EVENT_DISPATCHER(INetwork, NetworkOutEventHandler, getOutEventDispatcher);
+PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkOutEventHandler, getPerRPCOutEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerPacketOutEventDispatcher); // same dispatcher as getPerRPCOutEventDispatcher
 PROXY(INetwork, bool, sendPacket, IPlayer&, Span<uint8_t>, int, bool);
 PROXY(INetwork, bool, broadcastPacket, Span<uint8_t>, int, const IPlayer* , bool);
 PROXY(INetwork, bool, sendRPC, IPlayer&, int, Span<uint8_t>, int, bool);

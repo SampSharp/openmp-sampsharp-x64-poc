@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public const string SizeFQN = "SashManaged.OpenMp.Size";
+
     public const string SequentialStructLayoutAttribute = "[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]";
 
     public const string MarshallAttributeFQN = "SashManaged.OpenMpApiMarshallAttribute";

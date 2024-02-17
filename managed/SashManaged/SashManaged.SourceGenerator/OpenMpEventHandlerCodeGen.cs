@@ -44,12 +44,7 @@ namespace SashManaged.SourceGenerator
 
             var attribute = symbol.GetAttributes(Constants.EventHandlerAttributeFQN).Single();
 
-            var handlerName =  attribute.NamedArguments.FirstOrDefault(x => x.Key == "HandlerName").Value.Value as string;
-
-            if (handlerName == null)
-            {
-                handlerName = symbol.Name.Substring(1);
-            }
+            var handlerName =  attribute.NamedArguments.FirstOrDefault(x => x.Key == "HandlerName").Value.Value as string ?? symbol.Name.Substring(1);
 
             var members = symbol
                 .GetMembers()
@@ -64,10 +59,6 @@ namespace SashManaged.SourceGenerator
 
         private static string Process(EventHandlerDecl node)
         {
-            var handlerName = node.HandlerName;
-            var dispatcherName = $"IEventDispatcher_{node.Symbol.Name.Substring(1)}";
-            var nativeDispatcherName = $"IEventDispatcher_{handlerName}";
-
             var sb = new StringBuilder();
 
             sb.AppendLine($$"""
@@ -75,6 +66,89 @@ namespace SashManaged.SourceGenerator
 
                             namespace {{node.Symbol.ContainingNamespace.ToDisplayString()}}
                             {
+                            """);
+
+            // Generate EventHandler
+            EmitEventHandler(node, sb, node.HandlerName);
+
+            // Generate Dispatcher
+            EmitEventDispatcher(node, sb, node.HandlerName);
+
+
+            return sb.ToString();
+        }
+
+        private static void EmitEventDispatcher(EventHandlerDecl node, StringBuilder sb, string handlerName)
+        {
+            var dispatcherName = $"IEventDispatcher_{node.Symbol.Name.Substring(1)}";
+            var nativeDispatcherName = $"IEventDispatcher_{handlerName}";
+
+            sb.AppendLine($$"""
+                                {{Constants.SequentialStructLayoutAttribute}}
+                                internal struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
+                                {
+                                    private readonly nint _data;
+                                    
+                                    {{Common.DllImportAttribute("SampSharp")}}
+                                    private static extern bool {{nativeDispatcherName}}_addEventHandler({{dispatcherName}} dispatcher, nint handler, EventPriority priority);
+                                    
+                                    {{Common.DllImportAttribute("SampSharp")}}
+                                    private static extern bool {{nativeDispatcherName}}_removeEventHandler({{dispatcherName}} dispatcher, nint handler);
+                                        
+                                    {{Common.DllImportAttribute("SampSharp")}}
+                                    private static extern bool {{nativeDispatcherName}}_hasEventHandler({{dispatcherName}} dispatcher, nint handler, out EventPriority priority);
+                                    
+                                    {{Common.DllImportAttribute("SampSharp")}}
+                                    private static extern {{Constants.SizeFQN}} {{nativeDispatcherName}}_count({{dispatcherName}} dispatcher);
+                                   
+                                    public bool AddEventHandler({{node.Symbol.Name}} handler, EventPriority priority = EventPriority.Default)
+                                    {
+                                        var active = {{node.Symbol.Name}}_Handler.Activate(handler);
+                                    
+                                        if (!{{nativeDispatcherName}}_addEventHandler(this, active.Handle, priority))
+                                        {
+                                            return false;
+                                        }
+                                    
+                                        var dispatcher = this;
+                                        active.Disposing += (sender, e) => dispatcher.RemoveEventHandler(handler);
+                                    
+                                        return true;
+                                    }
+                                    
+                                    public bool RemoveEventHandler({{node.Symbol.Name}} handler)
+                                    {
+                                        if ({{node.Symbol.Name}}_Handler.Active != handler)
+                                        {
+                                            return false;
+                                        }
+                                    
+                                        return {{nativeDispatcherName}}_removeEventHandler(this, {{node.Symbol.Name}}_Handler.ActiveHandle!.Value);
+                                    }
+                                    
+                                    public bool HasEventHandler({{node.Symbol.Name}} handler, out EventPriority priority)
+                                    {
+                                        if ({{node.Symbol.Name}}_Handler.Active != handler)
+                                        {
+                                            priority = default;
+                                            return false;
+                                        }
+                                    
+                                        return {{nativeDispatcherName}}_hasEventHandler(this, {{node.Symbol.Name}}_Handler.ActiveHandle!.Value, out priority);
+                                    }
+                                    
+                                    public {{Constants.SizeFQN}} Count()
+                                    {
+                                        return {{nativeDispatcherName}}_count(this);
+                                    }
+                                }
+                            }
+                            """);
+        }
+
+        private static void EmitEventHandler(EventHandlerDecl node, StringBuilder sb, string handlerName)
+        {
+            sb.AppendLine($$"""
                                 internal class {{node.Symbol.Name}}_Handler : SashManaged.BaseEventHandler<{{node.Symbol.Name}}>
                                 {
                                 
@@ -143,65 +217,8 @@ namespace SashManaged.SourceGenerator
                                     }
                                 }
                             """);
-
-            sb.AppendLine($$"""
-                                {{Constants.SequentialStructLayoutAttribute}}
-                                internal struct {{dispatcherName}} : SashManaged.OpenMp.IEventDispatcher<{{node.Symbol.Name}}>
-                                {
-                                    private readonly nint _data;
-                                    
-                                    {{Common.DllImportAttribute("SampSharp")}}
-                                    private static extern bool {{nativeDispatcherName}}_addEventHandler({{dispatcherName}} dispatcher, nint handler, EventPriority priority);
-                                    
-                                    {{Common.DllImportAttribute("SampSharp")}}
-                                    private static extern bool {{nativeDispatcherName}}_removeEventHandler({{dispatcherName}} dispatcher, nint handler);
-                                    
-                                    {{Common.DllImportAttribute("SampSharp")}}
-                                    private static extern bool {{nativeDispatcherName}}_hasEventHandler({{dispatcherName}} dispatcher, nint handler, out EventPriority priority);
-                                    
-                                    public bool AddEventHandler({{node.Symbol.Name}} handler, EventPriority priority = EventPriority.Default)
-                                    {
-                                        var active = {{node.Symbol.Name}}_Handler.Activate(handler);
-                                    
-                                        if (!{{nativeDispatcherName}}_addEventHandler(this, active.Handle, priority))
-                                        {
-                                            return false;
-                                        }
-                                    
-                                        var dispatcher = this;
-                                        active.Disposing += (sender, e) => dispatcher.RemoveEventHandler(handler);
-                                    
-                                        return true;
-                                    }
-                                    
-                                    public bool RemoveEventHandler({{node.Symbol.Name}} handler)
-                                    {
-                                        if ({{node.Symbol.Name}}_Handler.Active != handler)
-                                        {
-                                            return false;
-                                        }
-                                    
-                                        return {{nativeDispatcherName}}_removeEventHandler(this, {{node.Symbol.Name}}_Handler.ActiveHandle!.Value);
-                                    }
-                                    
-                                    public bool HasEventHandler({{node.Symbol.Name}} handler, out EventPriority priority)
-                                    {
-                                        if ({{node.Symbol.Name}}_Handler.Active != handler)
-                                        {
-                                            priority = default;
-                                            return false;
-                                        }
-                                    
-                                        return {{nativeDispatcherName}}_hasEventHandler(this, {{node.Symbol.Name}}_Handler.ActiveHandle!.Value, out priority);
-                                    }
-                                }
-                            }
-                            """);
-
-
-            return sb.ToString();
         }
-        
+
         private static string GetBlittableTypeStringForDelegate(IParameterSymbol x)
         {
             if (x.RefKind == RefKind.Ref)
