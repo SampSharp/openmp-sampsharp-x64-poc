@@ -170,8 +170,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
         v.SetColour(1, 2);
         var (vcol1, vcol2) = v.GetColour();
-
-        Console.WriteLine(vcol);
+        Console.WriteLine($"vehicle color: <1: {vcol1}, 2: {vcol2}>");
     }
 
     // need an entry point to build runtime config for this application

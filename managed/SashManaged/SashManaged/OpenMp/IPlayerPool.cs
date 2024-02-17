@@ -1,6 +1,4 @@
 ﻿using System.Numerics;
-using SashManaged.OpenMp.Enums;
-using SashManaged.OpenMp.Models;
 
 namespace SashManaged.OpenMp;
 

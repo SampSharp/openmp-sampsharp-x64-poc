@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SashManaged.OpenMp.Models;
+namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct SkillsArray

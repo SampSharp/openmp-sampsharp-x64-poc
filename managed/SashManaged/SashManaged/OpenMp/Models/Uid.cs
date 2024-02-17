@@ -3,7 +3,12 @@
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct UID(ulong data)
+public readonly struct UID(ulong value)
 {
-    private readonly ulong _data = data;
+    public readonly ulong Value = value;
+
+    public override string ToString()
+    {
+        return Value.ToString("x16");
+    }
 }

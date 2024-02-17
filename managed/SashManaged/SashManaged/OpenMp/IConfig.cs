@@ -1,6 +1,4 @@
-﻿using SashManaged.OpenMp.Models;
-
-namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp;
 
 [OpenMpApi(typeof(IExtensible))]
 public readonly partial struct IConfig
