@@ -6,7 +6,9 @@ namespace SashManaged.OpenMp;
 public readonly partial struct IBasePickup
 {
     public partial void SetType(byte type, bool update = true);
-    public new partial byte GetType(); // TODO: GetType name override
+
+    [OpenMpApiFunction("getType")]
+    public partial byte GetPickupType();
     public partial void SetPositionNoUpdate(Vector3 position);
     public partial void SetModel(int id, bool update = true);
     public partial int GetModel();

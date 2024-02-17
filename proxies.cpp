@@ -701,7 +701,54 @@ PROXY(IEntity, void, setRotation, GTAQuat);
 PROXY(IEntity, int, getVirtualWorld);
 PROXY(IEntity, void, setVirtualWorld, int);
 
-// @skip include/network
+// include/network
+PROXY_EVENT_HANDLER_BEGIN(NetworkEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(void, onPeerConnect, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPeerDisconnect, IPlayer&, PeerDisconnectReason)
+PROXY_EVENT_HANDLER_END(NetworkEventHandler, onPeerConnect, onPeerDisconnect)
+
+PROXY_EVENT_HANDLER_BEGIN(NetworkInEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(bool, onReceivePacket, IPlayer&, int, NetworkBitStream&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onReceiveRPC, IPlayer&, int, NetworkBitStream&)
+PROXY_EVENT_HANDLER_END(NetworkInEventHandler, onReceivePacket, onReceiveRPC)
+
+PROXY_EVENT_HANDLER_BEGIN(SingleNetworkInEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(bool, onReceive, IPlayer&, NetworkBitStream&)
+PROXY_EVENT_HANDLER_END(SingleNetworkInEventHandler, onReceive)
+
+PROXY_EVENT_HANDLER_BEGIN(NetworkOutEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(bool, onSendPacket, IPlayer*, int, NetworkBitStream&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onSendRPC, IPlayer*, int, NetworkBitStream&)
+PROXY_EVENT_HANDLER_END(NetworkOutEventHandler, onSendPacket, onSendRPC)
+
+PROXY_EVENT_HANDLER_BEGIN(SingleNetworkOutEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(bool, onSend, IPlayer*, NetworkBitStream&)
+PROXY_EVENT_HANDLER_END(SingleNetworkOutEventHandler, onSend)
+
+PROXY(INetwork, ENetworkType, getNetworkType);
+PROXY(INetwork, IEventDispatcher<NetworkEventHandler>&, getEventDispatcher);
+PROXY(INetwork, IEventDispatcher<NetworkInEventHandler>&, getInEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerRPCInEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerPacketInEventDispatcher);
+PROXY(INetwork, IEventDispatcher<NetworkOutEventHandler>&, getOutEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerRPCOutEventDispatcher);
+PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerPacketOutEventDispatcher);
+PROXY(INetwork, bool, sendPacket, IPlayer&, Span<uint8_t>, int, bool);
+PROXY(INetwork, bool, broadcastPacket, Span<uint8_t>, int, const IPlayer* , bool);
+PROXY(INetwork, bool, sendRPC, IPlayer&, int, Span<uint8_t>, int, bool);
+PROXY(INetwork, bool, broadcastRPC, int, Span<uint8_t>, int, IPlayer*, bool);
+PROXY(INetwork, NetworkStats, getStatistics, IPlayer*);
+PROXY(INetwork, unsigned, getPing, IPlayer&);
+PROXY(INetwork, void, disconnect, IPlayer&);
+PROXY(INetwork, void, ban, BanEntry&, Milliseconds);
+PROXY(INetwork, void, unban, BanEntry&);
+PROXY(INetwork, void, update);
+
+PROXY(INetworkComponent, INetwork*, getNetwork);
+
+PROXY(INetworkQueryExtension, bool, addRule, StringView, StringView)
+PROXY(INetworkQueryExtension, bool, removeRule, StringView)
+PROXY(INetworkQueryExtension, bool, isValidRule, StringView)
 
 // include/player
 PROXY(IPlayer, void, kick);

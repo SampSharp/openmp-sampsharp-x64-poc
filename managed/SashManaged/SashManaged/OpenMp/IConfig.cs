@@ -12,8 +12,9 @@ public readonly partial struct IConfig
     // TODO: public partial Size getStrings(StringView key, Span<StringView> output); // span not available
 
     public partial Size GetStringsCount(StringView key);
-
-    public partial ConfigOptionType GetType(StringView key);
+    
+    [OpenMpApiFunction("getType")]
+    public partial ConfigOptionType GetValueType(StringView key);
 
     public partial Size GetBansCount();
 

@@ -10,7 +10,7 @@ public readonly partial struct IPlayer
 
     public partial bool IsBot();
 
-    // TODO: public partial const PeerNetworkData& getNetworkData()    ;
+    public partial ref PeerNetworkData GetNetworkData();
     public partial uint GetPing();
     // TODO: bool sendPacket(Span<byte> data, int channel, bool dispatchEvents = true);
     // TODO: bool sendRPC(int id, Span<byte> data, int channel, bool dispatchEvents = true);
@@ -134,7 +134,7 @@ public readonly partial struct IPlayer
 
     public partial ref PlayerKeyData GetKeyData();
 
-    // public partial StaticArray<uint16_t, NUM_SKILL_LEVELS>& getSkillLevels()    ;
+    // TODO: public partial StaticArray<uint16_t, NUM_SKILL_LEVELS>& getSkillLevels()    ;
     public partial PlayerAimData GetAimData();
     public partial ref PlayerBulletData GetBulletData();
     public partial void UseCameraTargeting(bool enable);

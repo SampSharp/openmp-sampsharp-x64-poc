@@ -9,8 +9,10 @@ public static class Constants
     public const string ApiAttributeFQN = "SashManaged.OpenMpApiAttribute";
 
     public const string EventHandlerAttributeFQN = "SashManaged.OpenMpEventHandlerAttribute";
-
+    
     public const string OverloadAttributeFQN = "SashManaged.OpenMpApiOverloadAttribute";
+
+    public const string FunctionAttributeFQN = "SashManaged.OpenMpApiFunctionAttribute";
 
     public const string ComponentFQN = "SashManaged.OpenMp.IComponent";
 
