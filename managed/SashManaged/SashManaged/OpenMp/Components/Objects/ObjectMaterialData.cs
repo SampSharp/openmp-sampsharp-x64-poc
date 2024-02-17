@@ -16,7 +16,7 @@ public readonly struct ObjectMaterialData
     [FieldOffset(0)] public readonly byte MaterialSize;
     [FieldOffset(1)] public readonly byte FontSize;
     [FieldOffset(2)] public readonly byte Alignment;
-    [FieldOffset(3)] public readonly byte Bold; //boolean
+    [FieldOffset(3)] public readonly BlittableBoolean Bold;
     [FieldOffset(4)] public readonly Colour MaterialColour;
     public Colour FontColour => MaterialColour;
 
@@ -28,5 +28,5 @@ public readonly struct ObjectMaterialData
     public readonly MaterialType Type;
 
     [FieldOffset(12 + (32 + Size.Length) * 2 + 1)]
-    public readonly byte Used; // boolean
+    public readonly BlittableBoolean Used;
 }

@@ -23,7 +23,7 @@ public readonly unsafe struct StringView : ISpanFormattable
     {
         fixed (byte* pin = &span[0])
         {
-            // making the dangerous assumption that the span is permanently pinned (utf-8 literal)
+            // TODO: making the dangerous assumption that the span is permanently pinned (utf-8 literal)
             _reference = pin;
             _size = span.Length;
         }
@@ -61,7 +61,7 @@ public readonly unsafe struct StringView : ISpanFormattable
 
     public static implicit operator StringView(ReadOnlySpan<byte> span)
     {
-        // this is terrible but will do for now.
+        // TODO: this is terrible but will do for now.
         return new StringView(span);
     }
 }

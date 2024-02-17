@@ -4,7 +4,7 @@ using System.Text;
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Explicit)]
-public readonly struct HybridString46
+public readonly struct HybridString24
 {
     // First bit is 1 if dynamic and 0 if static; the rest are the length
     [FieldOffset(0)] private readonly Size _lenDynamic;
@@ -12,15 +12,15 @@ public readonly struct HybridString46
     //[FieldOffset(Size.Length)]
     //private readonly byte* _ptr;
 
-    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 46)]
+    [FieldOffset(Size.Length)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = 24)]
     private readonly byte[]? _static;
 
-    public HybridString46(string inp)
+    public HybridString24(string inp)
     {
         var q = Encoding.UTF8.GetBytes(inp);
-        if (q.Length < 46)
+        if (q.Length < 24)
         {
-            _static = new byte[46];
+            _static = new byte[24];
 
             q.CopyTo(_static, 0);
             _lenDynamic = new Size(new nint((long)inp.Length << 1));
