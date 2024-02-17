@@ -26,6 +26,7 @@ public class OpenMpHybridStringGeneratorCodeGen : IIncrementalGenerator
 
             ctx.AddSource(node.Symbol.Name + ".g.cs", SourceText.From(ProcessStruct(node), Encoding.UTF8));
         });
+
     }
 
     private static string ProcessStruct(StructDecl node)
@@ -35,6 +36,9 @@ public class OpenMpHybridStringGeneratorCodeGen : IIncrementalGenerator
         var size = node.Size;
         sb.AppendLine($$"""
                         /// <auto-generator />
+                        
+                        #nullable enable
+                        
                         namespace {{node.Symbol.ContainingNamespace.ToDisplayString()}}
                         {
                             [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
@@ -94,7 +98,7 @@ public class OpenMpHybridStringGeneratorCodeGen : IIncrementalGenerator
         return syntax is StructDeclarationSyntax
         {
             AttributeLists.Count: > 0
-        } structDecl && structDecl.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
+        } structDecl && structDecl.IsPartial();
     }
 
     private static StructDecl GetStructDeclaration(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)

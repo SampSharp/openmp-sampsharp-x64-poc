@@ -1,15 +1,31 @@
 ﻿using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using SashManaged.OpenMp;
 using IComponentList = SashManaged.OpenMp.IComponentList;
 
 namespace SashManaged;
 
+
+public partial class Testing
+{
+    //[System.Runtime.InteropServices.DllImport("SampSharp", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
+    
+    //[LibraryImport("SampSharp")]
+    //public static partial IVehicle IVehiclesComponent_create(IVehiclesComponent ptr, BlittableBoolean isStatic, int modelID, Vector3 position, float Z, int colour1, int colour2, int respawnDelay, BlittableBoolean addSiren);
+    
+    [LibraryImport("SampSharp")]
+    public static partial void ICore_setData(ICore ptr, SashManaged.OpenMp.SettableCoreDataType type, [System.Runtime.InteropServices.Marshalling.MarshalUsing(typeof(StringViewMarshaller))] string data);
+}
+
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
+
+    #region Handlers
 
     public void OnTick(Microseconds micros, TimePoint now)
     {
@@ -116,6 +132,39 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         _vehicles.Create(false, 401, new Vector3(5, 0, 10));
     }
 
+    public void OnPoolEntryCreated(IPlayer entry)
+    {
+        Console.WriteLine($"Pool entry created for player {entry.GetName()}");
+    }
+
+    public void OnPoolEntryDestroyed(IPlayer entry)
+    {
+        Console.WriteLine($"Pool entry removed for player {entry.GetName()}");
+    }
+
+    public bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender)
+    {
+        Console.WriteLine($"on console text {command} || {parameters}");
+        return false;
+    }
+
+    public void OnRconLoginAttempt(IPlayer player, StringView password, bool success)
+    {
+        Console.WriteLine("rcon login attempt");
+    }
+
+    public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
+    {
+        Console.WriteLine("command list request");
+        commands.Emplace("banana"u8);
+        foreach (var txt in commands)
+        {
+            Console.WriteLine("SASH> " + txt);
+        }
+    }
+
+    #endregion
+
     private static IPlayerPool _players;
 
     [UnmanagedCallersOnly]
@@ -127,7 +176,9 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         Console.WriteLine($"core version: {core.GetVersion()}");
 
-        core.SetData(SettableCoreDataType.ServerName, "Hello from .NET code!!!"u8);
+        Testing.ICore_setData(core, SettableCoreDataType.ServerName, "This is getting marshalled!!!");
+
+        //core.SetData(SettableCoreDataType.ServerName, "Hello from .NET code!!!"u8);
 
         var cfg = core.GetConfig();
 
@@ -178,36 +229,5 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public static void Main()
     {
         /*nop*/
-    }
-
-    public void OnPoolEntryCreated(IPlayer entry)
-    {
-        Console.WriteLine($"Pool entry created for player {entry.GetName()}");
-    }
-
-    public void OnPoolEntryDestroyed(IPlayer entry)
-    {
-        Console.WriteLine($"Pool entry removed for player {entry.GetName()}");
-    }
-
-    public bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender)
-    {
-        Console.WriteLine($"on console text {command} || {parameters}");
-        return false;
-    }
-
-    public void OnRconLoginAttempt(IPlayer player, StringView password, bool success)
-    {
-        Console.WriteLine("rcon login attempt");
-    }
-
-    public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
-    {
-        Console.WriteLine("command list request");
-        commands.Emplace("banana"u8);
-        foreach (var txt in commands)
-        {
-            Console.WriteLine("SASH> " + txt);
-        }
     }
 }

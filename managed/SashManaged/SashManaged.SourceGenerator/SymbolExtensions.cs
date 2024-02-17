@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SashManaged.SourceGenerator;
 
@@ -13,7 +15,17 @@ public static class SymbolExtensions
     {
         return symbol.GetAttributes().HasAttribute(attributeName);
     }
-      
+    
+    public static bool IsPartial(this MemberDeclarationSyntax syntax)
+    {
+        return syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
+    }
+
+    public static bool HasModifier(this MemberDeclarationSyntax syntax, SyntaxKind modifier)
+    {
+        return syntax.Modifiers.Any(m => m.IsKind(modifier));
+    }
+
     public static bool HasAttribute(this ImmutableArray<AttributeData> attributes, string attributeName)
     {
         return attributes.Any(x =>

@@ -6,7 +6,7 @@ namespace SashManaged.OpenMp;
 [StructLayout(LayoutKind.Sequential)]
 public readonly unsafe struct StringView : ISpanFormattable
 {
-    private readonly byte* _reference;
+    internal readonly byte* _reference;
     private readonly Size _size;
 
     public StringView(byte* data, Size size)
