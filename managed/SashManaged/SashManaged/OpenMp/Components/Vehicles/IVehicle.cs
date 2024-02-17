@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
 
 namespace SashManaged.OpenMp;
 
@@ -13,15 +14,13 @@ public readonly partial struct IVehicle
     public partial void SetColour(int col1, int col2);
     public partial Pair<int, int> GetColour();
     public partial void SetHealth(float Health);
-
     public partial float GetHealth();
-
-    // TODO: virtual bool updateFromDriverSync( VehicleDriverSyncPacket& vehicleSync, IPlayer player);
-    // TODO: virtual bool updateFromPassengerSync( VehiclePassengerSyncPacket& passengerSync, IPlayer player);
-    // TODO: virtual bool updateFromUnoccupied( VehicleUnoccupiedSyncPacket& unoccupiedSync, IPlayer player);
-    // TODO: virtual bool updateFromTrailerSync( VehicleTrailerSyncPacket& unoccupiedSync, IPlayer player);
+    public partial bool UpdateFromDriverSync(ref VehicleDriverSyncPacket vehicleSync, IPlayer player);
+    public partial bool UpdateFromPassengerSync(ref VehiclePassengerSyncPacket passengerSync, IPlayer player);
+    public partial bool UpdateFromUnoccupied(ref VehicleUnoccupiedSyncPacket unoccupiedSync, IPlayer player);
+    public partial bool UpdateFromTrailerSync(ref VehicleTrailerSyncPacket unoccupiedSync, IPlayer player);
     public partial FlatPtrHashSet<IPlayer> StreamedForPlayers();
-    public partial IPlayer getDriver();
+    public partial IPlayer GetDriver();
     public partial FlatPtrHashSet<IPlayer> GetPassengers();
     public partial void SetPlate(StringView plate);
     public partial StringView GetPlate();

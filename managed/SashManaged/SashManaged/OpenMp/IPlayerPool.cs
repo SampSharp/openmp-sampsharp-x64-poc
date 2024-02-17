@@ -1,4 +1,6 @@
 ﻿using System.Numerics;
+using SashManaged.OpenMp.Enums;
+using SashManaged.OpenMp.Models;
 
 namespace SashManaged.OpenMp;
 
@@ -19,7 +21,6 @@ public readonly partial struct IPlayerPool
     public partial IEventDispatcher<IPlayerCheckEventHandler> GetPlayerCheckDispatcher();
     public partial IEventDispatcher<IPlayerUpdateEventHandler> GetPlayerUpdateDispatcher();
     public partial IEventDispatcher<IPlayerPoolEventHandler> GetPoolEventDispatcher();
-
     public partial bool IsNameTaken(StringView name, IPlayer skip);
     public partial void SendClientMessageToAll(ref Colour colour, StringView message);
     public partial void SendChatMessageToAll(IPlayer from, StringView message);
@@ -28,8 +29,7 @@ public readonly partial struct IPlayerPool
     public partial void SendDeathMessageToAll(IPlayer killer, IPlayer killee, int weapon);
     public partial void SendEmptyDeathMessageToAll();
     public partial void CreateExplosionForAll(Vector3 vec, int type, float radius);
-
-    // TODO: public partial Pair<NewConnectionResult, IPlayer> RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms)    ;
+    public partial Pair<NewConnectionResult, IPlayer> RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms)    ;
     public partial void BroadcastPacket(SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial void BroadcastRPC(int id, SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial bool IsNameValid(StringView name);

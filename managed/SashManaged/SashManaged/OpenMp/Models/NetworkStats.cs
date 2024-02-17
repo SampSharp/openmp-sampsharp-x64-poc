@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SashManaged.OpenMp;
+namespace SashManaged.OpenMp.Models;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct NetworkStats

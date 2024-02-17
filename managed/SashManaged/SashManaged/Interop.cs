@@ -169,7 +169,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
         v.SetColour(1, 2);
-        var vcol = v.GetColour();
+        var (vcol1, vcol2) = v.GetColour();
 
         Console.WriteLine(vcol);
     }

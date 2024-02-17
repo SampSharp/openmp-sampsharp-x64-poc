@@ -1,4 +1,4 @@
-﻿namespace SashManaged.OpenMp;
+﻿namespace SashManaged.OpenMp.Enums;
 
 public enum ENetworkType
 {
