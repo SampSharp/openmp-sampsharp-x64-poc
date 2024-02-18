@@ -20,6 +20,12 @@ public partial class Testing
     public static partial void ICore_setData(ICore ptr, SashManaged.OpenMp.SettableCoreDataType type, [System.Runtime.InteropServices.Marshalling.MarshalUsing(typeof(StringViewMarshaller))] string data);
 }
 
+[OpenMpApi2]
+public partial struct TestV2
+{
+    public partial ref int Testing123(ref int a, bool b, string c);
+}
+
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {
     private static ICore _core;

@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public const string StringViewFQN = "SashManaged.OpenMp.StringView";
+
     public const string SizeFQN = "SashManaged.OpenMp.Size";
 
     public const string SequentialStructLayoutAttribute = "[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]";
@@ -9,6 +11,7 @@ public static class Constants
     public const string MarshallAttributeFQN = "SashManaged.OpenMpApiMarshallAttribute";
     
     public const string ApiAttributeFQN = "SashManaged.OpenMpApiAttribute";
+    public const string ApiAttribute2FQN = "SashManaged.OpenMpApi2Attribute";
 
     public const string HybridStringGeneratorAttributeFQN = "SashManaged.OpenMpHybridStringGeneratorAttribute";
 
