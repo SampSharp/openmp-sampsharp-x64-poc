@@ -128,28 +128,8 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .WithAttributeLists(
                 List(
                     new []{
-                        AttributeList(
-                            SingletonSeparatedList(
-                                Attribute(
-                                    ParseName("global::System.CodeDom.Compiler.GeneratedCodeAttribute")) // TODO const
-                                    .WithArgumentList(
-                                        AttributeArgumentList(
-                                            SeparatedList(
-                                                new []{
-                                                    AttributeArgument(
-                                                        LiteralExpression(
-                                                            SyntaxKind.StringLiteralExpression, 
-                                                            Literal("Mylibrary"))), // TODO: from this assemlby
-                                                    AttributeArgument(
-                                                        LiteralExpression(
-                                                            SyntaxKind.StringLiteralExpression, 
-                                                            Literal("0.0.1")))
-                                                }
-                                            ))))),
-                        AttributeList(
-                            SingletonSeparatedList(
-                                Attribute(
-                                    ParseName("global::System.Runtime.CompilerServices.SkipLocalsInitAttribute")))) // TODO const
+                        AttributeFactory.GeneratedCode(),
+                        AttributeFactory.SkipLocalsInit()
                     }
                 ))
             .WithBody(invocation);
@@ -260,22 +240,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         //
         // return: retval
 
-        SyntaxList<TNode> Step<TNode>(string comment, Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller, SyntaxList<TNode> additional = default) where TNode : SyntaxNode
-        {
-            var result = List(parameters.Where(x => x.marshaller != null)
-                .SelectMany(x => marshaller(x.parameter, x.marshaller)));
-
-            result = result.AddRange(additional);
-
-            if (comment != null && result.Count > 0)
-            {
-                result = result.Replace(
-                    result[0],
-                    result[0].WithLeadingTrivia(Comment(comment)));
-            }
-            return result;
-        }
-
         var statements = List<StatementSyntax>();
         var tryStatements = List<StatementSyntax>();
         var finallyStatements = List<StatementSyntax>();
@@ -303,8 +267,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var setup = Step("// Setup", (p, m) => m.Setup(p));
         statements = statements.AddRange(setup);
 
-        // TODO @ all steps; check if is ref/out/etc to know if step is required
-
         // marshal
         var marshal = Step("// Marshal - Convert managed data to native data.", (p, m) => m.Marshal(p));
         tryStatements = tryStatements.AddRange(marshal);
@@ -319,7 +281,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         ExpressionStatement(pInvokeExpression))));
 
         // Unmarshal
-        var unmarshal = Step("// Unmarshal - Convert native data to managed data.", (p, m) => m.Unmarshal(p),
+        var unmarshal = Step("// Unmarshal - Convert native data to managed data.", (p, m) => 
+                IsByRefParam(p.RefKind)  // only unmarshal ref types
+                    ? m.Unmarshal(p) : default,
             returnMarshaller?.Unmarshal(null) ?? default);
 
         tryStatements = tryStatements.AddRange(unmarshal);
@@ -344,8 +308,29 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         return Block(statements);
+        
+        SyntaxList<TNode> Step<TNode>(string comment, Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller, SyntaxList<TNode> additional = default) where TNode : SyntaxNode
+        {
+            var result = List(parameters.Where(x => x.marshaller != null)
+                .SelectMany(x => marshaller(x.parameter, x.marshaller)));
+
+            result = result.AddRange(additional);
+
+            if (comment != null && result.Count > 0)
+            {
+                result = result.Replace(
+                    result[0],
+                    result[0].WithLeadingTrivia(Comment(comment)));
+            }
+            return result;
+        }
     }
     
+    private static bool IsByRefParam(RefKind kind)
+    {
+        return kind is RefKind.Ref or RefKind.Out or RefKind.RefReadOnly or RefKind.RefReadOnlyParameter;
+    }
+
     private static LocalDeclarationStatementSyntax CreateLocalDeclarationWithDefaultValue(TypeSyntax type, string identifier) =>
         LocalDeclarationStatement(
             VariableDeclaration(type,
@@ -377,32 +362,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .WithParameterList(externParameters)
             .WithAttributeLists(
                 SingletonList(
-                    AttributeList(
-                        SeparatedList(new[]
-                        {
-                            Attribute(ParseName("global::System.Runtime.InteropServices.DllImportAttribute"),
-                                AttributeArgumentList(
-                                    SeparatedList(new[] {
-                                        AttributeArgument(
-                                            LiteralExpression(SyntaxKind.StringLiteralExpression, Literal("SampSharp"))
-                                        ),
-                                        AttributeArgument(cdecl)
-                                            .WithNameEquals(NameEquals("CallingConvention")),
-                                        AttributeArgument(
-                                                LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(ToExternName(symbol)))
-                                            )
-                                            .WithNameEquals(NameEquals("EntryPoint")),
-                                        AttributeArgument(
-                                                LiteralExpression(SyntaxKind.TrueLiteralExpression)
-                                            )
-                                            .WithNameEquals(NameEquals("ExactSpelling"))
-                                    })
-                                )
-                            )
-                        })
-                    )
-                )
-            )
+                    AttributeFactory.DllImport("SampSharp", ToExternName(symbol))))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
             .WithLeadingTrivia(Comment("// Local P/Invoke"));
     }
