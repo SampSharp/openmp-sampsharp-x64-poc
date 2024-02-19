@@ -432,9 +432,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         switch (typeSyntax.SpecialType)
         {
             case SpecialType.System_Boolean:
-                return BooleanMarshalling.Instance;
+                return WellKnownMarshallerTypes.Boolean;
             case SpecialType.System_String:
-                return StringMarshalling.Instance;
+                return WellKnownMarshallerTypes.String;
         }
 
         if (typeSyntax.SpecialType != SpecialType.None)
