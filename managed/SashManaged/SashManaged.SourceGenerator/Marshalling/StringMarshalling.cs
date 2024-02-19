@@ -9,49 +9,85 @@ public class StringMarshalling : Marshaller
 {
     public static StringMarshalling Instance { get; } = new();
 
-    public override bool RequiresMarshalling => true;
-    public override bool RequiresUnsafe => false;
-
-    public override TypeSyntax GetExternalType(ITypeSymbol typeSymbol)
+    public override TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol)
     {
         return ParseTypeName($"global::{Constants.StringViewFQN}");
     }
-
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    
+    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol)
     {
-        // TODO to const
-        var marshallerType = ParseTypeName("global::SashManaged.StringViewMarshaller.ManagedToUnmanagedIn");
-
-        return List(new StatementSyntax[]{
-            LocalDeclarationStatement(
-                VariableDeclaration(
-                    ParseTypeName($"global::{Constants.StringViewFQN}"),
-                    SingletonSeparatedList(
-                        VariableDeclarator(Identifier($"__{parameter.Name}_native"))
-                            .WithInitializer(
-                                EqualsValueClause(
-                                    LiteralExpression(SyntaxKind.DefaultLiteralExpression, Token(SyntaxKind.DefaultKeyword))
-                                )
-                            )
-                    )
-                )
-            ),
-            LocalDeclarationStatement(
-                    VariableDeclaration(
-                        marshallerType,
-                        SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"__{parameter.Name}_native_marshaller"))
-                                .WithInitializer(
-                                    EqualsValueClause(
-                                        ImplicitObjectCreationExpression()
-                                    )
-                                )
-                        )
-                    )
-                )
-                .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword))),
-        });
+        return InvokeAndAssign($"__{parameterSymbol.Name}_native", parameterSymbol.Name, "global::SashManaged.StringViewMarshaller", "ConvertToUnmanaged");
     }
+    
+    public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol)
+    {
+        if (parameterSymbol == null)
+        {
+            return InvokeAndAssign("__retVal", "__retVal_native", "global::SashManaged.StringViewMarshaller", "ConvertToManaged");
+        }
+
+        return InvokeAndAssign(parameterSymbol.Name, $"__{parameterSymbol.Name}_native", "global::SashManaged.StringViewMarshaller", "ConvertToManaged");
+    }
+
+    public override SyntaxList<StatementSyntax> Cleanup(IParameterSymbol parameterSymbol)
+    {
+        return SingletonList<StatementSyntax>(
+            ExpressionStatement(
+                InvokeWithArgument("global::SashManaged.StringViewMarshaller", "Free", $"__{parameterSymbol.Name}_native")));
+    }
+
+    private static SyntaxList<StatementSyntax> InvokeAndAssign(string toValue, string fromValue, string marshallerType, string marshallerMethod)
+    {
+        return SingletonList<StatementSyntax>(
+            ExpressionStatement(
+                AssignmentExpression(
+                    SyntaxKind.SimpleAssignmentExpression,
+                    IdentifierName(toValue),
+                    InvokeWithArgument(marshallerType, marshallerMethod, fromValue))));
+    }
+
+    private static InvocationExpressionSyntax InvokeWithArgument(string marshallerType, string marshallerMethod, string argument)
+    {
+        return InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(marshallerType),
+                    IdentifierName(marshallerMethod)
+                )
+            )
+            .WithArgumentList(
+                ArgumentList(
+                    SingletonSeparatedList(
+                        Argument(IdentifierName(argument))
+                    )
+                )
+            );
+    }
+    // old below
+
+    // public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    // {
+    //     // TODO to const
+    //     var marshallerType = ParseTypeName("global::SashManaged.StringViewMarshaller.ManagedToUnmanagedIn");
+    //
+    //     // TODO: to singleton list
+    //     return List(new StatementSyntax[]{
+    //         LocalDeclarationStatement(
+    //                 VariableDeclaration(
+    //                     marshallerType,
+    //                     SingletonSeparatedList(
+    //                         VariableDeclarator(Identifier($"__{parameter.Name}_native_marshaller"))
+    //                             .WithInitializer(
+    //                                 EqualsValueClause(
+    //                                     ImplicitObjectCreationExpression()
+    //                                 )
+    //                             )
+    //                     )
+    //                 )
+    //             )
+    //             .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword))),
+    //     });
+    // }
 
     public override SyntaxList<StatementSyntax> ManagedToUnmanaged(IParameterSymbol parameter)
     {

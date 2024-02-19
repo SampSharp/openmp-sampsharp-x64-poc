@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
@@ -15,15 +14,21 @@ public partial class Testing
     
     //[LibraryImport("SampSharp")]
     //public static partial IVehicle IVehiclesComponent_create(IVehiclesComponent ptr, BlittableBoolean isStatic, int modelID, Vector3 position, float Z, int colour1, int colour2, int respawnDelay, BlittableBoolean addSiren);
-    
+
     [LibraryImport("SampSharp")]
-    public static partial void ICore_setData(ICore ptr, SashManaged.OpenMp.SettableCoreDataType type, [System.Runtime.InteropServices.Marshalling.MarshalUsing(typeof(StringViewMarshaller))] string data);
+    public static partial BlittableRef<int> RefTest();
+
+    [LibraryImport("SampSharp")]
+    [return: MarshalUsing(typeof(StringViewMarshaller))]
+    public static partial string ICore_setData(ICore ptr, SashManaged.OpenMp.SettableCoreDataType type, [System.Runtime.InteropServices.Marshalling.MarshalUsing(typeof(StringViewMarshaller))] ref string data);
 }
 
 [OpenMpApi2]
 public partial struct TestV2
 {
-    public partial ref int Testing123(ref int a, bool b, string c);
+    public partial int Testing123(ref int a, bool b, string c);
+
+    public partial bool Testing456(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
 }
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
@@ -182,7 +187,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         Console.WriteLine($"core version: {core.GetVersion()}");
 
-        Testing.ICore_setData(core, SettableCoreDataType.ServerName, "This is getting marshalled!!!");
+        //Testing.ICore_setData(core, SettableCoreDataType.ServerName, "This is getting marshalled!!!");
 
         //core.SetData(SettableCoreDataType.ServerName, "Hello from .NET code!!!"u8);
 

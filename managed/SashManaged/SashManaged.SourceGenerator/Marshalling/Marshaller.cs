@@ -7,9 +7,7 @@ namespace SashManaged.SourceGenerator.Marshalling;
 
 public abstract class Marshaller : IMarshaller
 {
-    public abstract bool RequiresMarshalling { get; }
-    public abstract bool RequiresUnsafe { get; }
-    public abstract TypeSyntax GetExternalType(ITypeSymbol typeSymbol);
+    public abstract TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol);
     public virtual SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
     {
         return List<StatementSyntax>();
@@ -33,6 +31,26 @@ public abstract class Marshaller : IMarshaller
     public virtual ArgumentSyntax GetArgument(IParameterSymbol parameter)
     {
         return WithParameterRefKind(Argument(IdentifierName(parameter.Name)), parameter);
+    }
+
+    public virtual SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+    
+    public virtual SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+    
+    public virtual SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+
+    public virtual SyntaxList<StatementSyntax> Cleanup(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
     }
 
     protected ArgumentSyntax WithParameterRefKind(ArgumentSyntax argument, IParameterSymbol parameter)
