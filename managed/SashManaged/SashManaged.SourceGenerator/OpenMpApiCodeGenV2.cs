@@ -15,6 +15,15 @@ namespace SashManaged.SourceGenerator;
 [Generator]
 public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 {
+    private const string COMMENT_SETUP = "// Setup - Perform required setup.";
+    private const string COMMENT_MARSHAL = "// Marshal - Convert managed data to native data.";
+    private const string COMMENT_PINNED_MARSHAL = "// PinnedMarshal - Convert managed data to native data that requires the managed data to be pinned.";
+    private const string COMMENT_NOTIFY = "// NotifyForSuccessfulInvoke - Keep alive any managed objects that need to stay alive across the call.";
+    private const string COMMENT_UNMARSHAL_CAPTURE =
+        "// UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.";
+    private const string COMMENT_UNMARSHAL = "// Unmarshal - Convert native data to managed data.";
+    private const string COMMENT_CLEANUP = "// Cleanup - Perform cleanup of caller allocated resources.";
+    
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var attributedStructs = context.SyntaxProvider
@@ -43,7 +52,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             var sourceText = unit.NormalizeWhitespace(elasticTrivia:true)
                 .GetText(Encoding.UTF8);
             
-            ctx.AddSource($"{symbol.Name}.v2.g.cs", sourceText);
+            ctx.AddSource($"{symbol.Name}.g.cs", sourceText);
         });
     }
 
@@ -222,31 +231,65 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
         // The generated method consists of the following content:
         //
-        // locals: Generate locals for marshalled types and return value
-        // setup: Let marshallers setup
+        // LocalsInit - Generate locals for marshalled types and return value
+        // Setup - Perform required setup.
+        //   TODO: create stateful marshaller = new()
         // try
         // {
-        //   marshal: managed to native
+        //   Marshal - Convert managed data to native data.
+        //     TODO: stateful marshaller.FromManaged(param)
         //   {
-        //     pinned_marshal: bring unmanaged into scope
+        //     PinnedMarshal - Convert managed data to native data that requires the managed data to be pinned.
+        //       TODO: marshaller.ToUnmanaged()
         //     p/invoke 
         //   }
-        //   unmarshal: native to managed
+        //   NotifyForSuccessfulInvoke - Keep alive any managed objects that need to stay alive across the call.
+        //   UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.
+        //     TODO: marshaller.FromUnmanaged(_native)
+        //   Unmarshal - Convert native data to managed data.
+        //     TODO: marshaller.ToManaged()
         // }
         // finally
         // {
-        //   cleanup: let marshallers free memory
+        //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
         // }
         //
         // return: retval
+        //
+        // NOTES:
+        // - design doc: https://github.com/dotnet/runtime/blob/main/docs/design/libraries/LibraryImportGenerator/UserTypeMarshallingV2.md
+        // - looking to support Default, ManagedToUnmanagedIn, ManagedToUnmanagedOut, ManagedToUnmanagedRef
+        // - GetPinnableReference only available in managed -> unmanaged
+        // - OnInvoke only available in managed -> unmanaged
+        // - implement later:
+        // -- GetPinnableReference
+        // -- guarenteed unmarshalling
+        // -- OnInvoke
+        // - not implementing element marshalling (arrays) at the moment.
+        //
+        // TODO: strategy selector
+        // STRATEGIES:
+        // - Stateless Managed->Unmanaged
+        // - Stateless Managed->Unmanaged with Caller-Allocated Buffer
+        // - Stateless Unmanaged->Managed
+        // - Stateless Unmanaged->Managed with Guaranteed Unmarshalling
+        //   > later
+        // - Stateless Bidirectional
+        //   > kinda the current default strategy
+        //
+        // - Stateful Managed->Unmanaged
+        // - Stateful Managed->Unmanaged with Caller Allocated Buffer
+        // - Stateful Unmanaged->Managed
+        // - Stateful Unmanaged->Managed with Guaranteed Unmarshalling
+        //   > later
+        // - Stateful Bidirectional
 
         var statements = List<StatementSyntax>();
-        var tryStatements = List<StatementSyntax>();
         var finallyStatements = List<StatementSyntax>();
 
         // locals
         statements = statements.AddRange(
-            Step(null, (p, m) => 
+            Step(parameters, null, (p, m) => 
                 SingletonList<StatementSyntax>(
                     CreateLocalDeclarationWithDefaultValue(m.ToMarshalledType(p.Type), $"__{p.Name}_native"))));
 
@@ -254,7 +297,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         {
             var returnType = ToTypeSyntax(symbol.ReturnType);
             statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
-
         }
 
         if (returnMarshaller != null)
@@ -262,43 +304,45 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             var nativeType = returnMarshaller.ToMarshalledType(symbol.ReturnType);
             statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
         }
+        
+        // marshalling
+        // TODO: IsIn guard
+        // TODO: better return marshalling
+        var setup = Step(parameters, COMMENT_SETUP, (p, m) => m.Setup(p));
+        var marshal = Step(parameters, COMMENT_MARSHAL, (p, m) => m.Marshal(p));
+        var pinnedMarshal = Step(parameters, COMMENT_PINNED_MARSHAL, (p, m) => m.PinnedMarshal(p));
+        var notify = Step(parameters, COMMENT_NOTIFY, (p, m) => m.NotifyForSuccessfulInvoke(p));
+        var unmarshalCapture = Step(parameters, COMMENT_UNMARSHAL_CAPTURE, IsOut, (p, m) => m.UnmarshalCapture(p));
+        var unmarshal = Step(parameters, COMMENT_UNMARSHAL, IsOut, (p, m) => m.Unmarshal(p), returnMarshaller?.Unmarshal(null) ?? default);
+        var cleanup = Step(parameters, COMMENT_CLEANUP, (p, m) => m.Cleanup(p));
+        
+        finallyStatements = finallyStatements.AddRange(cleanup);
 
-        // setup
-        var setup = Step("// Setup", (p, m) => m.Setup(p));
-        statements = statements.AddRange(setup);
-
-        // marshal
-        var marshal = Step("// Marshal - Convert managed data to native data.", (p, m) => m.Marshal(p));
-        tryStatements = tryStatements.AddRange(marshal);
-
-        // PinnedMarshal
-        var pinnedMarshal = Step("// PinnedMarshal", (p, m) => m.PinnedMarshal(p));
-
-        tryStatements = tryStatements
+        
+        var guarded = marshal
             .Add(
                 Block(
                     pinnedMarshal.Add(
-                        ExpressionStatement(pInvokeExpression))));
+                        ExpressionStatement(pInvokeExpression))))
+            .AddRange(notify)
+            .AddRange(unmarshalCapture)
+            .AddRange(unmarshal);
+        
+        statements = statements.AddRange(setup);
 
-        // Unmarshal
-        var unmarshal = Step("// Unmarshal - Convert native data to managed data.", (p, m) => 
-                IsByRefParam(p.RefKind)  // only unmarshal ref types
-                    ? m.Unmarshal(p) : default,
-            returnMarshaller?.Unmarshal(null) ?? default);
-
-        tryStatements = tryStatements.AddRange(unmarshal);
-
-        // Cleanup
-        var cleanup = Step("// Cleanup - Perform cleanup of caller allocated resources.", (p, m) => m.Cleanup(p));
-        finallyStatements = finallyStatements.AddRange(cleanup);
-
-        // try / finally
-        statements = statements.Add(TryStatement()
-            .WithBlock(Block(tryStatements))
-            .WithFinally(
-                FinallyClause(
-                    Block(finallyStatements)))
-        );
+        if (finallyStatements.Any())
+        {
+            statements = statements.Add(TryStatement()
+                .WithBlock(Block(guarded))
+                .WithFinally(
+                    FinallyClause(
+                        Block(finallyStatements)))
+            );
+        }
+        else
+        {
+            statements = statements.AddRange(guarded);
+        }
 
         if (!symbol.ReturnsVoid)
         {
@@ -308,27 +352,47 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         return Block(statements);
-        
-        SyntaxList<TNode> Step<TNode>(string comment, Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller, SyntaxList<TNode> additional = default) where TNode : SyntaxNode
-        {
-            var result = List(parameters.Where(x => x.marshaller != null)
-                .SelectMany(x => marshaller(x.parameter, x.marshaller)));
 
-            result = result.AddRange(additional);
+    }
 
-            if (comment != null && result.Count > 0)
-            {
-                result = result.Replace(
-                    result[0],
-                    result[0].WithLeadingTrivia(Comment(comment)));
-            }
-            return result;
-        }
+    private static SyntaxList<TNode> Step<TNode>(List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters, string comment,
+        Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller, SyntaxList<TNode> additional = default) where TNode : SyntaxNode
+    {
+        return Step(parameters, comment, _ => true, marshaller, additional);
     }
     
-    private static bool IsByRefParam(RefKind kind)
+    private static SyntaxList<TNode> Step<TNode>(
+        List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters,
+        string comment, 
+        Func<IParameterSymbol, bool> condition,
+        Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller,
+        SyntaxList<TNode> additional = default) where TNode : SyntaxNode
     {
+        var result = List(parameters.Where(x => x.marshaller != null && condition(x.parameter))
+            .SelectMany(x => marshaller(x.parameter, x.marshaller)));
+
+        result = result.AddRange(additional);
+
+        if (comment != null && result.Count > 0)
+        {
+            result = result.Replace(result[0],
+                result[0]
+                    .WithLeadingTrivia(Comment(comment)));
+        }
+
+        return result;
+    }
+    
+    private static bool IsOut(IParameterSymbol parameter)
+    {
+        var kind = parameter.RefKind;
         return kind is RefKind.Ref or RefKind.Out or RefKind.RefReadOnly or RefKind.RefReadOnlyParameter;
+    }
+
+    private static bool IsIn(IParameterSymbol parameter)
+    {
+        var kind = parameter.RefKind;
+        return kind is RefKind.In or RefKind.None or RefKind.Ref;
     }
 
     private static LocalDeclarationStatementSyntax CreateLocalDeclarationWithDefaultValue(TypeSyntax type, string identifier) =>

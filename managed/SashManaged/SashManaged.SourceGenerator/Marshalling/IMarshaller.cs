@@ -10,6 +10,8 @@ public interface IMarshaller
     SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter);
     SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol parameterSymbol);
+    SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> Cleanup(IParameterSymbol parameterSymbol);
+    SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol);
 }

@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using SashManaged.OpenMp;
@@ -7,6 +8,7 @@ namespace SashManaged;
 
 [CustomMarshaller(typeof(string), MarshalMode.Default, typeof(StringViewMarshaller))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToUnmanagedIn))]
+[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToUnmanagedOut))]
 public static unsafe class StringViewMarshaller
 {
     public static StringView ConvertToUnmanaged(string? managed)
@@ -38,7 +40,25 @@ public static unsafe class StringViewMarshaller
         }
         Marshal.FreeHGlobal((nint)unmanaged._reference);
     }
-    
+
+    public ref struct ManagedToUnmanagedOut
+    {
+        private string? _result;
+
+        public void FromUnmanaged(StringView unmanaged)
+        {
+            _result = unmanaged.ToString();
+        }
+        
+        public readonly string ToManaged()
+        {
+            return _result!;
+        }
+
+        public readonly void Free()
+        {
+        }
+    }
     public ref struct ManagedToUnmanagedIn
     {
         public static int BufferSize => 128;

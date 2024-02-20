@@ -14,21 +14,30 @@ public partial class Testing
     
     //[LibraryImport("SampSharp")]
     //public static partial IVehicle IVehiclesComponent_create(IVehiclesComponent ptr, BlittableBoolean isStatic, int modelID, Vector3 position, float Z, int colour1, int colour2, int respawnDelay, BlittableBoolean addSiren);
+    
+    [LibraryImport("SampSharp")]
+    public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
+    
+    [LibraryImport("SampSharp")]
+    public static partial int WithInString([MarshalUsing(typeof(StringViewMarshaller))] string str);
 
     [LibraryImport("SampSharp")]
-    public static partial BlittableRef<int> RefTest();
+    public static partial int WithOutString([MarshalUsing(typeof(StringViewMarshaller))] out string str);
 
     [LibraryImport("SampSharp")]
-    [return: MarshalUsing(typeof(StringViewMarshaller))]
-    public static partial string ICore_setData(ICore ptr, SashManaged.OpenMp.SettableCoreDataType type, [System.Runtime.InteropServices.Marshalling.MarshalUsing(typeof(StringViewMarshaller))] ref string data);
+    public static partial int WithDefaultMarshaller([MarshalUsing(typeof(BooleanMarshaller))]ref bool b);
+
+    [LibraryImport("SampSharp")]
+    public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SashManaged.OpenMp.SettableCoreDataType type);
 }
 
 [OpenMpApi2]
 public partial struct TestV2
 {
-    public partial int Testing123(ref int a, bool b, string c);
+    public partial int RefTest(bool b);
+    // public partial int Testing123(ref int a, bool b, string c);
 
-    public partial bool Testing456(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+    // public partial bool Testing456(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
 }
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler

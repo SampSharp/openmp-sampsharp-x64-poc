@@ -23,7 +23,12 @@ public abstract class Marshaller : IMarshaller
     {
         return List<StatementSyntax>();
     }
-    
+
+    public SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+
     public virtual SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
@@ -32,6 +37,21 @@ public abstract class Marshaller : IMarshaller
     public virtual SyntaxList<StatementSyntax> Cleanup(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
+    }
+
+    public SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+    
+    protected static string Managed(IParameterSymbol parameterSymbol)
+    {
+        return parameterSymbol?.Name ?? "__retVal";
+    }
+
+    protected static string Unmanaged(IParameterSymbol parameterSymbol)
+    {
+        return $"__{(parameterSymbol?.Name ?? "__retVal")}_native";
     }
 
     protected static SyntaxList<StatementSyntax> InvokeAndAssign(string toValue, string fromValue, string marshallerType, string marshallerMethod)
