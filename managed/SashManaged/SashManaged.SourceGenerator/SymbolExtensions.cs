@@ -41,6 +41,13 @@ public static class SymbolExtensions
     {
         return symbol.GetAttributes().GetAttributes(attributeName);
     }
+
+    public static AttributeData GetAttribute(this ISymbol symbol, string attributeName)
+    {
+        return symbol.GetAttributes(attributeName)
+            .FirstOrDefault();
+    }
+
     public static IEnumerable<AttributeData> GetAttributes(this ImmutableArray<AttributeData> attribute, string attributeName)
     {
         return attribute

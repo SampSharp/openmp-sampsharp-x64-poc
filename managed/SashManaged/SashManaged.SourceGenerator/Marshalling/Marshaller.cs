@@ -5,9 +5,12 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
-public abstract class Marshaller : IMarshaller
+public abstract class Marshaller(string nativeTypeName, string marshallerTypeName) : IMarshaller
 {
-    public abstract TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol);
+    public virtual TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol)
+    {
+        return ParseTypeName(nativeTypeName);
+    }
 
     public virtual SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
     {
@@ -54,23 +57,23 @@ public abstract class Marshaller : IMarshaller
         return $"__{(parameterSymbol?.Name ?? "__retVal")}_native";
     }
 
-    protected static SyntaxList<StatementSyntax> InvokeAndAssign(string toValue, string fromValue, string marshallerType, string marshallerMethod)
+    protected SyntaxList<StatementSyntax> InvokeAndAssign(string left, string right, string method)
     {
         return SingletonList<StatementSyntax>(
             ExpressionStatement(
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(toValue),
-                    InvokeWithArgument(marshallerType, marshallerMethod, fromValue))));
+                    IdentifierName(left),
+                    InvokeWithArgument(method, right))));
     }
 
-    protected static InvocationExpressionSyntax InvokeWithArgument(string marshallerType, string marshallerMethod, string argument)
+    protected InvocationExpressionSyntax InvokeWithArgument(string method, string argument)
     {
         return InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(marshallerType),
-                    IdentifierName(marshallerMethod)
+                    IdentifierName(marshallerTypeName),
+                    IdentifierName(method)
                 )
             )
             .WithArgumentList(

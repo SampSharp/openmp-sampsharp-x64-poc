@@ -3,13 +3,13 @@
 public static class WellKnownMarshallerTypes
 {
     public static IMarshaller String { get; } = 
-        new DefaultMarshallerStrategy(
+        new StatelessBidirectionalMarshallerStrategy(
             nativeTypeName: $"global::{Constants.StringViewFQN}",
             marshallerTypeName: "global::SashManaged.StringViewMarshaller",
             hasFree: true);
 
     public static IMarshaller Boolean { get; } = 
-        new DefaultMarshallerStrategy(
+        new StatelessBidirectionalMarshallerStrategy(
             nativeTypeName: $"global::{Constants.BlittableBooleanFQN}",
             marshallerTypeName: "global::SashManaged.BooleanMarshaller",
             hasFree: false);
