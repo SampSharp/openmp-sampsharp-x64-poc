@@ -27,7 +27,7 @@ public abstract class Marshaller(string nativeTypeName, string marshallerTypeNam
         return List<StatementSyntax>();
     }
 
-    public SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol)
+    public virtual SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
     }
@@ -37,34 +37,39 @@ public abstract class Marshaller(string nativeTypeName, string marshallerTypeNam
         return List<StatementSyntax>();
     }
 
-    public virtual SyntaxList<StatementSyntax> Cleanup(IParameterSymbol parameterSymbol)
+    public virtual SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
     }
 
-    public SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol)
+    public virtual SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
     }
     
-    protected static string Managed(IParameterSymbol parameterSymbol)
+    protected static string GetManagedVar(IParameterSymbol parameterSymbol)
     {
         return parameterSymbol?.Name ?? "__retVal";
     }
 
-    protected static string Unmanaged(IParameterSymbol parameterSymbol)
+    protected static string GetUnmanagedVar(IParameterSymbol parameterSymbol)
     {
         return $"__{(parameterSymbol?.Name ?? "__retVal")}_native";
     }
 
-    protected SyntaxList<StatementSyntax> InvokeAndAssign(string left, string right, string method)
+    protected static string GetMarshallerVar(IParameterSymbol parameterSymbol)
+    {
+        return $"__{parameterSymbol.Name}_native_marshaller";
+    }
+
+    protected SyntaxList<StatementSyntax> InvokeAndAssign(string local, string method, string argument)
     {
         return SingletonList<StatementSyntax>(
             ExpressionStatement(
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(left),
-                    InvokeWithArgument(method, right))));
+                    IdentifierName(local),
+                    InvokeWithArgument(method, argument))));
     }
 
     protected InvocationExpressionSyntax InvokeWithArgument(string method, string argument)

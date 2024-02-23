@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using SashManaged.SourceGenerator.Marshalling;
 
@@ -22,7 +23,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     private const string COMMENT_UNMARSHAL_CAPTURE =
         "// UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.";
     private const string COMMENT_UNMARSHAL = "// Unmarshal - Convert native data to managed data.";
-    private const string COMMENT_CLEANUP = "// Cleanup - Perform cleanup of caller allocated resources.";
+    private const string COMMENT_CLEANUP = "// CleanupCallerAllocated - Perform cleanup of caller allocated resources.";
     
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -32,7 +33,22 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                 static (s, _) => s is StructDeclarationSyntax str && str.IsPartial(), 
                 static(ctx, ct) => GetStructDeclaration(ctx, ct))
             .Where(x => x is not null);
-        
+
+        var tst = context.SyntaxProvider.ForAttributeWithMetadataName("System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute",
+            static (s, _) => s is ClassDeclarationSyntax,
+            static (ctx, ct) => ctx);
+
+        context.RegisterSourceOutput(tst,
+            (ctx, info) =>
+            {
+                var target = info.TargetSymbol.Name;
+                var dbg = string.Join(" ",
+                    info.Attributes.Select(x => ((TypedConstant)x.ConstructorArguments[1])!.Value!
+                        .ToString()));
+
+                var st = SourceText.From($"// {target} - {dbg}", Encoding.UTF8);
+                ctx.AddSource($"{target}.g.cs", st);
+            });
         context.RegisterSourceOutput(attributedStructs, (ctx, info) =>
         {
             var node = info.Node;
@@ -314,7 +330,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var notify = Step(parameters, COMMENT_NOTIFY, IsIn, (p, m) => m.NotifyForSuccessfulInvoke(p));
         var unmarshalCapture = Step(parameters, COMMENT_UNMARSHAL_CAPTURE, IsOut, (p, m) => m.UnmarshalCapture(p));
         var unmarshal = Step(parameters, COMMENT_UNMARSHAL, IsOut, (p, m) => m.Unmarshal(p), returnMarshaller?.Unmarshal(null) ?? default);
-        var cleanup = Step(parameters, COMMENT_CLEANUP, (p, m) => m.Cleanup(p));
+        var cleanup = Step(parameters, COMMENT_CLEANUP, (p, m) => m.CleanupCallerAllocated(p));
 
 
         // wire up steps
@@ -468,6 +484,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     
     private static IMarshaller GetParameterMarshaller(IParameterSymbol parameterSymbol)
     {
+        //return WellKnownMarshallerTypes.GetMarshaller(parameterSymbol);
         return GetMarshaller(parameterSymbol.Type);
     }
     
