@@ -3,9 +3,9 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
-public interface IMarshaller
+public interface IMarshallerShape
 {
-    TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol);
+    TypeSyntax GetNativeType();
     
     SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter);
     SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol);

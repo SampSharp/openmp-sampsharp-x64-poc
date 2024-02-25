@@ -119,13 +119,13 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         var parameters = symbol.Parameters
-            .Select(x => (parameter: x, marshaller: MarshallerStrategyFactory.GetMarshaller(x, structDeclaration.WellKnownMarshallerTypes)))
+            .Select(x => (parameter: x, marshaller: MarshallerShapeFactory.GetMarshaller(x, structDeclaration.WellKnownMarshallerTypes)))
             .ToList();
 
         var invocation = CreateInvocation(symbol, parameters);
         
         // Extern P/Invoke
-        var externReturnType = returnMarshaller?.ToMarshalledType(symbol.ReturnType) ?? 
+        var externReturnType = returnMarshaller?.GetNativeType() ?? 
                                ToTypeSyntax(symbol.ReturnType, symbol.ReturnsByRef, symbol.ReturnsByRefReadonly);
 
         var externFunction = CreateExternFunction(symbol, externReturnType, parameters);
@@ -146,7 +146,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     private static BlockSyntax CreateInvocation(IMethodSymbol symbol,
-        List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters)
+        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
     {
         var returnMarshaller = GetMarshaller(symbol.ReturnType);
 
@@ -157,10 +157,10 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             : CreateInvocationWithoutMarshalling(symbol, parameters);
     }
 
-    private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol parameter, IMarshaller marshaller = null)
+    private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol parameter, IMarshallerShape marshallerShape = null)
     {
         var identifier = parameter.Name;
-        if (marshaller != null)
+        if (marshallerShape != null)
         {
             identifier = $"__{identifier}_native";
         }
@@ -181,7 +181,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
     }
     private static BlockSyntax CreateInvocationWithoutMarshalling(IMethodSymbol symbol, 
-        List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters)
+        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
     {
         ExpressionSyntax invoke = InvocationExpression(IdentifierName("__PInvoke"))
             .WithArgumentList(
@@ -209,7 +209,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     private static BlockSyntax CreateInvocationWithMarshalling(IMethodSymbol symbol,
-        List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters)
+        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
     {
         var returnMarshaller = GetMarshaller(symbol.ReturnType);
 
@@ -265,25 +265,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // - TODO: GetPinnableReference
         // - TODO: guaranteed unmarshalling
         // - TODO: stateful bidirectional
-        // - TODO: if(invokeSuccess) around callee cleanup
 
-        // init locals
-        var statements = Step(parameters, null, (p, m) => 
-            SingletonList<StatementSyntax>(
-                CreateLocalDeclarationWithDefaultValue(m.ToMarshalledType(p.Type), $"__{p.Name}_native")));
-
-        if (!symbol.ReturnsVoid)
-        {
-            var returnType = ToTypeSyntax(symbol.ReturnType);
-            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
-        }
-
-        if (returnMarshaller != null)
-        {
-            var nativeType = returnMarshaller.ToMarshalledType(symbol.ReturnType);
-            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
-        }
-        
         // collect all marshalling steps
         // TODO: better return marshalling
         var setup = Step(parameters, COMMENT_SETUP, (p, m) => m.Setup(p));
@@ -294,8 +276,46 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var unmarshal = Step(parameters, COMMENT_UNMARSHAL, (p, m) => m.Unmarshal(p), returnMarshaller?.Unmarshal(null) ?? default);
         var cleanupCallee = Step(parameters, COMMENT_CLEANUP_CALLEE, (p, m) => m.CleanupCalleeAllocated(p));
         var cleanupCaller = Step(parameters, COMMENT_CLEANUP_CALLER, (p, m) => m.CleanupCallerAllocated(p));
+        
+        // init locals
+        var statements = Step(parameters, null, (p, m) => 
+            SingletonList<StatementSyntax>(
+                CreateLocalDeclarationWithDefaultValue(m.GetNativeType(), $"__{p.Name}_native")));
+
+        if (!symbol.ReturnsVoid)
+        {
+            var returnType = ToTypeSyntax(symbol.ReturnType);
+            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
+        }
+
+        if (returnMarshaller != null)
+        {
+            var nativeType = returnMarshaller.GetNativeType();
+            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
+        }
 
 
+
+        // if callee cleanup is required, we need to keep track of invocation success
+        if (cleanupCallee.Count > 0)
+        {
+            statements = statements.Add(
+                CreateLocalDeclarationWithDefaultValue(
+                    ParseTypeName("bool"), 
+                    "__invokeSucceeded"));
+        
+            notify = notify.Insert(0, 
+                ExpressionStatement(
+                    AssignmentExpression(
+                        SyntaxKind.SimpleAssignmentExpression, 
+                        IdentifierName("__invokeSucceeded"), 
+                        LiteralExpression(SyntaxKind.TrueLiteralExpression))));
+        
+            cleanupCallee = SingletonList<StatementSyntax>(
+                        IfStatement(IdentifierName("__invokeSucceeded"), 
+                        Block(cleanupCallee)));
+        }
+        
         // wire up steps
         var finallyStatements = cleanupCallee.AddRange(cleanupCaller);
 
@@ -336,9 +356,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     private static SyntaxList<TNode> Step<TNode>(
-        List<(IParameterSymbol parameter, IMarshaller marshaller)> parameters,
+        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters,
         string comment, 
-        Func<IParameterSymbol, IMarshaller, SyntaxList<TNode>> marshaller,
+        Func<IParameterSymbol, IMarshallerShape, SyntaxList<TNode>> marshaller,
         SyntaxList<TNode> additional = default) where TNode : SyntaxNode
     {
         var result = List(parameters.Where(x => x.marshaller != null)
@@ -367,7 +387,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
     private static LocalFunctionStatementSyntax CreateExternFunction(IMethodSymbol symbol, 
         TypeSyntax externReturnType, 
-        IEnumerable<(IParameterSymbol parameter, IMarshaller marshaller)> parameterMarshallers)
+        IEnumerable<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameterMarshallers)
     {
         var handleParam = Parameter(Identifier("handle_")).WithType(ParseTypeName("nint"));
 
@@ -407,14 +427,15 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         return $"{char.ToLowerInvariant(value[0])}{value.Substring(1)}";
     }
 
-    private static IMarshaller GetMarshaller(ITypeSymbol typeSyntax)
+    private static IMarshallerShape GetMarshaller(ITypeSymbol typeSyntax)
     {
+        // TODO: this is only still used by return type; this method needs to be gone
         switch (typeSyntax.SpecialType)
         {
             case SpecialType.System_Boolean:
-                return MarshallerStrategyFactory.Boolean;
+                return MarshallerShapeFactory.Boolean;
             case SpecialType.System_String:
-                return MarshallerStrategyFactory.String;
+                return MarshallerShapeFactory.String;
         }
 
         if (typeSyntax.SpecialType != SpecialType.None)
@@ -422,18 +443,17 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             return null;
         }
 
-        // TODO: check for type marshalling attributes
         return null;
     }
 
-    private static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, IEnumerable<(IParameterSymbol symbol, IMarshaller marshaller)> parameters)
+    private static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, IEnumerable<(IParameterSymbol symbol, IMarshallerShape marshaller)> parameters)
     {
         return ParameterList(
             SingletonSeparatedList(first)
                 .AddRange(
                     parameters
                         .Select(parameter => Parameter(Identifier(parameter.symbol.Name))
-                        .WithType(parameter.marshaller?.ToMarshalledType(parameter.symbol.Type) ?? ToTypeSyntax(parameter.symbol.Type))
+                        .WithType(parameter.marshaller?.GetNativeType() ?? ToTypeSyntax(parameter.symbol.Type))
                         .WithModifiers(GetRefTokens(parameter.symbol.RefKind)))));
     }
 

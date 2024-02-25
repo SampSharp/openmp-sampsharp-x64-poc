@@ -2,15 +2,15 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator.Marshalling;
+namespace SashManaged.SourceGenerator.Marshalling.Stateless;
 
-public class StatelessBidirectionalMarshallerStrategy(string nativeTypeName, string marshallerTypeName, bool hasFree) : Marshaller(nativeTypeName, marshallerTypeName)
+public class StatelessBidirectionalMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol)
     {
         return InvokeAndAssign(GetUnmanagedVar(parameterSymbol), "ConvertToUnmanaged", GetManagedVar(parameterSymbol));
     }
-    
+
     public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol)
     {
         return InvokeAndAssign(GetManagedVar(parameterSymbol), "ConvertToManaged", GetUnmanagedVar(parameterSymbol));

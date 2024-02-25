@@ -16,7 +16,6 @@ public static class AttributeFactory
 
     public static AttributeListSyntax GeneratedCode()
     {
-        var assem = Assembly.GetExecutingAssembly();
         var assemblyName = Assembly.GetExecutingAssembly().GetName();
         
         return AttributeList(

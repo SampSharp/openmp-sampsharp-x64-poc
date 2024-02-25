@@ -1,16 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
-public abstract class Marshaller(string nativeTypeName, string marshallerTypeName) : IMarshaller
+public abstract class MarshallerShape(string nativeTypeName, string marshallerTypeName) : IMarshallerShape
 {
     protected string NativeTypeName => nativeTypeName;
     protected string MarshallerTypeName => marshallerTypeName;
 
-    public virtual TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol)
+    public virtual TypeSyntax GetNativeType()
     {
         return ParseTypeName(nativeTypeName);
     }
@@ -63,38 +62,5 @@ public abstract class Marshaller(string nativeTypeName, string marshallerTypeNam
     protected static string GetUnmanagedVar(IParameterSymbol parameterSymbol)
     {
         return $"__{(parameterSymbol?.Name ?? "__retVal")}_native";
-    }
-
-    protected static string GetMarshallerVar(IParameterSymbol parameterSymbol)
-    {
-        return $"__{parameterSymbol.Name}_native_marshaller";
-    }
-
-    protected SyntaxList<StatementSyntax> InvokeAndAssign(string local, string method, string argument)
-    {
-        return SingletonList<StatementSyntax>(
-            ExpressionStatement(
-                AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(local),
-                    InvokeWithArgument(method, argument))));
-    }
-
-    protected InvocationExpressionSyntax InvokeWithArgument(string method, string argument)
-    {
-        return InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(marshallerTypeName),
-                    IdentifierName(method)
-                )
-            )
-            .WithArgumentList(
-                ArgumentList(
-                    SingletonSeparatedList(
-                        Argument(IdentifierName(argument))
-                    )
-                )
-            );
     }
 }

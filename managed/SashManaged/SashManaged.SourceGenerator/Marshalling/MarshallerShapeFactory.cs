@@ -1,24 +1,26 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using SashManaged.SourceGenerator.Marshalling.Stateful;
+using SashManaged.SourceGenerator.Marshalling.Stateless;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
-public static class MarshallerStrategyFactory
+public static class MarshallerShapeFactory
 {
-    public static IMarshaller String { get; } = 
-        new StatelessBidirectionalMarshallerStrategy(
+    public static IMarshallerShape String { get; } = 
+        new StatelessBidirectionalMarshallerShape(
             nativeTypeName: $"global::{Constants.StringViewFQN}",
             marshallerTypeName: "global::SashManaged.StringViewMarshaller",
             hasFree: true);
 
-    public static IMarshaller Boolean { get; } = 
-        new StatelessBidirectionalMarshallerStrategy(
+    public static IMarshallerShape Boolean { get; } = 
+        new StatelessBidirectionalMarshallerShape(
             nativeTypeName: $"global::{Constants.BlittableBooleanFQN}",
             marshallerTypeName: "global::SashManaged.BooleanMarshaller",
             hasFree: false);
 
-    public static IMarshaller GetMarshaller(IParameterSymbol parameterSymbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    public static IMarshallerShape GetMarshaller(IParameterSymbol parameterSymbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
     {
         var refKind = parameterSymbol.RefKind;
         
@@ -79,19 +81,19 @@ public static class MarshallerStrategyFactory
         var defaultInfo = modes.FirstOrDefault(x => SymbolEquals(paramType, x.ManagedType) && 
                                                     x.Mode == MarshallerModeValue.Default);
 
-        var strategy = selected == null 
+        var shape = selected == null 
             ? null 
-            : GetStrategyForMarshaller(selected, parameterSymbol);
+            : GetShapeForMarshaller(selected, parameterSymbol);
 
-        if (strategy == null && defaultInfo != null)
+        if (shape == null && defaultInfo != null)
         {
-            strategy = GetStrategyForMarshaller(defaultInfo, parameterSymbol);
+            shape = GetShapeForMarshaller(defaultInfo, parameterSymbol);
         }
 
-        return strategy;
+        return shape;
     }
 
-    private static IMarshaller GetStrategyForMarshaller(MarshallerModeInfo selected, IParameterSymbol parameterSymbol)
+    private static IMarshallerShape GetShapeForMarshaller(MarshallerModeInfo selected, IParameterSymbol parameterSymbol)
     {
         var refKind = parameterSymbol.RefKind;
 
@@ -216,7 +218,7 @@ public static class MarshallerStrategyFactory
         return true;
     }
 
-    private static IMarshaller GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
+    private static IMarshallerShape GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
     {
         var fromUnmanaged = GetMethod(info.MarshallerType, "FromUnmanaged", _ => true);
         var toManaged = GetMethod(info.MarshallerType, "ToManaged");
@@ -234,12 +236,12 @@ public static class MarshallerStrategyFactory
         
         var unmanagedType = fromUnmanaged.Parameters[0].Type;
         
-        return new StatefulUnmanagedToManagedMarshallerStrategy(
+        return new StatefulUnmanagedToManagedMarshallerShape(
             GetTypeString(unmanagedType), 
             GetTypeString(info.MarshallerType));
     }
 
-    private static IMarshaller GetStatefulManagedToUnmanged(MarshallerModeInfo info)
+    private static IMarshallerShape GetStatefulManagedToUnmanged(MarshallerModeInfo info)
     {
         var fromManaged = GetMethod(info.MarshallerType, "FromManaged", info.ManagedType);
         var toUnmanaged = GetMethod(info.MarshallerType, "ToUnmanaged");
@@ -260,7 +262,7 @@ public static class MarshallerStrategyFactory
         if (fromManaged != null)
         {
             // no buffer
-            return new StatefulManagedToUnmanagedMarshallerStrategy(
+            return new StatefulManagedToUnmanagedMarshallerShape(
                 GetTypeString(unmanagedType), 
                 GetTypeString(info.MarshallerType), 
                 hasOnInvoked);
@@ -269,7 +271,7 @@ public static class MarshallerStrategyFactory
         if (fromManagedBuffer != null && bufferSize != null)
         {
             // with buffer;
-            return new StatefulManagedToUnmanagedWithBufferMarshallerStrategy(
+            return new StatefulManagedToUnmanagedWithBufferMarshallerShape(
                 GetTypeString(unmanagedType), 
                 GetTypeString(info.MarshallerType), 
                 hasOnInvoked);
@@ -278,7 +280,7 @@ public static class MarshallerStrategyFactory
         return null;
     }
 
-    private static IMarshaller GetStatelessManagedToUnmanged(MarshallerModeInfo info)
+    private static IMarshallerShape GetStatelessManagedToUnmanged(MarshallerModeInfo info)
     {
         var toUnmanaged = GetMethod(info.MarshallerType, "ConvertToUnmanaged", info.ManagedType);
 
@@ -292,13 +294,13 @@ public static class MarshallerStrategyFactory
         var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
 
 
-        return new StatelessManagedToUnmanagedMarshallerStrategy(
+        return new StatelessManagedToUnmanagedMarshallerShape(
             GetTypeString(unmanagedType), 
             GetTypeString(info.MarshallerType), 
             hasFree);
     }
     
-    private static IMarshaller GetStatelessUnmanagedToManaged(MarshallerModeInfo info)
+    private static IMarshallerShape GetStatelessUnmanagedToManaged(MarshallerModeInfo info)
     {
         var toManaged = info.MarshallerType
             .GetMembers("ConvertToManaged")
@@ -316,13 +318,13 @@ public static class MarshallerStrategyFactory
         var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
 
 
-        return new StatelessUnmanagedToManagedMarshallerStrategy(
+        return new StatelessUnmanagedToManagedMarshallerShape(
             GetTypeString(unmanagedType), 
             GetTypeString(info.MarshallerType), 
             hasFree);
     }
     
-    private static IMarshaller GetStatelessBidirectional(MarshallerModeInfo info)
+    private static IMarshallerShape GetStatelessBidirectional(MarshallerModeInfo info)
     {
         var toManaged = info.MarshallerType
             .GetMembers("ConvertToManaged")
@@ -350,7 +352,7 @@ public static class MarshallerStrategyFactory
         var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
 
 
-        return new StatelessBidirectionalMarshallerStrategy(
+        return new StatelessBidirectionalMarshallerShape(
             GetTypeString(unmanagedType), 
             GetTypeString(info.MarshallerType), 
             hasFree);

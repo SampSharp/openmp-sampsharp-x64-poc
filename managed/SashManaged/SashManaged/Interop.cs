@@ -32,13 +32,82 @@ public partial class Testing
 }
 
 [OpenMpApi2]
-public partial struct TestV2
+public partial struct TestV2 : IPointer, IEquatable<TestV2>, IEquatable<IPointer> // TODO: IPointer and IEquatable for self and implementations in code gen
 {
     public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
 
     public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
+    
+    // TODO: equals members should be generated
+
+    // TODO: operators for inheritance
+    // TODO: cast operators for inheritance
+    
+    // <base>
+    public override bool Equals(object? obj)
+    {
+        if (obj is null && Handle == IntPtr.Zero)
+        {
+            return true;
+        }
+
+        // TODO: inheritance equality
+        return obj is TestV2 other && Equals(other);
+    }
+
+    public bool Equals(IPointer other)
+    {
+        return _handle == other.Handle;
+    }
+
+    public override int GetHashCode()
+    {
+        return _handle.GetHashCode();
+    }
+
+    public static bool operator ==(TestV2 lhs, object? rhs)
+    {
+        return lhs.Equals(rhs);
+    }
+    
+    public static bool operator !=(TestV2 lhs, object? rhs)
+    {
+        return !lhs.Equals(rhs);
+    }
+
+    public static bool operator ==(object? lhs, TestV2 rhs)
+    {
+        return rhs.Equals(lhs);
+    }
+
+    public static bool operator !=(object? lhs, TestV2 rhs)
+    {
+        return !rhs.Equals(lhs);
+    }
+    // </base>
+
+    // <for-each-type>
+    public bool Equals(TestV2 other)
+    {
+        return _handle == other._handle;
+    }
+
+    public static bool operator ==(TestV2 lhs, TestV2 rhs)
+    {
+        return lhs.Equals(rhs);
+    }
+
+    public static bool operator !=(TestV2 lhs, TestV2 rhs)
+    {
+        return !lhs.Equals(rhs);
+    }
+
+    // + inverse for implementations
+    // </for-each-type>
+
+
 }
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
