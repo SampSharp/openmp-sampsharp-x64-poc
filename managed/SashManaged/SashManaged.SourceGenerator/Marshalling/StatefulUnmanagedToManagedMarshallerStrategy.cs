@@ -6,6 +6,27 @@ namespace SashManaged.SourceGenerator.Marshalling;
 
 public class StatefulUnmanagedToManagedMarshallerStrategy(string nativeTypeName, string marshallerTypeName) : Marshaller(nativeTypeName, marshallerTypeName)
 {
+    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    {
+        // scoped type marshaller = new();
+        return SyntaxFactory.SingletonList<StatementSyntax>(
+            SyntaxFactory.LocalDeclarationStatement(
+                    SyntaxFactory.VariableDeclaration(
+                        SyntaxFactory.IdentifierName(MarshallerTypeName),
+                        SyntaxFactory.SingletonSeparatedList(
+                            SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier($"__{parameter.Name}_native_marshaller"))
+                                .WithInitializer(
+                                    SyntaxFactory.EqualsValueClause(
+                                        SyntaxFactory.ImplicitObjectCreationExpression()
+                                    )
+                                )
+                        )
+                    )
+                )
+                .WithModifiers(SyntaxFactory.TokenList(SyntaxFactory.Token(SyntaxKind.ScopedKeyword)))
+        );
+    }
+
     public override SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol)
     {
         // marshaller.FromUnmanaged(unmanaged);
@@ -29,7 +50,7 @@ public class StatefulUnmanagedToManagedMarshallerStrategy(string nativeTypeName,
         return SyntaxFactory.SingletonList<StatementSyntax>(
             SyntaxFactory.ExpressionStatement(
                 SyntaxFactory.AssignmentExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
+                    SyntaxKind.SimpleAssignmentExpression,
                     SyntaxFactory.IdentifierName(GetManagedVar(parameterSymbol)),
                     SyntaxFactory.InvocationExpression(
                         SyntaxFactory.MemberAccessExpression(
@@ -38,11 +59,7 @@ public class StatefulUnmanagedToManagedMarshallerStrategy(string nativeTypeName,
                             SyntaxFactory.IdentifierName("ToManaged"))))));
     }
 
-    public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol parameterSymbol)
-    {
-        return base.CleanupCallerAllocated(parameterSymbol);
-    }
-    public SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol parameterSymbol)
     {
         // marshaller.Free();
         return SyntaxFactory.SingletonList<StatementSyntax>(

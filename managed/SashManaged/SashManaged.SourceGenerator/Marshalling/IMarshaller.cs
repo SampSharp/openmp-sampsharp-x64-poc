@@ -13,5 +13,6 @@ public interface IMarshaller
     SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol parameterSymbol);
+    SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol);
 }

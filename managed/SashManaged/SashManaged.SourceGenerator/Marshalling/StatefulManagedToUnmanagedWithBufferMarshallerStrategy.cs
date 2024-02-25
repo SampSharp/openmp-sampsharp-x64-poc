@@ -29,7 +29,7 @@ public class StatefulManagedToUnmanagedWithBufferMarshallerStrategy(string nativ
                                                     SyntaxFactory.ArrayRankSpecifier(SyntaxFactory.SingletonSeparatedList<ExpressionSyntax>(
                                                         SyntaxFactory.MemberAccessExpression(
                                                             SyntaxKind.SimpleMemberAccessExpression, 
-                                                            SyntaxFactory.IdentifierName(marshallerTypeName), 
+                                                            SyntaxFactory.IdentifierName(MarshallerTypeName), 
                                                             SyntaxFactory.IdentifierName("BufferSize"))))))))
                                 })))));
     }

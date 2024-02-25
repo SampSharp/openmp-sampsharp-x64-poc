@@ -34,10 +34,11 @@ public partial class Testing
 [OpenMpApi2]
 public partial struct TestV2
 {
-    public partial int RefTest(bool b);
-    // public partial int Testing123(ref int a, bool b, string c);
+    public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
 
-    // public partial bool Testing456(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+    public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
+    public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+    public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
 }
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler

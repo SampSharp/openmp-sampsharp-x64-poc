@@ -7,6 +7,9 @@ namespace SashManaged.SourceGenerator.Marshalling;
 
 public abstract class Marshaller(string nativeTypeName, string marshallerTypeName) : IMarshaller
 {
+    protected string NativeTypeName => nativeTypeName;
+    protected string MarshallerTypeName => marshallerTypeName;
+
     public virtual TypeSyntax ToMarshalledType(ITypeSymbol typeSymbol)
     {
         return ParseTypeName(nativeTypeName);
@@ -38,6 +41,11 @@ public abstract class Marshaller(string nativeTypeName, string marshallerTypeNam
     }
 
     public virtual SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol parameterSymbol)
+    {
+        return List<StatementSyntax>();
+    }
+
+    public virtual SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
     }

@@ -18,7 +18,7 @@ public class StatefulManagedToUnmanagedMarshallerStrategy(string nativeTypeName,
         return SyntaxFactory.SingletonList<StatementSyntax>(
             SyntaxFactory.LocalDeclarationStatement(
                     SyntaxFactory.VariableDeclaration(
-                        SyntaxFactory.IdentifierName(nativeTypeName),
+                        SyntaxFactory.IdentifierName(MarshallerTypeName),
                         SyntaxFactory.SingletonSeparatedList(
                             SyntaxFactory.VariableDeclarator(SyntaxFactory.Identifier($"__{parameter.Name}_native_marshaller"))
                                 .WithInitializer(
