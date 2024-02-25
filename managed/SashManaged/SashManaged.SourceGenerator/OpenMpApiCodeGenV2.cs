@@ -57,24 +57,22 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         });
     }
 
-    private static SyntaxList<MemberDeclarationSyntax> GenerateStructMembers(StructDeclaration info)
+    private static SyntaxList<MemberDeclarationSyntax> GenerateStructMembers(StructStubGenerationContext ctx)
     {
         return List(
-            GenerateCommonStructMembers(info)
+            GenerateCommonStructMembers(ctx)
                 .Concat(
-                    info.Methods.Select(x => GenerateMethod(x, info))
-                        .Where(x => x != null)
-                )
-            );
+                    ctx.Methods.Select(GenerateMethod)
+                        .Where(x => x != null)));
     }
 
-    private static IEnumerable<MemberDeclarationSyntax> GenerateCommonStructMembers(StructDeclaration info)
+    private static IEnumerable<MemberDeclarationSyntax> GenerateCommonStructMembers(StructStubGenerationContext ctx)
     {
         var nint = ParseTypeName("nint");
         yield return FieldDeclaration(VariableDeclaration(nint, SingletonSeparatedList(VariableDeclarator("_handle"))))
             .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword)));
 
-        yield return ConstructorDeclaration(Identifier(info.Symbol.Name))
+        yield return ConstructorDeclaration(Identifier(ctx.Symbol.Name))
             .WithParameterList(ParameterList(
                 SingletonSeparatedList(
                 Parameter(Identifier("handle")).WithType(nint)
@@ -86,26 +84,23 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         AssignmentExpression(
                             SyntaxKind.SimpleAssignmentExpression, 
                             IdentifierName("_handle"),
-                            IdentifierName("handle")
-                            )
-                        )
-                    )
-                )
-            );
+                            IdentifierName("handle"))))));
 
         yield return PropertyDeclaration(nint, "Handle")
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
             .WithExpressionBody(ArrowExpressionClause(IdentifierName("_handle")))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+
+        // TODO: inheritance members
+        // TODO: casting
+        // TODO: null check
     }
 
-    private static MemberDeclarationSyntax GenerateMethod((MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol) info, StructDeclaration structDeclaration)
+    private static MemberDeclarationSyntax GenerateMethod(MethodStubGenerationContext ctx)
     {
-        var (node, symbol) = info;
-
         // Guard: cannot ref return a value that requires marshalling
-        var returnMarshaller = GetMarshaller(symbol.ReturnType);
-        if (returnMarshaller != null && symbol.ReturnsByRef)
+        var returnMarshaller = GetMarshaller(ctx.Symbol.ReturnType);
+        if (returnMarshaller != null && ctx.Symbol.ReturnsByRef)
         {
             // Cannot ref return a type that needs marshalling
             // TODO: diagnostic
@@ -113,28 +108,24 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         // TODO: ref return not yet supported
-        if (symbol.ReturnsByRef)
+        if (ctx.Symbol.ReturnsByRef)
         {
             return null;
         }
 
-        var parameters = symbol.Parameters
-            .Select(x => (parameter: x, marshaller: MarshallerShapeFactory.GetMarshaller(x, structDeclaration.WellKnownMarshallerTypes)))
-            .ToList();
-
-        var invocation = CreateInvocation(symbol, parameters);
+        var invocation = CreateInvocation(ctx);
         
         // Extern P/Invoke
         var externReturnType = returnMarshaller?.GetNativeType() ?? 
-                               ToTypeSyntax(symbol.ReturnType, symbol.ReturnsByRef, symbol.ReturnsByRefReadonly);
+                               ToTypeSyntax(ctx.Symbol.ReturnType, ctx.Symbol.ReturnsByRef, ctx.Symbol.ReturnsByRefReadonly);
 
-        var externFunction = CreateExternFunction(symbol, externReturnType, parameters);
+        var externFunction = CreateExternFunction(ctx, externReturnType);
 
         invocation = invocation.WithStatements(invocation.Statements.Add(externFunction));
      
-        return MethodDeclaration(ToReturnTypeSyntax(symbol), node.Identifier)
-            .WithModifiers(node.Modifiers)
-            .WithParameterList(ToParameterListSyntax(symbol.Parameters))
+        return MethodDeclaration(ToReturnTypeSyntax(ctx.Symbol), ctx.Declaration.Identifier)
+            .WithModifiers(ctx.Declaration.Modifiers)
+            .WithParameterList(ToParameterListSyntax(ctx.Symbol.Parameters))
             .WithAttributeLists(
                 List(
                     new []{
@@ -145,16 +136,16 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .WithBody(invocation);
     }
 
-    private static BlockSyntax CreateInvocation(IMethodSymbol symbol,
-        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
+    private static BlockSyntax CreateInvocation(MethodStubGenerationContext ctx)
     {
-        var returnMarshaller = GetMarshaller(symbol.ReturnType);
 
-        var marshallingRequired = returnMarshaller != null || parameters.Any(x => x.marshaller != null);
+        var returnMarshaller = GetMarshaller(ctx.Symbol.ReturnType);
+
+        var marshallingRequired = returnMarshaller != null || ctx.Parameters.Any(x => x.MarshallerShape != null);
 
         return marshallingRequired 
-            ? CreateInvocationWithMarshalling(symbol, parameters)
-            : CreateInvocationWithoutMarshalling(symbol, parameters);
+            ? CreateInvocationWithMarshalling(ctx)
+            : CreateInvocationWithoutMarshalling(ctx);
     }
 
     private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol parameter, IMarshallerShape marshallerShape = null)
@@ -180,27 +171,26 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                 return argument;
         }
     }
-    private static BlockSyntax CreateInvocationWithoutMarshalling(IMethodSymbol symbol, 
-        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
+    private static BlockSyntax CreateInvocationWithoutMarshalling(MethodStubGenerationContext ctx)
     {
         ExpressionSyntax invoke = InvocationExpression(IdentifierName("__PInvoke"))
             .WithArgumentList(
                 ArgumentList(
                     SingletonSeparatedList(Argument(IdentifierName("_handle")))
                         .AddRange(
-                            parameters.Select(x => GetArgumentForParameter(x.parameter, x.marshaller)
+                            ctx.Parameters.Select(x => GetArgumentForParameter(x.Symbol, x.MarshallerShape)
                             )
                         )
                 )
             );
 
         // No marshalling required, call __PInvoke and return
-        if (symbol.ReturnsVoid)
+        if (ctx.Symbol.ReturnsVoid)
         {
             return Block(ExpressionStatement(invoke));
         }
             
-        if (symbol.ReturnsByRef || symbol.ReturnsByRefReadonly)
+        if (ctx.Symbol.ReturnsByRef || ctx.Symbol.ReturnsByRefReadonly)
         {
             invoke = RefExpression(invoke);
         }
@@ -208,10 +198,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         return Block(ReturnStatement(invoke));
     }
 
-    private static BlockSyntax CreateInvocationWithMarshalling(IMethodSymbol symbol,
-        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters)
+    private static BlockSyntax CreateInvocationWithMarshalling(MethodStubGenerationContext ctx)
     {
-        var returnMarshaller = GetMarshaller(symbol.ReturnType);
+        var returnMarshaller = GetMarshaller(ctx.Symbol.ReturnType);
 
         ExpressionSyntax invoke = 
             InvocationExpression(IdentifierName("__PInvoke"))
@@ -220,9 +209,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         SingletonSeparatedList(
                                 Argument(IdentifierName("_handle")))
                             .AddRange(
-                                parameters.Select(x => GetArgumentForParameter(x.parameter, x.marshaller)))));
+                                ctx.Parameters.Select(x => GetArgumentForParameter(x.Symbol, x.MarshallerShape)))));
         
-        if (!symbol.ReturnsVoid)
+        if (!ctx.Symbol.ReturnsVoid)
         {
             // TODO: ref return
             invoke = 
@@ -268,23 +257,23 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
         // collect all marshalling steps
         // TODO: better return marshalling
-        var setup = Step(parameters, COMMENT_SETUP, (p, m) => m.Setup(p));
-        var marshal = Step(parameters, COMMENT_MARSHAL, (p, m) => m.Marshal(p));
-        var pinnedMarshal = Step(parameters, COMMENT_PINNED_MARSHAL, (p, m) => m.PinnedMarshal(p));
-        var notify = Step(parameters, COMMENT_NOTIFY, (p, m) => m.NotifyForSuccessfulInvoke(p));
-        var unmarshalCapture = Step(parameters, COMMENT_UNMARSHAL_CAPTURE, (p, m) => m.UnmarshalCapture(p));
-        var unmarshal = Step(parameters, COMMENT_UNMARSHAL, (p, m) => m.Unmarshal(p), returnMarshaller?.Unmarshal(null) ?? default);
-        var cleanupCallee = Step(parameters, COMMENT_CLEANUP_CALLEE, (p, m) => m.CleanupCalleeAllocated(p));
-        var cleanupCaller = Step(parameters, COMMENT_CLEANUP_CALLER, (p, m) => m.CleanupCallerAllocated(p));
+        var setup = Step(ctx, COMMENT_SETUP, (p, m) => m.Setup(p));
+        var marshal = Step(ctx, COMMENT_MARSHAL, (p, m) => m.Marshal(p));
+        var pinnedMarshal = Step(ctx, COMMENT_PINNED_MARSHAL, (p, m) => m.PinnedMarshal(p));
+        var notify = Step(ctx, COMMENT_NOTIFY, (p, m) => m.NotifyForSuccessfulInvoke(p));
+        var unmarshalCapture = Step(ctx, COMMENT_UNMARSHAL_CAPTURE, (p, m) => m.UnmarshalCapture(p));
+        var unmarshal = Step(ctx, COMMENT_UNMARSHAL, (p, m) => m.Unmarshal(p), returnMarshaller?.Unmarshal(null) ?? default);
+        var cleanupCallee = Step(ctx, COMMENT_CLEANUP_CALLEE, (p, m) => m.CleanupCalleeAllocated(p));
+        var cleanupCaller = Step(ctx, COMMENT_CLEANUP_CALLER, (p, m) => m.CleanupCallerAllocated(p));
         
         // init locals
-        var statements = Step(parameters, null, (p, m) => 
+        var statements = Step(ctx, null, (p, m) => 
             SingletonList<StatementSyntax>(
                 CreateLocalDeclarationWithDefaultValue(m.GetNativeType(), $"__{p.Name}_native")));
 
-        if (!symbol.ReturnsVoid)
+        if (!ctx.Symbol.ReturnsVoid)
         {
-            var returnType = ToTypeSyntax(symbol.ReturnType);
+            var returnType = ToTypeSyntax(ctx.Symbol.ReturnType);
             statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
         }
 
@@ -344,7 +333,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             statements = statements.AddRange(guarded);
         }
 
-        if (!symbol.ReturnsVoid)
+        if (!ctx.Symbol.ReturnsVoid)
         {
             statements = statements.Add(
                 ReturnStatement(
@@ -356,13 +345,13 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     private static SyntaxList<TNode> Step<TNode>(
-        List<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameters,
+        MethodStubGenerationContext ctx,
         string comment, 
         Func<IParameterSymbol, IMarshallerShape, SyntaxList<TNode>> marshaller,
         SyntaxList<TNode> additional = default) where TNode : SyntaxNode
     {
-        var result = List(parameters.Where(x => x.marshaller != null)
-            .SelectMany(x => marshaller(x.parameter, x.marshaller)));
+        var result = List(ctx.Parameters.Where(x => x.MarshallerShape != null)
+            .SelectMany(x => marshaller(x.Symbol, x.MarshallerShape)));
 
         result = result.AddRange(additional);
 
@@ -385,13 +374,11 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                             EqualsValueClause(
                                 LiteralExpression(SyntaxKind.DefaultLiteralExpression, Token(SyntaxKind.DefaultKeyword)))))));
 
-    private static LocalFunctionStatementSyntax CreateExternFunction(IMethodSymbol symbol, 
-        TypeSyntax externReturnType, 
-        IEnumerable<(IParameterSymbol parameter, IMarshallerShape marshaller)> parameterMarshallers)
+    private static LocalFunctionStatementSyntax CreateExternFunction(MethodStubGenerationContext ctx, TypeSyntax externReturnType)
     {
         var handleParam = Parameter(Identifier("handle_")).WithType(ParseTypeName("nint"));
 
-        var externParameters = ToParameterListSyntax(handleParam, parameterMarshallers);
+        var externParameters = ToParameterListSyntax(handleParam, ctx);
 
         return LocalFunctionStatement(externReturnType, "__PInvoke")
             .WithModifiers(TokenList(          
@@ -402,7 +389,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .WithParameterList(externParameters)
             .WithAttributeLists(
                 SingletonList(
-                    AttributeFactory.DllImport("SampSharp", ToExternName(symbol))))
+                    AttributeFactory.DllImport("SampSharp", ToExternName(ctx.Symbol))))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
             .WithLeadingTrivia(Comment("// Local P/Invoke"));
     }
@@ -446,15 +433,15 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         return null;
     }
 
-    private static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, IEnumerable<(IParameterSymbol symbol, IMarshallerShape marshaller)> parameters)
+    private static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, MethodStubGenerationContext ctx)
     {
         return ParameterList(
             SingletonSeparatedList(first)
                 .AddRange(
-                    parameters
-                        .Select(parameter => Parameter(Identifier(parameter.symbol.Name))
-                        .WithType(parameter.marshaller?.GetNativeType() ?? ToTypeSyntax(parameter.symbol.Type))
-                        .WithModifiers(GetRefTokens(parameter.symbol.RefKind)))));
+                    ctx.Parameters
+                        .Select(parameter => Parameter(Identifier(parameter.Symbol.Name))
+                        .WithType(parameter.MarshallerShape?.GetNativeType() ?? ToTypeSyntax(parameter.Symbol.Type))
+                        .WithModifiers(GetRefTokens(parameter.Symbol.RefKind)))));
     }
 
     private static SyntaxTokenList GetRefTokens(RefKind refKind)
@@ -499,7 +486,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         );
     }
 
-    private static StructDeclaration GetStructDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
+    private static StructStubGenerationContext GetStructDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var targetNode = (StructDeclarationSyntax)ctx.TargetNode;
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
@@ -513,21 +500,32 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             ((x => x.SpecialType == SpecialType.System_Boolean), booleanMarshaller),
         ]);
 
-        // partial, non-static, non-generic
-        List<(MethodDeclarationSyntax, IMethodSymbol)> methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
+        // filter methods: partial, non-static, non-generic
+        var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
             .Where(x => x.IsPartial() && !x.HasModifier(SyntaxKind.StaticKeyword) && x.TypeParameterList == null)
-            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol 
+            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol
                 ? (null, null)
                 : (methodDeclaration, methodSymbol))
             .Where(x => x.methodSymbol != null)
-            .ToList();
+            .Select(method =>
+            {
+                var parameters = method.methodSymbol.Parameters.Select(parameter =>
+                        new ParameterStubGenerationContext(parameter, MarshallerShapeFactory.GetMarshaller(parameter, wellKnownMarshallerTypes)))
+                    .ToArray();
 
-        return new StructDeclaration(symbol, targetNode, methods, wellKnownMarshallerTypes);
+                return new MethodStubGenerationContext(method.methodDeclaration, method.methodSymbol, parameters);
+            })
+            .ToArray();
+
+        return new StructStubGenerationContext(symbol, targetNode, methods);
     }
 
-    private record StructDeclaration(
+    private record StructStubGenerationContext(
         ISymbol Symbol,
         StructDeclarationSyntax Node,
-        List<(MethodDeclarationSyntax node, IMethodSymbol symbol)> Methods,
-        WellKnownMarshallerTypes WellKnownMarshallerTypes);
+        MethodStubGenerationContext[] Methods);
+
+    private record struct MethodStubGenerationContext(MethodDeclarationSyntax Declaration, IMethodSymbol Symbol, ParameterStubGenerationContext[] Parameters);
+
+    private record struct ParameterStubGenerationContext(IParameterSymbol Symbol, IMarshallerShape MarshallerShape);
 }

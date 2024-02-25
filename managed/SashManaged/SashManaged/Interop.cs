@@ -57,12 +57,12 @@ public partial struct TestV2 : IPointer, IEquatable<TestV2>, IEquatable<IPointer
         return obj is TestV2 other && Equals(other);
     }
 
-    public bool Equals(IPointer other)
+    public readonly bool Equals(IPointer? other)
     {
-        return _handle == other.Handle;
+        return _handle == (other?.Handle ?? IntPtr.Zero);
     }
 
-    public override int GetHashCode()
+    public readonly override int GetHashCode()
     {
         return _handle.GetHashCode();
     }
