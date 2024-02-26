@@ -16,9 +16,8 @@ public static class MarshallerShapeFactory
             return null;
         }
 
-        // TODO: const for types
-        var marshalUsing = symbol.GetReturnTypeAttribute("System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute");
-        var typeMarshaller = symbol.ReturnType.GetAttribute("System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute");
+        var marshalUsing = symbol.GetReturnTypeAttribute(Constants.MarshalUsingAttributeFQN);
+        var typeMarshaller = symbol.ReturnType.GetAttribute(Constants.NativeMarshallingAttributeFQN);
         
         // Always handle return parameter as "out"
         return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, symbol.ReturnType, RefKind.Out);
@@ -29,8 +28,8 @@ public static class MarshallerShapeFactory
         var refKind = symbol.RefKind;
         var type = symbol.Type;
 
-        var marshalUsing = symbol.GetAttribute("System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute");
-        var typeMarshaller = symbol.Type.GetAttribute("System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute");
+        var marshalUsing = symbol.GetAttribute(Constants.MarshalUsingAttributeFQN);
+        var typeMarshaller = symbol.Type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
         
         return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, type, refKind);
     }
@@ -150,7 +149,7 @@ public static class MarshallerShapeFactory
         return null;
     }
 
-    private static bool SymbolEquals(ISymbol lhs, ISymbol rhs)
+    private static bool SymbolEquals(ITypeSymbol lhs, ITypeSymbol rhs)
     {
         return SymbolEqualityComparer.Default.Equals(lhs, rhs);
     }
@@ -162,20 +161,19 @@ public static class MarshallerShapeFactory
             : symbol.ToDisplayString();
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, string name)
+    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name)
     {
-        return GetMethod(type, name, Array.Empty<ITypeSymbol>());
+        return GetMethod(type, stateful, name, Array.Empty<ITypeSymbol>());
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, string name, params ITypeSymbol[] argTypes)
+    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name, params ITypeSymbol[] argTypes)
     {
-        // TODO: static/instance check
         return type
             .GetMembers(name)
             .OfType<IMethodSymbol>()
             .FirstOrDefault(x =>
             {
-                if (x.Parameters.Length != argTypes.Length)
+                if (stateful == x.IsStatic || x.Parameters.Length != argTypes.Length)
                 {
                     return false;
                 }
@@ -186,15 +184,14 @@ public static class MarshallerShapeFactory
 
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, string name, params Func<IParameterSymbol, bool>[] argChecks)
+    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name, params Func<IParameterSymbol, bool>[] argChecks)
     {
-        // TODO: static/instance check
         return type
             .GetMembers(name)
             .OfType<IMethodSymbol>()
             .FirstOrDefault(x =>
             {
-                if (x.Parameters.Length != argChecks.Length)
+                if (stateful == x.IsStatic || x.Parameters.Length != argChecks.Length)
                 {
                     return false;
                 }
@@ -205,31 +202,25 @@ public static class MarshallerShapeFactory
 
     }
 
-    private static IPropertySymbol GetProperty(ITypeSymbol type, string name, Func<ITypeSymbol, bool> check)
+    private static IPropertySymbol GetProperty(ITypeSymbol type, bool isStatic, string name, Func<ITypeSymbol, bool> check)
     {
-        // TODO: static/instance check
         return type
             .GetMembers(name)
             .OfType<IPropertySymbol>()
-            .FirstOrDefault(x => check(x.Type));
+            .FirstOrDefault(x => isStatic == x.IsStatic && check(x.Type));
 
     }
 
     private static bool IsSpanByte(ITypeSymbol type)
     {
-        if (type is not INamedTypeSymbol named || named.ToDisplayString() != "Sytem.Span<byte>")
-        {
-            return false;
-        }
-
-        return true;
+        return type is INamedTypeSymbol named && named.ToDisplayString() == Constants.SpanOfBytesFQN;
     }
 
     private static IMarshallerShape GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
     {
-        var fromUnmanaged = GetMethod(info.MarshallerType, "FromUnmanaged", _ => true);
-        var toManaged = GetMethod(info.MarshallerType, "ToManaged");
-        var free = GetMethod(info.MarshallerType, "Free");
+        var fromUnmanaged = GetMethod(info.MarshallerType, true, "FromUnmanaged", _ => true);
+        var toManaged = GetMethod(info.MarshallerType, true, "ToManaged");
+        var free = GetMethod(info.MarshallerType, true, "Free");
         
         if (fromUnmanaged == null || toManaged == null || free == null)
         {
@@ -250,14 +241,14 @@ public static class MarshallerShapeFactory
 
     private static IMarshallerShape GetStatefulManagedToUnmanged(MarshallerModeInfo info)
     {
-        var fromManaged = GetMethod(info.MarshallerType, "FromManaged", info.ManagedType);
-        var toUnmanaged = GetMethod(info.MarshallerType, "ToUnmanaged");
-        var free = GetMethod(info.MarshallerType, "Free");
+        var fromManaged = GetMethod(info.MarshallerType, true, "FromManaged", info.ManagedType);
+        var toUnmanaged = GetMethod(info.MarshallerType, true, "ToUnmanaged");
+        var free = GetMethod(info.MarshallerType, true, "Free");
 
-        var fromManagedBuffer = GetMethod(info.MarshallerType, "FromManaged", x => SymbolEquals(x, info.ManagedType), x => IsSpanByte(x.Type));
-        var bufferSize = GetProperty(info.MarshallerType, "BufferSize", x => x.SpecialType == SpecialType.System_Int32);
+        var fromManagedBuffer = GetMethod(info.MarshallerType, true, "FromManaged", x => SymbolEquals(x.Type, info.ManagedType), x => IsSpanByte(x.Type));
+        var bufferSize = GetProperty(info.MarshallerType, true, "BufferSize", x => x.SpecialType == SpecialType.System_Int32);
 
-        var hasOnInvoked = GetMethod(info.MarshallerType, "OnInvoked") != null;
+        var hasOnInvoked = GetMethod(info.MarshallerType, true, "OnInvoked") != null;
 
         if (toUnmanaged == null || free == null)
         {
@@ -289,7 +280,7 @@ public static class MarshallerShapeFactory
 
     private static IMarshallerShape GetStatelessManagedToUnmanged(MarshallerModeInfo info)
     {
-        var toUnmanaged = GetMethod(info.MarshallerType, "ConvertToUnmanaged", info.ManagedType);
+        var toUnmanaged = GetMethod(info.MarshallerType, false, "ConvertToUnmanaged", info.ManagedType);
 
         if (toUnmanaged == null)
         {
@@ -298,7 +289,7 @@ public static class MarshallerShapeFactory
 
         var unmanagedType = toUnmanaged.ReturnType;
 
-        var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
+        var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
 
 
         return new StatelessManagedToUnmanagedMarshallerShape(
@@ -314,15 +305,14 @@ public static class MarshallerShapeFactory
             .OfType<IMethodSymbol>()
             .SingleOrDefault();
             
-        if (toManaged == null)
+        if (toManaged == null || toManaged.Parameters.Length != 1)
         {
             return null;
         }
 
-        // TODO: check Parameters length
         var unmanagedType = toManaged.Parameters[0].Type;
-
-        var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
+        
+        var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
 
 
         return new StatelessUnmanagedToManagedMarshallerShape(
@@ -338,7 +328,7 @@ public static class MarshallerShapeFactory
             .OfType<IMethodSymbol>()
             .SingleOrDefault();
            
-        var toUnmanaged = GetMethod(info.MarshallerType, "ConvertToUnmanaged", info.ManagedType);
+        var toUnmanaged = GetMethod(info.MarshallerType, false, "ConvertToUnmanaged", info.ManagedType);
  
         if (toUnmanaged == null || toManaged == null)
         {
@@ -356,8 +346,7 @@ public static class MarshallerShapeFactory
             return null;
         }
 
-        var hasFree = GetMethod(info.MarshallerType, "Free", unmanagedType) != null;
-
+        var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
 
         return new StatelessBidirectionalMarshallerShape(
             GetTypeString(unmanagedType), 
@@ -367,7 +356,7 @@ public static class MarshallerShapeFactory
 
     private static MarshallerModeInfo[] GetModes(ITypeSymbol marshaller)
     {
-        return marshaller.GetAttributes("System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute")
+        return marshaller.GetAttributes(Constants.CustomMarshallerAttributeFQN)
             .Select(GetMode)
             .Where(x => x != null)
             .ToArray();
@@ -375,20 +364,9 @@ public static class MarshallerShapeFactory
 
     private static MarshallerModeValue ModeForValue(object constant)
     {
-        var str = constant.ToString();
-        switch (str)
-        {
-            // TODO: is constant of type int?
-            case "0":
-                return MarshallerModeValue.Default;
-            case "1":
-                return MarshallerModeValue.ManagedToUnmanagedIn;
-            case "2":
-                return MarshallerModeValue.ManagedToUnmanagedRef;
-            case "3":
-                return MarshallerModeValue.ManagedToUnmanagedOut;
-        }
-        return MarshallerModeValue.Other;
+        return constant is int number 
+            ? (MarshallerModeValue)number 
+            : MarshallerModeValue.Other;
     }
 
     private static MarshallerModeInfo GetMode(AttributeData attributeData)

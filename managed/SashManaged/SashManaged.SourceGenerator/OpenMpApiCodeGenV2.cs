@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -231,7 +230,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // - TODO: GetPinnableReference
         // - TODO: guaranteed unmarshalling
         // - TODO: stateful bidirectional
-        // - TODO: return marshalling
 
         // collect all marshalling steps
         var setup = Step(ctx, COMMENT_SETUP, (p, m) => m.Setup(p), ctx.ReturnMarshallerShape?.Setup(null) ?? default);

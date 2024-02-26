@@ -2,6 +2,8 @@
 
 public static class Constants
 {
+    public const string SpanOfBytesFQN = "System.Span<byte>";
+
     public const string StringViewFQN = "SashManaged.OpenMp.StringView";
 
     public const string SizeFQN = "SashManaged.OpenMp.Size";
@@ -11,6 +13,7 @@ public static class Constants
     public const string MarshallAttributeFQN = "SashManaged.OpenMpApiMarshallAttribute";
     
     public const string ApiAttributeFQN = "SashManaged.OpenMpApiAttribute";
+
     public const string ApiAttribute2FQN = "SashManaged.OpenMpApi2Attribute";
 
     public const string HybridStringGeneratorAttributeFQN = "SashManaged.OpenMpHybridStringGeneratorAttribute";
@@ -32,4 +35,10 @@ public static class Constants
     public const string BlittableBooleanFQN = "SashManaged.BlittableBoolean";
 
     public const string BlittableRefFQN = "SashManaged.BlittableRef";
+
+    public const string MarshalUsingAttributeFQN = "System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute";
+
+    public const string NativeMarshallingAttributeFQN = "System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute";
+
+    public const string CustomMarshallerAttributeFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute";
 }
