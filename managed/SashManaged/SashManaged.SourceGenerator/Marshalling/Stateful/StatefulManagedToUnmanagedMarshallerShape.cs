@@ -13,7 +13,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
     //     TODO: public static ref TOther GetPinnableReference(TManaged managed); // Optional. Can throw exceptions. Result pinnned and passed to Invoke.
     // }
 
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol)
     {
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
@@ -21,7 +21,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                     VariableDeclaration(
                         IdentifierName(MarshallerTypeName),
                         SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"__{parameter.Name}_native_marshaller"))
+                            VariableDeclarator(Identifier($"__{parameterSymbol.Name}_native_marshaller"))
                                 .WithInitializer(
                                     EqualsValueClause(
                                         ImplicitObjectCreationExpression()

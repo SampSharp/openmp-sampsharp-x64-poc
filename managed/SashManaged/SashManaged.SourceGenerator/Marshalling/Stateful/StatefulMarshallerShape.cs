@@ -6,6 +6,6 @@ public abstract class StatefulMarshallerShape(string nativeTypeName, string mars
 {
     protected static string GetMarshallerVar(IParameterSymbol parameterSymbol)
     {
-        return $"__{parameterSymbol.Name}_native_marshaller";
+        return $"__{(parameterSymbol?.Name ?? "retVal")}_native_marshaller";
     }
 }

@@ -7,7 +7,7 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 
 public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol)
     {
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
@@ -15,7 +15,7 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                     VariableDeclaration(
                         IdentifierName(MarshallerTypeName),
                         SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"__{parameter.Name}_native_marshaller"))
+                            VariableDeclarator(Identifier(GetMarshallerVar(parameterSymbol)))
                                 .WithInitializer(
                                     EqualsValueClause(
                                         ImplicitObjectCreationExpression()

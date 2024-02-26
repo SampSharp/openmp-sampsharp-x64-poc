@@ -39,7 +39,9 @@ public partial struct TestV2 : IPointer, IEquatable<TestV2>, IEquatable<IPointer
     public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
-    
+
+    public partial string TestReturnString();
+
     // TODO: equals members should be generated
 
     // TODO: operators for inheritance

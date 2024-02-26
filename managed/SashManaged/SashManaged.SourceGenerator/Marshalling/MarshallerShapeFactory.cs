@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using SashManaged.SourceGenerator.Marshalling.Stateful;
@@ -8,26 +9,35 @@ namespace SashManaged.SourceGenerator.Marshalling;
 
 public static class MarshallerShapeFactory
 {
-    public static IMarshallerShape String { get; } = 
-        new StatelessBidirectionalMarshallerShape(
-            nativeTypeName: $"global::{Constants.StringViewFQN}",
-            marshallerTypeName: "global::SashManaged.StringViewMarshaller",
-            hasFree: true);
-
-    public static IMarshallerShape Boolean { get; } = 
-        new StatelessBidirectionalMarshallerShape(
-            nativeTypeName: $"global::{Constants.BlittableBooleanFQN}",
-            marshallerTypeName: "global::SashManaged.BooleanMarshaller",
-            hasFree: false);
-
-    public static IMarshallerShape GetMarshaller(IParameterSymbol parameterSymbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    public static IMarshallerShape GetMarshallerShape(IMethodSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
     {
-        var refKind = parameterSymbol.RefKind;
+        if (symbol.ReturnsVoid)
+        {
+            return null;
+        }
+
+        // TODO: const for types
+        var marshalUsing = symbol.GetReturnTypeAttribute("System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute");
+        var typeMarshaller = symbol.ReturnType.GetAttribute("System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute");
         
-        // Find marshaller type based on parameter or parameter type
-        var marshalUsing = parameterSymbol.GetAttribute("System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute");
-        var typeMarshaller = parameterSymbol.Type.GetAttribute("System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute");
+        // Always handle return parameter as "out"
+        return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, symbol.ReturnType, RefKind.Out);
+    }
+
+    public static IMarshallerShape GetMarshallerShape(IParameterSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    {
+        var refKind = symbol.RefKind;
+        var type = symbol.Type;
+
+        var marshalUsing = symbol.GetAttribute("System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute");
+        var typeMarshaller = symbol.Type.GetAttribute("System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute");
         
+        return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, type, refKind);
+    }
+
+    private static IMarshallerShape GetMarshallerShape(WellKnownMarshallerTypes wellKnownMarshallerTypes, AttributeData typeMarshaller, AttributeData marshalUsing,
+        ITypeSymbol type, RefKind refKind)
+    {
         var marshaller = typeMarshaller?.ConstructorArguments[0].Value as ITypeSymbol;
         if (marshalUsing?.ConstructorArguments.Length > 0)
         {
@@ -41,7 +51,7 @@ public static class MarshallerShapeFactory
         if (marshaller == null)
         {
             var wk = wellKnownMarshallerTypes.Marshallers
-                .FirstOrDefault(x => x.matcher(parameterSymbol.Type) && x.marshaller != null)
+                .FirstOrDefault(x => x.matcher(type) && x.marshaller != null)
                 .marshaller;
 
             if (wk == null)
@@ -59,44 +69,41 @@ public static class MarshallerShapeFactory
         }
 
         MarshallerModeInfo selected = null;
-        var paramType = parameterSymbol.Type;
         switch (refKind)
         {
             case RefKind.In:
             case RefKind.None:
-                selected = modes.FirstOrDefault(x => SymbolEquals(paramType, x.ManagedType) && 
+                selected = modes.FirstOrDefault(x => SymbolEquals(type, x.ManagedType) && 
                                                      x.Mode == MarshallerModeValue.ManagedToUnmanagedIn);
                 break;
             case RefKind.Out:
-                selected = modes.FirstOrDefault(x => SymbolEquals(paramType, x.ManagedType) &&
+                selected = modes.FirstOrDefault(x => SymbolEquals(type, x.ManagedType) &&
                                                      x.Mode == MarshallerModeValue.ManagedToUnmanagedOut);
                 break;
             case RefKind.Ref:
             case RefKind.RefReadOnlyParameter:
-                selected = modes.FirstOrDefault(x => SymbolEquals(paramType, x.ManagedType) &&
+                selected = modes.FirstOrDefault(x => SymbolEquals(type, x.ManagedType) &&
                                                      x.Mode == MarshallerModeValue.ManagedToUnmanagedRef);
                 break;
         }
 
-        var defaultInfo = modes.FirstOrDefault(x => SymbolEquals(paramType, x.ManagedType) && 
+        var defaultInfo = modes.FirstOrDefault(x => SymbolEquals(type, x.ManagedType) && 
                                                     x.Mode == MarshallerModeValue.Default);
 
         var shape = selected == null 
             ? null 
-            : GetShapeForMarshaller(selected, parameterSymbol);
+            : GetShapeForMarshaller(selected, refKind);
 
         if (shape == null && defaultInfo != null)
         {
-            shape = GetShapeForMarshaller(defaultInfo, parameterSymbol);
+            shape = GetShapeForMarshaller(defaultInfo, refKind);
         }
 
         return shape;
     }
 
-    private static IMarshallerShape GetShapeForMarshaller(MarshallerModeInfo selected, IParameterSymbol parameterSymbol)
+    private static IMarshallerShape GetShapeForMarshaller(MarshallerModeInfo selected, RefKind refKind)
     {
-        var refKind = parameterSymbol.RefKind;
-
         if (selected.MarshallerType.IsStatic && !selected.MarshallerType.IsValueType)
         {
             // stateless
@@ -371,6 +378,7 @@ public static class MarshallerShapeFactory
         var str = constant.ToString();
         switch (str)
         {
+            // TODO: is constant of type int?
             case "0":
                 return MarshallerModeValue.Default;
             case "1":

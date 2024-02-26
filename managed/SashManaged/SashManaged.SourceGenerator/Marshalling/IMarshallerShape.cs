@@ -7,7 +7,7 @@ public interface IMarshallerShape
 {
     TypeSyntax GetNativeType();
     
-    SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter);
+    SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol parameterSymbol);
     SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol);

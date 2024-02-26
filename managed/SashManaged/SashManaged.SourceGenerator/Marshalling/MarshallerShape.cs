@@ -14,7 +14,7 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
         return ParseTypeName(nativeTypeName);
     }
 
-    public virtual SyntaxList<StatementSyntax> Setup(IParameterSymbol parameter)
+    public virtual SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol)
     {
         return List<StatementSyntax>();
     }
@@ -61,6 +61,6 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
 
     protected static string GetUnmanagedVar(IParameterSymbol parameterSymbol)
     {
-        return $"__{(parameterSymbol?.Name ?? "__retVal")}_native";
+        return $"__{(parameterSymbol?.Name ?? "retVal")}_native";
     }
 }

@@ -47,6 +47,18 @@ public static class SymbolExtensions
         return symbol.GetAttributes(attributeName)
             .FirstOrDefault();
     }
+    
+    public static IEnumerable<AttributeData> GetReturnTypeAttributes(this IMethodSymbol symbol, string attributeName)
+    {
+        return symbol.GetReturnTypeAttributes()
+            .GetAttributes(attributeName);
+    }
+
+    public static AttributeData GetReturnTypeAttribute(this IMethodSymbol symbol, string attributeName)
+    {
+        return symbol.GetReturnTypeAttributes(attributeName)
+            .FirstOrDefault();
+    }
 
     public static IEnumerable<AttributeData> GetAttributes(this ImmutableArray<AttributeData> attribute, string attributeName)
     {
@@ -59,7 +71,7 @@ public static class SymbolExtensions
                 )
             );
     }
-
+    
     private static readonly SymbolDisplayFormat _fullyQualifiedFormatWithoutGlobal =
         SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining);
 }
