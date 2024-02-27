@@ -41,7 +41,17 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
             var structDeclaration = StructDeclaration(node.Identifier)
                 .WithModifiers(node.Modifiers)
-                .WithMembers(GenerateStructMembers(info));
+                .WithMembers(GenerateStructMembers(info))
+                .WithBaseList(
+                    BaseList(
+                        SeparatedList<BaseTypeSyntax>(
+                            GetBaseTypes(info))))
+                .WithAttributeLists(
+                    List(
+                        new []{
+                            AttributeFactory.GeneratedCode(),
+                            AttributeFactory.SkipLocalsInit()
+                        }));
 
             var unit = CompilationUnit()
                 .AddMembers(NamespaceDeclaration(ParseName(symbol.ContainingNamespace.ToDisplayString()))
@@ -56,25 +66,121 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         });
     }
 
+    private static IEnumerable<SimpleBaseTypeSyntax> GetBaseTypes(StructStubGenerationContext ctx)
+    {
+        return ctx.ImplementingTypes.Select(x => 
+                SimpleBaseType(
+                    GenericName(
+                            Identifier($"global::{Constants.IEquatableFQN}"))
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SingletonSeparatedList<TypeSyntax>(
+                                    IdentifierName($"global::{x.ToDisplayString()}"))))))
+            .Concat([
+                SimpleBaseType(
+                    GenericName(
+                            Identifier($"global::{Constants.IEquatableFQN}"))
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SingletonSeparatedList<TypeSyntax>(
+                                    IdentifierName(ctx.Symbol.Name))))),
+                SimpleBaseType(
+                    IdentifierName($"global::{Constants.PointerFQN}"))
+            ]);
+    }
+
     private static SyntaxList<MemberDeclarationSyntax> GenerateStructMembers(StructStubGenerationContext ctx)
     {
         return List(
             GenerateCommonStructMembers(ctx)
+                .Concat(GenerateImplementingTypeMembers(ctx))
                 .Concat(
                     ctx.Methods.Select(GenerateMethod)
                         .Where(x => x != null)));
     }
 
+    private static SyntaxList<MemberDeclarationSyntax> GenerateImplementingTypeMembers(StructStubGenerationContext ctx)
+    {
+        var result = List<MemberDeclarationSyntax>();
+
+        foreach (var implementingType in ctx.ImplementingTypes)
+        {
+            var implementingMethods = implementingType.GetMembers()
+                .OfType<IMethodSymbol>()
+                .Where(x => !x.IsStatic && x.MethodKind == MethodKind.Ordinary && x.Name != "Equals");
+
+            foreach (var implementingMethod in implementingMethods)
+            {
+                var method = MethodDeclaration(
+                        ToTypeSyntax(
+                            implementingMethod.ReturnType, 
+                            implementingMethod.ReturnsByRef, 
+                            implementingMethod.ReturnsByRefReadonly), 
+                        implementingMethod.Name)
+                    .WithParameterList(
+                        ToParameterListSyntax(implementingMethod.Parameters));
+
+                var typeStr = $"global::{implementingType.ToDisplayString()}";
+
+                var invocation =  
+                    InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            ObjectCreationExpression(
+                                    IdentifierName(typeStr))
+                                .WithArgumentList(
+                                    ArgumentList(
+                                        SingletonSeparatedList(
+                                            Argument(
+                                                IdentifierName("_handle"))))),
+                            IdentifierName(implementingMethod.Name)))
+                        .WithArgumentList(
+                            ArgumentList(
+                                SeparatedList(
+                                    implementingMethod.Parameters.Select(GetArgumentForParameter))));
+
+                if (implementingMethod.ReturnsVoid)
+                {
+                    method = method.WithBody(
+                        Block(
+                            SingletonList(
+                                ExpressionStatement(invocation))));
+                }
+                else if (implementingMethod.ReturnsByRef || implementingMethod.ReturnsByRefReadonly)
+                {
+                    method = method.WithBody(
+                        Block(
+                            SingletonList(
+                                ReturnStatement(
+                                    RefExpression(invocation)))));
+                }
+                else
+                {
+                    method = method.WithBody(
+                        Block(
+                            SingletonList(
+                                ReturnStatement(invocation))));
+                }
+
+                result = result.Add(method);
+            }
+        }
+
+        return result;
+    }
+
     private static IEnumerable<MemberDeclarationSyntax> GenerateCommonStructMembers(StructStubGenerationContext ctx)
     {
-        var nint = ParseTypeName("nint");
-        yield return FieldDeclaration(VariableDeclaration(nint, SingletonSeparatedList(VariableDeclarator("_handle"))))
+        // private readonly field _handle;
+        var nintType = ParseTypeName("nint");
+        yield return FieldDeclaration(VariableDeclaration(nintType, SingletonSeparatedList(VariableDeclarator("_handle"))))
             .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword)));
 
+        // .ctor(nint handle)
         yield return ConstructorDeclaration(Identifier(ctx.Symbol.Name))
             .WithParameterList(ParameterList(
                 SingletonSeparatedList(
-                Parameter(Identifier("handle")).WithType(nint)
+                Parameter(Identifier("handle")).WithType(nintType)
                 )))
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
             .WithBody(Block(
@@ -85,14 +191,362 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                             IdentifierName("_handle"),
                             IdentifierName("handle"))))));
 
-        yield return PropertyDeclaration(nint, "Handle")
+        // public nint Handle => _handle;
+        yield return PropertyDeclaration(nintType, "Handle")
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
             .WithExpressionBody(ArrowExpressionClause(IdentifierName("_handle")))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
 
-        // TODO: inheritance members
-        // TODO: casting
-        // TODO: null check
+        // public override bool Equals(object obj)
+        yield return MethodDeclaration(
+            PredefinedType(Token(SyntaxKind.BoolKeyword)),
+            Identifier("Equals"))
+        .WithModifiers(
+            TokenList(
+                Token(SyntaxKind.PublicKeyword),
+                Token(SyntaxKind.OverrideKeyword)
+            ))
+        .WithParameterList(
+            ParameterList(
+                SingletonSeparatedList(
+                    Parameter(
+                        Identifier("obj"))
+                    .WithType(
+                            PredefinedType(Token(SyntaxKind.ObjectKeyword))))))
+        .WithBody(
+            Block(
+                IfStatement(
+                    BinaryExpression(
+                        SyntaxKind.LogicalAndExpression,
+                        IsPatternExpression(
+                            IdentifierName("obj"),
+                            ConstantPattern(
+                                LiteralExpression(SyntaxKind.NullLiteralExpression))),
+                        BinaryExpression(
+                            SyntaxKind.EqualsExpression,
+                            IdentifierName("Handle"),
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                IdentifierName("nint"),
+                                IdentifierName("Zero")))),
+                    Block(
+                        SingletonList<StatementSyntax>(
+                            ReturnStatement(
+                                LiteralExpression(SyntaxKind.TrueLiteralExpression))))),
+                ReturnStatement(
+                    BinaryExpression(
+                        SyntaxKind.LogicalAndExpression,
+                        IsPatternExpression(
+                            IdentifierName("obj"),
+                            DeclarationPattern(
+                                IdentifierName($"global::{Constants.PointerFQN}"),
+                                SingleVariableDesignation(
+                                    Identifier("other")))),
+                        InvocationExpression(
+                            IdentifierName("Equals"))
+                        .WithArgumentList(
+                            ArgumentList(
+                                SingletonSeparatedList(
+                                    Argument(IdentifierName("other")))))))));
+
+        // public bool Equals(IPointer other)
+        yield return MethodDeclaration(
+                PredefinedType(
+                    Token(SyntaxKind.BoolKeyword)),
+                Identifier("Equals"))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword)))
+            .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList(
+                        Parameter(Identifier("other"))
+                            .WithType(IdentifierName("IPointer")))))
+            .WithBody(
+                Block(
+                    SingletonList<StatementSyntax>(
+                        ReturnStatement(
+                            BinaryExpression(
+                                SyntaxKind.EqualsExpression,
+                                IdentifierName("_handle"),
+                                ParenthesizedExpression(
+                                    BinaryExpression(
+                                        SyntaxKind.CoalesceExpression,
+                                        ConditionalAccessExpression(
+                                            IdentifierName("other"),
+                                            MemberBindingExpression(
+                                                IdentifierName("Handle"))),
+                                        MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName("nint"),
+                                            IdentifierName("Zero")))))))));
+
+        // public override int GetHashCode()
+        yield return MethodDeclaration(
+                PredefinedType(
+                    Token(SyntaxKind.IntKeyword)),
+                Identifier("GetHashCode"))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.OverrideKeyword)
+                ))
+            .WithBody(
+                Block(
+                    SingletonList<StatementSyntax>(
+                        ReturnStatement(
+                            InvocationExpression(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("_handle"),
+                                    IdentifierName("GetHashCode")))))));
+
+        //type == object
+        yield return
+            CreateOperator(
+                SyntaxKind.EqualsEqualsToken,
+                IdentifierName(ctx.Symbol.Name), 
+                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                CreateLhsEqualsRhs(false)
+            );
+
+        // type != object
+        yield return
+            CreateOperator(
+                SyntaxKind.ExclamationEqualsToken,
+                IdentifierName(ctx.Symbol.Name), 
+                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                CreateLhsEqualsRhs(true)
+            );
+
+        // object == type
+        yield return
+            CreateOperator(
+                SyntaxKind.EqualsEqualsToken,
+                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                IdentifierName(ctx.Symbol.Name), 
+                CreateRhsEqualsLhs(false)
+            );
+        
+        // object != type
+        yield return
+            CreateOperator(
+                SyntaxKind.ExclamationEqualsToken,
+                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                IdentifierName(ctx.Symbol.Name), 
+                CreateRhsEqualsLhs(true)
+            );
+
+        // bool Equals(type other)
+        yield return CreateEqualsMethod(ctx.Symbol.Name);
+        
+        //type == type
+        yield return
+            CreateOperator(
+                SyntaxKind.EqualsEqualsToken,
+                IdentifierName(ctx.Symbol.Name), 
+                IdentifierName(ctx.Symbol.Name), 
+                CreateLhsEqualsRhs(false)
+            );
+
+        // type != type
+        yield return
+            CreateOperator(
+                SyntaxKind.ExclamationEqualsToken,
+                IdentifierName(ctx.Symbol.Name), 
+                IdentifierName(ctx.Symbol.Name), 
+                CreateLhsEqualsRhs(true)
+            );
+
+        // TODO members for inheritance with depth > 1
+        foreach (var type in ctx.ImplementingTypes)
+        {
+            var implType = $"global::{type.ToDisplayString()}";
+
+            // public bool Equals(impl other)
+            yield return CreateEqualsMethod(implType);
+
+            //type == impl
+            yield return
+                CreateOperator(
+                    SyntaxKind.EqualsEqualsToken,
+                    IdentifierName(ctx.Symbol.Name), 
+                    IdentifierName(implType), 
+                    CreateLhsEqualsRhs(false)
+                );
+
+            // type != impl
+            yield return
+                CreateOperator(
+                    SyntaxKind.ExclamationEqualsToken,
+                    IdentifierName(ctx.Symbol.Name), 
+                    IdentifierName(implType), 
+                    CreateLhsEqualsRhs(true)
+                );
+
+            // impl == type
+            yield return
+                CreateOperator(
+                    SyntaxKind.EqualsEqualsToken,
+                    IdentifierName(implType), 
+                    IdentifierName(ctx.Symbol.Name), 
+                    CreateRhsEqualsLhs(false)
+                );
+        
+            // impl != type
+            yield return
+                CreateOperator(
+                    SyntaxKind.ExclamationEqualsToken,
+                    IdentifierName(implType), 
+                    IdentifierName(ctx.Symbol.Name), 
+                    CreateRhsEqualsLhs(true)
+                );
+
+            yield return ConversionOperatorDeclaration(
+                Token(SyntaxKind.ImplicitKeyword),
+                IdentifierName("BaseTest"))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.StaticKeyword)))
+            .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList(
+                        Parameter(
+                            Identifier("value"))
+                        .WithType(
+                            IdentifierName("TestV2")))))
+            .WithBody(
+                Block(
+                    SingletonList<StatementSyntax>(
+                        ReturnStatement(
+                            ObjectCreationExpression(
+                                IdentifierName(implType))
+                            .WithArgumentList(
+                                ArgumentList(
+                                    SingletonSeparatedList(
+                                        Argument(
+                                            MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                IdentifierName("value"),
+                                                IdentifierName("Handle"))))))))));
+
+            yield return ConversionOperatorDeclaration(
+                Token(SyntaxKind.ExplicitKeyword),
+                IdentifierName("TestV2"))
+            .WithModifiers(
+                TokenList(Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.StaticKeyword)))
+            .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList(
+                        Parameter(
+                            Identifier("value"))
+                        .WithType(
+                            IdentifierName(implType)))))
+            .WithBody(
+                Block(
+                    SingletonList<StatementSyntax>(
+                        ReturnStatement(
+                            ObjectCreationExpression(
+                                IdentifierName("TestV2"))
+                            .WithArgumentList(
+                                ArgumentList(
+                                    SingletonSeparatedList(
+                                        Argument(
+                                            MemberAccessExpression(
+                                                SyntaxKind.SimpleMemberAccessExpression,
+                                                IdentifierName("value"),
+                                                IdentifierName("Handle"))))))))));
+        }
+    }
+
+    private static MethodDeclarationSyntax CreateEqualsMethod(string typeName)
+    {
+        return MethodDeclaration(
+                PredefinedType(
+                    Token(SyntaxKind.BoolKeyword)),
+                Identifier("Equals"))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword)))
+            .WithParameterList(
+                ParameterList(
+                    SingletonSeparatedList(
+                        Parameter(Identifier("other"))
+                            .WithType(IdentifierName(typeName)))))
+            .WithBody(
+                Block(
+                    SingletonList<StatementSyntax>(
+                        ReturnStatement(
+                            BinaryExpression(
+                                SyntaxKind.EqualsExpression,
+                                IdentifierName("Handle"),
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    IdentifierName("other"),
+                                    IdentifierName("Handle")))))));
+    }
+
+    private static OperatorDeclarationSyntax CreateOperator(SyntaxKind operatorToken, TypeSyntax lhsType, TypeSyntax rhsType, BlockSyntax block)
+    {
+        return OperatorDeclaration(
+                PredefinedType(
+                    Token(SyntaxKind.BoolKeyword)),
+                Token(operatorToken))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.StaticKeyword)
+                ))
+            .WithParameterList(
+                ParameterList(
+                    SeparatedList(new []{
+                        Parameter(Identifier("lhs"))
+                            .WithType(lhsType),
+                        Parameter(Identifier("rhs"))
+                            .WithType(rhsType)
+                    })))
+            .WithBody(block
+                );
+    }
+
+    private static BlockSyntax CreateLhsEqualsRhs(bool logicalNot)
+    {
+        return CreateThisEqualsThat(logicalNot, "lhs", "rhs");
+    }
+    
+    private static BlockSyntax CreateRhsEqualsLhs(bool logicalNot)
+    {
+        return CreateThisEqualsThat(logicalNot, "rhs", "lhs");
+    }
+
+    private static BlockSyntax CreateThisEqualsThat(bool logicalNot, string @this, string that)
+    {
+        var invocation = InvocationExpression(
+                MemberAccessExpression(
+                    SyntaxKind.SimpleMemberAccessExpression,
+                    IdentifierName(@this),
+                    IdentifierName("Equals")))
+            .WithArgumentList(
+                ArgumentList(
+                    SingletonSeparatedList(
+                        Argument(
+                            IdentifierName(that)))));
+
+        if (logicalNot)
+        {
+            return Block(
+                SingletonList<StatementSyntax>(
+                    ReturnStatement(
+                        PrefixUnaryExpression(
+                            SyntaxKind.LogicalNotExpression,
+                            invocation))));
+        }
+
+        return Block(
+            SingletonList<StatementSyntax>(
+                ReturnStatement(invocation)));
     }
 
     private static MemberDeclarationSyntax GenerateMethod(MethodStubGenerationContext ctx)
@@ -110,13 +564,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         return MethodDeclaration(ToReturnTypeSyntax(ctx.Symbol), ctx.Declaration.Identifier)
             .WithModifiers(ctx.Declaration.Modifiers)
             .WithParameterList(ToParameterListSyntax(ctx.Symbol.Parameters))
-            .WithAttributeLists(
-                List(
-                    new []{
-                        AttributeFactory.GeneratedCode(),
-                        AttributeFactory.SkipLocalsInit()
-                    }
-                ))
             .WithBody(invocation);
     }
 
@@ -136,6 +583,11 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         return WithParameterRefKind(Argument(IdentifierName(identifier)), ctx.Symbol);
+    }
+
+    private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol symbol)
+    {
+        return WithParameterRefKind(Argument(IdentifierName(symbol.Name)), symbol);
     }
 
     private static ArgumentSyntax WithParameterRefKind(ArgumentSyntax argument, IParameterSymbol parameter)
@@ -261,9 +713,10 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // if callee cleanup is required, we need to keep track of invocation success
         if (cleanupCallee.Count > 0)
         {
+            
             statements = statements.Add(
                 CreateLocalDeclarationWithDefaultValue(
-                    ParseTypeName("bool"), 
+                    PredefinedType(Token(SyntaxKind.BoolKeyword)), 
                     "__invokeSucceeded"));
         
             notify = notify.Insert(0, 
@@ -443,10 +896,14 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var stringViewMarshaller = ctx.SemanticModel.Compilation.GetTypeByMetadataName("SashManaged.StringViewMarshaller");
         var booleanMarshaller = ctx.SemanticModel.Compilation.GetTypeByMetadataName("SashManaged.BooleanMarshaller");
 
-        var wellKnownMarshallerTypes = new WellKnownMarshallerTypes([
-            ((x => x.SpecialType == SpecialType.System_String), stringViewMarshaller),
-            ((x => x.SpecialType == SpecialType.System_Boolean), booleanMarshaller),
-        ]);
+        var wellKnownMarshallerTypes = new WellKnownMarshallerTypes(
+            (x => x.SpecialType == SpecialType.System_String, stringViewMarshaller),
+            (x => x.SpecialType == SpecialType.System_Boolean, booleanMarshaller)
+        );
+
+        var implementingTypes = attribute.ConstructorArguments[0]
+            .Values.Select(x => (ITypeSymbol)x.Value)
+            .ToArray();
 
         // filter methods: partial, non-static, non-generic
         var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
@@ -475,7 +932,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods);
+        return new StructStubGenerationContext(symbol, targetNode, methods, implementingTypes);
     }
 }
 

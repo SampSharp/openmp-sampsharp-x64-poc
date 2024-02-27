@@ -6,4 +6,5 @@ namespace SashManaged.SourceGenerator;
 public record StructStubGenerationContext(
     ISymbol Symbol,
     StructDeclarationSyntax Node,
-    MethodStubGenerationContext[] Methods);
+    MethodStubGenerationContext[] Methods,
+    ITypeSymbol[] ImplementingTypes);

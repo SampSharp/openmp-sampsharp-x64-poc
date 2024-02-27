@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using SashManaged.OpenMp;
-using IComponentList = SashManaged.OpenMp.IComponentList;
 
 namespace SashManaged;
 
@@ -32,7 +31,15 @@ public partial class Testing
 }
 
 [OpenMpApi2]
-public partial struct TestV2 : IPointer, IEquatable<TestV2>, IEquatable<IPointer> // TODO: IPointer and IEquatable for self and implementations in code gen
+public readonly partial struct BaseTest
+{
+    public partial int GetSomeNumber();
+
+    public partial void SetSomeNumber(int num);
+}
+
+[OpenMpApi2(typeof(BaseTest), Library = "FooLib")]
+public readonly partial struct TestV2
 {
     public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
 
@@ -41,74 +48,6 @@ public partial struct TestV2 : IPointer, IEquatable<TestV2>, IEquatable<IPointer
     public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
 
     public partial string TestReturnString();
-
-    // TODO: equals members should be generated
-
-    // TODO: operators for inheritance
-    // TODO: cast operators for inheritance
-    
-    // <base>
-    public override bool Equals(object? obj)
-    {
-        if (obj is null && Handle == IntPtr.Zero)
-        {
-            return true;
-        }
-
-        // TODO: inheritance equality
-        return obj is TestV2 other && Equals(other);
-    }
-
-    public readonly bool Equals(IPointer? other)
-    {
-        return _handle == (other?.Handle ?? IntPtr.Zero);
-    }
-
-    public readonly override int GetHashCode()
-    {
-        return _handle.GetHashCode();
-    }
-
-    public static bool operator ==(TestV2 lhs, object? rhs)
-    {
-        return lhs.Equals(rhs);
-    }
-    
-    public static bool operator !=(TestV2 lhs, object? rhs)
-    {
-        return !lhs.Equals(rhs);
-    }
-
-    public static bool operator ==(object? lhs, TestV2 rhs)
-    {
-        return rhs.Equals(lhs);
-    }
-
-    public static bool operator !=(object? lhs, TestV2 rhs)
-    {
-        return !rhs.Equals(lhs);
-    }
-    // </base>
-
-    // <for-each-type>
-    public bool Equals(TestV2 other)
-    {
-        return _handle == other._handle;
-    }
-
-    public static bool operator ==(TestV2 lhs, TestV2 rhs)
-    {
-        return lhs.Equals(rhs);
-    }
-
-    public static bool operator !=(TestV2 lhs, TestV2 rhs)
-    {
-        return !lhs.Equals(rhs);
-    }
-
-    // + inverse for implementations
-    // </for-each-type>
-
 
 }
 
@@ -263,6 +202,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public static void OnInit(ICore core, IComponentList componentList)
     {
         _core = core;
+
         Console.WriteLine("OnInit from managed c# code!");
         Console.WriteLine($"Network bit stream version: {core.GetNetworkBitStreamVersion()}");
 

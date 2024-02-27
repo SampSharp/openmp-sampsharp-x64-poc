@@ -1,8 +1,13 @@
-﻿namespace SashManaged.SourceGenerator;
+﻿using System;
+
+namespace SashManaged.SourceGenerator;
 
 public static class Constants
 {
+
     public const string SpanOfBytesFQN = "System.Span<byte>";
+
+    public const string IEquatableFQN = "System.IEquatable";
 
     public const string StringViewFQN = "SashManaged.OpenMp.StringView";
 
@@ -41,4 +46,6 @@ public static class Constants
     public const string NativeMarshallingAttributeFQN = "System.Runtime.InteropServices.Marshalling.NativeMarshallingAttribute";
 
     public const string CustomMarshallerAttributeFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute";
+
+    public const string PointerFQN = "SashManaged.IPointer";
 }
