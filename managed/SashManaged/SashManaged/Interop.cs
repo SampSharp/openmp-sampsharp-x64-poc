@@ -1,55 +1,9 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using SashManaged.OpenMp;
 
 namespace SashManaged;
-
-
-public partial class Testing
-{
-    //[System.Runtime.InteropServices.DllImport("SampSharp", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-    
-    //[LibraryImport("SampSharp")]
-    //public static partial IVehicle IVehiclesComponent_create(IVehiclesComponent ptr, BlittableBoolean isStatic, int modelID, Vector3 position, float Z, int colour1, int colour2, int respawnDelay, BlittableBoolean addSiren);
-    
-    [LibraryImport("SampSharp")]
-    public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
-    
-    [LibraryImport("SampSharp")]
-    public static partial int WithInString([MarshalUsing(typeof(StringViewMarshaller))] string str);
-
-    [LibraryImport("SampSharp")]
-    public static partial int WithOutString([MarshalUsing(typeof(StringViewMarshaller))] out string str);
-
-    [LibraryImport("SampSharp")]
-    public static partial int WithDefaultMarshaller([MarshalUsing(typeof(BooleanMarshaller))]ref bool b);
-
-    [LibraryImport("SampSharp")]
-    public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SashManaged.OpenMp.SettableCoreDataType type);
-}
-
-[OpenMpApi2]
-public readonly partial struct BaseTest
-{
-    public partial int GetSomeNumber();
-
-    public partial void SetSomeNumber(int num);
-}
-
-[OpenMpApi2(typeof(BaseTest), Library = "FooLib")]
-public readonly partial struct TestV2
-{
-    public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
-
-    public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
-    public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
-    public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
-
-    public partial string TestReturnString();
-
-}
 
 public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {

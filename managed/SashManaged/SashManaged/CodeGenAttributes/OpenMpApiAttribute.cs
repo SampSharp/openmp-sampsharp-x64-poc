@@ -11,4 +11,5 @@ public class OpenMpApi2Attribute(params Type[] implements) : Attribute
 {
     public Type[] Implements { get; } = implements;
     public string Library { get; set; } = "SampSharp";
+    public string? NativeTypeName { get; set; }
 }

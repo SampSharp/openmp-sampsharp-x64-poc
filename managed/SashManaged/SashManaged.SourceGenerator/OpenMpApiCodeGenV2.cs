@@ -815,18 +815,18 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .WithParameterList(externParameters)
             .WithAttributeLists(
                 SingletonList(
-                    AttributeFactory.DllImport(ctx.Library, ToExternName(ctx.Symbol))))
+                    AttributeFactory.DllImport(ctx.Library, ToExternName(ctx))))
             .WithSemicolonToken(Token(SyntaxKind.SemicolonToken))
             .WithLeadingTrivia(Comment("// Local P/Invoke"));
     }
 
-    private static string ToExternName(IMethodSymbol symbol)
+    private static string ToExternName(MethodStubGenerationContext ctx)
     {
-        var overload = symbol.GetAttribute(Constants.OverloadAttributeFQN)?.ConstructorArguments[0].Value as string;
+        var overload = ctx.Symbol.GetAttribute(Constants.OverloadAttributeFQN)?.ConstructorArguments[0].Value as string;
 
-        return symbol.GetAttribute(Constants.FunctionAttributeFQN)?.ConstructorArguments[0].Value is string functionName 
-            ? $"{symbol.ContainingType.Name}_{functionName}" 
-            : $"{symbol.ContainingType.Name}_{StringUtil.FirstCharToLower(symbol.Name)}{overload}";
+        return ctx.Symbol.GetAttribute(Constants.FunctionAttributeFQN)?.ConstructorArguments[0].Value is string functionName 
+            ? $"{ctx.NativeTypeName}_{functionName}" 
+            : $"{ctx.NativeTypeName}_{StringUtil.FirstCharToLower(ctx.Symbol.Name)}{overload}";
     }
     
     private static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, MethodStubGenerationContext ctx)
@@ -893,6 +893,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var library = attribute.NamedArguments.FirstOrDefault(x => x.Key == "Library")
             .Value.Value as string ?? "SampSharp";
 
+        var nativeTypeName = attribute.NamedArguments.FirstOrDefault(x => x.Key == "NativeTypeName")
+            .Value.Value as string ?? symbol.Name;
+
         var stringViewMarshaller = ctx.SemanticModel.Compilation.GetTypeByMetadataName("SashManaged.StringViewMarshaller");
         var booleanMarshaller = ctx.SemanticModel.Compilation.GetTypeByMetadataName("SashManaged.BooleanMarshaller");
 
@@ -927,7 +930,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                     // TODO: diagnostic
                     return null;
                 }
-                return new MethodStubGenerationContext(method.methodDeclaration, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library);
+                return new MethodStubGenerationContext(method.methodDeclaration, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library, nativeTypeName);
             })
             .Where(x => x != null)
             .ToArray();

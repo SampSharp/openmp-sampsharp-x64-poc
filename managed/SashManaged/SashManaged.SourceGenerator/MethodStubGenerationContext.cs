@@ -4,4 +4,11 @@ using SashManaged.SourceGenerator.Marshalling;
 
 namespace SashManaged.SourceGenerator;
 
-public record MethodStubGenerationContext(MethodDeclarationSyntax Declaration, IMethodSymbol Symbol, ParameterStubGenerationContext[] Parameters, IMarshallerShape ReturnMarshallerShape, bool RequiresMarshalling, string Library);
+public record MethodStubGenerationContext(
+    MethodDeclarationSyntax Declaration, 
+    IMethodSymbol Symbol,
+    ParameterStubGenerationContext[] Parameters, 
+    IMarshallerShape ReturnMarshallerShape, 
+    bool RequiresMarshalling, 
+    string Library,
+    string NativeTypeName);
