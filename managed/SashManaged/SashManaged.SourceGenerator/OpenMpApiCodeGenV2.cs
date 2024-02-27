@@ -679,9 +679,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // - design doc: https://github.com/dotnet/runtime/blob/main/docs/design/libraries/LibraryImportGenerator/UserTypeMarshallingV2.md
         // - we're supporting Default, ManagedToUnmanagedIn, ManagedToUnmanagedOut, ManagedToUnmanagedRef
         // - not implementing element marshalling (arrays) at the moment.
-        // - TODO: GetPinnableReference
-        // - TODO: guaranteed unmarshalling
-        // - TODO: stateful bidirectional
+        // - TODO: GetPinnableReference support
+        // - TODO: marshaller shapes with guaranteed unmarshalling
+        // - TODO: marshaller shape for stateful bidirectional 
 
         // collect all marshalling steps
         var setup = Step(ctx, COMMENT_SETUP, (p, m) => m.Setup(p), ctx.ReturnMarshallerShape?.Setup(null) ?? default);
@@ -936,13 +936,5 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .ToArray();
 
         return new StructStubGenerationContext(symbol, targetNode, methods, implementingTypes);
-    }
-}
-
-public static class StringUtil
-{
-    public static string FirstCharToLower(string value)
-    {
-        return $"{char.ToLowerInvariant(value[0])}{value.Substring(1)}";
     }
 }
