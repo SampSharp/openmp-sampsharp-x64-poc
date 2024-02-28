@@ -1,5 +1,6 @@
 #include <sdk.hpp>
 #include <stdbool.h>
+#include <stdbool.h>
 #include <Server/Components/Actors/actors.hpp>
 #include <Server/Components/Checkpoints/checkpoints.hpp>
 #include <Server/Components/Classes/classes.hpp>
@@ -1074,4 +1075,23 @@ extern "C" SDK_EXPORT void __CDECL FlatHashSetStringView_emplace(FlatHashSet<Str
     set.emplace(value);
 }
 
+extern "C" SDK_EXPORT bool __CDECL IEventDispatcher_addEventHandler(IEventDispatcher<void*>& dispatcher, void** handler, event_order_t priority)
+{
+    return dispatcher.addEventHandler(handler, priority);
+}
+
+extern "C" SDK_EXPORT bool __CDECL IEventDispatcher_hasEventHandler(IEventDispatcher<void*>& dispatcher, void** handler, event_order_t& priority)
+{
+    return dispatcher.hasEventHandler(handler, priority);
+}
+
+extern "C" SDK_EXPORT bool __CDECL IEventDispatcher_removeEventHandler(IEventDispatcher<void*>& dispatcher, void** handler)
+{
+    return dispatcher.removeEventHandler(handler);
+}
+
+extern "C" SDK_EXPORT size_t __CDECL IEventDispatcher_count(const IEventDispatcher<void*>& dispatcher)
+{
+    return dispatcher.count();
+}
 #pragma clang diagnostic pop

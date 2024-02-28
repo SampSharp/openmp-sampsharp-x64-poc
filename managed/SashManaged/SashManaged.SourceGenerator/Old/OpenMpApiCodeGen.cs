@@ -6,7 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Old;
 
 [Generator]
 public class OpenMpApiCodeGen : IIncrementalGenerator
@@ -15,7 +15,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
     {
         var structPovider = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                Constants.ApiAttributeFQN, 
+                Constants.ApiAttributeFQN,
                 static (s, _) => s is StructDeclarationSyntax str && str.IsPartial(),
                 GetStructDeclaration)
             .Where(x => x != null);
@@ -30,7 +30,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
             ctx.AddSource(node.Symbol.Name + ".g.cs", SourceText.From(ProcessStruct(node), Encoding.UTF8));
         });
     }
-     
+
     private static string ProcessStruct(StructDecl node)
     {
         var attribute = node.Symbol.GetAttributes(Constants.ApiAttributeFQN).Single();
@@ -96,7 +96,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
             var typeConstraint = string.Empty;
             if (method.IsGenericMethod)
             {
-                
+
                 typeConstraint = string.Join(" ", method.TypeParameters.Select(x => $"where {x.Name} : {string.Join(", ", x.ConstraintTypes.Select(y => y.ToDisplayString()))}"));
 
                 typeArguments = $"<{string.Join(", ", method.TypeArguments.Select(x => x.Name))}>";
@@ -183,7 +183,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                                 """);
             }
         }
-                
+
         if (ctx.RequiresMarshalling)
         {
             sb.AppendLine("""
@@ -211,7 +211,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
         }
         else if (ctx.RequiresReturnMarshalling)
         {
-                    
+
             sb.AppendLine($"            return System.Runtime.InteropServices.Marshal.PtrToStructure<{ctx.MethodSymbol.ReturnType.ToDisplayString()}>(returnValue);");
         }
         else if (!ctx.MethodSymbol.ReturnsVoid)
@@ -246,7 +246,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
 
         sb.AppendLine("        }");
         sb.AppendLine();
-                
+
         sb.AppendLine($$"""
                                 {{ctx.MethodDeclaration.Modifiers}} {{refModifier}}{{ctx.ReturnType}} {{ctx.MethodName}}({{ctx.ParametersString}})
                                 {
@@ -306,7 +306,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
             ? $"{node.Symbol.Name}_{functionName}"
             : $"{node.Symbol.Name}_{FirstLower(ctx.MethodName)}{overload}";
         ctx.RequiresExternUnsafe = ctx.IsUnsafe || methodSymbol.ReturnsByRef;
-        ctx.RequiresUnsafeWrapper =  methodSymbol.ReturnsByRef || ctx.RequiresMarshalling || ctx.RequiresReturnMarshalling;
+        ctx.RequiresUnsafeWrapper = methodSymbol.ReturnsByRef || ctx.RequiresMarshalling || ctx.RequiresReturnMarshalling;
         ctx.ReturnTypeExtern = DetermineExternReturnType(ctx, methodSymbol);
         return ctx;
     }
@@ -349,7 +349,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
                 return $"{handlerNamespace}.IEventDispatcher_{handlerName}";
             }
         }
-        
+
         return methodSymbol.ReturnType.ToDisplayString();
     }
 
@@ -358,18 +358,18 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
     {
         return $"{char.ToLowerInvariant(value[0])}{value.Substring(1)}";
     }
-    
+
     private static StructDecl GetStructDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var structDeclaration = (StructDeclarationSyntax)ctx.TargetNode;
         if (ctx.SemanticModel.GetDeclaredSymbol(structDeclaration, cancellationToken) is not { } structSymbol)
             return null;
-        
+
         var methods = structDeclaration.Members.OfType<MethodDeclarationSyntax>()
             .Where(x => x.IsPartial())
             .Select(methodDeclaration =>
             {
-                return ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol 
+                return ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol
                     ? (null, null)
                     : (methodDeclaration, methodSymbol);
             })

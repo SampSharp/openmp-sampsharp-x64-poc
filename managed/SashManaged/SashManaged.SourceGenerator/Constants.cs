@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace SashManaged.SourceGenerator;
 
@@ -22,9 +23,13 @@ public static class Constants
     public const string ApiAttribute2FQN = "SashManaged.OpenMpApi2Attribute";
 
     public const string HybridStringGeneratorAttributeFQN = "SashManaged.OpenMpHybridStringGeneratorAttribute";
-
-    public const string EventHandlerAttributeFQN = "SashManaged.OpenMpEventHandlerAttribute";
     
+    public const string EventHandlerAttributeFQN = "SashManaged.OpenMpEventHandlerAttribute";
+
+    public const string EventHandlerAttribute2FQN = "SashManaged.OpenMpEventHandler2Attribute";
+
+    public const string EventHandler2FQN = "SashManaged.OpenMp.IEventHandler2";
+
     public const string OverloadAttributeFQN = "SashManaged.OpenMpApiOverloadAttribute";
 
     public const string FunctionAttributeFQN = "SashManaged.OpenMpApiFunctionAttribute";
@@ -48,4 +53,10 @@ public static class Constants
     public const string CustomMarshallerAttributeFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute";
 
     public const string PointerFQN = "SashManaged.IPointer";
+
+    public const string EventHandlerNativeHandleStorageFQN = "SashManaged.OpenMp.EventHandlerNativeHandleStorage";
+
+    public static readonly string DelegateFQN = typeof(Delegate).FullName;
+
+    public static readonly string MarshalFQN = typeof(Marshal).FullName;
 }

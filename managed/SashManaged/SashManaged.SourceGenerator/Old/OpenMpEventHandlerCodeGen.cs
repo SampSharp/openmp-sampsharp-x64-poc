@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 
-namespace SashManaged.SourceGenerator
+namespace SashManaged.SourceGenerator.Old
 {
     [Generator]
     public class OpenMpEventHandlerCodeGen : IIncrementalGenerator
@@ -16,7 +16,7 @@ namespace SashManaged.SourceGenerator
         {
             var structPovider = context.SyntaxProvider
                 .ForAttributeWithMetadataName(Constants.EventHandlerAttributeFQN,
-                    static(s, _) => s is InterfaceDeclarationSyntax,
+                    static (s, _) => s is InterfaceDeclarationSyntax,
                     GetEventHandlerDeclaration)
                 .WithTrackingName("Syntax");
 
@@ -30,7 +30,7 @@ namespace SashManaged.SourceGenerator
                 ctx.AddSource(node.Symbol.Name + ".g.cs", SourceText.From(Process(node), Encoding.UTF8));
             });
         }
-        
+
         private static EventHandlerDeclaration GetEventHandlerDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
         {
             var declaration = (InterfaceDeclarationSyntax)ctx.TargetNode;
@@ -39,7 +39,7 @@ namespace SashManaged.SourceGenerator
 
             var attribute = ctx.Attributes.Single();
 
-            var handlerName =  attribute.NamedArguments.FirstOrDefault(x => x.Key == "HandlerName").Value.Value as string ?? symbol.Name.Substring(1);
+            var handlerName = attribute.NamedArguments.FirstOrDefault(x => x.Key == "HandlerName").Value.Value as string ?? symbol.Name.Substring(1);
 
             var members = symbol
                 .GetMembers()
@@ -150,7 +150,7 @@ namespace SashManaged.SourceGenerator
                                 {
                                 
                             """);
-            
+
             // all members...
             foreach (var method in node.Members)
             {

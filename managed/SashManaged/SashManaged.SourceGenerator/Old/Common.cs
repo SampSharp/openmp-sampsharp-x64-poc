@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Old;
 
 public static class Common
 {
@@ -39,7 +39,7 @@ public static class Common
 
         return type.ToDisplayString();
     }
-    
+
     public static string ParameterAsString(ImmutableArray<IParameterSymbol> parameters, bool marshal = false, bool blittable = false)
     {
         return string.Join(", ", parameters.Select(x => ToParameterText(x, marshal, blittable)));

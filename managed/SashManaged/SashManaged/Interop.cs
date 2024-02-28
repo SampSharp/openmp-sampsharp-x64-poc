@@ -5,7 +5,7 @@ using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
+public class Interop : IPlayerConnectEventHandler, ICoreEventHandler2, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
@@ -14,7 +14,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
     public void OnTick(Microseconds micros, TimePoint now)
     {
-        //Console.WriteLine($"micros: {micros.AsTimeSpan()}, now: {now}");
+        // Console.WriteLine($"micros: {micros.AsTimeSpan()}, now: {now}");
     }
 
     public void OnIncomingConnection(IPlayer player, StringView ipAddress, ushort port)
@@ -162,10 +162,6 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
 
         Console.WriteLine($"core version: {core.GetVersion()}");
 
-        //Testing.ICore_setData(core, SettableCoreDataType.ServerName, "This is getting marshalled!!!");
-
-        //core.SetData(SettableCoreDataType.ServerName, "Hello from .NET code!!!"u8);
-
         var cfg = core.GetConfig();
 
         // test config
@@ -194,7 +190,12 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         players.GetPlayerSpawnDispatcher().AddEventHandler(handler);
         players.GetPlayerConnectDispatcher().AddEventHandler(handler);
         players.GetPlayerShotDispatcher().AddEventHandler(handler);
-        core.GetEventDispatcher().AddEventHandler(handler);
+
+        var core2 = new ICore2(core.Handle);
+        var dispatcher = core2.GetEventDispatcher();
+        Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
+        dispatcher.AddEventHandler(handler);
+        Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
 
         componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
         players.GetPoolEventDispatcher().AddEventHandler(handler);

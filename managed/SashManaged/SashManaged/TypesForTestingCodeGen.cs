@@ -1,4 +1,8 @@
 ﻿using SashManaged.OpenMp;
+using System;
+using System.Diagnostics;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
@@ -7,11 +11,6 @@ namespace SashManaged;
 
 public partial class Testing
 {
-    //[System.Runtime.InteropServices.DllImport("SampSharp", CallingConvention = System.Runtime.InteropServices.CallingConvention.Cdecl)]
-    
-    //[LibraryImport("SampSharp")]
-    //public static partial IVehicle IVehiclesComponent_create(IVehiclesComponent ptr, BlittableBoolean isStatic, int modelID, Vector3 position, float Z, int colour1, int colour2, int respawnDelay, BlittableBoolean addSiren);
-    
     [LibraryImport("SampSharp")]
     public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
     
@@ -25,7 +24,7 @@ public partial class Testing
     public static partial int WithDefaultMarshaller([MarshalUsing(typeof(BooleanMarshaller))]ref bool b);
 
     [LibraryImport("SampSharp")]
-    public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SashManaged.OpenMp.SettableCoreDataType type);
+    public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SettableCoreDataType type);
 }
 
 [OpenMpApi2]
@@ -49,6 +48,21 @@ public readonly partial struct TestV2
 
 }
 
+[OpenMpEventHandler2(NativeTypeName = "CoreEventHandler")]
+public partial interface ICoreEventHandler2 : IEventHandler2
+{
+    void OnTick(Microseconds micros, TimePoint now);
+
+    // void OnText(int text); // no marshalling support yet
+    //
+    // should marshal like: 
+    // Delegate __onText_delegate = (OnText_)((text) =>
+    // {
+    //     var __text_managed = StringViewMarshaller.ConvertToManaged(text)!;
+    //     OnText(__text_managed);
+    // });
+}
+
 [OpenMpApi2(NativeTypeName = "ICore")]
 public readonly partial struct ICore2
 {
@@ -58,7 +72,7 @@ public readonly partial struct ICore2
 
     public partial IPlayerPool GetPlayers();
 
-    public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
+    public partial IEventDispatcher2<ICoreEventHandler2> GetEventDispatcher();
 
     public partial IConfig GetConfig();
 

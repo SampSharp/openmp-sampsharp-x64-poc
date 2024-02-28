@@ -8,3 +8,10 @@ public class OpenMpEventHandlerAttribute : Attribute
     /// </summary>
     public string? HandlerName { get; set; }
 }
+
+[AttributeUsage(AttributeTargets.Interface)]
+public class OpenMpEventHandler2Attribute : Attribute
+{
+    public string Library { get; set; } = "SampSharp";
+    public string? NativeTypeName { get; set; }
+}

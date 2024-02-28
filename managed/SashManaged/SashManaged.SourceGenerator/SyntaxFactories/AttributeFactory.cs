@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.SyntaxFactories;
 
 public static class AttributeFactory
 {
@@ -17,22 +17,22 @@ public static class AttributeFactory
     public static AttributeListSyntax GeneratedCode()
     {
         var assemblyName = Assembly.GetExecutingAssembly().GetName();
-        
+
         return AttributeList(
             SingletonSeparatedList(
                 Attribute(
-                        ParseName(GENERATED_CODE_FQN)) 
+                        ParseName(GENERATED_CODE_FQN))
                     .WithArgumentList(
                         AttributeArgumentList(
                             SeparatedList(
-                                new []{
+                                new[]{
                                     AttributeArgument(
                                         LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression, 
+                                            SyntaxKind.StringLiteralExpression,
                                             Literal(assemblyName.Name))),
                                     AttributeArgument(
                                         LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression, 
+                                            SyntaxKind.StringLiteralExpression,
                                             Literal(assemblyName.Version.ToString())))
                                 }
                             )))));
@@ -49,8 +49,8 @@ public static class AttributeFactory
     public static AttributeListSyntax DllImport(string library, string entryPoint, string callingConvention = "Cdecl")
     {
         var conv = MemberAccessExpression(
-            SyntaxKind.SimpleMemberAccessExpression, 
-            ParseTypeName(CALLING_CONVENTION_FQN), 
+            SyntaxKind.SimpleMemberAccessExpression,
+            ParseTypeName(CALLING_CONVENTION_FQN),
             IdentifierName(callingConvention));
 
         return AttributeList(
