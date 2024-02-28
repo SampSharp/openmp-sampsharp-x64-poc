@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi]
+[OpenMpApi2]
 public readonly partial struct IExtension;

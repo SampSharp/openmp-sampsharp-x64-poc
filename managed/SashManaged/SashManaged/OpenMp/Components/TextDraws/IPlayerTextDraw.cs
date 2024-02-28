@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(ITextDrawBase))]
+[OpenMpApi2(typeof(ITextDrawBase))]
 public readonly partial struct IPlayerTextDraw
 {
     public partial void Show();

@@ -1,10 +1,10 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi]
+[OpenMpApi2]
 public readonly partial struct IComponent
 {
     public partial ComponentType GetComponentType();
     public partial int SupportedVersion();
-    public partial StringView ComponentName();
+    public partial string ComponentName();
     public partial SemanticVersion ComponentVersion();
 }

@@ -383,7 +383,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
             yield return ConversionOperatorDeclaration(
                 Token(SyntaxKind.ImplicitKeyword),
-                IdentifierName("BaseTest"))
+                implName)
             .WithModifiers(
                 TokenList(
                     Token(SyntaxKind.PublicKeyword),
@@ -394,7 +394,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         Parameter(
                             Identifier("value"))
                         .WithType(
-                            IdentifierName("TestV2")))))
+                            IdentifierName(ctx.Symbol.Name)))))
             .WithBody(
                 Block(
                     SingletonList<StatementSyntax>(
@@ -412,7 +412,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
             yield return ConversionOperatorDeclaration(
                 Token(SyntaxKind.ExplicitKeyword),
-                IdentifierName("TestV2"))
+                IdentifierName(ctx.Symbol.Name))
             .WithModifiers(
                 TokenList(Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.StaticKeyword)))
@@ -428,7 +428,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                     SingletonList<StatementSyntax>(
                         ReturnStatement(
                             ObjectCreationExpression(
-                                IdentifierName("TestV2"))
+                                IdentifierName(ctx.Symbol.Name))
                             .WithArgumentList(
                                 ArgumentList(
                                     SingletonSeparatedList(

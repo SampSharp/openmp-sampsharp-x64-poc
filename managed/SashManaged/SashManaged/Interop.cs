@@ -5,7 +5,7 @@ using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler2, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
+public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
@@ -191,8 +191,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler2, IPlayerSp
         players.GetPlayerConnectDispatcher().AddEventHandler(handler);
         players.GetPlayerShotDispatcher().AddEventHandler(handler);
 
-        var core2 = new ICore2(core.Handle);
-        var dispatcher = core2.GetEventDispatcher();
+        var dispatcher = core.GetEventDispatcher();
         Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
         dispatcher.AddEventHandler(handler);
         Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count().Value}");

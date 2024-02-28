@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi]
+[OpenMpApi2]
 public readonly partial struct IIDProvider
 {
     public partial int GetID();

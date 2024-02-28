@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi]
+[OpenMpApi2]
 public readonly partial struct ICore
 {
     public partial SemanticVersion GetVersion();
@@ -9,7 +9,7 @@ public readonly partial struct ICore
 
     public partial IPlayerPool GetPlayers();
 
-    public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
+    public partial IEventDispatcher2<ICoreEventHandler> GetEventDispatcher();
 
     public partial IConfig GetConfig();
 
@@ -25,7 +25,7 @@ public readonly partial struct ICore
 
     public partial void UseStuntBonuses(bool enable);
 
-    public partial void SetData(SettableCoreDataType type, StringView data);
+    public partial void SetData(SettableCoreDataType type, string data);
 
     public partial void SetThreadSleep(Microseconds value);
 
@@ -35,11 +35,11 @@ public readonly partial struct ICore
 
     public partial void ReloadAll();
 
-    public partial StringView GetWeaponName(PlayerWeapon weapon);
+    public partial string GetWeaponName(PlayerWeapon weapon);
 
-    public partial void ConnectBot(StringView name, StringView script);
+    public partial void ConnectBot(string name, string script);
 
     public partial uint TickRate();
 
-    public partial StringView GetVersionHash();
+    public partial string GetVersionHash();
 }
