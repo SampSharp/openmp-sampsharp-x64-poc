@@ -63,6 +63,14 @@ public partial interface ICoreEventHandler2 : IEventHandler2
     // });
 }
 
+[OpenMpEventHandler2(NativeTypeName = "ActorEventHandler")]
+public partial interface IActorEventHandler2 : IEventHandler2
+{
+    void OnPlayerGiveDamageActor(IPlayer player, IActor actor, float amount, uint weapon, BodyPart part);
+    void OnActorStreamOut(IActor actor, IPlayer forPlayer);
+    void OnActorStreamIn(IActor actor, IPlayer forPlayer);
+}
+
 [OpenMpApi2(NativeTypeName = "ICore")]
 public readonly partial struct ICore2
 {
