@@ -8,7 +8,7 @@ public record MethodStubGenerationContext(
     MethodDeclarationSyntax Declaration, 
     IMethodSymbol Symbol,
     ParameterStubGenerationContext[] Parameters, 
-    IMarshallerShape ReturnMarshallerShape, 
+    IMarshallerShape? ReturnMarshallerShape, 
     bool RequiresMarshalling, 
     string Library,
     string NativeTypeName);

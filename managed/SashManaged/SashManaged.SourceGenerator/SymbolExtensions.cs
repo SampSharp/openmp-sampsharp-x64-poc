@@ -42,7 +42,7 @@ public static class SymbolExtensions
         return symbol.GetAttributes().GetAttributes(attributeName);
     }
 
-    public static AttributeData GetAttribute(this ISymbol symbol, string attributeName)
+    public static AttributeData? GetAttribute(this ISymbol symbol, string attributeName)
     {
         return symbol.GetAttributes(attributeName)
             .FirstOrDefault();
@@ -54,7 +54,7 @@ public static class SymbolExtensions
             .GetAttributes(attributeName);
     }
 
-    public static AttributeData GetReturnTypeAttribute(this IMethodSymbol symbol, string attributeName)
+    public static AttributeData? GetReturnTypeAttribute(this IMethodSymbol symbol, string attributeName)
     {
         return symbol.GetReturnTypeAttributes(attributeName)
             .FirstOrDefault();

@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Marshalling;
-using SashManaged.SourceGenerator.SyntaxFactories;
+
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
@@ -13,9 +13,18 @@ using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SashManaged.SourceGenerator;
 
+/// <summary>
+/// This source generator generates event handler interfaces for OpenMP events. The generated interface contains
+/// a default implementation for IncreaseReference/DecreaseReference methods, which are used to creating an unmanaged
+/// event handler for the managed event handler. The implementation invokes the native function
+/// `{EventHandlerName}Impl_create`/_delete to create the unmanaged event handler. The create call will include native
+/// handles of delegate functions for every event method in the interface.
+/// </summary>
 [Generator]
 public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
 {
+
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var attributedInterfaces = context.SyntaxProvider
@@ -27,7 +36,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
 
         context.RegisterSourceOutput(attributedInterfaces, (ctx, info) =>
         {
-            var interfaceDeclaration = InterfaceDeclaration(info.Syntax.Identifier)
+            var interfaceDeclaration = InterfaceDeclaration(info!.Syntax.Identifier)
                 .WithModifiers(info.Syntax.Modifiers)
                 .WithMembers(GenerateInterfaceMembers(info))
                 .WithBaseList(
@@ -259,7 +268,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
             parameters: parameters);
     }
 
-    private static EventInterfaceStubGenerationContext GetInterfaceDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
+    private static EventInterfaceStubGenerationContext? GetInterfaceDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var targetNode = (InterfaceDeclarationSyntax)ctx.TargetNode;
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
@@ -284,7 +293,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
-                var parameters = method.methodSymbol.Parameters.Select(parameter =>
+                var parameters = method.methodSymbol!.Parameters.Select(parameter =>
                         new ParameterStubGenerationContext(parameter, MarshallerShapeFactory.GetMarshallerShape(parameter, wellKnownMarshallerTypes)))
                     .ToArray();
 
@@ -298,11 +307,11 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
                     return null;
                 }
 
-                return new EventMethodStubGenerationContext(method.methodDeclaration, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling);
+                return new EventMethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling);
             })
             .Where(x => x != null)
             .ToArray();
 
-        return new EventInterfaceStubGenerationContext(symbol, targetNode, methods, library, nativeTypeName);
+        return new EventInterfaceStubGenerationContext(symbol, targetNode, methods!, library, nativeTypeName);
     }
 }

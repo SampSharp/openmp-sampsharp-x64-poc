@@ -47,12 +47,10 @@ public static class StatementFactory
                             .WithModifiers(GetRefTokens(parameter.RefKind)))));
     }
 
-    public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape marshallerShape)
+    public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape)
     {
         return new ParamForwardInfo(symbol.Name, marshallerShape?.GetNativeType() ?? TypeSyntaxFactory.TypeNameGlobal(symbol.Type), symbol.RefKind);
     }
-
-    public record struct ParamForwardInfo(string Name, TypeSyntax Type, RefKind RefKind);
 
     private static SyntaxTokenList GetRefTokens(RefKind refKind)
     {
@@ -63,4 +61,6 @@ public static class StatementFactory
             _ => default
         };
     }
+    
+    public record struct ParamForwardInfo(string Name, TypeSyntax Type, RefKind RefKind);
 }

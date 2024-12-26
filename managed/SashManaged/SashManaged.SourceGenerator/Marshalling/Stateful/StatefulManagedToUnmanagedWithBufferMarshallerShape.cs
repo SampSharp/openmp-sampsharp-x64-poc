@@ -7,7 +7,7 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 
 public class StatefulManagedToUnmanagedWithBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify) : StatefulManagedToUnmanagedMarshallerShape(nativeTypeName, marshallerTypeName, notify)
 {
-    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
         // marshaller.FromManaged(managed, stackalloc byte[type.BufferSize]);
         return SingletonList<StatementSyntax>(

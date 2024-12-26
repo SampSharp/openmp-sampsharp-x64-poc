@@ -7,7 +7,7 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 
 public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
@@ -28,7 +28,7 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
         );
     }
 
-    public override SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol? parameterSymbol)
     {
         // marshaller.FromUnmanaged(unmanaged);
         return SingletonList<StatementSyntax>(
@@ -45,7 +45,7 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                                     IdentifierName(GetUnmanagedVar(parameterSymbol))))))));
     }
 
-    public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol? parameterSymbol)
     {
         // managed = marshaller.ToManaged();
         return SingletonList<StatementSyntax>(
@@ -60,7 +60,7 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                             IdentifierName("ToManaged"))))));
     }
 
-    public override SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol? parameterSymbol)
     {
         // marshaller.Free();
         return SingletonList<StatementSyntax>(

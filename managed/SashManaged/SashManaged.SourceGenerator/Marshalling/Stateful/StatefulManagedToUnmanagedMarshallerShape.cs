@@ -13,7 +13,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
     //     TODO: public static ref TOther GetPinnableReference(TManaged managed); // Optional. Can throw exceptions. Result pinnned and passed to Invoke.
     // }
 
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
@@ -21,7 +21,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                     VariableDeclaration(
                         IdentifierName(MarshallerTypeName),
                         SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"__{parameterSymbol.Name}_native_marshaller"))
+                            VariableDeclarator(Identifier($"__{parameterSymbol?.Name}_native_marshaller"))
                                 .WithInitializer(
                                     EqualsValueClause(
                                         ImplicitObjectCreationExpression()
@@ -34,7 +34,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
         );
     }
 
-    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
         // marshaller.FromManaged(managed);
         return SingletonList<StatementSyntax>(
@@ -51,7 +51,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                                     IdentifierName(GetManagedVar(parameterSymbol))))))));
     }
 
-    public override SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol? parameterSymbol)
     {
         // native = marshaller.ToUnmanaged();
         return SingletonList<StatementSyntax>(
@@ -66,7 +66,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                             IdentifierName("ToUnmanaged"))))));
     }
 
-    public override SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol? parameterSymbol)
     {
         if (!notify)
         {
@@ -83,7 +83,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                         IdentifierName("OnInvoked")))));
     }
 
-    public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol parameterSymbol)
+    public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol)
     {
         // marshaller.Free();
         return SingletonList<StatementSyntax>(

@@ -7,4 +7,6 @@ public record StructStubGenerationContext(
     ISymbol Symbol,
     StructDeclarationSyntax Syntax,
     MethodStubGenerationContext[] Methods,
-    ITypeSymbol[] ImplementingTypes);
+    ITypeSymbol[] ImplementingTypes,
+    bool IsExtension,
+    bool IsComponent);

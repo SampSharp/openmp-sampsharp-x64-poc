@@ -76,8 +76,7 @@ public static class HelperSyntaxFactory
                         Parameter(Identifier("rhs"))
                             .WithType(rhsType)
                     })))
-            .WithBody(block
-            );
+            .WithBody(block);
     }
 
     private static BlockSyntax CreateThisEqualsThat(bool logicalNot, string @this, string that)

@@ -101,7 +101,7 @@ public class OpenMpHybridStringGeneratorCodeGen : IIncrementalGenerator
         } structDecl && structDecl.IsPartial();
     }
 
-    private static StructDecl GetStructDeclaration(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)
+    private static StructDecl? GetStructDeclaration(GeneratorSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var structDeclaration = (StructDeclarationSyntax)ctx.Node;
         if (ctx.SemanticModel.GetDeclaredSymbol(structDeclaration, cancellationToken) is not { } structSymbol)

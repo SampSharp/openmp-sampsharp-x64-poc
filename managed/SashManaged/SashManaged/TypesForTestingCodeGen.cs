@@ -1,8 +1,4 @@
 ﻿using SashManaged.OpenMp;
-using System;
-using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
@@ -49,7 +45,7 @@ public readonly partial struct TestV2
 }
 
 [OpenMpEventHandler2(NativeTypeName = "CoreEventHandler")]
-public partial interface ICoreEventHandler2 : IEventHandler2
+public partial interface ICoreEventHandler2
 {
     void OnTick(Microseconds micros, TimePoint now);
 
@@ -61,6 +57,25 @@ public partial interface ICoreEventHandler2 : IEventHandler2
     //     var __text_managed = StringViewMarshaller.ConvertToManaged(text)!;
     //     OnText(__text_managed);
     // });
+}
+
+[OpenMpApi2(typeof(IComponent))]
+public readonly partial struct Ff
+{
+    public static UID ComponentId => new();
+}
+
+public class Cc
+{
+    public void C()
+    {
+        Ff f = new Ff(0);
+
+        var ptr = (IComponent)f;
+        var name = ptr.ComponentName();
+
+        var name2= f.ComponentName();
+    }
 }
 
 [OpenMpEventHandler2(NativeTypeName = "ActorEventHandler")]

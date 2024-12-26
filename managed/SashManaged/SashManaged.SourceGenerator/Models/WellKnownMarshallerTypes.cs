@@ -3,4 +3,4 @@ using Microsoft.CodeAnalysis;
 
 namespace SashManaged.SourceGenerator;
 
-public record WellKnownMarshallerTypes(params (Func<ITypeSymbol, bool> matcher, INamedTypeSymbol marshaller)[] Marshallers);
+public record WellKnownMarshallerTypes(params (Func<ITypeSymbol, bool> matcher, INamedTypeSymbol? marshaller)[] Marshallers);

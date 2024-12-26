@@ -9,7 +9,7 @@ namespace SashManaged.SourceGenerator.Marshalling;
 
 public static class MarshallerShapeFactory
 {
-    public static IMarshallerShape GetMarshallerShape(IMethodSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    public static IMarshallerShape? GetMarshallerShape(IMethodSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
     {
         if (symbol.ReturnsVoid)
         {
@@ -23,7 +23,7 @@ public static class MarshallerShapeFactory
         return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, symbol.ReturnType, RefKind.Out);
     }
 
-    public static IMarshallerShape GetMarshallerShape(IParameterSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    public static IMarshallerShape? GetMarshallerShape(IParameterSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
     {
         var refKind = symbol.RefKind;
         var type = symbol.Type;
@@ -34,7 +34,7 @@ public static class MarshallerShapeFactory
         return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, type, refKind);
     }
 
-    private static IMarshallerShape GetMarshallerShape(WellKnownMarshallerTypes wellKnownMarshallerTypes, AttributeData typeMarshaller, AttributeData marshalUsing,
+    private static IMarshallerShape? GetMarshallerShape(WellKnownMarshallerTypes wellKnownMarshallerTypes, AttributeData? typeMarshaller, AttributeData? marshalUsing,
         ITypeSymbol type, RefKind refKind)
     {
         var marshaller = typeMarshaller?.ConstructorArguments[0].Value as ITypeSymbol;
@@ -67,7 +67,7 @@ public static class MarshallerShapeFactory
             return null;
         }
 
-        MarshallerModeInfo selected = null;
+        MarshallerModeInfo? selected = null;
         switch (refKind)
         {
             case RefKind.In:
@@ -101,7 +101,7 @@ public static class MarshallerShapeFactory
         return shape;
     }
 
-    private static IMarshallerShape GetShapeForMarshaller(MarshallerModeInfo selected, RefKind refKind)
+    private static IMarshallerShape? GetShapeForMarshaller(MarshallerModeInfo selected, RefKind refKind)
     {
         if (selected.MarshallerType.IsStatic && !selected.MarshallerType.IsValueType)
         {
@@ -161,12 +161,12 @@ public static class MarshallerShapeFactory
             : symbol.ToDisplayString();
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name)
+    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name)
     {
         return GetMethod(type, stateful, name, Array.Empty<ITypeSymbol>());
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name, params ITypeSymbol[] argTypes)
+    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name, params ITypeSymbol[] argTypes)
     {
         return type
             .GetMembers(name)
@@ -184,7 +184,7 @@ public static class MarshallerShapeFactory
 
     }
 
-    private static IMethodSymbol GetMethod(ITypeSymbol type, bool stateful, string name, params Func<IParameterSymbol, bool>[] argChecks)
+    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name, params Func<IParameterSymbol, bool>[] argChecks)
     {
         return type
             .GetMembers(name)
@@ -202,7 +202,7 @@ public static class MarshallerShapeFactory
 
     }
 
-    private static IPropertySymbol GetProperty(ITypeSymbol type, bool isStatic, string name, Func<ITypeSymbol, bool> check)
+    private static IPropertySymbol? GetProperty(ITypeSymbol type, bool isStatic, string name, Func<ITypeSymbol, bool> check)
     {
         return type
             .GetMembers(name)
@@ -216,7 +216,7 @@ public static class MarshallerShapeFactory
         return type is INamedTypeSymbol named && named.ToDisplayString() == Constants.SpanOfBytesFQN;
     }
 
-    private static IMarshallerShape GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
+    private static IMarshallerShape? GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
     {
         var fromUnmanaged = GetMethod(info.MarshallerType, true, "FromUnmanaged", _ => true);
         var toManaged = GetMethod(info.MarshallerType, true, "ToManaged");
@@ -239,7 +239,7 @@ public static class MarshallerShapeFactory
             GetTypeString(info.MarshallerType));
     }
 
-    private static IMarshallerShape GetStatefulManagedToUnmanged(MarshallerModeInfo info)
+    private static IMarshallerShape? GetStatefulManagedToUnmanged(MarshallerModeInfo info)
     {
         var fromManaged = GetMethod(info.MarshallerType, true, "FromManaged", info.ManagedType);
         var toUnmanaged = GetMethod(info.MarshallerType, true, "ToUnmanaged");
@@ -278,7 +278,7 @@ public static class MarshallerShapeFactory
         return null;
     }
 
-    private static IMarshallerShape GetStatelessManagedToUnmanged(MarshallerModeInfo info)
+    private static IMarshallerShape? GetStatelessManagedToUnmanged(MarshallerModeInfo info)
     {
         var toUnmanaged = GetMethod(info.MarshallerType, false, "ConvertToUnmanaged", info.ManagedType);
 
@@ -298,7 +298,7 @@ public static class MarshallerShapeFactory
             hasFree);
     }
     
-    private static IMarshallerShape GetStatelessUnmanagedToManaged(MarshallerModeInfo info)
+    private static IMarshallerShape? GetStatelessUnmanagedToManaged(MarshallerModeInfo info)
     {
         var toManaged = info.MarshallerType
             .GetMembers("ConvertToManaged")
@@ -321,7 +321,7 @@ public static class MarshallerShapeFactory
             hasFree);
     }
     
-    private static IMarshallerShape GetStatelessBidirectional(MarshallerModeInfo info)
+    private static IMarshallerShape? GetStatelessBidirectional(MarshallerModeInfo info)
     {
         var toManaged = info.MarshallerType
             .GetMembers("ConvertToManaged")
@@ -371,9 +371,9 @@ public static class MarshallerShapeFactory
 
     private static MarshallerModeInfo GetMode(AttributeData attributeData)
     {
-        var managedType = (ITypeSymbol)attributeData.ConstructorArguments[0].Value;
+        var managedType = (ITypeSymbol)attributeData.ConstructorArguments[0].Value!;
         var mode = ModeForValue(attributeData.ConstructorArguments[1].Value!);
-        var marshallerType = (ITypeSymbol)attributeData.ConstructorArguments[2].Value;
+        var marshallerType = (ITypeSymbol)attributeData.ConstructorArguments[2].Value!;
 
         return new MarshallerModeInfo(managedType, mode, marshallerType);
     }

@@ -31,7 +31,7 @@ namespace SashManaged.SourceGenerator.Old
             });
         }
 
-        private static EventHandlerDeclaration GetEventHandlerDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
+        private static EventHandlerDeclaration? GetEventHandlerDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
         {
             var declaration = (InterfaceDeclarationSyntax)ctx.TargetNode;
             if (ctx.SemanticModel.GetDeclaredSymbol(declaration, cancellationToken) is not { } symbol)

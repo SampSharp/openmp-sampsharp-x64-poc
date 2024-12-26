@@ -359,7 +359,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
         return $"{char.ToLowerInvariant(value[0])}{value.Substring(1)}";
     }
 
-    private static StructDecl GetStructDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
+    private static StructDecl? GetStructDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var structDeclaration = (StructDeclarationSyntax)ctx.TargetNode;
         if (ctx.SemanticModel.GetDeclaredSymbol(structDeclaration, cancellationToken) is not { } structSymbol)
@@ -375,7 +375,7 @@ public class OpenMpApiCodeGen : IIncrementalGenerator
             })
             .ToList();
 
-        return new StructDecl(structSymbol, structDeclaration, methods);
+        return new StructDecl(structSymbol, structDeclaration, methods!);
     }
 
     private class StructDecl(ISymbol symbol, StructDeclarationSyntax typeDeclaration, List<(MethodDeclarationSyntax methodDeclaration, IMethodSymbol methodSymbol)> methods)

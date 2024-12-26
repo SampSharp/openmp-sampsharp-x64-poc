@@ -46,12 +46,12 @@ public static class AttributeFactory
                     ParseName(SKIP_LOCALS_INIT_FQN))));
     }
 
-    public static AttributeListSyntax DllImport(string library, string entryPoint, string callingConvention = "Cdecl")
+    public static AttributeListSyntax DllImport(string library, string entryPoint, CallingConvention callingConvention = CallingConvention.Cdecl)
     {
         var conv = MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
             ParseTypeName(CALLING_CONVENTION_FQN),
-            IdentifierName(callingConvention));
+            IdentifierName(callingConvention.ToString()));
 
         return AttributeList(
             SingletonSeparatedList(
