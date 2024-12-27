@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -44,8 +45,11 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
         context.RegisterSourceOutput(attributedStructs, (ctx, info) =>
         {
+            var modifiers = info!.Syntax.Modifiers;
+            modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
+
             var structDeclaration = StructDeclaration(info!.Syntax.Identifier)
-                .WithModifiers(info.Syntax.Modifiers)
+                .WithModifiers(modifiers)
                 .WithMembers(GenerateStructMembers(info))
                 .WithBaseList(
                     BaseList(
@@ -667,6 +671,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // {
         //   if (__invokeSucceeded)
         //   {
+        //      TODO: [new/check order] GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
         //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
         //   }
         //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
@@ -683,6 +688,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var setup = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_SETUP, (p, m) => m.Setup(p), ctx.ReturnMarshallerShape?.Setup(null) ?? default);
         var marshal = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_MARSHAL, (p, m) => m.Marshal(p), ctx.ReturnMarshallerShape?.Marshal(null) ?? default);
         var pinnedMarshal = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_PINNED_MARSHAL, (p, m) => m.PinnedMarshal(p), ctx.ReturnMarshallerShape?.PinnedMarshal(null) ?? default);
+        var pin = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_PIN, (p, m) => m.Pin(p));
         var notify = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_NOTIFY, (p, m) => m.NotifyForSuccessfulInvoke(p), ctx.ReturnMarshallerShape?.NotifyForSuccessfulInvoke(null) ?? default);
         var unmarshalCapture = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL_CAPTURE, (p, m) => m.UnmarshalCapture(p), ctx.ReturnMarshallerShape?.UnmarshalCapture(null) ?? default);
         var unmarshal = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL, (p, m) => m.Unmarshal(p), ctx.ReturnMarshallerShape?.Unmarshal(null) ?? default);
@@ -692,6 +698,11 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // init locals
         var statements = Step(ctx, null, (p, m) =>
         {
+            if (!m.RequiresLocal)
+            {
+                return new SyntaxList<StatementSyntax>();
+            }
+
             var identifier = $"__{p.Name}_native";
             return SingletonList<StatementSyntax>(CreateLocalDeclarationWithDefaultValue(m.GetNativeType(), identifier));
         });
@@ -729,11 +740,15 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // wire up steps
         var finallyStatements = cleanupCallee.AddRange(cleanupCaller);
 
+        StatementSyntax pinnedBlock = Block(pinnedMarshal.Add(ExpressionStatement(invoke)));
+
+        for (var i = pin.Count - 1; i >= 0; i--)
+        {
+            pinnedBlock = pin[i].WithStatement(pinnedBlock);
+        }
+
         var guarded = marshal
-            .Add(
-                Block(
-                    pinnedMarshal.Add(
-                        ExpressionStatement(invoke))))
+            .Add(pinnedBlock)
             .AddRange(notify)
             .AddRange(unmarshalCapture)
             .AddRange(unmarshal);
@@ -767,11 +782,9 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     
     private static ArgumentSyntax GetArgumentForParameter(ParameterStubGenerationContext ctx)
     {
-        var identifier = ctx.MarshallerShape != null 
-            ? $"__{ctx.Symbol.Name}_native" 
-            : ctx.Symbol.Name;
-
-        return WithParameterRefToken(Argument(IdentifierName(identifier)), ctx.Symbol);
+        return ctx.MarshallerShape != null 
+            ? ctx.MarshallerShape.GetArgument(ctx) 
+            : WithParameterRefToken(Argument(IdentifierName(ctx.Symbol.Name)), ctx.Symbol);
     }
 
     private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol symbol)
@@ -792,6 +805,30 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             .SelectMany(x => marshaller(x.Symbol, x.MarshallerShape!)));
 
         result = result.AddRange(additional);
+
+        if (comment != null && result.Count > 0)
+        {
+            result = result.Replace(result[0],
+                result[0]
+                    .WithLeadingTrivia(Comment(comment)));
+        }
+
+        return result;
+    }
+    
+    /// <summary>
+    /// Generate a step in the marshalling process with generated code for each parameter of the current method
+    /// </summary>
+    private static SyntaxList<TNode> Step<TNode>(
+        MethodStubGenerationContext ctx,
+        string? comment, 
+        Func<IParameterSymbol, IMarshallerShape, TNode?> marshaller) where TNode : SyntaxNode
+    {
+        var result = List(ctx.Parameters.Where(x => x.MarshallerShape != null)
+                .Select(x => marshaller(x.Symbol, x.MarshallerShape!))
+                .Where(x => x != null)
+                .Select(x => x!)
+            );
 
         if (comment != null && result.Count > 0)
         {

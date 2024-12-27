@@ -103,7 +103,7 @@ public static class MarshallerShapeFactory
             // stateless
             return refKind switch
             {
-                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatelessManagedToUnmanaged(selected),
+                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatelessManagedToUnmanaged(selected, refKind),
                 RefKind.Out => MarshallerShapeActivator.GetStatelessUnmanagedToManaged(selected),
                 RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatelessBidirectional(selected),
                 _ => null

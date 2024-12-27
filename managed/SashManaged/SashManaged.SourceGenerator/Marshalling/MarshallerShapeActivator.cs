@@ -12,7 +12,7 @@ public static class MarshallerShapeActivator
     // The following value marshaller shapes are documented here
     // https://github.com/dotnet/runtime/blob/main/docs/design/libraries/LibraryImportGenerator/UserTypeMarshallingV2.md
     //
-    // Stateless Managed->Unmanaged (TODO: implemented except for pinned reference)
+    // Stateless Managed->Unmanaged (implemented)
     // Stateless Managed->Unmanaged with Caller-Allocated Buffer (implemented)
     // Stateless Unmanaged->Managed (implemented)
     // Stateless Unmanaged->Managed with Guaranteed Unmarshalling (TODO: not implemented)
@@ -46,12 +46,6 @@ public static class MarshallerShapeActivator
         return new StatefulUnmanagedToManagedMarshallerShape(
             GetTypeString(unmanagedType), 
             GetTypeString(info.MarshallerType));
-    }
-
-    public static IMarshallerShape? GetStatefulBidirectional(MarshallerModeInfo info)
-    {
-        // TODO implement
-        return null;
     }
 
     public static IMarshallerShape? GetStatefulManagedToUnmanged(MarshallerModeInfo info)
@@ -93,7 +87,13 @@ public static class MarshallerShapeActivator
         return null;
     }
 
-    public static IMarshallerShape? GetStatelessManagedToUnmanaged(MarshallerModeInfo info)
+    public static IMarshallerShape? GetStatefulBidirectional(MarshallerModeInfo info)
+    {
+        // TODO implement
+        return null;
+    }
+
+    public static IMarshallerShape? GetStatelessManagedToUnmanaged(MarshallerModeInfo info, RefKind refKind)
     {
         var toUnmanaged = GetMethod(info.MarshallerType, false, "ConvertToUnmanaged", info.ManagedType);
         
@@ -105,19 +105,24 @@ public static class MarshallerShapeActivator
       
         if (toUnmanaged != null)
         {
-            var hasFree = GetMethod(info.MarshallerType, false, "Free", toUnmanaged.ReturnType) != null;
+            var getPinnableReference = GetMethod(info.MarshallerType, false, "GetPinnableReference", info.ManagedType);
 
-            return new StatelessManagedToUnmanagedMarshallerShape(
-                GetTypeString(toUnmanaged.ReturnType), 
-                GetTypeString(info.MarshallerType), 
-                hasFree);
+            if (getPinnableReference?.ReturnsByRef == true)
+            {
+                return new StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(
+                    GetTypeString(toUnmanaged.ReturnType), 
+                    GetTypeString(info.MarshallerType));
+            }
+
+            var hasFree = GetMethod(info.MarshallerType, false, "Free", toUnmanaged.ReturnType) != null;
+            return new StatelessManagedToUnmanagedMarshallerShape(GetTypeString(toUnmanaged.ReturnType), GetTypeString(info.MarshallerType), hasFree);
         }
 
         if (bufferSize != null && toUnmanagedBuffer != null)
         {
             var hasFree = GetMethod(info.MarshallerType, false, "Free", toUnmanagedBuffer.ReturnType) != null;
 
-            return new StatelessManagedToUnmanagedWithCalledAllocatedBufferMarshallerShape(
+            return new StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(
                 GetTypeString(toUnmanagedBuffer.ReturnType), 
                 GetTypeString(info.MarshallerType), 
                 hasFree);

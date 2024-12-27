@@ -30,6 +30,9 @@ public partial class Testing
     public static partial int FooTestIn2([MarshalUsing(typeof(FooMarshaller))] in Foo ptr, SettableCoreDataType type);
     
     [LibraryImport("SampSharp")]
+    public static partial int FooTestIn3([MarshalUsing(typeof(FooMarshaller))] Foo ptr, [MarshalUsing(typeof(FooMarshaller))] Foo ptr3, [MarshalUsing(typeof(FooMarshaller))] in Foo ptr2, SettableCoreDataType type, [MarshalUsing(typeof(StringViewMarshaller))] string str);
+
+    [LibraryImport("SampSharp")]
     [return: MarshalUsing(typeof(FooMarshaller))] public static partial Foo FooTestOut(SettableCoreDataType type);
 
 
@@ -37,7 +40,7 @@ public partial class Testing
     public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
 }
 
-[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNativeInBuffer))]
+[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNativeIn))]
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToNativeOutGuarenteedUnmarshalling))]
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToNativeRefGUPin))]
 public static class FooMarshaller
@@ -53,7 +56,11 @@ public static class FooMarshaller
         {
             throw new NotImplementedException();
         }
+        
+        public static void Free(byte* unmanaged)
+        {
 
+        }
         public static void Free(nint unmanaged)
         {
 

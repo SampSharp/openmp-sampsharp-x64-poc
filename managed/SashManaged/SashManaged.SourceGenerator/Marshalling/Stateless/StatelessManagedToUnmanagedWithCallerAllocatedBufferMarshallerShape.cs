@@ -8,7 +8,7 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateless;
 /// <summary>
 /// Stateless Managed->Unmanaged with Caller-Allocated Buffer
 /// </summary>
-public class StatelessManagedToUnmanagedWithCalledAllocatedBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
