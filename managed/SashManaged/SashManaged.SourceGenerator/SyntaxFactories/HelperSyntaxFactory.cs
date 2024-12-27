@@ -22,7 +22,7 @@ public static class HelperSyntaxFactory
         IEnumerable<ParamForwardInfo> parameters, 
         params ParameterSyntax[] parametersPrefix)
     {
-        var externParameters = ToParameterListSyntax(parametersPrefix, parameters);
+        var externParameters = ToParameterListSyntax(parametersPrefix, parameters, true);
 
         return LocalFunctionStatement(externReturnType, "__PInvoke")
             .WithModifiers(TokenList(          
@@ -48,7 +48,7 @@ public static class HelperSyntaxFactory
         return ToParameterListSyntax([], parameters.Select(x => ToForwardInfo(x, null)));
     }
 
-    public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax[] prefix, IEnumerable<ParamForwardInfo> parameters)
+    public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax[] prefix, IEnumerable<ParamForwardInfo> parameters, bool removeIn = false)
     {
         return ParameterList(
             SeparatedList(prefix)
@@ -56,7 +56,7 @@ public static class HelperSyntaxFactory
                     parameters
                         .Select(parameter => Parameter(Identifier(parameter.Name))
                             .WithType(parameter.Type)
-                            .WithModifiers(GetRefTokens(parameter.RefKind)))));
+                            .WithModifiers(GetRefTokens(parameter.RefKind, removeIn)))));
     }
     
     public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape)
@@ -64,13 +64,13 @@ public static class HelperSyntaxFactory
         return new ParamForwardInfo(symbol.Name, marshallerShape?.GetNativeType() ?? TypeNameGlobal(symbol.Type), symbol.RefKind);
     }
 
-    private static SyntaxTokenList GetRefTokens(RefKind refKind)
+    private static SyntaxTokenList GetRefTokens(RefKind refKind, bool removeIn)
     {
         return refKind switch
         {
             RefKind.Ref => TokenList(Token(SyntaxKind.RefKeyword)),
             RefKind.Out => TokenList(Token(SyntaxKind.OutKeyword)),
-            RefKind.In => TokenList(Token(SyntaxKind.InKeyword)),
+            RefKind.In => removeIn ? default : TokenList(Token(SyntaxKind.InKeyword)),
             _ => default
         };
     }
