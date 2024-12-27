@@ -96,28 +96,28 @@ public static class MarshallerShapeFactory
         return shape;
     }
 
-    private static IMarshallerShape? GetMarshallerShapeForMarshallerMode(MarshallerModeInfo selected, RefKind refKind)
+    private static IMarshallerShape? GetMarshallerShapeForMarshallerMode(MarshallerModeInfo marshallerInfo, RefKind refKind)
     {
-        if (selected.MarshallerType.IsStatic)
+        if (marshallerInfo.MarshallerType.IsStatic)
         {
             // stateless
             return refKind switch
             {
-                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatelessManagedToUnmanaged(selected, refKind),
-                RefKind.Out => MarshallerShapeActivator.GetStatelessUnmanagedToManaged(selected),
-                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatelessBidirectional(selected),
+                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatelessManagedToUnmanaged(marshallerInfo, refKind),
+                RefKind.Out => MarshallerShapeActivator.GetStatelessUnmanagedToManaged(marshallerInfo),
+                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatelessBidirectional(marshallerInfo, refKind),
                 _ => null
             };
         }
 
-        if (selected.MarshallerType.IsValueType)
+        if (marshallerInfo.MarshallerType.IsValueType)
         {
             // stateful
             return refKind switch
             {
-                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatefulManagedToUnmanged(selected),
-                RefKind.Out => MarshallerShapeActivator.GetStatefulUnmanagedToManaged(selected),
-                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatefulBidirectional(selected),
+                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatefulManagedToUnmanaged(marshallerInfo),
+                RefKind.Out => MarshallerShapeActivator.GetStatefulUnmanagedToManaged(marshallerInfo),
+                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatefulBidirectional(marshallerInfo),
                 _ => null
             };
         }

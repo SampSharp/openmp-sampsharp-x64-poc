@@ -18,7 +18,7 @@ public interface IMarshallerShape
     SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol? parameterSymbol);
     SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol);
 
-
     bool RequiresLocal { get; }
+
     ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx);
 }
