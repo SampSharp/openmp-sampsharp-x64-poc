@@ -12,6 +12,8 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
 {
     public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
+        // TODO: if not ref, then not scoped
+
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
             LocalDeclarationStatement(

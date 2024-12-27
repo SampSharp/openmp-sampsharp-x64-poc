@@ -41,7 +41,7 @@ public partial class Testing
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNativeIn))]
-[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToNativeOutGuarenteedUnmarshalling))]
+[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedOut, typeof(SFManagedToUnmanagedOutFinally))]
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToNativeRefGUPin))]
 public static class FooMarshaller
 {
@@ -126,6 +126,30 @@ public static class FooMarshaller
         }
 
         public static void Free(nint unmanaged)
+        {
+
+        }
+    }
+
+    public ref struct SFManagedToUnmanagedOutFinally
+    {
+        public SFManagedToUnmanagedOutFinally()
+        {
+
+        }
+
+        public void FromUnmanaged(nint unmanaged)
+        {
+
+        }
+
+
+        public Foo ToManagedFinally()
+        {
+            return new Foo();
+        }
+
+        public void Free()
         {
 
         }

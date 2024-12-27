@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using SashManaged.SourceGenerator.Marshalling.Stateful;
 using SashManaged.SourceGenerator.Marshalling.Stateless;
@@ -19,7 +20,7 @@ public static class MarshallerShapeActivator
     // Stateful Managed->Unmanaged (TODO: implemented without pinning)
     // Stateful Managed->Unmanaged with Caller Allocated Buffer (TODO: implemented without pinning)
     // Stateful Unmanaged->Managed (implemented)
-    // Stateful Unmanaged->Managed with Guaranteed Unmarshalling (TODO: not implemented)
+    // Stateful Unmanaged->Managed with Guaranteed Unmarshalling (implemented)
     // Stateful Bidirectional (implemented)
     //
     // TODO: No collection marshallers have been implemented (do we need them?)
@@ -27,24 +28,25 @@ public static class MarshallerShapeActivator
     public static IMarshallerShape? GetStatefulUnmanagedToManaged(MarshallerModeInfo info)
     {
         var fromUnmanaged = GetMethod(info.MarshallerType, true, "FromUnmanaged", _ => true);
-        var toManaged = GetMethod(info.MarshallerType, true, "ToManaged");
         var free = GetMethod(info.MarshallerType, true, "Free");
-        
-        if (fromUnmanaged == null || toManaged == null || free == null)
+        var toManaged = GetMethod(info.MarshallerType, true, "ToManaged");
+        var toManagedFinally = GetMethod(info.MarshallerType, true, "ToManagedFinally");
+
+        if (fromUnmanaged != null && toManaged != null && free != null && SymbolEqualityComparer.Default.Equals(toManaged.ReturnType, info.ManagedType))
         {
-            return null;
+            var unmanagedType = fromUnmanaged.Parameters[0].Type;
+
+            return new StatefulUnmanagedToManagedMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType));
         }
-        
-        if (!SymbolEqualityComparer.Default.Equals(toManaged.ReturnType, info.ManagedType))
+
+        if (fromUnmanaged != null && toManagedFinally != null && free != null && SymbolEqualityComparer.Default.Equals(toManagedFinally.ReturnType, info.ManagedType))
         {
-            return null;
+            var unmanagedType = fromUnmanaged.Parameters[0].Type;
+
+            return new StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType));
         }
-        
-        var unmanagedType = fromUnmanaged.Parameters[0].Type;
-        
-        return new StatefulUnmanagedToManagedMarshallerShape(
-            GetTypeString(unmanagedType), 
-            GetTypeString(info.MarshallerType));
+
+        return null;
     }
 
     public static IMarshallerShape? GetStatefulManagedToUnmanaged(MarshallerModeInfo info)

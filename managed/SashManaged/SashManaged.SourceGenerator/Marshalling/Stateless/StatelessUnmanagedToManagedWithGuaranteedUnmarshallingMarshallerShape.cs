@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling.Stateless;
 
@@ -18,9 +18,9 @@ public class StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerSha
     {
         // type.Free(unmanaged);
         return !hasFree
-            ? SyntaxFactory.List<StatementSyntax>()
-            : SyntaxFactory.SingletonList<StatementSyntax>(
-                SyntaxFactory.ExpressionStatement(
+            ? List<StatementSyntax>()
+            : SingletonList<StatementSyntax>(
+                ExpressionStatement(
                     InvokeWithArgument("Free", GetUnmanagedVar(parameterSymbol))));
     }
 }
