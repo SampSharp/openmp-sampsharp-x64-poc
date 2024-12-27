@@ -18,7 +18,7 @@ public static unsafe class StringViewMarshaller
         }
             
         var byteCount = Encoding.UTF8.GetByteCount(managed);
-        var ptrBuffer = (byte*)Marshal.AllocHGlobal(byteCount);
+        var ptrBuffer = (byte*)Marshal.AllocHGlobal(byteCount); // TODO: leak: not being freed
 
         var span = new Span<byte>(ptrBuffer, byteCount);
         Encoding.UTF8.GetBytes(managed, span);

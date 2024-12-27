@@ -5,6 +5,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 
+/// <summary>
+/// Stateful Managed->Unmanaged
+/// </summary>
 public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
     // public struct ManagedToNative // Can be ref struct

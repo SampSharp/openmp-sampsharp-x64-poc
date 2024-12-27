@@ -5,6 +5,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 
+/// <summary>
+/// Stateful Unmanaged->Managed
+/// </summary>
 public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
     public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)

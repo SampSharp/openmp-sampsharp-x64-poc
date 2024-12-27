@@ -7,6 +7,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.SyntaxFactories;
 
+/// <summary>
+/// Creates attributes syntax nodes.
+/// </summary>
 public static class AttributeFactory
 {
     public static readonly string GENERATED_CODE_FQN = $"global::{typeof(GeneratedCodeAttribute).FullName}";

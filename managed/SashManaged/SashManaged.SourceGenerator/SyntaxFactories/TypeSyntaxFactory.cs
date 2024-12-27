@@ -5,6 +5,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SashManaged.SourceGenerator.SyntaxFactories;
 
+/// <summary>
+/// Creates type syntax nodes.
+/// </summary>
 public static class TypeSyntaxFactory
 {
     public static IdentifierNameSyntax IdentifierNameGlobal(ITypeSymbol symbol)
