@@ -671,7 +671,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         // {
         //   if (__invokeSucceeded)
         //   {
-        //      TODO: [new/check order] GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
+        //      GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
         //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
         //   }
         //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
@@ -692,6 +692,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var notify = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_NOTIFY, (p, m) => m.NotifyForSuccessfulInvoke(p), ctx.ReturnMarshallerShape?.NotifyForSuccessfulInvoke(null) ?? default);
         var unmarshalCapture = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL_CAPTURE, (p, m) => m.UnmarshalCapture(p), ctx.ReturnMarshallerShape?.UnmarshalCapture(null) ?? default);
         var unmarshal = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL, (p, m) => m.Unmarshal(p), ctx.ReturnMarshallerShape?.Unmarshal(null) ?? default);
+        var guaranteedUnmarshal = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_GUARANTEED_UNMARSHAL, (p, m) => m.GuaranteedUnmarshal(p), ctx.ReturnMarshallerShape?.GuaranteedUnmarshal(null) ?? default);
         var cleanupCallee = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLEE, (p, m) => m.CleanupCalleeAllocated(p), ctx.ReturnMarshallerShape?.CleanupCalleeAllocated(null) ?? default);
         var cleanupCaller = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLER, (p, m) => m.CleanupCallerAllocated(p), ctx.ReturnMarshallerShape?.CleanupCallerAllocated(null) ?? default);
         
@@ -720,7 +721,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         }
 
         // if callee cleanup is required, we need to keep track of invocation success
-        if (cleanupCallee.Count > 0)
+        if (cleanupCallee.Count > 0 || guaranteedUnmarshal.Count > 0)
         {
             statements = statements.Add(
                 CreateLocalDeclarationWithDefaultValue(PredefinedType(Token(SyntaxKind.BoolKeyword)), "__invokeSucceeded"));
@@ -734,7 +735,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         
             cleanupCallee = SingletonList<StatementSyntax>(
                         IfStatement(IdentifierName("__invokeSucceeded"), 
-                        Block(cleanupCallee)));
+                        Block(guaranteedUnmarshal.AddRange(cleanupCallee))));
         }
         
         // wire up steps

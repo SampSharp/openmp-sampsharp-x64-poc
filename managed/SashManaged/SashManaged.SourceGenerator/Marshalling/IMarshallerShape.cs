@@ -16,6 +16,7 @@ public interface IMarshallerShape
     SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol);
     SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol? parameterSymbol);
     SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol? parameterSymbol);
+    SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol);
 
 
     bool RequiresLocal { get; }

@@ -15,7 +15,7 @@ public static class MarshallerShapeActivator
     // Stateless Managed->Unmanaged (implemented)
     // Stateless Managed->Unmanaged with Caller-Allocated Buffer (implemented)
     // Stateless Unmanaged->Managed (implemented)
-    // Stateless Unmanaged->Managed with Guaranteed Unmarshalling (TODO: not implemented)
+    // Stateless Unmanaged->Managed with Guaranteed Unmarshalling (implemented)
     // Stateless Bidirectional (TODO: implemented without GU and pinning)
     // Stateful Managed->Unmanaged (TODO: implemented without pinning)
     // Stateful Managed->Unmanaged with Caller Allocated Buffer (TODO: implemented without pinning)
@@ -137,21 +137,32 @@ public static class MarshallerShapeActivator
             .GetMembers("ConvertToManaged")
             .OfType<IMethodSymbol>()
             .SingleOrDefault();
-            
-        if (toManaged == null || toManaged.Parameters.Length != 1)
+          
+        if (toManaged is { Parameters.Length: 1 })
         {
-            return null;
+            var unmanagedType = toManaged.Parameters[0].Type;
+
+            var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
+
+
+            return new StatelessUnmanagedToManagedMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType), hasFree);
+        }
+          
+        var toManagedFinally = info.MarshallerType
+            .GetMembers("ConvertToManagedFinally")
+            .OfType<IMethodSymbol>()
+            .SingleOrDefault();
+
+        if (toManagedFinally is { Parameters.Length: 1 })
+        {
+            var unmanagedType = toManagedFinally.Parameters[0].Type;
+
+            var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
+
+            return new StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType), hasFree);
         }
 
-        var unmanagedType = toManaged.Parameters[0].Type;
-        
-        var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
-
-
-        return new StatelessUnmanagedToManagedMarshallerShape(
-            GetTypeString(unmanagedType), 
-            GetTypeString(info.MarshallerType), 
-            hasFree);
+        return null;
     }
     
     public static IMarshallerShape? GetStatelessBidirectional(MarshallerModeInfo info)

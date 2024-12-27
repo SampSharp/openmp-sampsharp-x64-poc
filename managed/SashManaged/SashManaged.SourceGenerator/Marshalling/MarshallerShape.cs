@@ -9,7 +9,7 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
 {
     protected string NativeTypeName => nativeTypeName;
     protected string MarshallerTypeName => marshallerTypeName;
-    
+
     public virtual bool RequiresLocal => true;
 
     public virtual TypeSyntax GetNativeType()
@@ -70,6 +70,11 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
     protected static string GetManagedVar(IParameterSymbol? parameterSymbol)
     {
         return parameterSymbol?.Name ?? "__retVal";
+    }
+    
+    public virtual SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol)
+    {
+        return List<StatementSyntax>();
     }
 
     protected static string GetUnmanagedVar(IParameterSymbol? parameterSymbol)

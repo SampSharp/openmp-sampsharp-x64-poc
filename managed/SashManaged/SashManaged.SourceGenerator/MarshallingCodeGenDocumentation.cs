@@ -12,6 +12,6 @@ public static class MarshallingCodeGenDocumentation
     public const string COMMENT_UNMARSHAL = "// Unmarshal - Convert native data to managed data.";
     public const string COMMENT_CLEANUP_CALLEE = "// CleanupCalleeAllocated - Perform cleanup of callee allocated resources.";
     public const string COMMENT_CLEANUP_CALLER = "// CleanupCallerAllocated - Perform cleanup of caller allocated resources.";
-    public const string COMMENT_GUARENTEED_UNMARSHAL = "// GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.";
+    public const string COMMENT_GUARANTEED_UNMARSHAL = "// GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.";
     public const string COMMENT_P_INVOKE = "// Local P/Invoke";
 }
