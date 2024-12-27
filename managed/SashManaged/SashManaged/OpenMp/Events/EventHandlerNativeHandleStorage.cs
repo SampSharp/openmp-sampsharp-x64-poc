@@ -1,5 +1,8 @@
 ﻿namespace SashManaged.OpenMp;
 
+/// <summary>
+/// Represents a storage which keeps managed references to Delegates which have been converted to unmanaged function pointers. This is required to prevent GC from collecting these delegates.
+/// </summary>
 internal static class EventHandlerNativeHandleStorage
 {
     private static readonly Dictionary<IEventHandler2, (nint handle, int references, Delegate[] delegates)> _refs = [];
