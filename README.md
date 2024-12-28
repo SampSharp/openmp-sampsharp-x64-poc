@@ -57,3 +57,58 @@ supported by MS and may have stability issues.
 - The bridge between the .NET API and server API are generated at compile-time instead of at run-time. This means that
 the initial performance of the server should be better, it easier to diagnose issues in generated code and easier to
 improve the generated code since we generate c# code instead of itermediate code (IL).  
+
+
+## How to Compile/Run?
+
+##### Requirements
+
+- [Install CMake 3.19 +](https://cmake.org/download/)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/pt-br/vs/)
+  - Install the Development to desktop with .NET
+  - Install the Development to desktop with C++
+- [.NET 8 SDK x64](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/sdk-8.0.404-windows-x64-installer)
+- [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/runs/11611054690/artifacts/2127938904)
+
+##### Instructions
+
+- Clone the repository:
+  - `git clone https://github.com/SampSharp/openmp-sampsharp-x64-poc`
+
+- In the project directory, initialize and update GIT submodules:
+  - `git submodule update --init --recursive`
+  - check if all git submodules of the `sdk` folder have also been cloned
+    - Just see if exists content inside `sdk/lib/glm`, `sdk/lib/robin-hood-hashing`, `sdk/lib/span-lite`, `sdk/lib/string-view-lite` submodules.
+
+- Have the directory where open.mp x64 server is located at hand
+
+- Setup the launchSettings.json:
+  - Navigate to `managed/SashManaged/SashManaged/Properties/launchSettings.json`.
+  - Update `executablePath` and `workingDirectory` according to your open.mp x64 server dir
+
+- Setup the CMake:
+  - Open CMakeLists.txt
+  - Set your <i>CMAKE\_</i> variables on L18~L24 according to your open.mp x64 server dir
+
+- Compile the C++ project:
+  - `mkdir build && cd build && cmake .. -A x64 -T ClangCL`
+
+- Open the `build` folder and open `.sln` file with the Visual Studio (VS)
+
+- Build the solution:
+  - Press `CTRL+SHIFT+B` or Right click on the solution on VS and go to the Build Solution option
+
+- Setup the `config.json` file of Open.MP
+  - Add the `sampsharp` property in config.json and change the value of `folder` property according of your path:
+  ```
+  "sampsharp": {
+      "folder": "D:\\Projects\\community\\openmp-sampsharp-x64-poc\\managed\\SashManaged\\SashManaged\\bin\\Debug\\net8.0\\",
+      "assembly": "SashManaged"
+  }
+  ```
+
+- Run the Open.MP server
+  - Go to `managed/SashManaged/SashManaged` and open the `.csproj` file with the VS
+  - Run the `open.mp` profile on VS
+
+- Let's go
