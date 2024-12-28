@@ -66,7 +66,8 @@ improve the generated code since we generate c# code instead of itermediate code
 - [Visual Studio 2022](https://visualstudio.microsoft.com/pt-br/vs/)
   - Install the Development to desktop with .NET
   - Install the Development to desktop with C++
-- [.NET 8 SDK x64](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/sdk-8.0.404-windows-x64-installer)
+- [.NET 8 SDK x64](https://dotnet.microsoft.com/pt-br/download)
+  - Download and install the .NET 8.0
 - [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/workflows/build.yml)
   - Find and click in the last sucessfully run in `master` branch
   - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file
