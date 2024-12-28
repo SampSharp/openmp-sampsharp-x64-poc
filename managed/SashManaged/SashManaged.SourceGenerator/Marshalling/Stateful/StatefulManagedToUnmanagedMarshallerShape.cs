@@ -8,16 +8,34 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 /// <summary>
 /// Stateful Managed->Unmanaged
 /// </summary>
-public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify, bool pinMarshaller) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
-    // public struct ManagedToNative // Can be ref struct
-    // {
-    //     TODO: public ref TIgnored GetPinnableReference(); // Result pinned for ToUnmanaged call and Invoke, but not used otherwise.
-    //     TODO: public static ref TOther GetPinnableReference(TManaged managed); // Optional. Can throw exceptions. Result pinnned and passed to Invoke.
-    // }
+    public override FixedStatementSyntax? Pin(IParameterSymbol? parameterSymbol)
+    {
+        if (!pinMarshaller)
+        {
+            return null;
+        }
+
+        return FixedStatement(
+                VariableDeclaration(
+                        PointerType(
+                            PredefinedType(
+                                Token(SyntaxKind.VoidKeyword))))
+                    .WithVariables(
+                        SingletonSeparatedList(
+                            VariableDeclarator(
+                                    Identifier($"__{parameterSymbol?.Name}_native__unused"))
+                                .WithInitializer(
+                                    EqualsValueClause(
+                                        IdentifierName($"__{parameterSymbol?.Name}_native_marshaller"))))),
+                Block());
+    }
 
     public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
+        // TODO: if not ref, then not scoped
+
         // scoped type marshaller = new();
         return SingletonList<StatementSyntax>(
             LocalDeclarationStatement(

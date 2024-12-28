@@ -40,7 +40,7 @@ public partial class Testing
     public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
 }
 
-[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNativeIn))]
+[CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedOut, typeof(SFManagedToUnmanagedOutFinally))]
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToNativeRefGUPin))]
 public static class FooMarshaller
@@ -129,6 +129,38 @@ public static class FooMarshaller
         {
 
         }
+    }
+
+    public unsafe ref struct SFManagedToUnmanagedInPin 
+    {
+        public SFManagedToUnmanagedInPin()
+        {
+        }
+
+        public void FromManaged(Foo managed)
+        {
+
+        }
+
+        public ref byte* GetPinnableReference()
+        {
+            throw new NotImplementedException();
+        }
+
+        public static ref byte* GetPinnableReference(Foo managed)
+        {
+            // passed to invoke
+            throw new NotImplementedException();
+        }
+
+        public nint ToUnmanaged()
+        {
+            return 0;
+        }
+
+        public void OnInvoked(){}
+
+        public void Free(){}
     }
 
     public ref struct SFManagedToUnmanagedOutFinally

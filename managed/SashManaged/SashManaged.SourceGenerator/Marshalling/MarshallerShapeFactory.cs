@@ -115,9 +115,9 @@ public static class MarshallerShapeFactory
             // stateful
             return refKind switch
             {
-                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatefulManagedToUnmanaged(marshallerInfo),
+                RefKind.In or RefKind.None => MarshallerShapeActivator.GetStatefulManagedToUnmanaged(marshallerInfo, refKind),
                 RefKind.Out => MarshallerShapeActivator.GetStatefulUnmanagedToManaged(marshallerInfo),
-                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatefulBidirectional(marshallerInfo),
+                RefKind.Ref or RefKind.RefReadOnlyParameter => MarshallerShapeActivator.GetStatefulBidirectional(marshallerInfo, refKind),
                 _ => null
             };
         }
