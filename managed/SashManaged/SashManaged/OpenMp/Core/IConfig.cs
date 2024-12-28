@@ -3,27 +3,22 @@
 [OpenMpApi2(typeof(IExtensible))]
 public readonly partial struct IConfig
 {
-    // TODO: ref return not yet supported
-
-    public partial StringView GetString(StringView key);
+    public partial string GetString(string key);
     
-    // public partial ref int GetInt(StringView key);
-    public partial BlittableRef<int> GetInt(StringView key);
+    public partial ref int GetInt(string key);
     
-    //public partial ref float GetFloat(StringView key);
-    public partial BlittableRef<float> GetFloat(StringView key);
+    public partial ref float GetFloat(string key);
 
-    public partial Size GetStrings(StringView key, SpanLite<StringView> output);
+    public partial Size GetStrings(string key, SpanLite<StringView> output);
 
-    public partial Size GetStringsCount(StringView key);
+    public partial Size GetStringsCount(string key);
     
     [OpenMpApiFunction("getType")]
-    public partial ConfigOptionType GetValueType(StringView key);
+    public partial ConfigOptionType GetValueType(string key);
 
     public partial Size GetBansCount();
 
-    // TODO: return by ref [return: OpenMpApiMarshall]
-    public partial BanEntry GetBan(Size index);
+    public partial BlittableStructRef<BanEntry> GetBan(Size index);
 
     public partial void AddBan(in BanEntry entry);
 
@@ -44,6 +39,5 @@ public readonly partial struct IConfig
 
     // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 
-    // public partial ref bool GetBool(StringView key);
-    public partial BlittableRef<bool> GetBool(StringView key);
+    public partial ref bool GetBool(string key);
 }

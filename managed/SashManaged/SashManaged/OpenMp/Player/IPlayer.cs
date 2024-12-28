@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IPlayer
 {
     public partial void Kick();

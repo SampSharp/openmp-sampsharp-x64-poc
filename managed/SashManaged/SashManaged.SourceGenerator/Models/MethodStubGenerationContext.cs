@@ -5,10 +5,13 @@ using SashManaged.SourceGenerator.Marshalling;
 namespace SashManaged.SourceGenerator;
 
 public record MethodStubGenerationContext(
-    MethodDeclarationSyntax Declaration, 
+    MethodDeclarationSyntax Declaration,
     IMethodSymbol Symbol,
-    ParameterStubGenerationContext[] Parameters, 
-    IMarshallerShape? ReturnMarshallerShape, 
-    bool RequiresMarshalling, 
+    ParameterStubGenerationContext[] Parameters,
+    IMarshallerShape? ReturnMarshallerShape,
+    bool RequiresMarshalling,
     string Library,
-    string NativeTypeName);
+    string NativeTypeName)
+{
+    public bool ReturnsByRef => Symbol.ReturnsByRef || Symbol.ReturnsByRefReadonly;
+}

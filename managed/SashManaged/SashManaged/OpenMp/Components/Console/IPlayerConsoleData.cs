@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtensible))]
+[OpenMpApi2(typeof(IExtensible))]
 public readonly partial struct IPlayerConsoleData
 {
     public partial bool HasConsoleAccess();

@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface IPlayerChangeEventHandler
+[OpenMpEventHandler2]
+public interface IPlayerChangeEventHandler : IEventHandler2
 {
     void OnPlayerScoreChange(IPlayer player, int score);
     void OnPlayerNameChange(IPlayer player, StringView oldName);

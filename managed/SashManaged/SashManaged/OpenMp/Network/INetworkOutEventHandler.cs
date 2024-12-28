@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface INetworkOutEventHandler
+[OpenMpEventHandler2]
+public interface INetworkOutEventHandler : IEventHandler2
 {
     bool OnSendPacket(IPlayer peer, int id, NetworkBitStream bs);
     bool OnSendRPC(IPlayer peer, int id, NetworkBitStream bs);

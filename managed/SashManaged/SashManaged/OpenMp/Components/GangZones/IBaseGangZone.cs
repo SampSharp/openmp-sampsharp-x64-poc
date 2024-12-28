@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
+[OpenMpApi2(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct IBaseGangZone
 {
     public partial bool IsShownForPlayer(IPlayer player);

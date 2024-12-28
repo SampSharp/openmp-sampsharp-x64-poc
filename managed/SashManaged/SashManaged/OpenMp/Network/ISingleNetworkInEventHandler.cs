@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface ISingleNetworkInEventHandler
+[OpenMpEventHandler2]
+public interface ISingleNetworkInEventHandler : IEventHandler2
 {
     bool OnReceive(IPlayer peer, NetworkBitStream bs);
 }

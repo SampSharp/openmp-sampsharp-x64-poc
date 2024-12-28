@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(ICheckpointDataBase))]
+[OpenMpApi2(typeof(ICheckpointDataBase))]
 public readonly partial struct ICheckpointData;

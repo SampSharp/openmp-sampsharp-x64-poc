@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler(HandlerName = "PoolEventHandler")]
-public interface IPlayerPoolEventHandler : IPoolEventHandler<IPlayer>;
+[OpenMpEventHandler2(NativeTypeName = "PoolEventHandler")]
+public interface IPlayerPoolEventHandler : IPoolEventHandler<IPlayer>, IEventHandler2;

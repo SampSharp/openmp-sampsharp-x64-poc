@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface IActorEventHandler
+[OpenMpEventHandler2]
+public interface IActorEventHandler : IEventHandler2
 {
     void OnPlayerGiveDamageActor(IPlayer player, IActor actor, float amount, uint weapon, BodyPart part);
     void OnActorStreamOut(IActor actor, IPlayer forPlayer);

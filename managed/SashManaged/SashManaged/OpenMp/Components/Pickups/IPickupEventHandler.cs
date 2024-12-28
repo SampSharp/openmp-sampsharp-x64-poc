@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface IPickupEventHandler
+[OpenMpEventHandler2]
+public interface IPickupEventHandler : IEventHandler2
 {
     void OnPlayerPickUpPickup(IPlayer player, IPickup pickup);
 }

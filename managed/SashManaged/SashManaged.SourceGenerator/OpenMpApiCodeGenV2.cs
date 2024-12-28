@@ -19,7 +19,8 @@ using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
 namespace SashManaged.SourceGenerator;
 
 /// <summary>
-/// This source generator generates the marshalling interop methods for OpenMP API structs. The generator generates the following:
+/// This source generator generates the marshalling interop methods for OpenMP API structs. The generator generates the
+/// following:
 /// <list type="bullet">
 ///     <item>Implementation of the IPointer interface</item>
 ///     <item>Implementation of the IEquatable{self} interface</item>
@@ -252,7 +253,8 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     /// <summary>
-    /// Returns an explicit interface implementation method declaration for the FromHandle method for the specified interface.
+    /// Returns an explicit interface implementation method declaration for the FromHandle method for the specified
+    /// interface.
     /// </summary>
     private static MethodDeclarationSyntax CreateFromHandleMethod(StructStubGenerationContext ctx, string genericInterfaceFQN)
     {
@@ -291,7 +293,8 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     }
 
     /// <summary>
-    /// Returns members for the struct implementation that are common to all structs and equality members for all implementing types.
+    /// Returns members for the struct implementation that are common to all structs and equality members for all
+    /// implementing types.
     /// </summary>
     private static IEnumerable<MemberDeclarationSyntax> GenerateCommonStructMembers(StructStubGenerationContext ctx)
     {
@@ -616,6 +619,13 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
         var externReturnType = ctx.ReturnMarshallerShape?.GetNativeType() ?? 
                                TypeNameGlobal(ctx.Symbol.ReturnType);
 
+        if(ctx.ReturnsByRef)
+        {
+            externReturnType = ctx.RequiresMarshalling
+                ? PointerType(externReturnType)
+                : RefType(externReturnType);
+        }
+
         var externFunction = GenerateExternFunction(ctx, externReturnType);
 
         invocation = invocation.WithStatements(invocation.Statements.Add(externFunction));
@@ -648,7 +658,6 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                 )
             );
 
-        // No marshalling required, call __PInvoke and return
         if (ctx.Symbol.ReturnsVoid)
         {
             return Block(ExpressionStatement(invoke));
@@ -684,7 +693,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
         // The generated method consists of the following content:
         //
-        // LocalsInit - Generate locals for marshalled types and return value
+        // LocalsInit - Generate locals for marshalled types and return value.
         // Setup - Perform required setup.
         // try
         // {
@@ -736,19 +745,26 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             }
 
             var identifier = $"__{p.Name}_native";
+
             return SingletonList<StatementSyntax>(CreateLocalDeclarationWithDefaultValue(m.GetNativeType(), identifier));
         });
 
         if (!ctx.Symbol.ReturnsVoid)
         {
             var returnType = TypeNameGlobal(ctx.Symbol.ReturnType);
-            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
-        }
+            
+            if (ctx.ReturnsByRef)
+            {
+                returnType = PointerType(returnType);
+            }
 
-        if (ctx.ReturnMarshallerShape != null)
-        {
-            var nativeType = ctx.ReturnMarshallerShape.GetNativeType();
-            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
+            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
+            
+            if (ctx.ReturnMarshallerShape != null)
+            {
+                var nativeType = ctx.ReturnMarshallerShape.GetNativeType();
+                statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
+            }
         }
 
         // if callee cleanup is required, we need to keep track of invocation success
@@ -803,9 +819,17 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
         if (!ctx.Symbol.ReturnsVoid)
         {
-            statements = statements.Add(
-                ReturnStatement(
-                    IdentifierName("__retVal")));
+            ExpressionSyntax returnExpression = IdentifierName("__retVal");
+
+            if (ctx.ReturnsByRef)
+            {
+                returnExpression = RefExpression(
+                    PrefixUnaryExpression(
+                        SyntaxKind.PointerIndirectionExpression,
+                        returnExpression));
+            }
+
+            statements = statements.Add(ReturnStatement(returnExpression));
         }
 
         return Block(statements);
@@ -947,6 +971,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                     // TODO: diagnostic
                     return null;
                 }
+                
                 return new MethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library, nativeTypeName);
             })
             .Where(x => x != null)

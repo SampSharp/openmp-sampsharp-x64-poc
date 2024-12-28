@@ -2,8 +2,8 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface IObjectEventHandler
+[OpenMpEventHandler2]
+public interface IObjectEventHandler : IEventHandler2
 {
     void OnMoved(IObject objekt);
     void OnPlayerObjectMoved(IPlayer player, IPlayerObject objekt);

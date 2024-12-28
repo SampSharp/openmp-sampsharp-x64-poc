@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface ITextDrawEventHandler
+[OpenMpEventHandler2]
+public interface ITextDrawEventHandler : IEventHandler2
 {
     void OnPlayerClickTextDraw(IPlayer player, ITextDraw td);
     void OnPlayerClickPlayerTextDraw(IPlayer player, IPlayerTextDraw td);

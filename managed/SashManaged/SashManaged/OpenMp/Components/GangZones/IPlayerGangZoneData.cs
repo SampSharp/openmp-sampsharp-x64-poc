@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtension))]
+[OpenMpApi2(typeof(IExtension))]
 public readonly partial struct IPlayerGangZoneData
 {
     public static UID ExtensionId => new(0xee8d8056b3351d11);

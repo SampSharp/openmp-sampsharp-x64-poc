@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IBaseObject))]
+[OpenMpApi2(typeof(IBaseObject))]
 public readonly partial struct IObject
 {
     public partial void AttachToPlayer(IPlayer player, Vector3 offset, Vector3 rotation);

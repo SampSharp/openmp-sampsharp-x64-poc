@@ -165,18 +165,28 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         var cfg = core.GetConfig();
 
         // test config
-        var nameInConfig = cfg.GetString("name"u8);
+        var nameInConfig = cfg.GetString("name");
         Console.WriteLine($"Name in config: {nameInConfig}");
-        var announce = cfg.GetBool("announce"u8).Value;
-        var use_lan_mode = cfg.GetBool("network.use_lan_mode"u8).Value;
-        var chat_input_filter = cfg.GetBool("chat_input_filter"u8).Value;
+        var announce = cfg.GetBool("announce");
+        var use_lan_mode = cfg.GetBool("network.use_lan_mode");
+        var chat_input_filter = cfg.GetBool("chat_input_filter");
         Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode} chat_input_filter: {chat_input_filter}");
 
         // test bans
+
         var ban = new BanEntry(new HybridString46("1.2.3.5"), TimePoint.FromDateTimeOffset(DateTimeOffset.UtcNow), new HybridString25("name"), new HybridString32("reason"));
 
         cfg.AddBan(ban);
         cfg.WriteBans();
+
+        Console.WriteLine("written ban");
+
+        for(nint i=0;i<cfg.GetBansCount().Value;i++)
+        {
+            var a = cfg.GetBan(new Size(i));
+            var b = a.GetValue();
+            Console.WriteLine($"ban: {b.Name} {b.AddressString} {b.Reason} {b.Time.ToDateTimeOffset()}");
+        }
 
         var alias = cfg.GetNameFromAlias("minconnectiontime"u8);
 

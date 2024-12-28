@@ -38,6 +38,9 @@ public partial class Testing
 
     [LibraryImport("SampSharp")]
     public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
+
+    [LibraryImport("SampSharp")]
+    public static partial BarStruct GetBar();
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]
@@ -188,9 +191,34 @@ public static class FooMarshaller
     }
 }
 
-public class Foo
+public struct BarStruct
 {
+    public int A;
+    public int B;
+    public int C;
+}
 
+public  unsafe partial class Foo
+{
+    public static bool _test;
+
+
+    public static ref bool Test()
+    {
+        return ref _test;
+    }
+    
+    [LibraryImport("SampSharp")]
+    private static partial bool* Fld();
+
+    public static ref bool Test2()
+    {
+        bool* fld;
+
+        fld = Fld();
+
+        return ref *fld;
+    }
 }
 
 [OpenMpApi2]

@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
+[OpenMpApi2(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct IMenu
 {
     public partial void SetColumnHeader(StringView header, byte column);

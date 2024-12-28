@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IBasePickup
 {
     public partial void SetType(byte type, bool update = true);

@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IComponent))]
+[OpenMpApi2(typeof(IComponent))]
 public readonly partial struct IFixesComponent
 {
     public static UID ComponentId => new(0xb5c615eff0329ff7);

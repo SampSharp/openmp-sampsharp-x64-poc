@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler]
-public interface IConsoleEventHandler
+[OpenMpEventHandler2]
+public interface IConsoleEventHandler : IEventHandler2
 {
     bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender);
     void OnRconLoginAttempt(IPlayer player, StringView password, bool success);

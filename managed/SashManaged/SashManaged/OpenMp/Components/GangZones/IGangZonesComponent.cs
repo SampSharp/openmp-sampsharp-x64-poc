@@ -1,11 +1,11 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi(typeof(IComponent))]
+[OpenMpApi2(typeof(IComponent))]
 public readonly partial struct IGangZonesComponent
 {
     public static UID ComponentId => new(0xb3351d11ee8d8056);
 
-    public partial IEventDispatcher<IGangZoneEventHandler> GetEventDispatcher();
+    public partial IEventDispatcher2<IGangZoneEventHandler> GetEventDispatcher();
 
     public partial IGangZone create(GangZonePos pos);
 
