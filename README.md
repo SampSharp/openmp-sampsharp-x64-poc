@@ -67,7 +67,9 @@ improve the generated code since we generate c# code instead of itermediate code
   - Install the Development to desktop with .NET
   - Install the Development to desktop with C++
 - [.NET 8 SDK x64](https://dotnet.microsoft.com/pt-br/download/dotnet/thank-you/sdk-8.0.404-windows-x64-installer)
-- [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/runs/11611054690/artifacts/2127938904)
+- [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/workflows/build.yml)
+  - Find and click in the last sucessfully run in `master` branch
+  - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file
 
 ##### Instructions
 
