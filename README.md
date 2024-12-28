@@ -58,7 +58,6 @@ supported by MS and may have stability issues.
 the initial performance of the server should be better, it easier to diagnose issues in generated code and easier to
 improve the generated code since we generate c# code instead of itermediate code (IL).  
 
-
 ## How to Compile/Run?
 
 ##### Requirements
