@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IComponent))]
+[OpenMpApi(typeof(IComponent))]
 public readonly partial struct INetworkComponent
 {
     public static UID ComponentId => new(0xea9799fd79cf8442); // ID for RakNetLegacyNetworkComponent

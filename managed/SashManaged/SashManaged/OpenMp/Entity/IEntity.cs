@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2]
+[OpenMpApi]
 public readonly partial struct IEntity
 {
     public partial Vector3 GetPosition();

@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(ITextLabelBase))]
+[OpenMpApi(typeof(ITextLabelBase))]
 public readonly partial struct ITextLabel
 {
     public partial bool IsStreamedInForPlayer(IPlayer player);

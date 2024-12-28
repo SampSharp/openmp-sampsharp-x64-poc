@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IBasePickup))]
+[OpenMpApi(typeof(IBasePickup))]
 public readonly partial struct IPickup;

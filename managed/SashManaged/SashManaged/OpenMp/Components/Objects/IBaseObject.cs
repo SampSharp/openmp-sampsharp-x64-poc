@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IBaseObject
 {
     public partial void SetDrawDistance(float drawDistance);

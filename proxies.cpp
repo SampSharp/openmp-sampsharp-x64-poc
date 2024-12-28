@@ -21,7 +21,7 @@
 #include "dotnet/coreclr_delegates.h"
 
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
+//#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage"
 
 //

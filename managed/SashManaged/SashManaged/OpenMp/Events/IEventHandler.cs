@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-public interface IEventHandler2
+public interface IEventHandler
 {
     /// <summary>
     /// Do not call manually. Increases the reference counter to the unmanaged handle of this event handler and creates a handle if it does not exist yet.

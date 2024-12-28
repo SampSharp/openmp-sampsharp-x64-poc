@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IClassEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IClassEventHandler
 {
     bool OnPlayerRequestClass(IPlayer player, uint classId);
 }

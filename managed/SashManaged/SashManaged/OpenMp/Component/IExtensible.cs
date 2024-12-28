@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2]
+[OpenMpApi]
 public readonly partial struct IExtensible
 {
     public partial IExtension GetExtension(UID id);

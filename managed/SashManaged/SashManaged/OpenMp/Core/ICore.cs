@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2]
+[OpenMpApi]
 public readonly partial struct ICore
 {
     public partial SemanticVersion GetVersion();
@@ -9,7 +9,7 @@ public readonly partial struct ICore
 
     public partial IPlayerPool GetPlayers();
 
-    public partial IEventDispatcher2<ICoreEventHandler> GetEventDispatcher();
+    public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
 
     public partial IConfig GetConfig();
 

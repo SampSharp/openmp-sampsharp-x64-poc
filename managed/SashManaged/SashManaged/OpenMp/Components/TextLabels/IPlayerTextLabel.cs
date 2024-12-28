@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(ITextLabelBase))]
+[OpenMpApi(typeof(ITextLabelBase))]
 public readonly partial struct IPlayerTextLabel;

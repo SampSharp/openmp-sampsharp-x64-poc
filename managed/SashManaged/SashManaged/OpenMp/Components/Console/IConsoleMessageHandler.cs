@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2]
+[OpenMpApi]
 public readonly partial struct IConsoleMessageHandler
 {
     public partial void HandleConsoleMessage(string message);

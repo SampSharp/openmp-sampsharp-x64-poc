@@ -1,4 +1,4 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IBaseGangZone))]
+[OpenMpApi(typeof(IBaseGangZone))]
 public readonly partial struct IPlayerGangZone;

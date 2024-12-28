@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IVehicle
 {
     public partial void SetSpawnData(ref VehicleSpawnData data);

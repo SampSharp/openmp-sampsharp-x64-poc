@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible))]
+[OpenMpApi(typeof(IExtensible))]
 public readonly partial struct IConfig
 {
     public partial string GetString(string key);

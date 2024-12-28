@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IActor
 {
     public partial void SetSkin(int id);

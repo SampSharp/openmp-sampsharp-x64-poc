@@ -221,7 +221,7 @@ public  unsafe partial class Foo
     }
 }
 
-[OpenMpApi2]
+[OpenMpApi]
 public readonly partial struct BaseTest
 {
     public partial int GetSomeNumber();
@@ -229,7 +229,7 @@ public readonly partial struct BaseTest
     public partial void SetSomeNumber(int num);
 }
 
-[OpenMpApi2(typeof(BaseTest), Library = "FooLib")]
+[OpenMpApi(typeof(BaseTest), Library = "FooLib")]
 public readonly partial struct TestV2
 {
     public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
@@ -251,7 +251,7 @@ public readonly partial struct TestV2
 
 }
 
-[OpenMpEventHandler2(NativeTypeName = "CoreEventHandler")]
+[OpenMpEventHandler(NativeTypeName = "CoreEventHandler")]
 public partial interface ICoreEventHandler2
 {
     void OnTick(Microseconds micros, TimePoint now);
@@ -266,7 +266,7 @@ public partial interface ICoreEventHandler2
     // });
 }
 
-[OpenMpApi2(typeof(IComponent))]
+[OpenMpApi(typeof(IComponent))]
 public readonly partial struct Ff
 {
     public static UID ComponentId => new();
@@ -285,8 +285,8 @@ public class Cc
     }
 }
 
-[OpenMpEventHandler2(NativeTypeName = "ActorEventHandler")]
-public partial interface IActorEventHandler2 : IEventHandler2
+[OpenMpEventHandler(NativeTypeName = "ActorEventHandler")]
+public partial interface IActorEventHandler2 : IEventHandler
 {
     void OnPlayerGiveDamageActor(IPlayer player, IActor actor, float amount, uint weapon, BodyPart part);
     void OnActorStreamOut(IActor actor, IPlayer forPlayer);

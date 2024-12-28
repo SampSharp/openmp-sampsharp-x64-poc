@@ -11,12 +11,13 @@ using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
 using SashManaged.SourceGenerator.SyntaxFactories;
+using System.Runtime.InteropServices;
 
 namespace SashManaged.SourceGenerator;
 
 /// <summary>
-/// This source generator generates event handler interfaces for OpenMP events. The generated interface contains
-/// a default implementation for IncreaseReference/DecreaseReference methods, which are used to creating an unmanaged
+/// This source generator generates event handler interfaces for open.mp events. The generated interface contains a
+/// default implementation for IncreaseReference/DecreaseReference methods, which are used to creating an unmanaged
 /// event handler for the managed event handler. The implementation invokes the native function
 /// `{EventHandlerName}Impl_create`/_delete to create the unmanaged event handler. The create call will include native
 /// handles of delegate functions for every event method in the interface.
@@ -28,7 +29,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
     {
         var attributedInterfaces = context.SyntaxProvider
             .ForAttributeWithMetadataName(
-                Constants.EventHandlerAttribute2FQN, 
+                Constants.EventHandlerAttributeFQN, 
                 static (s, _) => s is InterfaceDeclarationSyntax str && str.IsPartial(), 
                 static(ctx, ct) => GetInterfaceDeclaration(ctx, ct))
             .Where(x => x is not null);
@@ -41,7 +42,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
                 .WithBaseList(
                     BaseList(SingletonSeparatedList<BaseTypeSyntax>(
                             SimpleBaseType(
-                                IdentifierNameGlobal(Constants.EventHandler2FQN)))));
+                                IdentifierNameGlobal(Constants.EventHandlerFQN)))));
             
             var unit = CompilationUnit()
                 .AddMembers(NamespaceDeclaration(ParseName(info.Symbol.ContainingNamespace.ToDisplayString()))
@@ -78,7 +79,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
                                 MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
                                     IdentifierNameGlobal(Constants.MarshalFQN),
-                                    IdentifierName("GetFunctionPointerForDelegate")))
+                                    IdentifierName(nameof(Marshal.GetFunctionPointerForDelegate))))
                             .WithArgumentList(
                                 ArgumentList(
                                     SingletonSeparatedList(
@@ -95,7 +96,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
                 Identifier("IncreaseReference"))
             .WithExplicitInterfaceSpecifier(
                 ExplicitInterfaceSpecifier(
-                    IdentifierNameGlobal(Constants.EventHandler2FQN)))
+                    IdentifierNameGlobal(Constants.EventHandlerFQN)))
             .WithBody(
                 Block(
                     LocalDeclarationStatement(
@@ -180,7 +181,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
                 Identifier("DecreaseReference"))
             .WithExplicitInterfaceSpecifier(
                 ExplicitInterfaceSpecifier(
-                    IdentifierNameGlobal(Constants.EventHandler2FQN)))
+                    IdentifierNameGlobal(Constants.EventHandlerFQN)))
             .WithBody(
                 Block(
                     LocalDeclarationStatement(

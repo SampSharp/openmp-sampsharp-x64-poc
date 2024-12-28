@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IVehicleEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IVehicleEventHandler
 {
     void OnVehicleStreamIn(IVehicle vehicle, IPlayer player);
     void OnVehicleStreamOut(IVehicle vehicle, IPlayer player);

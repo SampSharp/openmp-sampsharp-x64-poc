@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible), typeof(IIDProvider))]
+[OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct ITextDrawBase
 {
     public partial Vector2 GetPosition();

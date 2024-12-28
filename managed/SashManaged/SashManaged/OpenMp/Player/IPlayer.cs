@@ -1,8 +1,9 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible), typeof(IEntity))]
+[OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IPlayer
 {
     public partial void Kick();
@@ -37,10 +38,7 @@ public readonly partial struct IPlayer
     public partial void GiveWeapon(WeaponSlotData weapon);
     public partial void RemoveWeapon(byte weapon);
     public partial void SetWeaponAmmo(WeaponSlotData data);
-
-    [return: OpenMpApiMarshall]
-    public partial WeaponSlots GetWeapons();
-
+    public partial BlittableStructRef<WeaponSlots> GetWeapons();
     public partial WeaponSlotData GetWeaponSlot(int slot);
     public partial void ResetWeapons();
     public partial void SetArmedWeapon(int weapon);
@@ -94,7 +92,7 @@ public readonly partial struct IPlayer
     public partial void SetGravity(float gravity);
     public partial float GetGravity();
     public partial void SetWorldTime(Hours time);
-    public partial void ApplyAnimation([OpenMpApiMarshall] AnimationData animation, PlayerAnimationSyncType syncType);
+    public partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
     public partial void ClearAnimations(PlayerAnimationSyncType syncType);
     public partial PlayerAnimationData GetAnimationData();
     public partial PlayerSurfingData GetSurfingData();

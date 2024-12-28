@@ -2,7 +2,7 @@
 
 namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IComponent))]
+[OpenMpApi(typeof(IComponent))]
 public readonly partial struct ITextLabelsComponent
 {
     public static UID ComponentId => new(0xa0c57ea80a009742);

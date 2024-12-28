@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public partial interface ICoreEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface ICoreEventHandler
 {
     void OnTick(Microseconds micros, TimePoint now);
 }

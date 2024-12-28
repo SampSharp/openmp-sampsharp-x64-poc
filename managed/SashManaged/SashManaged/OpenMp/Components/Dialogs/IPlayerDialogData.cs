@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtension))]
+[OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerDialogData
 {
     public static UID ExtensionId => new(0xbc03376aa3591a11);

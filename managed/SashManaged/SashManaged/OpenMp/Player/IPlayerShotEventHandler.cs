@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IPlayerShotEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IPlayerShotEventHandler
 {
     bool OnPlayerShotMissed(IPlayer player, ref PlayerBulletData bulletData);
     bool OnPlayerShotPlayer(IPlayer player, IPlayer target, ref PlayerBulletData bulletData);

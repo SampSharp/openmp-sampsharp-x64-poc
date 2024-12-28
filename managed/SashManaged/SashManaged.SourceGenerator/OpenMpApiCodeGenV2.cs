@@ -19,7 +19,7 @@ using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
 namespace SashManaged.SourceGenerator;
 
 /// <summary>
-/// This source generator generates the marshalling interop methods for OpenMP API structs. The generator generates the
+/// This source generator generates the marshalling interop methods for open.mp API structs. The generator generates the
 /// following:
 /// <list type="bullet">
 ///     <item>Implementation of the IPointer interface</item>
@@ -39,7 +39,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var attributedStructs = context.SyntaxProvider.ForAttributeWithMetadataName(
-                Constants.ApiAttribute2FQN,
+                Constants.ApiAttributeFQN,
                 static (s, _) => s is StructDeclarationSyntax str && str.IsPartial(), 
                 static (ctx, ct) => GetStructDeclaration(ctx, ct))
             .Where(x => x is not null);

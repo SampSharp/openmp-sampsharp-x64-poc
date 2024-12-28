@@ -5,9 +5,9 @@
 /// </summary>
 internal static class EventHandlerNativeHandleStorage
 {
-    private static readonly Dictionary<IEventHandler2, (nint handle, int references, Delegate[] delegates)> _refs = [];
+    private static readonly Dictionary<IEventHandler, (nint handle, int references, Delegate[] delegates)> _refs = [];
 
-    public static nint? GetAndIncreaseReference(IEventHandler2 handler)
+    public static nint? GetAndIncreaseReference(IEventHandler handler)
     {
         if (_refs.TryGetValue(handler, out var tuple))
         {
@@ -18,12 +18,12 @@ internal static class EventHandlerNativeHandleStorage
         return null;
     }
 
-    public static void CreateReference(IEventHandler2 handler, nint handle, params Delegate[] delegates)
+    public static void CreateReference(IEventHandler handler, nint handle, params Delegate[] delegates)
     {
         _refs[handler] = (handle, 1, delegates);
     }
 
-    public static nint? GetHandle(IEventHandler2 handler)
+    public static nint? GetHandle(IEventHandler handler)
     {
         return _refs.TryGetValue(handler, out var tuple) ? tuple.handle : null;
     }
@@ -31,7 +31,7 @@ internal static class EventHandlerNativeHandleStorage
     /// <summary>
     /// Returns handle when handle should be destroyed.
     /// </summary>
-    public static nint? GetAndDecreaseReference(IEventHandler2 handler)
+    public static nint? GetAndDecreaseReference(IEventHandler handler)
     {
         if (!_refs.TryGetValue(handler, out var tuple))
         {

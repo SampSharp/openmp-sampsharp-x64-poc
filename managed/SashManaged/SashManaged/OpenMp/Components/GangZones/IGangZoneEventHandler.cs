@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IGangZoneEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IGangZoneEventHandler
 {
     void OnPlayerEnterGangZone(IPlayer player, IGangZone zone);
     void OnPlayerLeaveGangZone(IPlayer player, IGangZone zone);

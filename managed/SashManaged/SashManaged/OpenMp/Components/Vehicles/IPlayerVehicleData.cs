@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtension))]
+[OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerVehicleData
 {
     public static UID ExtensionId => new(0xa960485be6c70fb2);

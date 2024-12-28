@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IPlayerConnectEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IPlayerConnectEventHandler
 {
     void OnIncomingConnection(IPlayer player, StringView ipAddress, ushort port);
     void OnPlayerConnect(IPlayer player);

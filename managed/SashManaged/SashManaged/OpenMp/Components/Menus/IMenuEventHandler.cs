@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IMenuEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IMenuEventHandler
 {
     void OnPlayerSelectedMenuRow(IPlayer player, byte row);
     void OnPlayerExitedMenu(IPlayer player);

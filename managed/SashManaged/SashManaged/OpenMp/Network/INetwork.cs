@@ -1,12 +1,12 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtensible))]
+[OpenMpApi(typeof(IExtensible))]
 public readonly partial struct INetwork
 {
     public partial ENetworkType GetNetworkType();
-    public partial IEventDispatcher2<INetworkEventHandler> GetEventDispatcher();
-    public partial IEventDispatcher2<INetworkInEventHandler> GetInEventDispatcher();
-    public partial IEventDispatcher2<INetworkOutEventHandler> GetOutEventDispatcher();
+    public partial IEventDispatcher<INetworkEventHandler> GetEventDispatcher();
+    public partial IEventDispatcher<INetworkInEventHandler> GetInEventDispatcher();
+    public partial IEventDispatcher<INetworkOutEventHandler> GetOutEventDispatcher();
     public partial bool SendPacket(IPlayer peer, SpanLite<byte> data, int channel, bool dispatchEvents = true);
     public partial bool BroadcastPacket(SpanLite<byte> data, int channel, IPlayer exceptPeer = default, bool dispatchEvents = true);
     public partial bool SendRPC(IPlayer peer, int id, SpanLite<byte> data, int channel, bool dispatchEvents = true);

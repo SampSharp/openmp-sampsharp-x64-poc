@@ -1,6 +1,6 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpApi2(typeof(IExtension))]
+[OpenMpApi(typeof(IExtension))]
 public readonly partial struct INetworkQueryExtension
 {
     public static UID ExtensionId => new(0xfd46e147ea474971);

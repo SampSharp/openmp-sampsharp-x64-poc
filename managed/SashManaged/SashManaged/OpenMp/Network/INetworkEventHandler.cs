@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface INetworkEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface INetworkEventHandler
 {
     void OnPeerConnect(IPlayer peer);
     void OnPeerDisconnect(IPlayer peer, PeerDisconnectReason reason);

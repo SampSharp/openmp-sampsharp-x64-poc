@@ -1,7 +1,7 @@
 ﻿namespace SashManaged.OpenMp;
 
-[OpenMpEventHandler2]
-public interface IPlayerUpdateEventHandler : IEventHandler2
+[OpenMpEventHandler]
+public partial interface IPlayerUpdateEventHandler
 {
     bool OnPlayerUpdate(IPlayer player, TimePoint now);
 }
