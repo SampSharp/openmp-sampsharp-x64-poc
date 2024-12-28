@@ -173,7 +173,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode} chat_input_filter: {chat_input_filter}");
 
         // test bans
-        var ban = new BanEntry(new HybridString46("1.2.3.5"), TimePoint.FromTime(DateTimeOffset.UtcNow), new HybridString25("name"), new HybridString32("reason"));
+        var ban = new BanEntry(new HybridString46("1.2.3.5"), TimePoint.FromDateTimeOffset(DateTimeOffset.UtcNow), new HybridString25("name"), new HybridString32("reason"));
 
         cfg.AddBan(ban);
         cfg.WriteBans();
