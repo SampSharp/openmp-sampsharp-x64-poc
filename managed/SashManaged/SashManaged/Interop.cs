@@ -167,12 +167,13 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         // test config
         var nameInConfig = cfg.GetString("name"u8);
         Console.WriteLine($"Name in config: {nameInConfig}");
-        var announce = cfg.GetBool("announce"u8);
-        var use_lan_mode = cfg.GetBool("network.use_lan_mode"u8);
-        Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode}");
+        var announce = cfg.GetBool("announce"u8).Value;
+        var use_lan_mode = cfg.GetBool("network.use_lan_mode"u8).Value;
+        var chat_input_filter = cfg.GetBool("chat_input_filter"u8).Value;
+        Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode} chat_input_filter: {chat_input_filter}");
 
         // test bans
-        var ban = new BanEntry(new HybridString46("1.2.3.4"), 1234, new HybridString25("name"), new HybridString32("reason"));
+        var ban = new BanEntry(new HybridString46("1.2.3.5"), TimePoint.FromTime(DateTimeOffset.UtcNow), new HybridString25("name"), new HybridString32("reason"));
 
         cfg.AddBan(ban);
         cfg.WriteBans();

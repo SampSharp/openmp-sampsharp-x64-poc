@@ -13,6 +13,22 @@ public readonly struct TimePoint
         return new Nanoseconds(nanos);
     }
 
+    private TimePoint(long value)
+    {
+        Value = new Nanoseconds(value);
+    }
+
+    public static TimePoint FromDateTimeOffset(DateTimeOffset time)
+    {
+        var ticksSinceEpoch = time.UtcTicks - DateTimeOffset.UnixEpoch.Ticks;
+        return new TimePoint(ticksSinceEpoch);
+    }
+
+    public DateTimeOffset ToDateTimeOffset()
+    {
+        return new DateTimeOffset(Value.Value + DateTimeOffset.UnixEpoch.Ticks, TimeSpan.Zero);
+    }
+
     public override string ToString()
     {
         return Value.ToString();

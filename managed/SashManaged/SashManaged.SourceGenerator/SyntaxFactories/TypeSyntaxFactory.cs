@@ -37,6 +37,11 @@ public static class TypeSyntaxFactory
 
     public static TypeSyntax TypeNameGlobal(ITypeSymbol symbol)
     {
+        if (symbol.TypeKind == TypeKind.TypeParameter)
+        {
+            return ParseTypeName(symbol.Name);
+        }
+
         return ParseTypeName(
             symbol.SpecialType == SpecialType.None
                 ? TypeStringGlobal(symbol)
@@ -45,6 +50,7 @@ public static class TypeSyntaxFactory
 
     public static TypeSyntax TypeNameGlobal(IMethodSymbol returnTypeOfMethod)
     {
+        
         var result = TypeNameGlobal(returnTypeOfMethod.ReturnType);
 
         if (returnTypeOfMethod.ReturnsByRef || returnTypeOfMethod.ReturnsByRefReadonly)

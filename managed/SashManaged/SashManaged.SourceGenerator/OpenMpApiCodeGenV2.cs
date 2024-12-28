@@ -165,6 +165,30 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         TokenList(
                             Token(SyntaxKind.PublicKeyword)));
 
+                SimpleNameSyntax memberName = IdentifierName(implementingMethod.Name);
+                if (implementingMethod.TypeParameters.Length > 0)
+                {
+                    method = method.WithTypeParameterList(
+                        TypeParameterList(
+                            SeparatedList(
+                                implementingMethod.TypeParameters.Select(x => TypeParameter(x.Name)))));
+
+                    memberName = GenericName(
+                            Identifier(implementingMethod.Name))
+                        .WithTypeArgumentList(
+                            TypeArgumentList(
+                                SeparatedList<TypeSyntax>(
+                                    implementingMethod.TypeParameters.Select(x => IdentifierName(x.Name)))));
+                }
+
+                method = method.WithConstraintClauses(
+                    List(
+                        implementingMethod.TypeParameters
+                            .Select(x => TypeParameterConstraintClause(IdentifierName(x.Name))
+                                .WithConstraints(
+                                    SeparatedList(
+                                        x.ConstraintTypes.Select(y => (TypeParameterConstraintSyntax)ToTypeConstraint(y)))))));    
+
                 var invocation =  
                     InvocationExpression(
                         MemberAccessExpression(
@@ -176,12 +200,12 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                                         SingletonSeparatedList(
                                             Argument(
                                                 IdentifierName("_handle"))))),
-                            IdentifierName(implementingMethod.Name)))
+                            memberName))
                         .WithArgumentList(
                             ArgumentList(
                                 SeparatedList(
                                     implementingMethod.Parameters.Select(GetArgumentForParameter))));
-
+                
                 if (implementingMethod.ReturnsVoid)
                 {
                     method = method.WithBody(
@@ -218,6 +242,13 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             result = result.Add(CreateFromHandleMethod(ctx, Constants.ExtensionInterfaceFQN));
         }
         return result;
+    }
+
+    private static TypeConstraintSyntax ToTypeConstraint(ITypeSymbol typeSymbol)
+    {
+        var typeSyntax = ParseTypeName(typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+
+        return TypeConstraint(typeSyntax);
     }
 
     /// <summary>
