@@ -2,44 +2,73 @@
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using SashManaged.OpenMp;
+using System.Runtime.CompilerServices;
 
 namespace SashManaged;
 
-[CustomMarshaller(typeof(string), MarshalMode.Default, typeof(StringViewMarshaller))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToUnmanagedIn))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToUnmanagedOut))]
+[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToUnmanagedRef))]
 public static unsafe class StringViewMarshaller
 {
-    public static StringView ConvertToUnmanaged(string? managed)
+    public ref struct ManagedToUnmanagedIn
     {
-        if (managed == null)
+        public static int BufferSize => 128;
+
+        private byte* _heapBuffer;
+        private int _byteCount;
+
+        private Span<byte> _buffer;
+
+        public void FromManaged(string? managed, Span<byte> buffer)
         {
-            return default;
-        }
+            _buffer = buffer;
+
+            if (managed == null)
+            {
+                return;
+            }
+
+            _byteCount = Encoding.UTF8.GetByteCount(managed);
+
+            if (_byteCount <= buffer.Length)
+            {
+                Encoding.UTF8.GetBytes(managed, buffer[.._byteCount]);
+                _heapBuffer = null;
+            }
+            else
+            {
+                // buffer on stack too small, allocate on heap
+                _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount);
+
+                var heapBuffer = new Span<byte>(_heapBuffer, _byteCount);
+                Encoding.UTF8.GetBytes(managed, heapBuffer);
+            }
             
-        var byteCount = Encoding.UTF8.GetByteCount(managed);
-        var ptrBuffer = (byte*)Marshal.AllocHGlobal(byteCount); // TODO: leak: not being freed
-
-        var span = new Span<byte>(ptrBuffer, byteCount);
-        Encoding.UTF8.GetBytes(managed, span);
-
-        return new StringView(ptrBuffer, byteCount);
-    }
-
-    public static string? ConvertToManaged(StringView unmanaged)
-    {
-        return unmanaged.ToString();
-    }
-
-    public static void Free(StringView unmanaged)
-    {
-        if (unmanaged._reference == null)
-        {
-            return;
         }
-        Marshal.FreeHGlobal((nint)unmanaged._reference);
-    }
 
+        public ref byte GetPinnableReference()
+        {
+            // should not be required, but let's be safe
+            return ref _buffer.GetPinnableReference();
+        }
+
+        public readonly StringView ToUnmanaged()
+        {
+            return _heapBuffer == null 
+                ? new StringView((byte*)Unsafe.AsPointer(ref _buffer.GetPinnableReference()), new Size(_buffer.Length)) 
+                : new StringView(_heapBuffer, new Size(_byteCount));
+        }
+
+        public void Free()
+        {
+            if (_heapBuffer != null)
+            {
+                Marshal.FreeHGlobal((nint)_heapBuffer);
+                _heapBuffer = null;
+            }
+        }
+    }
     public ref struct ManagedToUnmanagedOut
     {
         private string? _result;
@@ -54,54 +83,56 @@ public static unsafe class StringViewMarshaller
             return _result!;
         }
 
-        public readonly void Free()
+        public void Free()
         {
         }
     }
-    public ref struct ManagedToUnmanagedIn
+
+    public ref struct ManagedToUnmanagedRef
     {
-        public static int BufferSize => 128;
+        private byte* _heapBuffer;
+        private int _byteCount;
+        private string? _result;
+        public ManagedToUnmanagedRef()
+        {
+        }
 
-        private byte* _allocatedBuffer;
-        private StringView _result;
-
-        public void FromManaged(string? managed, Span<byte> buffer)
+        public void FromManaged(string? managed)
         {
             if (managed == null)
             {
                 return;
             }
 
-            var byteCount = Encoding.UTF8.GetByteCount(managed);
+            _byteCount = Encoding.UTF8.GetByteCount(managed);
+            _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount);
 
-            Span<byte> spanToUse;
-            if (byteCount <= buffer.Length)
-            {
-                spanToUse = buffer[..byteCount];
-                _allocatedBuffer = null;
-            }
-            else
-            {
-                _allocatedBuffer = (byte*)Marshal.AllocHGlobal(byteCount);
-                spanToUse = new Span<byte>(_allocatedBuffer, byteCount);
-            }
-            
-            Encoding.UTF8.GetBytes(managed, spanToUse);
-
-            _result = (ReadOnlySpan<byte>)spanToUse;
+            var heapBuffer = new Span<byte>(_heapBuffer, _byteCount);
+            Encoding.UTF8.GetBytes(managed, heapBuffer);
         }
 
-        public readonly StringView ToUnmanaged()
+        public StringView ToUnmanaged()
+        {
+            return new StringView(_heapBuffer, new Size(_byteCount));
+        }
+
+        public void FromUnmanaged(StringView value)
+        {
+            _result = value.ToString();
+        }
+
+        public string? ToManaged()
         {
             return _result;
         }
 
         public void Free()
         {
-            if (_allocatedBuffer != null)
+            if(_heapBuffer != null)
             {
-                Marshal.FreeHGlobal((nint)_allocatedBuffer);
-                _allocatedBuffer = null;
+                Marshal.FreeHGlobal((nint)_heapBuffer);
+                _heapBuffer = null;
+                _byteCount = 0;
             }
         }
     }

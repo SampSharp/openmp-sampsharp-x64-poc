@@ -5,7 +5,13 @@ using SashManaged.OpenMp;
 
 namespace SashManaged;
 
-public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpawnEventHandler, IPlayerShotEventHandler, IPlayerPoolEventHandler, IConsoleEventHandler
+public class Interop : 
+    // IPlayerConnectEventHandler,
+    ICoreEventHandler//, 
+    // IPlayerSpawnEventHandler, 
+    // IPlayerShotEventHandler, 
+    // IPlayerPoolEventHandler, 
+    // IConsoleEventHandler
 {
     private static ICore _core;
     private static IVehiclesComponent _vehicles;
@@ -141,7 +147,7 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
     public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
     {
         Console.WriteLine("command list request");
-        commands.Emplace("banana"u8);
+        // commands.Emplace("banana"u8);
         foreach (var txt in commands)
         {
             Console.WriteLine("SASH> " + txt);
@@ -188,9 +194,9 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
             Console.WriteLine($"ban: {b.Name} {b.AddressString} {b.Reason} {b.Time.ToDateTimeOffset()}");
         }
 
-        var alias = cfg.GetNameFromAlias("minconnectiontime"u8);
+        // var alias = cfg.GetNameFromAlias("minconnectiontime"u8);
 
-        Console.WriteLine($"alias: {alias.First} {alias.Second}");
+        // Console.WriteLine($"alias: {alias.First} {alias.Second}");
         _vehicles = componentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
@@ -198,17 +204,17 @@ public class Interop : IPlayerConnectEventHandler, ICoreEventHandler, IPlayerSpa
         _players = players;
         var handler = new Interop();
 
-        players.GetPlayerSpawnDispatcher().AddEventHandler(handler);
-        players.GetPlayerConnectDispatcher().AddEventHandler(handler);
-        players.GetPlayerShotDispatcher().AddEventHandler(handler);
+        // players.GetPlayerSpawnDispatcher().AddEventHandler(handler);
+        // players.GetPlayerConnectDispatcher().AddEventHandler(handler);
+        // players.GetPlayerShotDispatcher().AddEventHandler(handler);
 
         var dispatcher = core.GetEventDispatcher();
         Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
         dispatcher.AddEventHandler(handler);
         Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
 
-        componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
-        players.GetPoolEventDispatcher().AddEventHandler(handler);
+        // componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
+        // players.GetPoolEventDispatcher().AddEventHandler(handler);
         Console.WriteLine("iter players...");
         foreach (var player1 in _players.Players())
         {

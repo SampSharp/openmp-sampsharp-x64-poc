@@ -14,8 +14,4 @@ public static class BooleanMarshaller
     {
         return unmanaged;
     }
-
-    // public static void Free(BlittableBoolean unmanaged)
-    // {
-    // }
 }

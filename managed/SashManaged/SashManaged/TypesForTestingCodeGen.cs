@@ -9,7 +9,14 @@ public partial class Testing
 {
     [LibraryImport("SampSharp")]
     public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
+
+    // TODO: handle ref readonly like in
+    [LibraryImport("SampSharp")]
+    public static partial int WithRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
     
+    [LibraryImport("SampSharp")]
+    public static partial int WithRealInString([MarshalUsing(typeof(StringViewMarshaller))] in string str);
+
     [LibraryImport("SampSharp")]
     public static partial int WithInString([MarshalUsing(typeof(StringViewMarshaller))] string str);
 
@@ -22,7 +29,6 @@ public partial class Testing
     [LibraryImport("SampSharp")]
     public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SettableCoreDataType type);
 
-    
     [LibraryImport("SampSharp")]
     public static partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);
     
@@ -34,7 +40,6 @@ public partial class Testing
 
     [LibraryImport("SampSharp")]
     [return: MarshalUsing(typeof(FooMarshaller))] public static partial Foo FooTestOut(SettableCoreDataType type);
-
 
     [LibraryImport("SampSharp")]
     public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
@@ -235,7 +240,7 @@ public readonly partial struct TestV2
     public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
 
     public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
-    public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+    // public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
 
     public partial string TestReturnString();
@@ -247,7 +252,7 @@ public readonly partial struct TestV2
     
     [return: MarshalUsing(typeof(FooMarshaller))] public partial Foo FooTestOut(SettableCoreDataType type);
 
-    public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
+    // public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
 
 }
 

@@ -18,7 +18,7 @@ public readonly partial struct IPlayerPool
     public partial IEventDispatcher<IPlayerClickEventHandler> GetPlayerClickDispatcher();
     public partial IEventDispatcher<IPlayerCheckEventHandler> GetPlayerCheckDispatcher();
     public partial IEventDispatcher<IPlayerUpdateEventHandler> GetPlayerUpdateDispatcher();
-    public partial IEventDispatcher<IPlayerPoolEventHandler> GetPoolEventDispatcher();
+    // public partial IEventDispatcher<IPlayerPoolEventHandler> GetPoolEventDispatcher();
     public partial bool IsNameTaken(StringView name, IPlayer skip);
     public partial void SendClientMessageToAll(ref Colour colour, StringView message);
     public partial void SendChatMessageToAll(IPlayer from, StringView message);
