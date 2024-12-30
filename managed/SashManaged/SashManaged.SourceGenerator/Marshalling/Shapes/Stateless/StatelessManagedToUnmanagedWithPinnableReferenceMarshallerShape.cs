@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-namespace SashManaged.SourceGenerator.Marshalling.Stateless;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateless;
 
 /// <summary>
 /// Stateless Managed->Unmanaged with pinnable reference.
@@ -11,7 +11,7 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateless;
 public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
 {
     public override bool RequiresLocal => false;
-    
+
     public override FixedStatementSyntax Pin(IParameterSymbol? parameterSymbol)
     {
         return FixedStatement(VariableDeclaration(

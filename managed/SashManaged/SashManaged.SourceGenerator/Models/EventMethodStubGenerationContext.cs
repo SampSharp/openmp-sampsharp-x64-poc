@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SashManaged.SourceGenerator.Marshalling;
+using SashManaged.SourceGenerator.Marshalling.Shapes;
 
 namespace SashManaged.SourceGenerator;
 

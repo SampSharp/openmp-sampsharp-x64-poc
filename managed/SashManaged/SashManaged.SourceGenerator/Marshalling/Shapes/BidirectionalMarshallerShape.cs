@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SashManaged.SourceGenerator.Marshalling;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes;
 
 public class BidirectionalMarshallerShape(IMarshallerShape inShape, IMarshallerShape outShape) : IMarshallerShape
 {

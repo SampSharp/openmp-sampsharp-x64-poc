@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
+using SashManaged.SourceGenerator.Marshalling.Shapes;
 using SashManaged.SourceGenerator.Marshalling.Stateful;
 using SashManaged.SourceGenerator.Marshalling.Stateless;
 

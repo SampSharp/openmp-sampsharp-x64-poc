@@ -1,17 +1,15 @@
-﻿using System.Linq;
-using System.Text;
-using System.Threading;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Marshalling;
-
+using SashManaged.SourceGenerator.SyntaxFactories;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
-using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
-using SashManaged.SourceGenerator.SyntaxFactories;
-using System.Runtime.InteropServices;
 
 namespace SashManaged.SourceGenerator;
 
@@ -23,7 +21,7 @@ namespace SashManaged.SourceGenerator;
 /// handles of delegate functions for every event method in the interface.
 /// </summary>
 [Generator]
-public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
+public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

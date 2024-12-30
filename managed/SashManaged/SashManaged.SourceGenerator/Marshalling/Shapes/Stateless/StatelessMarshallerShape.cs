@@ -1,9 +1,10 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SashManaged.SourceGenerator.Marshalling.Shapes;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator.Marshalling.Stateless;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateless;
 
 public abstract class StatelessMarshallerShape(string nativeTypeName, string marshallerTypeName) : MarshallerShape(nativeTypeName, marshallerTypeName)
 {

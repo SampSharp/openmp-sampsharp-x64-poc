@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SashManaged.SourceGenerator.Marshalling.Stateful;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateful;
 
 /// <summary>
 /// Stateful Unmanaged->Managed with Guaranteed Unmarshalling

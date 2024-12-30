@@ -30,7 +30,7 @@ public static class SymbolExtensions
     {
         return attributes.Any(x =>
                 string.Equals(
-                    x.AttributeClass?.ToDisplayString(_fullyQualifiedFormatWithoutGlobal),
+                    x.AttributeClass?.ToDisplayString(FullyQualifiedFormatWithoutGlobal),
                     attributeName,
                     StringComparison.Ordinal
                 )
@@ -65,13 +65,13 @@ public static class SymbolExtensions
         return attribute
             .Where(x =>
                 string.Equals(
-                    x.AttributeClass?.ToDisplayString(_fullyQualifiedFormatWithoutGlobal),
+                    x.AttributeClass?.ToDisplayString(FullyQualifiedFormatWithoutGlobal),
                     attributeName,
                     StringComparison.Ordinal
                 )
             );
     }
     
-    private static readonly SymbolDisplayFormat _fullyQualifiedFormatWithoutGlobal =
+    private static readonly SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal =
         SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining);
 }

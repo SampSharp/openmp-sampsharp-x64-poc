@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator.Marshalling;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes;
 
 public abstract class MarshallerShape(string nativeTypeName, string marshallerTypeName) : IMarshallerShape
 {
@@ -27,7 +27,7 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
     {
         return List<StatementSyntax>();
     }
-    
+
     public virtual SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol? parameterSymbol)
     {
         return List<StatementSyntax>();
@@ -79,7 +79,7 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
     {
         return parameterSymbol?.Name ?? "__retVal";
     }
-    
+
     public virtual SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol)
     {
         return List<StatementSyntax>();
@@ -87,6 +87,6 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
 
     protected static string GetUnmanagedVar(IParameterSymbol? parameterSymbol)
     {
-        return $"__{(parameterSymbol?.Name ?? "retVal")}_native";
+        return $"__{parameterSymbol?.Name ?? "retVal"}_native";
     }
 }

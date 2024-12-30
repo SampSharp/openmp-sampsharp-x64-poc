@@ -1,16 +1,14 @@
-﻿using System;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SashManaged.SourceGenerator.Marshalling;
+using SashManaged.SourceGenerator.Marshalling.Shapes;
+using SashManaged.SourceGenerator.SyntaxFactories;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.CSharp;
-using SashManaged.SourceGenerator.Marshalling;
-using SashManaged.SourceGenerator.SyntaxFactories;
-
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
@@ -34,7 +32,7 @@ namespace SashManaged.SourceGenerator;
 /// </list>
 /// </summary>
 [Generator]
-public class OpenMpApiCodeGenV2 : IIncrementalGenerator
+public class OpenMpApiSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {

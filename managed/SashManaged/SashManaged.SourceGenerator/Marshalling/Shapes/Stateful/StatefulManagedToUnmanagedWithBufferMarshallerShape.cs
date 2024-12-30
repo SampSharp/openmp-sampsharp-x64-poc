@@ -3,17 +3,17 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator.Marshalling.Stateless;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateful;
 
 /// <summary>
-/// Stateless Managed->Unmanaged with Caller-Allocated Buffer
+/// Stateful Managed->Unmanaged with Caller Allocated Buffer
 /// </summary>
-public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatefulManagedToUnmanagedWithBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify, bool pinMarshaller) : StatefulManagedToUnmanagedMarshallerShape(nativeTypeName, marshallerTypeName, notify, pinMarshaller)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
         var bufferVar = $"__{parameterSymbol?.Name ?? "retVal"}_native__buffer";
-        
+
         return List<StatementSyntax>([
             // global::System.Span<byte> __varName_native__buffer = stackalloc byte[MarshallerType.BufferSize];
             LocalDeclarationStatement(
@@ -47,35 +47,19 @@ public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape
                                                                     IdentifierName(MarshallerTypeName),
                                                                     IdentifierName("BufferSize")))))))))))),
             
-            // MarshallerType.ConvertToUnmanaged(managed, __varName_native__buffer);
+            // marshaller.FromManaged(managed, stackalloc byte[type.BufferSize]);
             ExpressionStatement(
-                AssignmentExpression(
-                    SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(GetUnmanagedVar(parameterSymbol)),
-                    InvocationExpression(
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName(MarshallerTypeName),
-                                IdentifierName("ConvertToUnmanaged")
-                            )
-                        )
-                        .WithArgumentList(
-                            ArgumentList(
-                                SeparatedList([
+                InvocationExpression(
+                        MemberAccessExpression(
+                            SyntaxKind.SimpleMemberAccessExpression,
+                            IdentifierName(GetMarshallerVar(parameterSymbol)),
+                            IdentifierName("FromManaged")))
+                    .WithArgumentList(
+                        ArgumentList(
+                            SeparatedList(
+                                new[] {
                                     Argument(IdentifierName(GetManagedVar(parameterSymbol))),
                                     Argument(IdentifierName(bufferVar))
-                                ])
-                            )
-                        )))]);
-    }
-
-    public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol)
-    {
-        // type.Free(unmanaged);
-        return !hasFree
-            ? List<StatementSyntax>()
-            : SingletonList<StatementSyntax>(
-                ExpressionStatement(
-                    InvokeWithArgument("Free", GetUnmanagedVar(parameterSymbol))));
+                                }))))]);
     }
 }

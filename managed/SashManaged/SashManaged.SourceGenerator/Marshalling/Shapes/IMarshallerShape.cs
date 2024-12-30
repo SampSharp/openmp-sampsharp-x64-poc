@@ -1,12 +1,12 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SashManaged.SourceGenerator.Marshalling;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes;
 
 public interface IMarshallerShape
 {
     TypeSyntax GetNativeType();
-    
+
     SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol);
     SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol);
     SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol? parameterSymbol);

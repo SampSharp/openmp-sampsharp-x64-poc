@@ -2,16 +2,16 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
-namespace SashManaged.SourceGenerator.Marshalling.Stateless;
+namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateless;
 
 /// <summary>
-/// Stateless Unmanaged->Managed
+/// Stateless Managed->Unmanaged
 /// </summary>
-public class StatelessUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatelessManagedToUnmanagedMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
 {
-    public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol? parameterSymbol)
+    public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
-        return InvokeAndAssign(GetManagedVar(parameterSymbol), "ConvertToManaged", GetUnmanagedVar(parameterSymbol));
+        return InvokeAndAssign(GetUnmanagedVar(parameterSymbol), "ConvertToUnmanaged", GetManagedVar(parameterSymbol));
     }
 
     public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol)
