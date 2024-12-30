@@ -28,31 +28,8 @@ public class StatefulManagedToUnmanagedMarshallerShape(string nativeTypeName, st
                                     Identifier($"__{parameterSymbol?.Name}_native__unused"))
                                 .WithInitializer(
                                     EqualsValueClause(
-                                        IdentifierName($"__{parameterSymbol?.Name}_native_marshaller"))))),
+                                        IdentifierName(GetMarshallerVar(parameterSymbol)))))),
                 Block());
-    }
-
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
-    {
-        // TODO: if not ref, then not scoped
-
-        // scoped type marshaller = new();
-        return SingletonList<StatementSyntax>(
-            LocalDeclarationStatement(
-                    VariableDeclaration(
-                        IdentifierName(MarshallerTypeName),
-                        SingletonSeparatedList(
-                            VariableDeclarator(Identifier($"__{parameterSymbol?.Name}_native_marshaller"))
-                                .WithInitializer(
-                                    EqualsValueClause(
-                                        ImplicitObjectCreationExpression()
-                                    )
-                                )
-                        )
-                    )
-                )
-                .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword)))
-        );
     }
 
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)

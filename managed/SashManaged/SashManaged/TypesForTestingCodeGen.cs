@@ -240,7 +240,9 @@ public readonly partial struct TestV2
     public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
 
     public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
-    // public partial int TestRefString(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+
+    public partial int TestRefString(ref string str);
+
     public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
 
     public partial string TestReturnString();
@@ -252,7 +254,7 @@ public readonly partial struct TestV2
     
     [return: MarshalUsing(typeof(FooMarshaller))] public partial Foo FooTestOut(SettableCoreDataType type);
 
-    // public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
+    public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
 
 }
 

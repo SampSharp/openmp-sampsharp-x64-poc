@@ -10,29 +10,6 @@ namespace SashManaged.SourceGenerator.Marshalling.Stateful;
 /// </summary>
 public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
 {
-    public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
-    {
-        // TODO: if not ref, then not scoped
-
-        // scoped type marshaller = new();
-        return SingletonList<StatementSyntax>(
-            LocalDeclarationStatement(
-                    VariableDeclaration(
-                        IdentifierName(MarshallerTypeName),
-                        SingletonSeparatedList(
-                            VariableDeclarator(Identifier(GetMarshallerVar(parameterSymbol)))
-                                .WithInitializer(
-                                    EqualsValueClause(
-                                        ImplicitObjectCreationExpression()
-                                    )
-                                )
-                        )
-                    )
-                )
-                .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword)))
-        );
-    }
-
     public override SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol? parameterSymbol)
     {
         // marshaller.FromUnmanaged(unmanaged);

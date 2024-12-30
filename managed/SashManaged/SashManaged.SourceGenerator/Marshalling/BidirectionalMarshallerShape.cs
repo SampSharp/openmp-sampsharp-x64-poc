@@ -12,7 +12,8 @@ public class BidirectionalMarshallerShape(IMarshallerShape inShape, IMarshallerS
 
     public SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
-        return inShape.Setup(parameterSymbol).AddRange(outShape.Setup(parameterSymbol));
+        // marshaller setups should be the same for both shapes
+        return inShape.Setup(parameterSymbol);
     }
 
     public SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
@@ -53,8 +54,7 @@ public class BidirectionalMarshallerShape(IMarshallerShape inShape, IMarshallerS
 
     public SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol? parameterSymbol)
     {
-        // only unmanaged -> managed should require callee allocated cleanup
-        return outShape.CleanupCalleeAllocated(parameterSymbol);
+        return default;
     }
 
     public SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol? parameterSymbol)
