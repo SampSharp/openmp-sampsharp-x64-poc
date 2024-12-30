@@ -2,7 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Models;
 
 public record MethodStubGenerationContext(
     MethodDeclarationSyntax Declaration,

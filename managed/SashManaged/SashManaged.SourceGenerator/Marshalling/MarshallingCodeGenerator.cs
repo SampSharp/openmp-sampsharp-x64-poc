@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using SashManaged.SourceGenerator.Marshalling;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Marshalling;
 
 public static class MarshallingCodeGenerator
 {

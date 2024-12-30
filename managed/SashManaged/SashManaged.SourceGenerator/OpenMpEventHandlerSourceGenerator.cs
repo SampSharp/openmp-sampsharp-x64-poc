@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Marshalling;
+using SashManaged.SourceGenerator.Models;
 using SashManaged.SourceGenerator.SyntaxFactories;
 using System.Linq;
 using System.Runtime.InteropServices;

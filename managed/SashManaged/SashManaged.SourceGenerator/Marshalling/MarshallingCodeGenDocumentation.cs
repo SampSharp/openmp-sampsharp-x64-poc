@@ -1,4 +1,4 @@
-﻿namespace SashManaged.SourceGenerator;
+﻿namespace SashManaged.SourceGenerator.Marshalling;
 
 public static class MarshallingCodeGenDocumentation
 {

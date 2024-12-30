@@ -1,7 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Models;
 
 public record StructStubGenerationContext(
     ISymbol Symbol,

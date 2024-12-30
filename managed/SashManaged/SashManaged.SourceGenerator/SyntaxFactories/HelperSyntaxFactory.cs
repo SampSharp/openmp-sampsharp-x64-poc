@@ -4,7 +4,9 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SashManaged.SourceGenerator.Marshalling;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
+using SashManaged.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 

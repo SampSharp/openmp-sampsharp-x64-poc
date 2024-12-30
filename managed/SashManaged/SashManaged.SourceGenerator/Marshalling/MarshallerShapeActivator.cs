@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
-using SashManaged.SourceGenerator.Marshalling.Stateful;
-using SashManaged.SourceGenerator.Marshalling.Stateless;
+using SashManaged.SourceGenerator.Marshalling.Shapes.Stateful;
+using SashManaged.SourceGenerator.Marshalling.Shapes.Stateless;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
