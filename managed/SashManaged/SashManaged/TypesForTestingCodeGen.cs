@@ -7,45 +7,59 @@ namespace SashManaged;
 
 public partial class Testing
 {
-    [LibraryImport("SampSharp")]
-    public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
-
-    // TODO: handle ref readonly like in
-    [LibraryImport("SampSharp")]
-    public static partial int WithRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
+    //
+    // // TODO: handle ref readonly like in
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithRealInString([MarshalUsing(typeof(StringViewMarshaller))] in string str);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithInString([MarshalUsing(typeof(StringViewMarshaller))] string str);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithOutString([MarshalUsing(typeof(StringViewMarshaller))] out string str);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithDefaultMarshaller([MarshalUsing(typeof(BooleanMarshaller))]ref bool b);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SettableCoreDataType type);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int FooTestIn2([MarshalUsing(typeof(FooMarshaller))] in Foo ptr, SettableCoreDataType type);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int FooTestIn3([MarshalUsing(typeof(FooMarshaller))] Foo ptr, [MarshalUsing(typeof(FooMarshaller))] Foo ptr3, [MarshalUsing(typeof(FooMarshaller))] in Foo ptr2, SettableCoreDataType type, [MarshalUsing(typeof(StringViewMarshaller))] string str);
+    //
+    // [LibraryImport("SampSharp")]
+    // [return: MarshalUsing(typeof(FooMarshaller))] public static partial Foo FooTestOut(SettableCoreDataType type);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
+    //
+    // [LibraryImport("SampSharp")]
+    // public static partial BarStruct GetBar();
     
     [LibraryImport("SampSharp")]
-    public static partial int WithRealInString([MarshalUsing(typeof(StringViewMarshaller))] in string str);
-
+    public static partial int TestString([MarshalUsing(typeof(StringViewMarshaller))] string message);
     [LibraryImport("SampSharp")]
-    public static partial int WithInString([MarshalUsing(typeof(StringViewMarshaller))] string str);
-
+    public static partial int TestInString([MarshalUsing(typeof(StringViewMarshaller))] in string message);
     [LibraryImport("SampSharp")]
-    public static partial int WithOutString([MarshalUsing(typeof(StringViewMarshaller))] out string str);
-
+    public static partial int TestOutString([MarshalUsing(typeof(StringViewMarshaller))] out string message);
     [LibraryImport("SampSharp")]
-    public static partial int WithDefaultMarshaller([MarshalUsing(typeof(BooleanMarshaller))]ref bool b);
-
+    public static partial int TestRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
     [LibraryImport("SampSharp")]
-    public static partial int WithToManagedFinallyAndOnInvoked([MarshalUsing(typeof(SafeHandleMarshaller<SafeHandle>))] ref SafeHandle ptr, SettableCoreDataType type);
-
-    [LibraryImport("SampSharp")]
-    public static partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);
+    public static partial int TestRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
     
-    [LibraryImport("SampSharp")]
-    public static partial int FooTestIn2([MarshalUsing(typeof(FooMarshaller))] in Foo ptr, SettableCoreDataType type);
-    
-    [LibraryImport("SampSharp")]
-    public static partial int FooTestIn3([MarshalUsing(typeof(FooMarshaller))] Foo ptr, [MarshalUsing(typeof(FooMarshaller))] Foo ptr3, [MarshalUsing(typeof(FooMarshaller))] in Foo ptr2, SettableCoreDataType type, [MarshalUsing(typeof(StringViewMarshaller))] string str);
-
-    [LibraryImport("SampSharp")]
-    [return: MarshalUsing(typeof(FooMarshaller))] public static partial Foo FooTestOut(SettableCoreDataType type);
-
-    [LibraryImport("SampSharp")]
-    public static partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
-
-    [LibraryImport("SampSharp")]
-    public static partial BarStruct GetBar();
+    // [LibraryImport("SampSharp")]
+    // public static partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]
@@ -237,24 +251,18 @@ public readonly partial struct BaseTest
 [OpenMpApi(typeof(BaseTest), Library = "FooLib")]
 public readonly partial struct TestV2
 {
-    public partial int TestInBool([MarshalUsing(typeof(BooleanMarshaller))] bool b);
-
-    public partial int TestInString(int style, string message, ref Milliseconds time, ref Milliseconds remaining);
-
+    public partial int TestString(string message);
+    public partial int TestInString(in string message);
+    public partial int TestOutString(out string message);
     public partial int TestRefString(ref string str);
+    public partial int TestRefReadonlyString(ref readonly string str);
+    public partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
 
-    public partial int TestOutString(int style, out string message, ref Milliseconds time, ref Milliseconds remaining);
-
-    public partial string TestReturnString();
-
-    
-    public partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);
-    
-    public partial int FooTestIn2([MarshalUsing(typeof(FooMarshaller))] in Foo ptr, SettableCoreDataType type);
-    
-    [return: MarshalUsing(typeof(FooMarshaller))] public partial Foo FooTestOut(SettableCoreDataType type);
-
-    public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
+    // public partial string TestReturnString();
+    // public partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);
+    // public partial int FooTestIn2([MarshalUsing(typeof(FooMarshaller))] in Foo ptr, SettableCoreDataType type);
+    // [return: MarshalUsing(typeof(FooMarshaller))] public partial Foo FooTestOut(SettableCoreDataType type);
+    // public partial int FooTestRef([MarshalUsing(typeof(FooMarshaller))] ref Foo ptr, SettableCoreDataType type);
 
 }
 

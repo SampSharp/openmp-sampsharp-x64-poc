@@ -161,7 +161,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                 var method = MethodDeclaration(
                         TypeNameGlobal(implementingMethod), 
                         implementingMethod.Name)
-                    .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters))
+                    .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters, false))
                     .WithModifiers(
                         TokenList(
                             Token(SyntaxKind.PublicKeyword)));
@@ -205,7 +205,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         .WithArgumentList(
                             ArgumentList(
                                 SeparatedList(
-                                    implementingMethod.Parameters.Select(GetArgumentForParameter))));
+                                    implementingMethod.Parameters.Select(GetArgumentParameter))));
                 
                 if (implementingMethod.ReturnsVoid)
                 {
@@ -632,7 +632,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
      
         return MethodDeclaration(TypeNameGlobal(ctx.Symbol), ctx.Declaration.Identifier)
             .WithModifiers(ctx.Declaration.Modifiers)
-            .WithParameterList(ToParameterListSyntax(ctx.Symbol.Parameters))
+            .WithParameterList(ToParameterListSyntax(ctx.Symbol.Parameters, false))
             .WithBody(invocation);
     }
 
@@ -653,7 +653,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                 ArgumentList(
                     SingletonSeparatedList(Argument(IdentifierName("_handle")))
                         .AddRange(
-                            ctx.Parameters.Select(GetArgumentForParameter)
+                            ctx.Parameters.Select(GetArgumentForPInvokeParameter)
                         )
                 )
             );
@@ -680,7 +680,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
                         SingletonSeparatedList(
                                 Argument(IdentifierName("_handle")))
                             .AddRange(
-                                ctx.Parameters.Select(GetArgumentForParameter))));
+                                ctx.Parameters.Select(GetArgumentForPInvokeParameter))));
         
         if (!ctx.Symbol.ReturnsVoid)
         {
@@ -836,16 +836,23 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
 
     }
     
-    private static ArgumentSyntax GetArgumentForParameter(ParameterStubGenerationContext ctx)
+    private static ArgumentSyntax GetArgumentForPInvokeParameter(ParameterStubGenerationContext ctx)
     {
-        return ctx.MarshallerShape != null 
-            ? ctx.MarshallerShape.GetArgument(ctx) 
-            : WithParameterRefToken(Argument(IdentifierName(ctx.Symbol.Name)), ctx.Symbol);
+        if (ctx.MarshallerShape != null)
+        {
+            return ctx.MarshallerShape.GetArgument(ctx);
+        }
+        else
+        {
+            ExpressionSyntax expr = IdentifierName(ctx.Symbol.Name);
+            return WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
+        }
     }
 
-    private static ArgumentSyntax GetArgumentForParameter(IParameterSymbol symbol)
+    
+    private static ArgumentSyntax GetArgumentParameter(IParameterSymbol symbol)
     {
-        return WithParameterRefToken(Argument(IdentifierName(symbol.Name)), symbol);
+        return WithPInvokeParameterRefToken(Argument(IdentifierName(symbol.Name)), symbol);
     }
 
     /// <summary>
@@ -907,7 +914,7 @@ public class OpenMpApiCodeGenV2 : IIncrementalGenerator
             library: ctx.Library, 
             externName: ToExternName(ctx),
             externReturnType: externReturnType, 
-            parameters: ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape)), 
+            parameters: ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, true)), 
             parametersPrefix: handleParam);
     }
 

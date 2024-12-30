@@ -40,6 +40,6 @@ public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(str
 
     public override ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx)
     {
-        return HelperSyntaxFactory.WithParameterRefToken(Argument(CastExpression(GetNativeType(), IdentifierName($"__{ctx.Symbol.Name}_native"))), ctx.Symbol);
+        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(CastExpression(GetNativeType(), IdentifierName($"__{ctx.Symbol.Name}_native"))), ctx.Symbol);
     }
 }

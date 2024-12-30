@@ -226,7 +226,7 @@ public class OpenMpEventHandlerCodeGenV2 : IIncrementalGenerator
 
         var delegates = ctx.Methods.Select(method =>
         {
-            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape)));
+            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, false)));
             var returnType = method.ReturnMarshallerShape?.GetNativeType() ?? 
                              TypeNameGlobal(method.Symbol.ReturnType);
 

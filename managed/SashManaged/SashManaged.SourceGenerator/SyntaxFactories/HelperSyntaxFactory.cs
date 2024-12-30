@@ -38,14 +38,14 @@ public static class HelperSyntaxFactory
             .WithLeadingTrivia(Comment(MarshallingCodeGenDocumentation.COMMENT_P_INVOKE));
     }
     
-    public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, MethodStubGenerationContext ctx)
+    public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, MethodStubGenerationContext ctx, bool toExtern)
     {
-        return ToParameterListSyntax([first], ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape)));
+        return ToParameterListSyntax([first], ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, toExtern)));
     }
     
-    public static ParameterListSyntax ToParameterListSyntax(ImmutableArray<IParameterSymbol> parameters)
+    public static ParameterListSyntax ToParameterListSyntax(ImmutableArray<IParameterSymbol> parameters, bool toExtern)
     {
-        return ToParameterListSyntax([], parameters.Select(x => ToForwardInfo(x, null)));
+        return ToParameterListSyntax([], parameters.Select(x => ToForwardInfo(x, null, toExtern)));
     }
 
     public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax[] prefix, IEnumerable<ParamForwardInfo> parameters, bool removeIn = false)
@@ -59,9 +59,24 @@ public static class HelperSyntaxFactory
                             .WithModifiers(GetRefTokens(parameter.RefKind, removeIn)))));
     }
     
-    public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape)
+    public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape, bool toExtern)
     {
-        return new ParamForwardInfo(symbol.Name, marshallerShape?.GetNativeType() ?? TypeNameGlobal(symbol.Type), symbol.RefKind);
+        var paramType = marshallerShape?.GetNativeType();
+        
+        if (paramType == null)
+        {
+            paramType =  TypeNameGlobal(symbol.Type);
+        }
+
+        var refKind = symbol.RefKind;
+
+        if (marshallerShape != null && toExtern && symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        {
+            paramType = PointerType(paramType);
+            refKind = RefKind.None;
+        }
+
+        return new ParamForwardInfo(symbol.Name, paramType, refKind);
     }
 
     private static SyntaxTokenList GetRefTokens(RefKind refKind, bool removeIn)
@@ -69,13 +84,14 @@ public static class HelperSyntaxFactory
         return refKind switch
         {
             RefKind.Ref => TokenList(Token(SyntaxKind.RefKeyword)),
+            RefKind.RefReadOnlyParameter => TokenList(Token(SyntaxKind.RefKeyword), Token(SyntaxKind.ReadOnlyKeyword)),
             RefKind.Out => TokenList(Token(SyntaxKind.OutKeyword)),
             RefKind.In => removeIn ? default : TokenList(Token(SyntaxKind.InKeyword)),
             _ => default
         };
     }
 
-    public static ArgumentSyntax WithParameterRefToken(ArgumentSyntax argument, IParameterSymbol parameter)
+    public static ArgumentSyntax WithPInvokeParameterRefToken(ArgumentSyntax argument, IParameterSymbol parameter)
     {
         switch (parameter.RefKind)
         {

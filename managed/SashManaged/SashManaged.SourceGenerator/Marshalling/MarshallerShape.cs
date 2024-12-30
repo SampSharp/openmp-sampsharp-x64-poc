@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -64,7 +65,14 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
 
     public virtual ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx)
     {
-        return HelperSyntaxFactory.WithParameterRefToken(Argument(IdentifierName($"__{ctx.Symbol.Name}_native")), ctx.Symbol);
+        ExpressionSyntax expr = IdentifierName($"__{ctx.Symbol.Name}_native");
+
+        if (ctx.Symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        {
+            expr = PrefixUnaryExpression(SyntaxKind.AddressOfExpression, expr);
+        }
+
+        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
     }
 
     protected static string GetManagedVar(IParameterSymbol? parameterSymbol)
