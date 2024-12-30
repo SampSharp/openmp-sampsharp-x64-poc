@@ -28,13 +28,7 @@ public static class SymbolExtensions
 
     public static bool HasAttribute(this ImmutableArray<AttributeData> attributes, string attributeName)
     {
-        return attributes.Any(x =>
-                string.Equals(
-                    x.AttributeClass?.ToDisplayString(FullyQualifiedFormatWithoutGlobal),
-                    attributeName,
-                    StringComparison.Ordinal
-                )
-            );
+        return attributes.Any(x => x.AttributeClass?.IsSame(attributeName) ?? false);
     } 
     
     public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, string attributeName)
@@ -70,6 +64,16 @@ public static class SymbolExtensions
                     StringComparison.Ordinal
                 )
             );
+    }
+
+    public static bool IsSame(this ITypeSymbol symbol, string name)
+    {
+        return string.Equals(symbol.ToDisplayString(FullyQualifiedFormatWithoutGlobal), name, StringComparison.Ordinal);
+    }
+
+    public static bool IsSame(this ISymbol symbol, ISymbol other)
+    {
+        return SymbolEqualityComparer.Default.Equals(symbol, other);
     }
     
     private static readonly SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal =

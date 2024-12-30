@@ -93,9 +93,6 @@ public static unsafe class StringViewMarshaller
         private byte* _heapBuffer;
         private int _byteCount;
         private string? _result;
-        public ManagedToUnmanagedRef()
-        {
-        }
 
         public void FromManaged(string? managed)
         {

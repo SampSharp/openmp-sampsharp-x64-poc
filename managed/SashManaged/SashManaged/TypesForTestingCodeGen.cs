@@ -10,7 +10,6 @@ public partial class Testing
     // [LibraryImport("SampSharp")]
     // public static partial int WithRefString([MarshalUsing(typeof(StringViewMarshaller))] ref string str);
     //
-    // // TODO: handle ref readonly like in
     // [LibraryImport("SampSharp")]
     // public static partial int WithRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
     //
@@ -58,8 +57,8 @@ public partial class Testing
     [LibraryImport("SampSharp")]
     public static partial int TestRefReadonlyString([MarshalUsing(typeof(StringViewMarshaller))] ref readonly string str);
     
-    // [LibraryImport("SampSharp")]
-    // public static partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
+    [LibraryImport("SampSharp")]
+    public static partial void ApplyAnimation(BlittableStructRef<AnimationData> animation, PlayerAnimationSyncType syncType);
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]
@@ -256,7 +255,7 @@ public readonly partial struct TestV2
     public partial int TestOutString(out string message);
     public partial int TestRefString(ref string str);
     public partial int TestRefReadonlyString(ref readonly string str);
-    public partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
+    public partial void ApplyAnimation(BlittableStructRef<AnimationData> animation, PlayerAnimationSyncType syncType);
 
     // public partial string TestReturnString();
     // public partial int FooTestIn([MarshalUsing(typeof(FooMarshaller))] Foo ptr, SettableCoreDataType type);

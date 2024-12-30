@@ -16,6 +16,8 @@ public static class Constants
 
     public const string CustomMarshallerAttributeFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute";
 
+    public const string GenericPlaceholderFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute.GenericPlaceholder";
+
     // SashManaged.OpenMp
     public const string EventHandlerFQN = "SashManaged.OpenMp.IEventHandler";
     

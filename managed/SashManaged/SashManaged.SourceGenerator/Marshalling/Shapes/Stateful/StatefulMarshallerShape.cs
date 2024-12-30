@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.CSharp;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using SashManaged.SourceGenerator.Marshalling.Shapes;
 
 namespace SashManaged.SourceGenerator.Marshalling.Shapes.Stateful;
 

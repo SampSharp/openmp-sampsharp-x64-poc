@@ -3,7 +3,7 @@
 namespace SashManaged
 {
     [StructLayout(LayoutKind.Sequential)]
-    public readonly unsafe struct BlittableStructRef<T> where T : struct
+    public readonly struct BlittableStructRef<T> where T : struct
     {
         private readonly nint _ptr;
 

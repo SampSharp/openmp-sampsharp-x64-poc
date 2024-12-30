@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.CodeAnalysis;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
 
@@ -65,8 +64,8 @@ public static class MarshallerShapeFactory
             marshaller = wellKnownMarshaller;
         }
 
-        var filteredModes = GetModes(marshaller)
-            .Where(x => SymbolEqualityComparer.Default.Equals(type, x.ManagedType))
+        var filteredModes = GetModes(marshaller, type)
+            .Where(x => type.IsSame(x.ManagedType))
             .ToList();
 
         if (filteredModes.Count == 0)
@@ -129,26 +128,73 @@ public static class MarshallerShapeFactory
     /// <summary>
     /// Returns all available marshaller modes for the specified marshaller type.
     /// </summary>
-    private static MarshallerModeInfo[] GetModes(ITypeSymbol marshaller)
+    private static MarshallerModeInfo[] GetModes(ITypeSymbol marshaller, ITypeSymbol forType)
     {
         return marshaller.GetAttributes(Constants.CustomMarshallerAttributeFQN)
-            .Select(GetModeFromAttribute)
+            .Select(x => GetModeFromAttribute(x, forType))
             .Where(x => x != null)
+            .Select(x => x!)
             .ToArray();
     }
 
     /// <summary>
     /// Returns marshaller mode info for the specified [CustomMarshaller] attribute.
     /// </summary>
-    private static MarshallerModeInfo GetModeFromAttribute(AttributeData attributeData)
+    private static MarshallerModeInfo? GetModeFromAttribute(AttributeData attributeData, ITypeSymbol forType)
     {
         var managedType = (ITypeSymbol)attributeData.ConstructorArguments[0].Value!;
         var mode = ModeForValue(attributeData.ConstructorArguments[1].Value!);
-        var marshallerType = (ITypeSymbol)attributeData.ConstructorArguments[2].Value!;
 
+        if (attributeData.ConstructorArguments[2].Value! is not INamedTypeSymbol marshallerType)
+        {
+            return null;
+        }
+
+        if (managedType.IsSame(Constants.GenericPlaceholderFQN))
+        {
+            managedType = forType;
+        }
+
+        // Replace generic placeholders with the actual type
+        if (marshallerType is { IsGenericType: true })
+        {
+            marshallerType = ReplacePlaceholderWithType(marshallerType, forType);
+        }
+
+        if (marshallerType.ContainingType is { IsGenericType: true })
+        {
+            var containing = ReplacePlaceholderWithType(marshallerType.ContainingType, forType);
+
+            // TODO: might not work properly for nested generic types
+            marshallerType = containing.GetMembers(marshallerType.Name)
+                .OfType<INamedTypeSymbol>()
+                .First();
+        }
+
+        
         return new MarshallerModeInfo(managedType, mode, marshallerType);
     }
+
+    private static INamedTypeSymbol ReplacePlaceholderWithType(INamedTypeSymbol namedType, ITypeSymbol type)
+    {
+        var replacements = 0;
+        var typeArguments = namedType.TypeArguments;
+        while (typeArguments.Any(x => x.IsSame(Constants.GenericPlaceholderFQN)))
+        {
+            var placeholder = namedType.TypeArguments.First(x => x.IsSame(Constants.GenericPlaceholderFQN));
     
+            typeArguments = typeArguments.Replace(placeholder, type);
+            replacements++;
+        }
+    
+        if (replacements > 0)
+        {
+            return namedType.ConstructedFrom.Construct(typeArguments.ToArray());
+        }
+    
+        return namedType;
+    }
+
     private static MarshallerModeValue ModeForValue(object constant)
     {
         return constant is int number 
