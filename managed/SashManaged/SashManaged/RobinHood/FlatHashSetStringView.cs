@@ -5,13 +5,13 @@ using SashManaged.OpenMp;
 namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct FlatHashSetStringView : IEnumerable<StringView>
+public readonly struct FlatHashSetStringView : IReadOnlyCollection<StringView>
 {
     private readonly nint _data;
 
     private static unsafe StringView Dereference(ref FlatPtrHashSetIterator iterator)
     {
-        return *(StringView*)iterator._keyVals;
+        return *(StringView*)iterator.Value;
     }
 
     public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();

@@ -5,12 +5,14 @@ namespace SashManaged;
 [StructLayout(LayoutKind.Sequential)]
 internal readonly struct FlatPtrHashSetIterator
 {
-    public readonly nint _keyVals;
-    private readonly nint _info;
+    private readonly nint _value; // NodePtr mKeyVals{nullptr};
+    private readonly nint _info; // uint8_t const* mInfo{nullptr};
+
+    public nint Value => _value;
 
     public bool Equals(FlatPtrHashSetIterator other)
     {
-        return _keyVals == other._keyVals;
+        return _value == other._value;
     }
 
     public override bool Equals(object? obj)
@@ -20,7 +22,7 @@ internal readonly struct FlatPtrHashSetIterator
 
     public override int GetHashCode()
     {
-        return _keyVals.GetHashCode();
+        return _value.GetHashCode();
     }
     
     public static bool operator ==(FlatPtrHashSetIterator a, FlatPtrHashSetIterator b)

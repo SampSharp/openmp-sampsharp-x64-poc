@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct FlatPtrHashSet<T> : IEnumerable<T> where T : unmanaged
+public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unmanaged
 {
     private readonly nint _data;
 
     private static unsafe T Dereference(ref FlatPtrHashSetIterator iterator)
     {
-        return *(T*)iterator._keyVals;
+        return *(T*)iterator.Value;
     }
 
     public int Count => RobinHood.FlatPtrHashSet_size(_data).Value.ToInt32();

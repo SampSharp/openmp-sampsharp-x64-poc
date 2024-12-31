@@ -42,6 +42,8 @@ public static class Constants
 
     public const string FunctionAttributeFQN = "SashManaged.OpenMpApiFunctionAttribute";
 
+    public const string NumberedTypeGeneratorAttributeFQN = "SashManaged.NumberedTypeGeneratorAttribute";
+
     public const string PointerFQN = "SashManaged.IPointer";
     
     public const string StringViewMarshallerFQN = "SashManaged.StringViewMarshaller";
