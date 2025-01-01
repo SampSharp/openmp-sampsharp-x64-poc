@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
 using SashManaged.SourceGenerator.Marshalling.Shapes.Stateful;
 using SashManaged.SourceGenerator.Marshalling.Shapes.Stateless;
+using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Marshalling;
 
@@ -41,12 +42,12 @@ public static class MarshallerShapeActivator
         
         if (toManaged != null && SymbolEqualityComparer.Default.Equals(toManaged.ReturnType, info.ManagedType))
         {
-            return new StatefulUnmanagedToManagedMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType));
+            return new StatefulUnmanagedToManagedMarshallerShape(ToGlobalTypeString(unmanagedType), ToGlobalTypeString(info.MarshallerType));
         }
 
         if (toManagedFinally != null && SymbolEqualityComparer.Default.Equals(toManagedFinally.ReturnType, info.ManagedType))
         {
-            return new StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType));
+            return new StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(ToGlobalTypeString(unmanagedType), ToGlobalTypeString(info.MarshallerType));
         }
 
         return null;
@@ -74,8 +75,8 @@ public static class MarshallerShapeActivator
         if (getPinnableReferenceStatic?.ReturnsByRef == true && refKind == RefKind.None)
         {
             return new StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(
-                GetTypeString(unmanagedType), 
-                GetTypeString(info.MarshallerType));
+                ToGlobalTypeString(unmanagedType), 
+                ToGlobalTypeString(info.MarshallerType));
         }
 
         var getPinnableReference = GetMethod(info.MarshallerType, true, "GetPinnableReference");
@@ -87,8 +88,8 @@ public static class MarshallerShapeActivator
         {
             // no buffer
             return new StatefulManagedToUnmanagedMarshallerShape(
-                GetTypeString(unmanagedType), 
-                GetTypeString(info.MarshallerType), 
+                ToGlobalTypeString(unmanagedType), 
+                ToGlobalTypeString(info.MarshallerType), 
                 hasOnInvoked, 
                 getPinnableReference != null);
         }
@@ -97,8 +98,8 @@ public static class MarshallerShapeActivator
         {
             // with buffer;
             return new StatefulManagedToUnmanagedWithBufferMarshallerShape(
-                GetTypeString(unmanagedType), 
-                GetTypeString(info.MarshallerType), 
+                ToGlobalTypeString(unmanagedType), 
+                ToGlobalTypeString(info.MarshallerType), 
                 hasOnInvoked,
                 getPinnableReference != null);
         }
@@ -136,12 +137,12 @@ public static class MarshallerShapeActivator
             if (getPinnableReference?.ReturnsByRef == true && refKind == RefKind.None)
             {
                 return new StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(
-                    GetTypeString(toUnmanaged.ReturnType), 
-                    GetTypeString(info.MarshallerType));
+                    ToGlobalTypeString(toUnmanaged.ReturnType), 
+                    ToGlobalTypeString(info.MarshallerType));
             }
 
             var hasFree = GetMethod(info.MarshallerType, false, "Free", toUnmanaged.ReturnType) != null;
-            return new StatelessManagedToUnmanagedMarshallerShape(GetTypeString(toUnmanaged.ReturnType), GetTypeString(info.MarshallerType), hasFree);
+            return new StatelessManagedToUnmanagedMarshallerShape(ToGlobalTypeString(toUnmanaged.ReturnType), ToGlobalTypeString(info.MarshallerType), hasFree);
         }
 
         if (bufferSize != null && toUnmanagedBuffer != null)
@@ -149,8 +150,8 @@ public static class MarshallerShapeActivator
             var hasFree = GetMethod(info.MarshallerType, false, "Free", toUnmanagedBuffer.ReturnType) != null;
 
             return new StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(
-                GetTypeString(toUnmanagedBuffer.ReturnType), 
-                GetTypeString(info.MarshallerType), 
+                ToGlobalTypeString(toUnmanagedBuffer.ReturnType), 
+                ToGlobalTypeString(info.MarshallerType), 
                 hasFree);
         }
 
@@ -171,7 +172,7 @@ public static class MarshallerShapeActivator
             var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
 
 
-            return new StatelessUnmanagedToManagedMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType), hasFree);
+            return new StatelessUnmanagedToManagedMarshallerShape(ToGlobalTypeString(unmanagedType), ToGlobalTypeString(info.MarshallerType), hasFree);
         }
           
         var toManagedFinally = info.MarshallerType
@@ -185,7 +186,7 @@ public static class MarshallerShapeActivator
 
             var hasFree = GetMethod(info.MarshallerType, false, "Free", unmanagedType) != null;
 
-            return new StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(GetTypeString(unmanagedType), GetTypeString(info.MarshallerType), hasFree);
+            return new StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(ToGlobalTypeString(unmanagedType), ToGlobalTypeString(info.MarshallerType), hasFree);
         }
 
         return null;
@@ -203,14 +204,7 @@ public static class MarshallerShapeActivator
 
         return new BidirectionalMarshallerShape(inShape, outShape);
     }
-    
-    private static string GetTypeString(ITypeSymbol symbol)
-    {
-        return symbol.SpecialType == SpecialType.None
-            ? $"global::{symbol.ToDisplayString()}"
-            : symbol.ToDisplayString();
-    }
-    
+
     private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name)
     {
         return GetMethod(type, stateful, name, Array.Empty<ITypeSymbol>());

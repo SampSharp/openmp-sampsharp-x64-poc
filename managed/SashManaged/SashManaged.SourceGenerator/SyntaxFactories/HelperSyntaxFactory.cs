@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Marshalling;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
-using SashManaged.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
@@ -40,11 +39,6 @@ public static class HelperSyntaxFactory
             .WithLeadingTrivia(Comment(MarshallingCodeGenDocumentation.COMMENT_P_INVOKE));
     }
     
-    public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax first, MethodStubGenerationContext ctx, bool toExtern)
-    {
-        return ToParameterListSyntax([first], ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, toExtern)));
-    }
-    
     public static ParameterListSyntax ToParameterListSyntax(ImmutableArray<IParameterSymbol> parameters, bool toExtern)
     {
         return ToParameterListSyntax([], parameters.Select(x => ToForwardInfo(x, null, toExtern)));
@@ -63,12 +57,7 @@ public static class HelperSyntaxFactory
     
     public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape, bool toExtern)
     {
-        var paramType = marshallerShape?.GetNativeType();
-        
-        if (paramType == null)
-        {
-            paramType =  TypeNameGlobal(symbol.Type);
-        }
+        var paramType = marshallerShape?.GetNativeType() ?? TypeNameGlobal(symbol.Type);
 
         var refKind = symbol.RefKind;
 

@@ -1,4 +1,4 @@
-﻿namespace SashManaged.SourceGenerator;
+﻿namespace SashManaged.SourceGenerator.Helpers;
 
 public static class StringUtil
 {

@@ -10,29 +10,19 @@ namespace SashManaged.SourceGenerator.SyntaxFactories;
 /// </summary>
 public static class TypeSyntaxFactory
 {
-    public static IdentifierNameSyntax IdentifierNameGlobal(ITypeSymbol symbol)
-    {
-        return IdentifierName(TypeStringGlobal(symbol));
-    }
-
     public static IdentifierNameSyntax IdentifierNameGlobal(string typeFQN)
     {
-        return IdentifierName(TypeStringGlobal(typeFQN));
-    }
-
-    public static SyntaxToken IdentifierGlobal(ITypeSymbol symbol)
-    {
-        return Identifier(TypeStringGlobal(symbol));
+        return IdentifierName(ToGlobalTypeString(typeFQN));
     }
 
     public static SyntaxToken IdentifierGlobal(string typeFQN)
     {
-        return Identifier(TypeStringGlobal(typeFQN));
+        return Identifier(ToGlobalTypeString(typeFQN));
     }
 
     public static TypeSyntax TypeNameGlobal(string typeFQN)
     {
-        return ParseTypeName(TypeStringGlobal(typeFQN));
+        return ParseTypeName(ToGlobalTypeString(typeFQN));
     }
 
     public static TypeSyntax TypeNameGlobal(ITypeSymbol symbol)
@@ -44,13 +34,12 @@ public static class TypeSyntaxFactory
 
         return ParseTypeName(
             symbol.SpecialType == SpecialType.None
-                ? TypeStringGlobal(symbol)
+                ? ToGlobalTypeString(symbol)
                 : symbol.ToDisplayString());
     }
 
     public static TypeSyntax TypeNameGlobal(IMethodSymbol returnTypeOfMethod)
     {
-        
         var result = TypeNameGlobal(returnTypeOfMethod.ReturnType);
 
         if (returnTypeOfMethod.ReturnsByRef || returnTypeOfMethod.ReturnsByRefReadonly)
@@ -62,15 +51,25 @@ public static class TypeSyntaxFactory
 
         return result;
     }
+    
+    public static TypeSyntax GenericType(string typeFQN, TypeSyntax typeArgument)
+    {
+        return GenericName(
+                IdentifierGlobal(typeFQN))
+            .WithTypeArgumentList(
+                TypeArgumentList(
+                    SingletonSeparatedList(typeArgument)));
+    }
 
-    public static string TypeStringGlobal(string typeFQN)
+    public static string ToGlobalTypeString(string typeFQN)
     {
         return $"global::{typeFQN}";
     }
 
-    public static string TypeStringGlobal(ITypeSymbol symbol)
+    public static string ToGlobalTypeString(ITypeSymbol symbol)
     {
-        return TypeStringGlobal(symbol.ToDisplayString());
+        return symbol.SpecialType == SpecialType.None 
+            ? ToGlobalTypeString(symbol.ToDisplayString()) 
+            : symbol.ToDisplayString();
     }
-
 }

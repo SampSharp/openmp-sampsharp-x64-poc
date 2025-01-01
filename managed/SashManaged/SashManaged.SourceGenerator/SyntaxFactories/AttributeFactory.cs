@@ -12,10 +12,10 @@ namespace SashManaged.SourceGenerator.SyntaxFactories;
 /// </summary>
 public static class AttributeFactory
 {
-    public static readonly string GENERATED_CODE_FQN = $"global::{typeof(GeneratedCodeAttribute).FullName}";
-    public static readonly string SKIP_LOCALS_INIT_FQN = "global::System.Runtime.CompilerServices.SkipLocalsInitAttribute";
-    public static readonly string DLL_IMPORT_FQN = $"global::{typeof(DllImportAttribute).FullName}";
-    private static readonly string CALLING_CONVENTION_FQN = $"global::{typeof(CallingConvention).FullName}";
+    private static readonly string GeneratedCodeFQN = $"global::{typeof(GeneratedCodeAttribute).FullName}";
+    private const string SkipLocalsInitFQN = "global::System.Runtime.CompilerServices.SkipLocalsInitAttribute";
+    private static readonly string DllImportFQN = $"global::{typeof(DllImportAttribute).FullName}";
+    private static readonly string CallingConventionFQN = $"global::{typeof(CallingConvention).FullName}";
 
     public static AttributeListSyntax GeneratedCode()
     {
@@ -24,21 +24,19 @@ public static class AttributeFactory
         return AttributeList(
             SingletonSeparatedList(
                 Attribute(
-                        ParseName(GENERATED_CODE_FQN))
+                        ParseName(GeneratedCodeFQN))
                     .WithArgumentList(
                         AttributeArgumentList(
-                            SeparatedList(
-                                new[]{
-                                    AttributeArgument(
-                                        LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(assemblyName.Name))),
-                                    AttributeArgument(
-                                        LiteralExpression(
-                                            SyntaxKind.StringLiteralExpression,
-                                            Literal(assemblyName.Version.ToString())))
-                                }
-                            )))));
+                            SeparatedList([
+                                AttributeArgument(
+                                    LiteralExpression(
+                                        SyntaxKind.StringLiteralExpression,
+                                        Literal(assemblyName.Name))),
+                                AttributeArgument(
+                                    LiteralExpression(
+                                        SyntaxKind.StringLiteralExpression,
+                                        Literal(assemblyName.Version.ToString())))
+                            ])))));
     }
 
     public static AttributeListSyntax SkipLocalsInit()
@@ -46,21 +44,21 @@ public static class AttributeFactory
         return AttributeList(
             SingletonSeparatedList(
                 Attribute(
-                    ParseName(SKIP_LOCALS_INIT_FQN))));
+                    ParseName(SkipLocalsInitFQN))));
     }
 
     public static AttributeListSyntax DllImport(string library, string entryPoint, CallingConvention callingConvention = CallingConvention.Cdecl)
     {
         var conv = MemberAccessExpression(
             SyntaxKind.SimpleMemberAccessExpression,
-            ParseTypeName(CALLING_CONVENTION_FQN),
+            ParseTypeName(CallingConventionFQN),
             IdentifierName(callingConvention.ToString()));
 
         return AttributeList(
             SingletonSeparatedList(
-                Attribute(ParseName(DLL_IMPORT_FQN),
+                Attribute(ParseName(DllImportFQN),
                     AttributeArgumentList(
-                        SeparatedList(new[] {
+                        SeparatedList([
                             AttributeArgument(
                                 LiteralExpression(SyntaxKind.StringLiteralExpression, Literal(library))
                             ),
@@ -74,7 +72,7 @@ public static class AttributeFactory
                                     LiteralExpression(SyntaxKind.TrueLiteralExpression)
                                 )
                                 .WithNameEquals(NameEquals(nameof(DllImportAttribute.ExactSpelling)))
-                        })
+                        ])
                     )
                 )
             )

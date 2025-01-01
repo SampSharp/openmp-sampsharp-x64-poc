@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.CodeAnalysis;
+using SashManaged.SourceGenerator.Helpers;
 using SashManaged.SourceGenerator.Marshalling.Shapes;
 
 namespace SashManaged.SourceGenerator.Marshalling;

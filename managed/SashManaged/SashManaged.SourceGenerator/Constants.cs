@@ -34,8 +34,6 @@ public static class Constants
     // SashManaged
     public const string ApiAttributeFQN = "SashManaged.OpenMpApiAttribute";
 
-    public const string HybridStringGeneratorAttributeFQN = "SashManaged.OpenMpHybridStringGeneratorAttribute";
-    
     public const string EventHandlerAttributeFQN = "SashManaged.OpenMpEventHandlerAttribute";
 
     public const string OverloadAttributeFQN = "SashManaged.OpenMpApiOverloadAttribute";

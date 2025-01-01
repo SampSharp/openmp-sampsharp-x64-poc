@@ -11,8 +11,9 @@ using System.Threading;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
+using SashManaged.SourceGenerator.Helpers;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Generators;
 
 /// <summary>
 /// This source generator generates event handler interfaces for open.mp events. The generated interface contains a
@@ -41,7 +42,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 .WithBaseList(
                     BaseList(SingletonSeparatedList<BaseTypeSyntax>(
                             SimpleBaseType(
-                                IdentifierNameGlobal(Constants.EventHandlerFQN)))));
+                                TypeNameGlobal(Constants.EventHandlerFQN)))));
             
             var unit = CompilationUnit()
                 .AddMembers(NamespaceDeclaration(ParseName(info.Symbol.ContainingNamespace.ToDisplayString()))
@@ -77,7 +78,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         InvocationExpression(
                                 MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierNameGlobal(Constants.MarshalFQN),
+                                    TypeNameGlobal(Constants.MarshalFQN),
                                     IdentifierName(nameof(Marshal.GetFunctionPointerForDelegate))))
                             .WithArgumentList(
                                 ArgumentList(
@@ -111,7 +112,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                                                 InvocationExpression(
                                                         MemberAccessExpression(
                                                             SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
+                                                            TypeNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
                                                             IdentifierName("GetAndIncreaseReference")))
                                                     .WithArgumentList(
                                                         ArgumentList(
@@ -131,8 +132,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                                         IdentifierName("Value")))))),
                     LocalDeclarationStatement(
                         VariableDeclaration(
-                                IdentifierName(
-                                    IdentifierGlobal(Constants.DelegateFQN)))
+                                TypeNameGlobal(Constants.DelegateFQN))
                             .WithVariables(
                                 SeparatedList(delegateVars))),
                     LocalDeclarationStatement(
@@ -158,7 +158,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         InvocationExpression(
                                 MemberAccessExpression(
                                     SyntaxKind.SimpleMemberAccessExpression,
-                                    IdentifierNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
+                                    TypeNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
                                     IdentifierName("CreateReference")))
                             .WithArgumentList(
                                 ArgumentList(
@@ -195,8 +195,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                                             EqualsValueClause(
                                                 InvocationExpression(
                                                         MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
+                                                            SyntaxKind.SimpleMemberAccessExpression, 
+                                                            TypeNameGlobal(Constants.EventHandlerNativeHandleStorageFQN),
                                                             IdentifierName("GetAndDecreaseReference")))
                                                     .WithArgumentList(
                                                         ArgumentList(

@@ -6,16 +6,10 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Helpers;
 
 public static class SymbolExtensions
 {
-        
-    public static bool HasAttribute(this ISymbol symbol, string attributeName)
-    {
-        return symbol.GetAttributes().HasAttribute(attributeName);
-    }
-    
     public static bool IsPartial(this MemberDeclarationSyntax syntax)
     {
         return syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
@@ -26,11 +20,6 @@ public static class SymbolExtensions
         return syntax.Modifiers.Any(m => m.IsKind(modifier));
     }
 
-    public static bool HasAttribute(this ImmutableArray<AttributeData> attributes, string attributeName)
-    {
-        return attributes.Any(x => x.AttributeClass?.IsSame(attributeName) ?? false);
-    } 
-    
     public static IEnumerable<AttributeData> GetAttributes(this ISymbol symbol, string attributeName)
     {
         return symbol.GetAttributes().GetAttributes(attributeName);
@@ -41,12 +30,6 @@ public static class SymbolExtensions
         return symbol.GetAttributes(attributeName)
             .FirstOrDefault();
     }
-    
-    public static IEnumerable<AttributeData> GetReturnTypeAttributes(this IMethodSymbol symbol, string attributeName)
-    {
-        return symbol.GetReturnTypeAttributes()
-            .GetAttributes(attributeName);
-    }
 
     public static AttributeData? GetReturnTypeAttribute(this IMethodSymbol symbol, string attributeName)
     {
@@ -54,7 +37,23 @@ public static class SymbolExtensions
             .FirstOrDefault();
     }
 
-    public static IEnumerable<AttributeData> GetAttributes(this ImmutableArray<AttributeData> attribute, string attributeName)
+    public static bool IsSame(this ITypeSymbol symbol, string typeFQN)
+    {
+        return string.Equals(symbol.ToDisplayString(FullyQualifiedFormatWithoutGlobal), typeFQN, StringComparison.Ordinal);
+    }
+
+    public static bool IsSame(this ISymbol symbol, ISymbol other)
+    {
+        return SymbolEqualityComparer.Default.Equals(symbol, other);
+    }
+
+    private static IEnumerable<AttributeData> GetReturnTypeAttributes(this IMethodSymbol symbol, string attributeName)
+    {
+        return symbol.GetReturnTypeAttributes()
+            .GetAttributes(attributeName);
+    }
+
+    private static IEnumerable<AttributeData> GetAttributes(this ImmutableArray<AttributeData> attribute, string attributeName)
     {
         return attribute
             .Where(x =>
@@ -66,16 +65,6 @@ public static class SymbolExtensions
             );
     }
 
-    public static bool IsSame(this ITypeSymbol symbol, string name)
-    {
-        return string.Equals(symbol.ToDisplayString(FullyQualifiedFormatWithoutGlobal), name, StringComparison.Ordinal);
-    }
-
-    public static bool IsSame(this ISymbol symbol, ISymbol other)
-    {
-        return SymbolEqualityComparer.Default.Equals(symbol, other);
-    }
-    
     private static readonly SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal =
         SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining);
 }

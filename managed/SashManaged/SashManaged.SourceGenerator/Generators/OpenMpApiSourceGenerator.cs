@@ -14,8 +14,10 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 using static SashManaged.SourceGenerator.SyntaxFactories.StatementFactory;
+using SashManaged.SourceGenerator.Helpers;
+using System.Diagnostics;
 
-namespace SashManaged.SourceGenerator;
+namespace SashManaged.SourceGenerator.Generators;
 
 /// <summary>
 /// This source generator generates the marshalling interop methods for open.mp API structs. The generator generates the
@@ -48,7 +50,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             var modifiers = info!.Syntax.Modifiers;
             modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
 
-            var structDeclaration = StructDeclaration(info!.Syntax.Identifier)
+            var structDeclaration = StructDeclaration(info.Syntax.Identifier)
                 .WithModifiers(modifiers)
                 .WithMembers(GenerateStructMembers(info))
                 .WithBaseList(
@@ -82,34 +84,19 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     {
         var result = ctx.ImplementingTypes.Select(x => 
                 SimpleBaseType(
-                    GenericName(
-                            IdentifierGlobal(Constants.IEquatableFQN))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierNameGlobal(x))))))
+                    GenericType(Constants.IEquatableFQN, TypeNameGlobal(x))))
             .Concat([
                 SimpleBaseType(
-                    GenericName(
-                            IdentifierGlobal(Constants.IEquatableFQN))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name))))),
+                        GenericType(Constants.IEquatableFQN, ParseTypeName(ctx.Symbol.Name))),
                 SimpleBaseType(
-                    IdentifierNameGlobal(Constants.PointerFQN))
+                    TypeNameGlobal(Constants.PointerFQN))
             ]);
         
         if (ctx.IsComponent)
         {
             result = result.Concat([
                 SimpleBaseType(
-                    GenericName(
-                            IdentifierGlobal(Constants.ComponentInterfaceFQN))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name)))))
+                    GenericType(Constants.ComponentInterfaceFQN, ParseTypeName(ctx.Symbol.Name)))
             ]);
         }
 
@@ -117,12 +104,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         {
             result = result.Concat([
                 SimpleBaseType(
-                    GenericName(
-                            IdentifierGlobal(Constants.ExtensionInterfaceFQN))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name)))))
+                    GenericType(Constants.ExtensionInterfaceFQN, ParseTypeName(ctx.Symbol.Name)))
             ]);
         }
 
@@ -194,7 +176,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             ObjectCreationExpression(
-                                    IdentifierNameGlobal(implementingType))
+                                    TypeNameGlobal(implementingType))
                                 .WithArgumentList(
                                     ArgumentList(
                                         SingletonSeparatedList(
@@ -365,7 +347,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                         IsPatternExpression(
                             IdentifierName("obj"),
                             DeclarationPattern(
-                                IdentifierNameGlobal(Constants.PointerFQN),
+                                TypeNameGlobal(Constants.PointerFQN),
                                 SingleVariableDesignation(
                                     Identifier("other")))),
                         InvocationExpression(
@@ -481,7 +463,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         // TODO members for inheritance with depth > 1
         foreach (var type in ctx.ImplementingTypes)
         {
-            var implName = IdentifierNameGlobal(type);
+            var implName = TypeNameGlobal(type);
 
             // public bool Equals(impl other)
             yield return CreateEqualsMethod(implName);
