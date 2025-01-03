@@ -38,7 +38,7 @@ public readonly partial struct ITextDrawBase
     public partial ref ITextDrawBase SetPreviewRotation(Vector3 rotation);
     public partial Vector3 GetPreviewRotation();
     public partial ref ITextDrawBase SetPreviewVehicleColour(int colour1, int colour2);
-    public partial Pair<int, int> GetPreviewVehicleColour();
+    public partial void GetPreviewVehicleColour(out Pair<int, int> result);
     public partial ref ITextDrawBase SetPreviewZoom(float zoom);
     public partial float GetPreviewZoom();
     public partial void Restream();

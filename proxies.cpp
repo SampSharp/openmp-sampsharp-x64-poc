@@ -91,11 +91,26 @@
         ); \
     }
 
+#define __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, proxy_name, ...) \
+    extern "C" SDK_EXPORT void __CDECL \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__)), type_return * result) \
+    { \
+        *result = subject -> method ( \
+            __VA_OPT__(_EXPAND_ARG(,__VA_ARGS__)) \
+        ); \
+    }
+
 /// proxy function macro. e.g. PROXY(subj, int, foo, bool) -> int subj_foo(subj * x, bool _1) { return x->foo(_1); }
 #define PROXY(type_subject, type_return, method, ...) __PROXY_IMPL(type_subject, type_return, method, type_subject##_##method, __VA_ARGS__)
 
+/// proxy function macro. e.g. PROXY_RESULT_PTR(subj, int, foo, bool) -> void subj_foo(subj * x, bool _1, int * result) { *result = x->foo(_1); }
+#define PROXY_PTR(type_subject, type_return, method, ...) __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, type_subject##_##method, __VA_ARGS__)
+
 /// proxy function macro for an overload. output is similar to PROXY macro, except the function name is post-fixed by overload argument
 #define PROXY_OVERLOAD(type_subject, type_return, method, overload, ...) __PROXY_IMPL(type_subject, type_return, method, type_subject##_##method##overload, __VA_ARGS__)
+
+/// proxy function macro for an overload. output is similar to PROXY_PTR macro, except the function name is post-fixed by overload argument
+#define PROXY_OVERLOAD_PTR(type_subject, type_return, method, overload, ...) __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, type_subject##_##method##overload, __VA_ARGS__)
 
 #define __PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
     __PROXY_IMPL(IEventDispatcher<handler_type>, bool, addEventHandler, IEventDispatcher_##handler_name##_addEventHandler, handler_type *, event_order_t); \
@@ -488,7 +503,7 @@ PROXY(ITextDrawBase, int, getPreviewModel);
 PROXY(ITextDrawBase, ITextDrawBase&, setPreviewRotation, Vector3);
 PROXY(ITextDrawBase, Vector3, getPreviewRotation);
 PROXY(ITextDrawBase, ITextDrawBase&, setPreviewVehicleColour, int, int);
-PROXY(ITextDrawBase, IntPair, getPreviewVehicleColour);
+PROXY_PTR(ITextDrawBase, IntPair, getPreviewVehicleColour);
 PROXY(ITextDrawBase, ITextDrawBase&, setPreviewZoom, float);
 PROXY(ITextDrawBase, float, getPreviewZoom);
 PROXY(ITextDrawBase, void, restream);
@@ -563,7 +578,7 @@ PROXY(IVehicle, bool, isStreamedInForPlayer, IPlayer&);
 PROXY(IVehicle, void, streamInForPlayer, IPlayer&);
 PROXY(IVehicle, void, streamOutForPlayer, IPlayer&);
 PROXY(IVehicle, void, setColour, int, int);
-PROXY(IVehicle, IntPair, getColour);
+PROXY_PTR(IVehicle, IntPair, getColour);
 PROXY(IVehicle, void, setHealth, float);
 PROXY(IVehicle, float, getHealth);
 PROXY(IVehicle, bool, updateFromDriverSync, VehicleDriverSyncPacket&, IPlayer&);

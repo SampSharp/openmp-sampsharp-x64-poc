@@ -11,7 +11,7 @@ public readonly partial struct IVehicle
     public partial void StreamInForPlayer(IPlayer player);
     public partial void StreamOutForPlayer(IPlayer player);
     public partial void SetColour(int col1, int col2);
-    public partial Pair<int, int> GetColour();
+    public partial void GetColour(out Pair<int, int> result);
     public partial void SetHealth(float Health);
     public partial float GetHealth();
     public partial bool UpdateFromDriverSync(ref VehicleDriverSyncPacket vehicleSync, IPlayer player);

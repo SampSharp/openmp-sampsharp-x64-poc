@@ -181,14 +181,14 @@ public class Interop :
         Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode} chat_input_filter: {chat_input_filter}");
 
         // test bans
-        
+
         cfg.AddBan(new BanEntry("1.2.3.5", DateTimeOffset.UtcNow, "name", "reason"));
         cfg.AddBan(new BanEntry("1.2.3.6", DateTimeOffset.UtcNow, "name", "reason2"));
         cfg.WriteBans();
 
         Console.WriteLine("written ban");
 
-        for(nint i=0;i<cfg.GetBansCount().Value;i++)
+        for (nint i = 0; i < cfg.GetBansCount().Value; i++)
         {
             var b = cfg.GetBan(new Size(i));
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
@@ -220,12 +220,12 @@ public class Interop :
         {
             Console.WriteLine($"Name: {player1.GetName()}");
         }
+
         Console.WriteLine("...iter players");
 
         var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
-        v.SetColour(1, 2);
-        var (vcol1, vcol2) = v.GetColour();
-        Console.WriteLine($"vehicle color: <1: {vcol1}, 2: {vcol2}>");
+        v.GetColour(out var vcol);
+        Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
     }
 
     // need an entry point to build runtime config for this application
