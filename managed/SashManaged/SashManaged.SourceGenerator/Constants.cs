@@ -30,6 +30,8 @@ public static class Constants
     public const string ComponentInterfaceFQN = "SashManaged.OpenMp.IComponentInterface";
     
     public const string EventHandlerNativeHandleStorageFQN = "SashManaged.OpenMp.EventHandlerNativeHandleStorage";
+    
+    public const string StringViewMarshallerFQN = "SashManaged.OpenMp.StringViewMarshaller";
 
     // SashManaged
     public const string ApiAttributeFQN = "SashManaged.OpenMpApiAttribute";
@@ -44,8 +46,6 @@ public static class Constants
 
     public const string PointerFQN = "SashManaged.IPointer";
     
-    public const string StringViewMarshallerFQN = "SashManaged.StringViewMarshaller";
-
     public static readonly string DelegateFQN = typeof(Delegate).FullName!;
 
     public static readonly string MarshalFQN = typeof(Marshal).FullName!;
