@@ -66,8 +66,8 @@ improve the generated code since we generate c# code instead of itermediate code
 - [Visual Studio 2022](https://visualstudio.microsoft.com/pt-br/vs/)
   - Install the Development to desktop with .NET
   - Install the Development to desktop with C++
-- [.NET 8 SDK x64](https://dotnet.microsoft.com/pt-br/download)
-  - Download and install the .NET 8.0
+- (included with Visual Studio) [.NET 9 SDK x64](https://dotnet.microsoft.com/pt-br/download)
+  - Download and install the .NET 9.0 SDK
 - [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/workflows/build.yml)
   - Find and click in the last sucessfully run in `master` branch
   - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file
@@ -104,7 +104,7 @@ improve the generated code since we generate c# code instead of itermediate code
   - Add the `sampsharp` property in config.json and change the value of `folder` property according of your path:
   ```
   "sampsharp": {
-      "folder": "D:\\Projects\\community\\openmp-sampsharp-x64-poc\\managed\\SashManaged\\SashManaged\\bin\\Debug\\net8.0\\",
+      "folder": "D:\\Projects\\community\\openmp-sampsharp-x64-poc\\managed\\SashManaged\\SashManaged\\bin\\Debug\\net9.0\\",
       "assembly": "SashManaged"
   }
   ```
