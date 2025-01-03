@@ -30,17 +30,21 @@ public static unsafe class StringViewMarshaller
 
             _byteCount = Encoding.UTF8.GetByteCount(managed);
 
-            if (_byteCount <= buffer.Length)
+            if (_byteCount < buffer.Length)
             {
                 Encoding.UTF8.GetBytes(managed, buffer[.._byteCount]);
+                buffer[_byteCount] = 0;
                 _heapBuffer = null;
             }
             else
             {
                 // buffer on stack too small, allocate on heap
-                _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount);
+                _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount + 1);
 
-                var heapBuffer = new Span<byte>(_heapBuffer, _byteCount);
+                var heapBuffer = new Span<byte>(_heapBuffer, _byteCount + 1)
+                {
+                    [_byteCount] = 0
+                };
                 Encoding.UTF8.GetBytes(managed, heapBuffer);
             }
             
@@ -55,7 +59,7 @@ public static unsafe class StringViewMarshaller
         public readonly StringView ToUnmanaged()
         {
             return _heapBuffer == null 
-                ? new StringView((byte*)Unsafe.AsPointer(ref _buffer.GetPinnableReference()), new Size(_buffer.Length)) 
+                ? new StringView((byte*)Unsafe.AsPointer(ref _buffer.GetPinnableReference()), new Size(_byteCount)) 
                 : new StringView(_heapBuffer, new Size(_byteCount));
         }
 
@@ -102,9 +106,12 @@ public static unsafe class StringViewMarshaller
             }
 
             _byteCount = Encoding.UTF8.GetByteCount(managed);
-            _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount);
+            _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount + 1);
 
-            var heapBuffer = new Span<byte>(_heapBuffer, _byteCount);
+            var heapBuffer = new Span<byte>(_heapBuffer, _byteCount + 1)
+            {
+                [_byteCount] = 0
+            };
             Encoding.UTF8.GetBytes(managed, heapBuffer);
         }
 

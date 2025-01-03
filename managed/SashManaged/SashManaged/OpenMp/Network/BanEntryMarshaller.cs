@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 
 namespace SashManaged.OpenMp;
@@ -15,7 +16,8 @@ public static unsafe class BanEntryMarshaller
         {
             var native = ToNative(managed);
 
-            var ptr = (nint)(byte*)callerAllocatedBuffer.GetPinnableReference();
+            
+            var ptr = (nint)Unsafe.AsPointer(ref callerAllocatedBuffer.GetPinnableReference());
             Marshal.StructureToPtr(native, ptr, false);
 
             return new BlittableStructRef<Native>(ptr);

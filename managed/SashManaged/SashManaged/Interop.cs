@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 using SashManaged.OpenMp;
+using System.Runtime.CompilerServices;
 
 namespace SashManaged;
 
@@ -173,16 +174,16 @@ public class Interop :
         // test config
         var nameInConfig = cfg.GetString("name");
         Console.WriteLine($"Name in config: {nameInConfig}");
+
         var announce = cfg.GetBool("announce");
         var use_lan_mode = cfg.GetBool("network.use_lan_mode");
         var chat_input_filter = cfg.GetBool("chat_input_filter");
         Console.WriteLine($"announce: {announce} use_lan_mode: {use_lan_mode} chat_input_filter: {chat_input_filter}");
 
         // test bans
-
-        var ban = new BanEntry("1.2.3.5", DateTimeOffset.UtcNow, "name", "reason");
-
-        cfg.AddBan(ban);
+        
+        cfg.AddBan(new BanEntry("1.2.3.5", DateTimeOffset.UtcNow, "name", "reason"));
+        cfg.AddBan(new BanEntry("1.2.3.6", DateTimeOffset.UtcNow, "name", "reason2"));
         cfg.WriteBans();
 
         Console.WriteLine("written ban");
