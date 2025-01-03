@@ -92,7 +92,7 @@ public readonly partial struct IPlayer
     public partial void SetGravity(float gravity);
     public partial float GetGravity();
     public partial void SetWorldTime(Hours time);
-    public partial void ApplyAnimation(in AnimationData animation, PlayerAnimationSyncType syncType);
+    public partial void ApplyAnimation(AnimationData animation, PlayerAnimationSyncType syncType);
     public partial void ClearAnimations(PlayerAnimationSyncType syncType);
     public partial PlayerAnimationData GetAnimationData();
     public partial PlayerSurfingData GetSurfingData();

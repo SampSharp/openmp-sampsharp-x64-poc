@@ -5,8 +5,8 @@ public readonly partial struct IActor
 {
     public partial void SetSkin(int id);
     public partial int GetSkin();
-    public partial void ApplyAnimation(ref AnimationData animation);
-    public partial ref AnimationData GetAnimation();
+    public partial void ApplyAnimation(AnimationData animation);
+    public partial AnimationData GetAnimation();
     public partial void ClearAnimations();
     public partial void SetHealth(float health);
     public partial float GetHealth();

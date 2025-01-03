@@ -1,32 +1,22 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices.Marshalling;
 
 namespace SashManaged.OpenMp;
 
-[StructLayout(LayoutKind.Explicit)]
-public readonly struct ObjectMaterialData
+[NativeMarshalling(typeof(ObjectMaterialDataMarshaller))]
+public record ObjectMaterialData(
+    int Model,
+    byte MaterialSize,
+    byte FontSize,
+    byte Alignment,
+    bool Bold,
+    Colour MaterialColour,
+    Colour BackgroundColour,
+    string Text,
+    string Font,
+    MaterialType Type,
+    bool Used)
 {
-    public enum MaterialType : byte
-    {
-        None,
-        Default,
-        Text
-    }
-
-    [FieldOffset(0)] public readonly int Model;
-    [FieldOffset(0)] public readonly byte MaterialSize;
-    [FieldOffset(1)] public readonly byte FontSize;
-    [FieldOffset(2)] public readonly byte Alignment;
-    [FieldOffset(3)] public readonly BlittableBoolean Bold;
-    [FieldOffset(4)] public readonly Colour MaterialColour;
     public Colour FontColour => MaterialColour;
-
-    [FieldOffset(8)] public readonly Colour BackgroundColour;
-    [FieldOffset(12)] public readonly HybridString32 TextOrTXD;
-    [FieldOffset(12 + 32 + Size.Length)] public readonly HybridString32 FontOrTexture;
-
-    [FieldOffset(12 + (32 + Size.Length) * 2)]
-    public readonly MaterialType Type;
-
-    [FieldOffset(12 + (32 + Size.Length) * 2 + 1)]
-    public readonly BlittableBoolean Used;
+    public string Txd => Text;
+    public string Texture => Font;
 }

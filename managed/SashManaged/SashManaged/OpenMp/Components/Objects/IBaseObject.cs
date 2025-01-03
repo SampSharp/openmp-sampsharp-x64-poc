@@ -14,7 +14,7 @@ public readonly partial struct IBaseObject
     public partial void Move(ref ObjectMoveData data);
     public partial bool IsMoving();
     public partial void Stop();
-    public partial ref ObjectMoveData getMovingData();
+    public partial ref ObjectMoveData GetMovingData();
     public partial void AttachToVehicle(IVehicle vehicle, Vector3 offset, Vector3 rotation);
     public partial void ResetAttachment();
     public partial ref ObjectAttachmentData GetAttachmentData();
