@@ -18,14 +18,14 @@ public readonly partial struct IConfig
 
     public partial Size GetBansCount();
 
-    public partial BlittableStructRef<BanEntry> GetBan(Size index);
+    public partial BanEntry GetBan(Size index);
 
-    public partial void AddBan(in BanEntry entry);
-
+    public partial void AddBan(BanEntry entry);
+    
     [OpenMpApiOverload("_index")]
     public partial void RemoveBan(Size index);
 
-    public partial void RemoveBan(in BanEntry entry);
+    public partial void RemoveBan(BanEntry entry);
 
     public partial void WriteBans();
 
@@ -33,9 +33,9 @@ public readonly partial struct IConfig
 
     public partial void ClearBans();
 
-    public partial bool IsBanned(in BanEntry entry);
+    public partial bool IsBanned(BanEntry entry);
 
-    public partial Pair<BlittableBoolean, StringView> GetNameFromAlias(StringView alias);
+    public partial Pair<BlittableBoolean, StringView> GetNameFromAlias(string alias);
 
     // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 

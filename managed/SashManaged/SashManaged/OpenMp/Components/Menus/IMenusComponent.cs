@@ -9,5 +9,5 @@ public readonly partial struct IMenusComponent
 
     public partial IEventDispatcher<IMenuEventHandler> GetEventDispatcher();
 
-    public partial IMenu Create(StringView title, Vector2 position, byte columns, float col1Width, float col2Width);
+    public partial IMenu Create(string title, Vector2 position, byte columns, float col1Width, float col2Width);
 }

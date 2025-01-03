@@ -147,7 +147,7 @@ public class Interop :
     public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
     {
         Console.WriteLine("command list request");
-        // commands.Emplace("banana"u8);
+        commands.Emplace("banana");
         foreach (var txt in commands)
         {
             Console.WriteLine("SASH> " + txt);
@@ -180,7 +180,7 @@ public class Interop :
 
         // test bans
 
-        var ban = new BanEntry(new HybridString46("1.2.3.5"), TimePoint.FromDateTimeOffset(DateTimeOffset.UtcNow), new HybridString25("name"), new HybridString32("reason"));
+        var ban = new BanEntry("1.2.3.5", DateTimeOffset.UtcNow, "name", "reason");
 
         cfg.AddBan(ban);
         cfg.WriteBans();
@@ -189,9 +189,8 @@ public class Interop :
 
         for(nint i=0;i<cfg.GetBansCount().Value;i++)
         {
-            var a = cfg.GetBan(new Size(i));
-            var b = a.GetValue();
-            Console.WriteLine($"ban: {b.Name} {b.AddressString} {b.Reason} {b.Time.ToDateTimeOffset()}");
+            var b = cfg.GetBan(new Size(i));
+            Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
         // var alias = cfg.GetNameFromAlias("minconnectiontime"u8);

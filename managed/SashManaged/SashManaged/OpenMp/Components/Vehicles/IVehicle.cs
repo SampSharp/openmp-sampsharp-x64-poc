@@ -21,8 +21,8 @@ public readonly partial struct IVehicle
     public partial FlatPtrHashSet<IPlayer> StreamedForPlayers();
     public partial IPlayer GetDriver();
     public partial FlatPtrHashSet<IPlayer> GetPassengers();
-    public partial void SetPlate(StringView plate);
-    public partial StringView GetPlate();
+    public partial void SetPlate(string plate);
+    public partial string GetPlate();
     public partial void SetDamageStatus(int PanelStatus, int DoorStatus, byte LightStatus, byte TyreStatus, IPlayer vehicleUpdater = default);
     public partial void GetDamageStatus(ref int PanelStatus, ref int DoorStatus, ref int LightStatus, ref int TyreStatus);
     public partial void SetPaintJob(int paintjob);

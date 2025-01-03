@@ -7,8 +7,19 @@ namespace SashManaged
     {
         private readonly nint _ptr;
 
+        public BlittableStructRef(nint ptr)
+        {
+            _ptr = ptr;
+        }
+
+        public bool IsNull => _ptr == 0;
         public T GetValue()
         {
+            if (IsNull)
+            {
+                return default;
+            }
+
             return Marshal.PtrToStructure<T>(_ptr);
         }
     }

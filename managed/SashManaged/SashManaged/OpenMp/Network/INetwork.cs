@@ -14,8 +14,8 @@ public readonly partial struct INetwork
     public partial NetworkStats GetStatistics(IPlayer player = default);
     public partial uint GetPing(IPlayer peer);
     public partial void Disconnect(IPlayer peer);
-    public partial void Ban(ref BanEntry entry, Milliseconds expire);
-    public partial void Unban(ref BanEntry entry);
+    public partial void Ban(BanEntry entry, Milliseconds expire);
+    public partial void Unban(BanEntry entry);
     public partial void Update();
     
     // TODO: Indexed event dispatcher based not implemented

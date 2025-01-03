@@ -7,6 +7,6 @@ public readonly partial struct IConsoleComponent
 
     public partial IEventDispatcher<IConsoleEventHandler> GetEventDispatcher();
 
-    public partial void Send(StringView command, ref ConsoleCommandSenderData sender);
-    public partial void SendMessage(ref ConsoleCommandSenderData recipient, StringView message);
+    public partial void Send(string command, ref ConsoleCommandSenderData sender);
+    public partial void SendMessage(ref ConsoleCommandSenderData recipient, string message);
 }

@@ -7,8 +7,8 @@ public readonly partial struct ITextDrawBase
 {
     public partial Vector2 GetPosition();
     public partial ref ITextDrawBase SetPosition(Vector2 position);
-    public partial void SetText(StringView text);
-    public partial StringView GetText();
+    public partial void SetText(string text);
+    public partial string GetText();
     public partial ref ITextDrawBase SetLetterSize(Vector2 size);
     public partial Vector2 GetLetterSize();
     public partial ref ITextDrawBase SetTextSize(Vector2 size);

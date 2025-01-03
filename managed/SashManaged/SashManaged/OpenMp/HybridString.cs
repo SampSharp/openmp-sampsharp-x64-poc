@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SashManaged.OpenMp;
@@ -60,28 +59,4 @@ public readonly struct HybridString16
     }
 
     private static Encoding Encoding => Encoding.UTF8;
-}
-
-internal readonly unsafe struct HybridStringDynamicStorage
-{
-    public readonly byte* Data;
-    public readonly delegate* unmanaged[Cdecl]<nint, void> FreePointer;
-
-    private HybridStringDynamicStorage(byte* data, delegate* unmanaged[Cdecl]<nint, void> freePointer)
-    {
-        Data = data;
-        FreePointer = freePointer;
-    }
-
-    public static HybridStringDynamicStorage Allocate(int length)
-    {
-        var data = (byte*)Marshal.AllocHGlobal(length);
-        return new HybridStringDynamicStorage(data, &Free);
-    }
-
-    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvCdecl)])]
-    internal static void Free(nint data)
-    {
-        Marshal.FreeHGlobal(data);
-    }
 }

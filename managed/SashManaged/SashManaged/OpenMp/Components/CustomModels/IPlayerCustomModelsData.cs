@@ -7,5 +7,5 @@ public readonly partial struct IPlayerCustomModelsData
 
     public partial uint GetCustomSkin();
     public partial void SetCustomSkin(uint skinModel);
-    public partial bool SendDownloadUrl(StringView url);
+    public partial bool SendDownloadUrl(string url);
 }

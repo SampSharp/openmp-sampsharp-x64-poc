@@ -47,11 +47,11 @@ public static unsafe class StringViewMarshaller
             
         }
 
-        public ref byte GetPinnableReference()
-        {
-            // should not be required, but let's be safe
-            return ref _buffer.GetPinnableReference();
-        }
+        // public ref byte GetPinnableReference()
+        // {
+        //     // should not be required, but let's be safe
+        //     return ref _buffer.GetPinnableReference();
+        // }
 
         public readonly StringView ToUnmanaged()
         {
@@ -69,6 +69,7 @@ public static unsafe class StringViewMarshaller
             }
         }
     }
+
     public ref struct ManagedToUnmanagedOut
     {
         private string? _result;

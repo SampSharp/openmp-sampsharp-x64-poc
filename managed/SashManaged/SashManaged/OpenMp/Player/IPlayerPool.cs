@@ -19,10 +19,10 @@ public readonly partial struct IPlayerPool
     public partial IEventDispatcher<IPlayerCheckEventHandler> GetPlayerCheckDispatcher();
     public partial IEventDispatcher<IPlayerUpdateEventHandler> GetPlayerUpdateDispatcher();
     // public partial IEventDispatcher<IPlayerPoolEventHandler> GetPoolEventDispatcher();
-    public partial bool IsNameTaken(StringView name, IPlayer skip);
-    public partial void SendClientMessageToAll(ref Colour colour, StringView message);
-    public partial void SendChatMessageToAll(IPlayer from, StringView message);
-    public partial void SendGameTextToAll(StringView message, Milliseconds time, int style);
+    public partial bool IsNameTaken(string name, IPlayer skip);
+    public partial void SendClientMessageToAll(ref Colour colour, string message);
+    public partial void SendChatMessageToAll(IPlayer from, string message);
+    public partial void SendGameTextToAll(string message, Milliseconds time, int style);
     public partial void HideGameTextForAll(int style);
     public partial void SendDeathMessageToAll(IPlayer killer, IPlayer killee, int weapon);
     public partial void SendEmptyDeathMessageToAll();
@@ -30,7 +30,7 @@ public readonly partial struct IPlayerPool
     public partial Pair<NewConnectionResult, IPlayer> RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms)    ;
     public partial void BroadcastPacket(SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial void BroadcastRPC(int id, SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
-    public partial bool IsNameValid(StringView name);
+    public partial bool IsNameValid(string name);
     public partial void AllowNickNameCharacter(char character, bool allow);
     public partial bool IsNickNameCharacterAllowed(char character);
     public partial Colour GetDefaultColour(int pid);

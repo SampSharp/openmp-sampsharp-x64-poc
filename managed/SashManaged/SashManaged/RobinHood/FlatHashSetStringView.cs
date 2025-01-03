@@ -5,7 +5,7 @@ using SashManaged.OpenMp;
 namespace SashManaged;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct FlatHashSetStringView : IReadOnlyCollection<StringView>
+public readonly struct FlatHashSetStringView : IReadOnlyCollection<string>
 {
     private readonly nint _data;
 
@@ -16,20 +16,28 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<StringView>
 
     public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();
 
-    public IEnumerator<StringView> GetEnumerator()
+    public IEnumerator<string> GetEnumerator()
     {
         var iter = RobinHood.FlatHashSetStringView_begin(_data);
 
         while (iter != RobinHood.FlatHashSetStringView_end(_data))
         {
-            yield return Dereference(ref iter);
+            yield return Dereference(ref iter).ToString();
             iter = RobinHood.FlatHashSetStringView_inc(iter);
         }
     }
 
-    public void Emplace(StringView value)
+    public unsafe void Emplace(string value)
     {
-        RobinHood.FlatHashSetStringView_emplace(_data, value);
+        scoped StringViewMarshaller.ManagedToUnmanagedIn valueMarshaller = new();
+        Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToUnmanagedIn.BufferSize];
+        valueMarshaller.FromManaged(value, buffer);
+
+        var valueMarshalled = valueMarshaller.ToUnmanaged();
+
+        RobinHood.FlatHashSetStringView_emplace(_data, valueMarshalled);
+
+        valueMarshaller.Free();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

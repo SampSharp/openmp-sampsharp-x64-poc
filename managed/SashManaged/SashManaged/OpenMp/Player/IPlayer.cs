@@ -7,7 +7,7 @@ namespace SashManaged.OpenMp;
 public readonly partial struct IPlayer
 {
     public partial void Kick();
-    public partial void Ban(StringView reason);
+    public partial void Ban(string reason);
     public partial bool IsBot();
     public partial ref PeerNetworkData GetNetworkData();
     public partial uint GetPing();
@@ -18,7 +18,7 @@ public readonly partial struct IPlayer
     public partial void BroadcastSyncPacket(SpanLite<byte> data, int channel)    ;
     public partial void Spawn();
     public partial ClientVersion GetClientVersion();
-    public partial StringView GetClientVersionName();
+    public partial string GetClientVersionName();
     public partial void SetPositionFindZ(Vector3 pos);
     public partial void SetCameraPosition(Vector3 pos);
     public partial Vector3 GetCameraPosition();
@@ -32,9 +32,9 @@ public readonly partial struct IPlayer
     [OpenMpApiOverload("_player")]
     public partial void AttachCameraToObject(IPlayerObject obj);
 
-    public partial EPlayerNameStatus SetName(StringView name);
-    public partial StringView GetName();
-    public partial StringView GetSerial();
+    public partial EPlayerNameStatus SetName(string name);
+    public partial string GetName();
+    public partial string GetSerial();
     public partial void GiveWeapon(WeaponSlotData weapon);
     public partial void RemoveWeapon(byte weapon);
     public partial void SetWeaponAmmo(WeaponSlotData data);
@@ -44,8 +44,8 @@ public readonly partial struct IPlayer
     public partial void SetArmedWeapon(int weapon);
     public partial int GetArmedWeapon();
     public partial int GetArmedWeaponAmmo();
-    public partial void SetShopName(StringView name);
-    public partial StringView GetShopName();
+    public partial void SetShopName(string name);
+    public partial string GetShopName();
     public partial void SetDrunkLevel(int level);
     public partial int GetDrunkLevel();
     public partial void SetColour(Colour colour);
@@ -59,10 +59,10 @@ public readonly partial struct IPlayer
     public partial uint GetWantedLevel();
     public partial void PlaySound(int sound, Vector3 pos);
     public partial int LastPlayedSound();
-    public partial void PlayAudio(StringView url, bool usePos = false, Vector3 pos = default, float distance = 0);
+    public partial void PlayAudio(string url, bool usePos = false, Vector3 pos = default, float distance = 0);
     public partial bool PlayerCrimeReport(IPlayer suspect, int crime);
     public partial void StopAudio();
-    public partial StringView LastPlayedAudio();
+    public partial string LastPlayedAudio();
     public partial void CreateExplosion(Vector3 vec, int type, float radius);
     public partial void SendDeathMessage(IPlayer player, IPlayer killer, int weapon);
     public partial void SendEmptyDeathMessage();
@@ -105,14 +105,14 @@ public readonly partial struct IPlayer
     public partial int GetTeam();
     public partial void SetSkin(int skin, bool send = true);
     public partial int GetSkin();
-    public partial void SetChatBubble(StringView text, ref Colour colour, float drawDist, Milliseconds expire);
-    public partial void SendClientMessage(ref Colour colour, StringView message);
-    public partial void SendChatMessage(IPlayer sender, StringView message);
-    public partial void SendCommand(StringView message);
-    public partial void SendGameText(StringView message, Milliseconds time, int style);
+    public partial void SetChatBubble(string text, ref Colour colour, float drawDist, Milliseconds expire);
+    public partial void SendClientMessage(ref Colour colour, string message);
+    public partial void SendChatMessage(IPlayer sender, string message);
+    public partial void SendCommand(string message);
+    public partial void SendGameText(string message, Milliseconds time, int style);
     public partial void HideGameText(int style);
     public partial bool HasGameText(int style);
-    public partial bool GetGameText(int style, ref StringView message, ref Milliseconds time, ref Milliseconds remaining);
+    public partial bool GetGameText(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
     public partial void SetWeather(int weatherID);
     public partial int GetWeather();
     public partial void SetWorldBounds(Vector4 coords);
