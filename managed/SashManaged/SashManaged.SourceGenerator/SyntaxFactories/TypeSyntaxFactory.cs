@@ -68,7 +68,8 @@ public static class TypeSyntaxFactory
 
     public static string ToGlobalTypeString(ITypeSymbol symbol)
     {
-        return symbol.SpecialType == SpecialType.None 
+        
+        return symbol.SpecialType == SpecialType.None && symbol.TypeKind != TypeKind.Pointer
             ? ToGlobalTypeString(symbol.ToDisplayString()) 
             : symbol.ToDisplayString();
     }

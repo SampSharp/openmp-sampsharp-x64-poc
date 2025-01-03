@@ -48,8 +48,12 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(attributedStructs, (ctx, info) =>
         {
             var modifiers = info!.Syntax.Modifiers;
-            modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
 
+            if (!modifiers.Any(x => x.IsKind(SyntaxKind.UnsafeKeyword)))
+            {
+                modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
+            }
+        
             var structDeclaration = StructDeclaration(info.Syntax.Identifier)
                 .WithModifiers(modifiers)
                 .WithMembers(GenerateStructMembers(info))
