@@ -1,17 +1,17 @@
-﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SashManaged.SourceGenerator.Marshalling;
-using SashManaged.SourceGenerator.Models;
-using SashManaged.SourceGenerator.SyntaxFactories;
-using System.Linq;
+﻿using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
-using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SashManaged.SourceGenerator.Helpers;
+using SashManaged.SourceGenerator.Marshalling;
+using SashManaged.SourceGenerator.Models;
+using SashManaged.SourceGenerator.SyntaxFactories;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SashManaged.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
+using static SashManaged.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SashManaged.SourceGenerator.Generators;
 
