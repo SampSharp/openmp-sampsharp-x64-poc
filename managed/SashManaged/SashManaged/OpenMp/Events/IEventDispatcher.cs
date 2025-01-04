@@ -3,7 +3,7 @@
 namespace SashManaged.OpenMp;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct IEventDispatcher<T> : IPointer where T : IEventHandler
+public readonly struct IEventDispatcher<T> : IPointer where T : class, IEventHandler<T>
 {
     private readonly nint _handle;
 
@@ -11,18 +11,24 @@ public readonly struct IEventDispatcher<T> : IPointer where T : IEventHandler
 
     public bool AddEventHandler(T handler, EventPriority priority = EventPriority.Default)
     {
-        var handlerHandle = handler.IncreaseReference();
+        var handlerHandle = T.Manager.Get(handler).Create();
 
         return EventDispatcherInterop.AddEventHandler(_handle, handlerHandle, priority);
     }
 
     public bool RemoveEventHandler(T handler)
     {
-        var handlerHandle = handler.GetHandle() ?? throw new InvalidOperationException("Missing handle.");
+        var reference = T.Manager.Get(handler);
+        var handlerHandle = reference.Handle;
 
-        if (EventDispatcherInterop.RemoveEventHandler(_handle, handlerHandle))
+        if (!handlerHandle.HasValue)
         {
-            handler.DecreaseReference();
+            return false;
+        }
+
+        if (EventDispatcherInterop.RemoveEventHandler(_handle, handlerHandle.Value))
+        {
+            reference.Free();
             return true;
         }
 
@@ -31,7 +37,7 @@ public readonly struct IEventDispatcher<T> : IPointer where T : IEventHandler
 
     public bool HasEventHandler(T handler, out EventPriority priority)
     {
-        var handlerHandle = handler.GetHandle();
+        var handlerHandle = T.Manager.Get(handler).Handle;
         priority = default;
 
         return handlerHandle.HasValue && EventDispatcherInterop.HasEventHandler(_handle, handlerHandle.Value, out priority);

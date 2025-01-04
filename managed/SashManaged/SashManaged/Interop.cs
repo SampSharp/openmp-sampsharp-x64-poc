@@ -77,12 +77,24 @@ public class Interop :
     
     public bool OnConsoleText(string command, string parameters, ref ConsoleCommandSenderData sender)
     {
+        if (command == "banana")
+        {
+            Console.WriteLine($"BANANA!!! {parameters}");
+            return true;
+        }
+
         Console.WriteLine($"cmd: {command}; params: {parameters}");
         return false;
     }
 
     public bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender)
     {
+        if (command.ToString() == "banana")
+        {
+            Console.WriteLine($"BANANA!!! {parameters}");
+            return true;
+        }
+
         Console.WriteLine($"cmd (SV): {command}; params: {parameters}");
         return false;
     }

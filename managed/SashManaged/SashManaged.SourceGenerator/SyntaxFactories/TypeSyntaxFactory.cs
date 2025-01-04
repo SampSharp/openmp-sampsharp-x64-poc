@@ -10,6 +10,9 @@ namespace SashManaged.SourceGenerator.SyntaxFactories;
 /// </summary>
 public static class TypeSyntaxFactory
 {
+    public static TypeSyntax IntPtrType { get; } = ParseTypeName("nint");
+    public static TypeSyntax ObjectType { get; } = PredefinedType(Token(SyntaxKind.ObjectKeyword));
+
     public static IdentifierNameSyntax IdentifierNameGlobal(string typeFQN)
     {
         return IdentifierName(ToGlobalTypeString(typeFQN));

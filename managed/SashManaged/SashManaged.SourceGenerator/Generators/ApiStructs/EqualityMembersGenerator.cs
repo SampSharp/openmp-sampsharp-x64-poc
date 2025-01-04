@@ -27,7 +27,7 @@ public static class EqualityMembersGenerator
                     Parameter(
                         Identifier("obj"))
                     .WithType(
-                            PredefinedType(Token(SyntaxKind.ObjectKeyword))))))
+                            ObjectType))))
         .WithBody(
             Block(
                 IfStatement(
@@ -42,7 +42,7 @@ public static class EqualityMembersGenerator
                             IdentifierName("Handle"),
                             MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
-                                ParseTypeName("nint"),
+                                IntPtrType,
                                 IdentifierName("Zero")))),
                     Block(
                         SingletonList<StatementSyntax>(
@@ -120,7 +120,7 @@ public static class EqualityMembersGenerator
         yield return CreateOperator(
                 SyntaxKind.EqualsEqualsToken,
                 IdentifierName(ctx.Symbol.Name),
-                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                ObjectType,
                 CreateEqualsInvocationLhsRhs(false)
             );
 
@@ -128,14 +128,14 @@ public static class EqualityMembersGenerator
         yield return CreateOperator(
                 SyntaxKind.ExclamationEqualsToken,
                 IdentifierName(ctx.Symbol.Name),
-                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                ObjectType,
                 CreateEqualsInvocationLhsRhs(true)
             );
 
         // object == type
         yield return CreateOperator(
                 SyntaxKind.EqualsEqualsToken,
-                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                ObjectType,
                 IdentifierName(ctx.Symbol.Name),
                 CreateEqualsInvocationRhsLhs(false)
             );
@@ -143,7 +143,7 @@ public static class EqualityMembersGenerator
         // object != type
         yield return CreateOperator(
                 SyntaxKind.ExclamationEqualsToken,
-                PredefinedType(Token(SyntaxKind.ObjectKeyword)),
+                ObjectType,
                 IdentifierName(ctx.Symbol.Name),
                 CreateEqualsInvocationRhsLhs(true)
             );

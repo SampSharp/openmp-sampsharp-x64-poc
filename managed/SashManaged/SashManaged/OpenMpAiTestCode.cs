@@ -265,21 +265,6 @@ public readonly partial struct TestV2
 
 }
 
-[OpenMpEventHandler(NativeTypeName = "CoreEventHandler")]
-public partial interface ICoreEventHandler2
-{
-    void OnTick(Microseconds micros, TimePoint now);
-    // TODO
-    // void OnText(int text); // no marshalling support yet
-    //
-    // should marshal like: 
-    // Delegate __onText_delegate = (OnText_)((text) =>
-    // {
-    //     var __text_managed = StringViewMarshaller.ConvertToManaged(text)!;
-    //     OnText(__text_managed);
-    // });
-}
-
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct Ff
 {
@@ -297,12 +282,4 @@ public class Cc
 
         var name2= f.ComponentName();
     }
-}
-
-[OpenMpEventHandler(NativeTypeName = "ActorEventHandler")]
-public partial interface IActorEventHandler2 : IEventHandler
-{
-    void OnPlayerGiveDamageActor(IPlayer player, IActor actor, float amount, uint weapon, BodyPart part);
-    void OnActorStreamOut(IActor actor, IPlayer forPlayer);
-    void OnActorStreamIn(IActor actor, IPlayer forPlayer);
 }

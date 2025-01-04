@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace SashManaged.SourceGenerator.Models;
 
 public record EventInterfaceStubGenerationContext(
-    ISymbol Symbol,
+    INamedTypeSymbol Symbol,
     InterfaceDeclarationSyntax Syntax,
     EventMethodStubGenerationContext[] Methods,
     string Library,
