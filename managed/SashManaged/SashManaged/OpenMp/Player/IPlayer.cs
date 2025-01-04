@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices.Marshalling;
 
 namespace SashManaged.OpenMp;
 

@@ -1,6 +1,6 @@
-﻿using SashManaged.OpenMp;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using SashManaged.OpenMp;
 
 namespace SashManaged;
 

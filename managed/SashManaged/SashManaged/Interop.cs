@@ -1,9 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
-using System.Text;
 using SashManaged.OpenMp;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 
 namespace SashManaged;
 
