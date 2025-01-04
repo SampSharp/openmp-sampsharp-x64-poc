@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "SampSharp.OpenMp.Core": {
+      "commandName": "Project"
+    },
+    "open.mp": {
+      "commandName": "Executable",
+      "executablePath": "D:\\projects\\openmp_dev\\x64\\omp-server.exe",
+      "workingDirectory": "D:\\projects\\openmp_dev\\x64\\"
+    }
+  }
+}
