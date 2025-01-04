@@ -1,4 +1,4 @@
 [submodule "sdk"]
-	path = sdk
+	path = external/sdk
 	url = https://github.com/openmultiplayer/open.mp-sdk
 	branch = master
