@@ -53,7 +53,8 @@ Benefits
 --------  
 
 There are a number of key differences between the libraries in this repo and the libraries in the main
-SampSharp repo: - We use the open.mp API instead of the the Pawn scripting API for communicating between .NET and the
+SampSharp repo:
+- We use the open.mp API instead of the the Pawn scripting API for communicating between .NET and the
 SA-MP server backend. Aside from the big performance benefit this change provides, we also gain an increased flexibility
 due to getting access to the entire server API instead of the subset exposed to Pawn.  
 - We build x64 binaries instead of x86. While open.mp does not yet ship their x64 server binaries from the releases
