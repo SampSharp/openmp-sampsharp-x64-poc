@@ -6,7 +6,8 @@
     "open.mp": {
       "commandName": "Executable",
       "executablePath": "D:\\projects\\openmp_dev\\x64\\omp-server.exe",
-      "workingDirectory": "D:\\projects\\openmp_dev\\x64\\"
+      "workingDirectory": "D:\\projects\\openmp_dev\\x64\\",
+      "commandLineArgs": "-c sampsharp.folder=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
     }
   }
 }

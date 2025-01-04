@@ -26,7 +26,7 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
 	
 	initConfigString("sampsharp.folder", "gamemode");
 	initConfigString("sampsharp.assembly", "GameMode");
-	initConfigString("sampsharp.entry_point_type", "SashManaged.Interop");
+	initConfigString("sampsharp.entry_point_type", "SampSharp.OpenMp.Core.Interop");
 	initConfigString("sampsharp.entry_point_method", "OnInit");
 }
 

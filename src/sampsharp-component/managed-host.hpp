@@ -1,7 +1,7 @@
 #pragma once
 
-#include "dotnet/hostfxr.h"
-#include "dotnet/coreclr_delegates.h"
+#include <hostfxr.h>
+#include <coreclr_delegates.h>
 #include <string>
 
 using string_t = std::basic_string<char_t>;

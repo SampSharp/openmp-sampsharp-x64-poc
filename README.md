@@ -81,44 +81,38 @@ improve the generated code since we generate c# code instead of itermediate code
 
 ##### Instructions
 
-- Clone the repository:  
-  - `git clone https://github.com/SampSharp/openmp-sampsharp-x64-poc`
-
-- In the project directory, initialize and update GIT submodules:
-  - `git submodule update --init --recursive`
-  - check if all git submodules of the `sdk` folder have also been cloned
-    - Just see if exists content inside `sdk/lib/glm`, `sdk/lib/robin-hood-hashing`, `sdk/lib/span-lite`,
-      `sdk/lib/string-view-lite` submodules.
-
+- Clone the repository including all submodules: `git clone https://github.com/SampSharp/openmp-sampsharp-x64-poc
+--recursive` 
+- **NOTE*** If you forgot to clone the submodules (directories in `external/sdk` empty), you can do it after cloning the
+  repository: `git submodule update --init --recursive` 
 - Have the directory where open.mp x64 server is located at hand
-
 - Setup the launchSettings.json:
-  - Navigate to `managed/SashManaged/SashManaged/Properties/launchSettings.json`.
-  - Update `executablePath` and `workingDirectory` according to your open.mp x64 server dir
+  - Navigate to `src/SampSharp.OpenMp.Core/Properties/launchSettings.json`.
+  - Replace the content with te following configuration and replace the `executablePath` and `workingDirectory` values:
+```
+{
+    "profiles": {
+    "SampSharp.OpenMp.Core": {
+        "commandName": "Project"
+    },
+    "open.mp": {
+        "commandName": "Executable",
+        "executablePath": "C:\\path\\to\\openmp_x64_server\\omp-server.exe",
+        "workingDirectory": "C:\\path\\to\\openmp_x64_server\\",
+        "commandLineArgs": "-c sampsharp.folder=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
+    }
+    }
+}
+```
 
-- Setup the CMake:
-  - Open CMakeLists.txt
-  - Set your <i>CMAKE\_</i> variables on L18~L24 according to your open.mp x64 server dir
+- Compile the C++ project (replace the path with the correct server path):
+  - `mkdir build && cd build && cmake .. -A x64 -T ClangCL -DCOMPONENTS_DIR="C:\path\to\openmp_x64_server\components"`
 
-- Compile the C++ project:
-  - `mkdir build && cd build && cmake .. -A x64 -T ClangCL`
+- Open the `build/sampsharp.sln` file with the Visual Studio
+- Build the solution using `CTRL+SHIFT+B` or select `Build -> Build Solution` from the menu
 
-- Open the `build` folder and open `.sln` file with the Visual Studio (VS)
-
-- Build the solution:
-  - Press `CTRL+SHIFT+B` or Right click on the solution on VS and go to the Build Solution option
-
-- Setup the `config.json` file of Open.MP
-  - Add the `sampsharp` property in config.json and change the value of `folder` property according of your path:
-  ```
-  "sampsharp": {
-      "folder": "D:\\Projects\\community\\openmp-sampsharp-x64-poc\\managed\\SashManaged\\SashManaged\\bin\\Debug\\net9.0\\",
-      "assembly": "SashManaged"
-  }
-  ```
-
-- Run the Open.MP server
-  - Go to `managed/SashManaged/SashManaged` and open the `.csproj` file with the VS
+- Build the dotnet project and run the open.mp server
+  - Open the `<root>/SampSharp.sln` file with the Visual Studio
   - Run the `open.mp` profile on VS
 
 - Let's go

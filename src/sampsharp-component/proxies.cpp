@@ -18,7 +18,7 @@
 #include <Server/Components/TextLabels/textlabels.hpp>
 #include <Server/Components/Vehicles/vehicles.hpp>
 
-#include "dotnet/coreclr_delegates.h"
+#include <coreclr_delegates.h>
 
 #pragma clang diagnostic push
 //#pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"

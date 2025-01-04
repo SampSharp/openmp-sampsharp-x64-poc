@@ -9,7 +9,7 @@
 
 #include <cassert>
 
-#include "dotnet/nethost.h"
+#include <nethost.h>
 
 
 bool ManagedHost::initialize(){
