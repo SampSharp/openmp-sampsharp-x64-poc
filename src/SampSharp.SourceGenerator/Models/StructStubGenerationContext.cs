@@ -6,7 +6,7 @@ namespace SampSharp.SourceGenerator.Models;
 public record StructStubGenerationContext(
     ISymbol Symbol,
     StructDeclarationSyntax Syntax,
-    MethodStubGenerationContext[] Methods,
+    ApiMethodStubGenerationContext[] Methods,
     ITypeSymbol[] ImplementingTypes,
     bool IsExtension,
     bool IsComponent);

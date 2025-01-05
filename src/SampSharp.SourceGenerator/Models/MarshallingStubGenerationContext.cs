@@ -1,17 +1,13 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
 
 namespace SampSharp.SourceGenerator.Models;
 
-public record MethodStubGenerationContext(
-    MethodDeclarationSyntax Declaration,
+public record MarshallingStubGenerationContext(
     IMethodSymbol Symbol,
     ParameterStubGenerationContext[] Parameters,
     IMarshallerShape? ReturnMarshallerShape,
-    bool RequiresMarshalling,
-    string Library,
-    string NativeTypeName)
+    bool RequiresMarshalling)
 {
     public bool ReturnsByRef => Symbol.ReturnsByRef || Symbol.ReturnsByRefReadonly;
 }

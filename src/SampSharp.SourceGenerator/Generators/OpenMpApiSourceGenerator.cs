@@ -179,7 +179,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     return null;
                 }
                 
-                return new MethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library, nativeTypeName);
+                return new ApiMethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library, nativeTypeName);
             })
             .Where(x => x != null)
             .ToArray();
