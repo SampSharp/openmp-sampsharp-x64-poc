@@ -2,14 +2,15 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
+
 namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 
 /// <summary>
 /// Stateless Managed->Unmanaged with pinnable reference.
 /// </summary>
-public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : StatelessMarshallerShape(nativeType, marshallerType)
 {
     public override bool RequiresLocal => false;
 
@@ -22,7 +23,7 @@ public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(str
             .WithVariables(
                 SingletonSeparatedList(
                     VariableDeclarator(
-                            Identifier(GetUnmanagedVar(parameterSymbol)))
+                            Identifier(GetNativeVar(parameterSymbol)))
                         .WithInitializer(
                             EqualsValueClause(
                                 PrefixUnaryExpression(
@@ -31,7 +32,7 @@ public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(str
                                             MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
                                                 ParseTypeName(MarshallerTypeName),
-                                                IdentifierName("GetPinnableReference")))
+                                                IdentifierName(ShapeConstants.MethodGetPinnableReference)))
                                         .WithArgumentList(
                                             ArgumentList(
                                                 SingletonSeparatedList(
@@ -41,6 +42,12 @@ public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(str
 
     public override ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx)
     {
-        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(CastExpression(GetNativeType(), IdentifierName($"__{ctx.Symbol.Name}_native"))), ctx.Symbol);
+        
+        return WithPInvokeParameterRefToken(
+            Argument(
+                CastExpression(
+                    GetNativeType(), 
+                    IdentifierName(GetNativeVar(ctx.Symbol)))),
+            ctx.Symbol);
     }
 }

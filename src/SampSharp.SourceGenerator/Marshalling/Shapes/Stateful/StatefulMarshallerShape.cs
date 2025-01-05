@@ -5,7 +5,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 
-public abstract class StatefulMarshallerShape(string nativeTypeName, string marshallerTypeName) : MarshallerShape(nativeTypeName, marshallerTypeName)
+public abstract class StatefulMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : MarshallerShape(nativeType, marshallerType)
 {
     public override SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
     {
@@ -28,10 +28,5 @@ public abstract class StatefulMarshallerShape(string nativeTypeName, string mars
                 )
                 .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword)))
         );
-    }
-
-    protected static string GetMarshallerVar(IParameterSymbol? parameterSymbol)
-    {
-        return $"__{parameterSymbol?.Name ?? "retVal"}_native_marshaller";
     }
 }

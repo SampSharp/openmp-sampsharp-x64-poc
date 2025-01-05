@@ -8,7 +8,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 /// <summary>
 /// Stateful Unmanaged->Managed
 /// </summary>
-public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, string marshallerTypeName) : StatefulMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatefulUnmanagedToManagedMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : StatefulMarshallerShape(nativeType, marshallerType)
 {
     public override SyntaxList<StatementSyntax> UnmarshalCapture(IParameterSymbol? parameterSymbol)
     {
@@ -19,12 +19,12 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             IdentifierName(GetMarshallerVar(parameterSymbol)),
-                            IdentifierName("FromUnmanaged")))
+                            IdentifierName(ShapeConstants.MethodFromUnmanaged)))
                     .WithArgumentList(
                         ArgumentList(
                             SingletonSeparatedList(
                                 Argument(
-                                    IdentifierName(GetUnmanagedVar(parameterSymbol))))))));
+                                    IdentifierName(GetNativeVar(parameterSymbol))))))));
     }
 
     public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol? parameterSymbol)
@@ -39,7 +39,7 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             IdentifierName(GetMarshallerVar(parameterSymbol)),
-                            IdentifierName("ToManaged"))))));
+                            IdentifierName(ShapeConstants.MethodToManaged))))));
     }
 
     public override SyntaxList<StatementSyntax> CleanupCalleeAllocated(IParameterSymbol? parameterSymbol)
@@ -51,6 +51,6 @@ public class StatefulUnmanagedToManagedMarshallerShape(string nativeTypeName, st
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
                         IdentifierName(GetMarshallerVar(parameterSymbol)),
-                        IdentifierName("Free")))));
+                        IdentifierName(ShapeConstants.MethodFree)))));
     }
 }

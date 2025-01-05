@@ -7,11 +7,14 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 /// <summary>
 /// Stateless Unmanaged->Managed with Guaranteed Unmarshalling
 /// </summary>
-public class StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool hasFree) : StatelessMarshallerShape(nativeType, marshallerType)
 {
     public override SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol)
     {
-        return InvokeAndAssign(GetManagedVar(parameterSymbol), "ConvertToManagedFinally", GetUnmanagedVar(parameterSymbol));
+        return InvokeAndAssign(
+            GetManagedVar(parameterSymbol), 
+            ShapeConstants.MethodConvertToManagedFinally, 
+            GetNativeVar(parameterSymbol));
     }
 
     public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol)
@@ -21,6 +24,8 @@ public class StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerSha
             ? List<StatementSyntax>()
             : SingletonList<StatementSyntax>(
                 ExpressionStatement(
-                    InvokeWithArgument("Free", GetUnmanagedVar(parameterSymbol))));
+                    InvokeWithArgument(
+                        ShapeConstants.MethodFree, 
+                        GetNativeVar(parameterSymbol))));
     }
 }

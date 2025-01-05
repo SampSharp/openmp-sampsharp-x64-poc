@@ -10,8 +10,35 @@ namespace SampSharp.SourceGenerator.SyntaxFactories;
 /// </summary>
 public static class TypeSyntaxFactory
 {
+    /// <summary>
+    /// <c>nint</c>
+    /// </summary>
     public static TypeSyntax IntPtrType { get; } = ParseTypeName("nint");
+
+    /// <summary>
+    /// <c>int</c>
+    /// </summary>
+    public static TypeSyntax IntType { get; } = PredefinedType(Token(SyntaxKind.IntKeyword));
+
+    /// <summary>
+    /// <c>object</c>
+    /// </summary>
     public static TypeSyntax ObjectType { get; } = PredefinedType(Token(SyntaxKind.ObjectKeyword));
+
+    /// <summary>
+    /// <c>global::System.Span&lt;byte&gt;</c>
+    /// </summary>
+    public static TypeSyntax SpanOfBytes { get; } = QualifiedName(
+        AliasQualifiedName(
+            IdentifierName(
+                Token(SyntaxKind.GlobalKeyword)),
+            IdentifierName("System")),
+        GenericName(
+                Identifier("Span"))
+            .WithTypeArgumentList(
+                TypeArgumentList(SingletonSeparatedList<TypeSyntax>(
+                    PredefinedType(
+                        Token(SyntaxKind.ByteKeyword))))));
 
     public static IdentifierNameSyntax IdentifierNameGlobal(string typeFQN)
     {
@@ -71,7 +98,6 @@ public static class TypeSyntaxFactory
 
     public static string ToGlobalTypeString(ITypeSymbol symbol)
     {
-        
         return symbol.SpecialType == SpecialType.None && symbol.TypeKind != TypeKind.Pointer
             ? ToGlobalTypeString(symbol.ToDisplayString()) 
             : symbol.ToDisplayString();

@@ -5,7 +5,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 
-public abstract class StatelessMarshallerShape(string nativeTypeName, string marshallerTypeName) : MarshallerShape(nativeTypeName, marshallerTypeName)
+public abstract class StatelessMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : MarshallerShape(nativeType, marshallerType)
 {
     protected SyntaxList<StatementSyntax> InvokeAndAssign(string local, string method, string argument)
     {

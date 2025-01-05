@@ -7,16 +7,18 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes;
 
-public abstract class MarshallerShape(string nativeTypeName, string marshallerTypeName) : IMarshallerShape
+public abstract class MarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : IMarshallerShape
 {
-    protected string NativeTypeName => nativeTypeName;
-    protected string MarshallerTypeName => marshallerTypeName;
+    protected ITypeSymbol NativeType => nativeType;
+    protected ITypeSymbol MarshallerType => marshallerType;
+    protected string NativeTypeName { get; } = TypeSyntaxFactory.ToGlobalTypeString(nativeType);
+    protected string MarshallerTypeName  { get; } = TypeSyntaxFactory.ToGlobalTypeString(marshallerType);
 
     public virtual bool RequiresLocal => true;
 
     public virtual TypeSyntax GetNativeType()
     {
-        return ParseTypeName(nativeTypeName);
+        return ParseTypeName(NativeTypeName);
     }
 
     public virtual SyntaxList<StatementSyntax> Setup(IParameterSymbol? parameterSymbol)
@@ -66,7 +68,7 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
 
     public virtual ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx)
     {
-        ExpressionSyntax expr = IdentifierName($"__{ctx.Symbol.Name}_native");
+        ExpressionSyntax expr = IdentifierName(GetNativeVar(ctx.Symbol));
 
         if (ctx.Symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
         {
@@ -76,18 +78,28 @@ public abstract class MarshallerShape(string nativeTypeName, string marshallerTy
         return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
     }
 
-    protected static string GetManagedVar(IParameterSymbol? parameterSymbol)
-    {
-        return parameterSymbol?.Name ?? "__retVal";
-    }
-
     public virtual SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol)
     {
         return List<StatementSyntax>();
     }
-
-    protected static string GetUnmanagedVar(IParameterSymbol? parameterSymbol)
+    
+    protected static string GetManagedVar(IParameterSymbol? parameterSymbol)
     {
-        return $"__{parameterSymbol?.Name ?? "retVal"}_native";
+        return MarshallerHelper.GetManagedVar(parameterSymbol);
+    }
+    
+    protected static string GetMarshallerVar(IParameterSymbol? parameterSymbol)
+    {
+        return MarshallerHelper.GetMarshallerVar(parameterSymbol);
+    }
+
+    protected static string GetNativeVar(IParameterSymbol? parameterSymbol)
+    {
+        return MarshallerHelper.GetNativeVar(parameterSymbol);
+    }
+
+    protected static string GetNativeExtraVar(IParameterSymbol? parameterSymbol, string extra)
+    {
+        return MarshallerHelper.GetNativeExtraVar(parameterSymbol, extra);
     }
 }

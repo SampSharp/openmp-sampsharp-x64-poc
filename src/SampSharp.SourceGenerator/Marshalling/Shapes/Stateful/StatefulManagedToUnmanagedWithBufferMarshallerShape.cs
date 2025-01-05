@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
@@ -8,27 +9,16 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 /// <summary>
 /// Stateful Managed->Unmanaged with Caller Allocated Buffer
 /// </summary>
-public class StatefulManagedToUnmanagedWithBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool notify, bool pinMarshaller) : StatefulManagedToUnmanagedMarshallerShape(nativeTypeName, marshallerTypeName, notify, pinMarshaller)
+public class StatefulManagedToUnmanagedWithBufferMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool notify, bool pinMarshaller) : StatefulManagedToUnmanagedMarshallerShape(nativeType, marshallerType, notify, pinMarshaller)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
-        var bufferVar = $"__{parameterSymbol?.Name ?? "retVal"}_native__buffer";
-
+        var bufferVar = GetNativeExtraVar(parameterSymbol, "buffer");
+        
         return List<StatementSyntax>([
             // global::System.Span<byte> __varName_native__buffer = stackalloc byte[MarshallerType.BufferSize];
             LocalDeclarationStatement(
-                VariableDeclaration(
-                        QualifiedName(
-                            AliasQualifiedName(
-                                IdentifierName(
-                                    Token(SyntaxKind.GlobalKeyword)),
-                                IdentifierName("System")),
-                            GenericName(
-                                    Identifier("Span"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(SingletonSeparatedList<TypeSyntax>(
-                                            PredefinedType(
-                                                Token(SyntaxKind.ByteKeyword)))))))
+                VariableDeclaration(TypeSyntaxFactory.SpanOfBytes)
                     .WithVariables(
                         SingletonSeparatedList(
                             VariableDeclarator(
@@ -45,7 +35,7 @@ public class StatefulManagedToUnmanagedWithBufferMarshallerShape(string nativeTy
                                                                 MemberAccessExpression(
                                                                     SyntaxKind.SimpleMemberAccessExpression,
                                                                     IdentifierName(MarshallerTypeName),
-                                                                    IdentifierName("BufferSize")))))))))))),
+                                                                    IdentifierName(ShapeConstants.PropertyBufferSize)))))))))))),
             
             // marshaller.FromManaged(managed, stackalloc byte[type.BufferSize]);
             ExpressionStatement(
@@ -53,13 +43,12 @@ public class StatefulManagedToUnmanagedWithBufferMarshallerShape(string nativeTy
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
                             IdentifierName(GetMarshallerVar(parameterSymbol)),
-                            IdentifierName("FromManaged")))
+                            IdentifierName(ShapeConstants.MethodFromManaged)))
                     .WithArgumentList(
                         ArgumentList(
-                            SeparatedList(
-                                new[] {
-                                    Argument(IdentifierName(GetManagedVar(parameterSymbol))),
+                            SeparatedList([
+                                Argument(IdentifierName(GetManagedVar(parameterSymbol))),
                                     Argument(IdentifierName(bufferVar))
-                                }))))]);
+                            ]))))]);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
@@ -8,27 +9,16 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 /// <summary>
 /// Stateless Managed->Unmanaged with Caller-Allocated Buffer
 /// </summary>
-public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(string nativeTypeName, string marshallerTypeName, bool hasFree) : StatelessMarshallerShape(nativeTypeName, marshallerTypeName)
+public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool hasFree) : StatelessMarshallerShape(nativeType, marshallerType)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
     {
-        var bufferVar = $"__{parameterSymbol?.Name ?? "retVal"}_native__buffer";
-
+        var bufferVar = GetNativeExtraVar(parameterSymbol, "buffer");
+        
         return List<StatementSyntax>([
             // global::System.Span<byte> __varName_native__buffer = stackalloc byte[MarshallerType.BufferSize];
             LocalDeclarationStatement(
-                VariableDeclaration(
-                        QualifiedName(
-                            AliasQualifiedName(
-                                IdentifierName(
-                                    Token(SyntaxKind.GlobalKeyword)),
-                                IdentifierName("System")),
-                            GenericName(
-                                    Identifier("Span"))
-                                .WithTypeArgumentList(
-                                    TypeArgumentList(SingletonSeparatedList<TypeSyntax>(
-                                            PredefinedType(
-                                                Token(SyntaxKind.ByteKeyword)))))))
+                VariableDeclaration(TypeSyntaxFactory.SpanOfBytes)
                     .WithVariables(
                         SingletonSeparatedList(
                             VariableDeclarator(
@@ -45,18 +35,18 @@ public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape
                                                                 MemberAccessExpression(
                                                                     SyntaxKind.SimpleMemberAccessExpression,
                                                                     IdentifierName(MarshallerTypeName),
-                                                                    IdentifierName("BufferSize")))))))))))),
+                                                                    IdentifierName(ShapeConstants.PropertyBufferSize)))))))))))),
             
             // MarshallerType.ConvertToUnmanaged(managed, __varName_native__buffer);
             ExpressionStatement(
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression,
-                    IdentifierName(GetUnmanagedVar(parameterSymbol)),
+                    IdentifierName(GetNativeVar(parameterSymbol)),
                     InvocationExpression(
                             MemberAccessExpression(
                                 SyntaxKind.SimpleMemberAccessExpression,
                                 IdentifierName(MarshallerTypeName),
-                                IdentifierName("ConvertToUnmanaged")
+                                IdentifierName(ShapeConstants.MethodConvertToUnmanaged)
                             )
                         )
                         .WithArgumentList(
@@ -76,6 +66,6 @@ public class StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape
             ? List<StatementSyntax>()
             : SingletonList<StatementSyntax>(
                 ExpressionStatement(
-                    InvokeWithArgument("Free", GetUnmanagedVar(parameterSymbol))));
+                    InvokeWithArgument(ShapeConstants.MethodFree, GetNativeVar(parameterSymbol))));
     }
 }

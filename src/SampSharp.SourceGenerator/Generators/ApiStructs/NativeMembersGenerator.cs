@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -18,6 +19,38 @@ namespace SampSharp.SourceGenerator.Generators.ApiStructs;
 
 public static class NativeMembersGenerator
 {
+    // The generated method consists of the following content:
+    //
+    // LocalsInit - Generate locals for marshalled types and return value.
+    // Setup - Perform required setup.
+    // try
+    // {
+    //   Marshal - Convert managed data to native data.
+    //   {
+    //     PinnedMarshal - Convert managed data to native data that requires the managed data to be pinned.
+    //     p/invoke 
+    //   }
+    //   [[__invokeSucceeded = true;]]
+    //   NotifyForSuccessfulInvoke - Keep alive any managed objects that need to stay alive across the call.
+    //   UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.
+    //   Unmarshal - Convert native data to managed data.
+    // }
+    // finally
+    // {
+    //   if (__invokeSucceeded)
+    //   {
+    //      GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
+    //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
+    //   }
+    //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
+    // }
+    //
+    // return: retVal
+    
+    private const string MethodPInvoke = "__PInvoke";
+    private const string FieldHandle = "_handle";
+    private const string LocalInvokeSucceeded =  "__invokeSucceeded";
+
     public static IEnumerable<MemberDeclarationSyntax> GenerateNativeMethods(StructStubGenerationContext ctx)
     {
         return ctx.Methods
@@ -65,10 +98,10 @@ public static class NativeMembersGenerator
 
     private static BlockSyntax CreateInvocationWithoutMarshalling(MethodStubGenerationContext ctx)
     {
-        ExpressionSyntax invoke = InvocationExpression(IdentifierName("__PInvoke"))
+        ExpressionSyntax invoke = InvocationExpression(IdentifierName(MethodPInvoke))
             .WithArgumentList(
                 ArgumentList(
-                    SingletonSeparatedList(Argument(IdentifierName("_handle")))
+                    SingletonSeparatedList(Argument(IdentifierName(FieldHandle)))
                         .AddRange(
                             ctx.Parameters.Select(GetArgumentForPInvokeParameter)
                         )
@@ -91,11 +124,11 @@ public static class NativeMembersGenerator
     private static BlockSyntax CreateInvocationWithMarshalling(MethodStubGenerationContext ctx)
     {
         ExpressionSyntax invoke = 
-            InvocationExpression(IdentifierName("__PInvoke"))
+            InvocationExpression(IdentifierName(MethodPInvoke))
                 .WithArgumentList(
                     ArgumentList(
                         SingletonSeparatedList(
-                                Argument(IdentifierName("_handle")))
+                                Argument(IdentifierName(FieldHandle)))
                             .AddRange(
                                 ctx.Parameters.Select(GetArgumentForPInvokeParameter))));
         
@@ -104,42 +137,9 @@ public static class NativeMembersGenerator
             invoke = 
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression, 
-                    IdentifierName(ctx.ReturnMarshallerShape == null ? "__retVal" : "__retVal_native"), 
+                    IdentifierName(ctx.ReturnMarshallerShape == null ? MarshallerConstants.LocalReturnValue : MarshallerHelper.GetNativeVar(null)), 
                     invoke);
         }
-
-        // The generated method consists of the following content:
-        //
-        // LocalsInit - Generate locals for marshalled types and return value.
-        // Setup - Perform required setup.
-        // try
-        // {
-        //   Marshal - Convert managed data to native data.
-        //   {
-        //     PinnedMarshal - Convert managed data to native data that requires the managed data to be pinned.
-        //     p/invoke 
-        //   }
-        //   [[__invokeSucceeded = true;]]
-        //   NotifyForSuccessfulInvoke - Keep alive any managed objects that need to stay alive across the call.
-        //   UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.
-        //   Unmarshal - Convert native data to managed data.
-        // }
-        // finally
-        // {
-        //   if (__invokeSucceeded)
-        //   {
-        //      GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
-        //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
-        //   }
-        //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
-        // }
-        //
-        // return: retVal
-        //
-        // NOTES:
-        // - design doc: https://github.com/dotnet/runtime/blob/main/docs/design/libraries/LibraryImportGenerator/UserTypeMarshallingV2.md
-        // - we're supporting Default, ManagedToUnmanagedIn, ManagedToUnmanagedOut, ManagedToUnmanagedRef
-        // - not implementing element marshalling (arrays) at the moment.
 
         // collect all marshalling steps
         var setup = Step(ctx, MarshallingCodeGenDocumentation.COMMENT_SETUP, (p, m) => m.Setup(p), ctx.ReturnMarshallerShape?.Setup(null) ?? default);
@@ -175,12 +175,12 @@ public static class NativeMembersGenerator
                 returnType = PointerType(returnType);
             }
 
-            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, "__retVal"));
+            statements = statements.Add(CreateLocalDeclarationWithDefaultValue(returnType, MarshallerConstants.LocalReturnValue));
             
             if (ctx.ReturnMarshallerShape != null)
             {
                 var nativeType = ctx.ReturnMarshallerShape.GetNativeType();
-                statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, "__retVal_native"));
+                statements = statements.Add(CreateLocalDeclarationWithDefaultValue(nativeType, MarshallerHelper.GetNativeVar(null)));
             }
         }
 
@@ -188,17 +188,17 @@ public static class NativeMembersGenerator
         if (cleanupCallee.Count > 0 || guaranteedUnmarshal.Count > 0)
         {
             statements = statements.Add(
-                CreateLocalDeclarationWithDefaultValue(PredefinedType(Token(SyntaxKind.BoolKeyword)), "__invokeSucceeded"));
+                CreateLocalDeclarationWithDefaultValue(PredefinedType(Token(SyntaxKind.BoolKeyword)), LocalInvokeSucceeded));
         
             notify = notify.Insert(0, 
                 ExpressionStatement(
                     AssignmentExpression(
                         SyntaxKind.SimpleAssignmentExpression, 
-                        IdentifierName("__invokeSucceeded"), 
+                        IdentifierName(LocalInvokeSucceeded), 
                         LiteralExpression(SyntaxKind.TrueLiteralExpression))));
         
             cleanupCallee = SingletonList<StatementSyntax>(
-                        IfStatement(IdentifierName("__invokeSucceeded"), 
+                        IfStatement(IdentifierName(LocalInvokeSucceeded), 
                         Block(guaranteedUnmarshal.AddRange(cleanupCallee))));
         }
         
@@ -236,7 +236,7 @@ public static class NativeMembersGenerator
 
         if (!ctx.Symbol.ReturnsVoid)
         {
-            ExpressionSyntax returnExpression = IdentifierName("__retVal");
+            ExpressionSyntax returnExpression = IdentifierName(MarshallerConstants.LocalReturnValue);
 
             if (ctx.ReturnsByRef)
             {
@@ -259,11 +259,9 @@ public static class NativeMembersGenerator
         {
             return ctx.MarshallerShape.GetArgument(ctx);
         }
-        else
-        {
-            ExpressionSyntax expr = IdentifierName(ctx.Symbol.Name);
-            return WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
-        }
+
+        ExpressionSyntax expr = IdentifierName(ctx.Symbol.Name);
+        return WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
     }
     
     /// <summary>
@@ -319,7 +317,8 @@ public static class NativeMembersGenerator
     /// </summary>
     private static LocalFunctionStatementSyntax GenerateExternFunction(MethodStubGenerationContext ctx, TypeSyntax externReturnType)
     {
-        var handleParam = Parameter(Identifier("handle_")).WithType(ParseTypeName("nint"));
+        
+        var handleParam = Parameter(Identifier("handle_")).WithType(IntPtrType);
 
         return HelperSyntaxFactory.GenerateExternFunction(
             library: ctx.Library, 
