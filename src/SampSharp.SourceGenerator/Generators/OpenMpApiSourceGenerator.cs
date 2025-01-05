@@ -122,11 +122,12 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     /// </summary>
     private static SyntaxList<MemberDeclarationSyntax> GenerateStructMembers(StructStubGenerationContext ctx)
     {
-        return List(
-            CreationMembersGenerator.GenerateCreationMembers(ctx)
-                .Concat(EqualityMembersGenerator.GenerateEqualityMembers(ctx))
-                .Concat(ForwardingMembersGenerator.GenerateImplementingTypeMembers(ctx))
-                .Concat(NativeMembersGenerator.GenerateNativeMethods(ctx)));
+        return List([
+            ..CreationMembersGenerator.GenerateCreationMembers(ctx), 
+            ..EqualityMembersGenerator.GenerateEqualityMembers(ctx),
+            ..ForwardingMembersGenerator.GenerateImplementingTypeMembers(ctx),
+            ..NativeMembersGenerator.GenerateNativeMethods(ctx)
+        ]);
     }
     
     /// <summary>
@@ -136,7 +137,9 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     {
         var targetNode = (StructDeclarationSyntax)ctx.TargetNode;
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
+        {
             return null;
+        }
 
         var attribute = ctx.Attributes.Single();
 
@@ -146,7 +149,8 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         var nativeTypeName = attribute.NamedArguments.FirstOrDefault(x => x.Key == "NativeTypeName")
             .Value.Value as string ?? symbol.Name;
 
-        var wellKnownMarshallerTypes = MarshallingCodeGenerator.GetWellKnownMarshallerTypes(ctx.SemanticModel.Compilation);
+        var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
+        var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
 
         // TODO implementingTypes for inheritance with depth > 1
         var implementingTypes = attribute.ConstructorArguments[0]
@@ -157,19 +161,20 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         var isExtension = implementingTypes.Any(x => x.ToDisplayString() == Constants.ExtensionFQN);
 
         // filter methods: partial, non-static, non-generic
-        var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
+        var methods = targetNode.Members
+            .OfType<MethodDeclarationSyntax>()
             .Where(x => x.IsPartial() && !x.HasModifier(SyntaxKind.StaticKeyword) && x.TypeParameterList == null)
-            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol
-                ? (null, null)
-                : (methodDeclaration, methodSymbol))
+            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is { } methodSymbol
+                ? (methodDeclaration, methodSymbol)
+                : (null, null))
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, MarshallerShapeFactory.GetMarshallerShape(parameter, wellKnownMarshallerTypes)))
+                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshallingDirection.ManagedToUnmanaged)))
                     .ToArray();
 
-                var returnMarshallerShape = MarshallerShapeFactory.GetMarshallerShape(method.methodSymbol, wellKnownMarshallerTypes);
+                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshallingDirection.ManagedToUnmanaged);
                 var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
 
                 if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
@@ -179,7 +184,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     return null;
                 }
                 
-                return new ApiMethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling, library, nativeTypeName);
+                return new ApiMethodStubGenerationContext(
+                    method.methodDeclaration!,
+                    method.methodSymbol, 
+                    parameters, 
+                    returnMarshallerShape,
+                    requiresMarshalling, 
+                    library,
+                    nativeTypeName);
             })
             .Where(x => x != null)
             .ToArray();

@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
 using SampSharp.SourceGenerator.Models;
@@ -242,8 +243,7 @@ public abstract class MarshallingGeneratorBase
     {
         var result = SyntaxFactory.List(ctx.Parameters.Where(x => x.MarshallerShape != null)
             .Select(x => marshaller(x.Symbol, x.MarshallerShape!))
-            .Where(x => x != null)
-            .Select(x => x!)
+            .WhereNotNull()
         );
 
         if (comment != null && result.Count > 0)

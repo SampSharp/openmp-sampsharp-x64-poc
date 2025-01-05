@@ -43,8 +43,8 @@ public readonly struct IEventDispatcher<T> : IPointer where T : class, IEventHan
         return handlerHandle.HasValue && EventDispatcherInterop.HasEventHandler(_handle, handlerHandle.Value, out priority);
     }
 
-    public Size Count()
+    public int Count()
     {
-        return EventDispatcherInterop.Count(_handle);
+        return EventDispatcherInterop.Count(_handle).Value.ToInt32();
     }
 }

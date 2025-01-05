@@ -1,72 +1,71 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
 
 namespace SampSharp.SourceGenerator.Marshalling;
 
-public static class MarshallerShapeFactory
+public class MarshallerShapeFactory
 {
-    /// <summary>
-    /// Returns the marshaller shape for the return value of the specified method <paramref name="symbol"/>.
-    /// </summary>
-    public static IMarshallerShape? GetMarshallerShape(IMethodSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    private readonly WellKnownMarshallerTypes _wellKnownMarshallerTypes;
+
+    public MarshallerShapeFactory(WellKnownMarshallerTypes wellKnownMarshallerTypes)
     {
-        if (symbol.ReturnsVoid)
+        _wellKnownMarshallerTypes = wellKnownMarshallerTypes;
+    }
+
+    /// <summary>
+    /// Returns the marshaller shape for the return value of the specified <paramref name="method"/>.
+    /// </summary>
+    public IMarshallerShape? GetMarshallerShape(IMethodSymbol method, MarshallingDirection direction)
+    {
+        if (method.ReturnsVoid)
         {
             return null;
         }
 
-        var marshalUsing = symbol.GetReturnTypeAttribute(Constants.MarshalUsingAttributeFQN);
-        var typeMarshaller = symbol.ReturnType.GetAttribute(Constants.NativeMarshallingAttributeFQN);
+        var marshalUsing = method.GetReturnTypeAttribute(Constants.MarshalUsingAttributeFQN);
+        var typeMarshaller = method.ReturnType.GetAttribute(Constants.NativeMarshallingAttributeFQN);
         
+        var marshallerType = GetMarshallerTypeForParameterType(typeMarshaller, marshalUsing, method.ReturnType);
+
         // Always handle return parameter as "out"
-        return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, symbol.ReturnType, RefKind.Out);
+        return GetMarshallerShape(marshallerType, method.ReturnType, RefKind.Out, GetDirectionInfo(direction));
     }
 
     /// <summary>
-    /// Returns the marshaller shape for the specified parameter <paramref name="symbol"/>.
+    /// Returns the marshaller shape for the specified <paramref name="parameter"/>.
     /// </summary>
-    public static IMarshallerShape? GetMarshallerShape(IParameterSymbol symbol, WellKnownMarshallerTypes wellKnownMarshallerTypes)
+    public IMarshallerShape? GetMarshallerShape(IParameterSymbol parameter, MarshallingDirection direction)
     {
-        var refKind = symbol.RefKind;
-        var type = symbol.Type;
-
-        var marshalUsing = symbol.GetAttribute(Constants.MarshalUsingAttributeFQN);
-        var typeMarshaller = symbol.Type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
+        var marshalUsing = parameter.GetAttribute(Constants.MarshalUsingAttributeFQN);
+        var typeMarshaller = parameter.Type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
         
-        return GetMarshallerShape(wellKnownMarshallerTypes, typeMarshaller, marshalUsing, type, refKind);
+        var marshallerType = GetMarshallerTypeForParameterType(typeMarshaller, marshalUsing, parameter.Type);
+
+        return GetMarshallerShape(marshallerType, parameter.Type, parameter.RefKind, GetDirectionInfo(direction));
     }
 
-    private static IMarshallerShape? GetMarshallerShape(WellKnownMarshallerTypes wellKnownMarshallerTypes, AttributeData? typeMarshaller, AttributeData? marshalUsing,
-        ITypeSymbol type, RefKind refKind)
+    private static MarshallingDirectionInfo GetDirectionInfo(MarshallingDirection direction)
     {
-        var marshaller = typeMarshaller?.ConstructorArguments[0].Value as ITypeSymbol;
-        if (marshalUsing?.ConstructorArguments.Length > 0)
+        return direction switch
         {
-            if (marshalUsing.ConstructorArguments[0].Value is ITypeSymbol marshallerOverride)
-            {
-                marshaller = marshallerOverride;
-            }
+            MarshallingDirection.ManagedToUnmanaged => MarshallingDirectionInfo.ManagedToUnmanaged,
+            MarshallingDirection.UnmanagedToManaged => MarshallingDirectionInfo.UnmanagedToManaged,
+            _ => throw new ArgumentOutOfRangeException(nameof(direction))
+        };
+    }
+
+    private static IMarshallerShape? GetMarshallerShape(ITypeSymbol? marshallerType, ITypeSymbol parameterType, RefKind refKind, MarshallingDirectionInfo direction)
+    {
+        if (marshallerType == null)
+        {
+            return null;
         }
 
-        // If no marshaller specified, look at a matching well known marshaller
-        if (marshaller == null)
-        {
-            var wellKnownMarshaller = wellKnownMarshallerTypes.Marshallers
-                .FirstOrDefault(x => x.matcher(type) && x.marshaller != null)
-                .marshaller;
-
-            if (wellKnownMarshaller == null)
-            {
-                return null;
-            }
-
-            marshaller = wellKnownMarshaller;
-        }
-
-        var filteredModes = GetModes(marshaller, type)
-            .Where(x => type.IsSame(x.ManagedType))
+        var filteredModes = GetModes(marshallerType, parameterType)
+            .Where(x => parameterType.IsSame(x.ManagedType))
             .ToList();
 
         if (filteredModes.Count == 0)
@@ -77,9 +76,9 @@ public static class MarshallerShapeFactory
         var marshallerMode = refKind 
             switch
         {
-            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => filteredModes.FirstOrDefault(x => x.Mode == MarshallerModeValue.ManagedToUnmanagedIn),
-            RefKind.Out => filteredModes.FirstOrDefault(x => x.Mode == MarshallerModeValue.ManagedToUnmanagedOut),
-            RefKind.Ref => filteredModes.FirstOrDefault(x => x.Mode == MarshallerModeValue.ManagedToUnmanagedRef),
+            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => filteredModes.FirstOrDefault(x => x.Mode == direction.In),
+            RefKind.Out => filteredModes.FirstOrDefault(x => x.Mode == direction.Out),
+            RefKind.Ref => filteredModes.FirstOrDefault(x => x.Mode == direction.Ref),
             _ => null
         };
 
@@ -95,6 +94,29 @@ public static class MarshallerShapeFactory
         }
 
         return shape;
+    }
+
+    private ITypeSymbol? GetMarshallerTypeForParameterType( AttributeData? typeMarshallerAttrib, AttributeData? marshalUsingAttrib,
+        ITypeSymbol type)
+    {
+        var marshaller = typeMarshallerAttrib?.ConstructorArguments[0].Value as ITypeSymbol;
+        if (marshalUsingAttrib?.ConstructorArguments.Length > 0)
+        {
+            if (marshalUsingAttrib.ConstructorArguments[0].Value is ITypeSymbol marshallerOverride)
+            {
+                marshaller = marshallerOverride;
+            }
+        }
+
+        // If no marshaller specified, look at a matching well known marshaller
+        if (marshaller != null)
+        {
+            return marshaller;
+        }
+
+        return _wellKnownMarshallerTypes.Marshallers
+            .FirstOrDefault(x => x.matcher(type) && x.marshaller != null)
+            .marshaller;
     }
 
     private static IMarshallerShape? GetMarshallerShapeForMarshallerMode(MarshallerModeInfo marshallerInfo, RefKind refKind)
@@ -133,8 +155,7 @@ public static class MarshallerShapeFactory
     {
         return marshaller.GetAttributes(Constants.CustomMarshallerAttributeFQN)
             .Select(x => GetModeFromAttribute(x, forType))
-            .Where(x => x != null)
-            .Select(x => x!)
+            .WhereNotNull()
             .ToArray();
     }
 
@@ -188,12 +209,9 @@ public static class MarshallerShapeFactory
             replacements++;
         }
     
-        if (replacements > 0)
-        {
-            return namedType.ConstructedFrom.Construct(typeArguments.ToArray());
-        }
-    
-        return namedType;
+        return replacements > 0 
+            ? namedType.ConstructedFrom.Construct(typeArguments.ToArray()) 
+            : namedType;
     }
 
     private static MarshallerModeValue ModeForValue(object constant)
@@ -202,5 +220,4 @@ public static class MarshallerShapeFactory
             ? (MarshallerModeValue)number 
             : MarshallerModeValue.Other;
     }
-
 }

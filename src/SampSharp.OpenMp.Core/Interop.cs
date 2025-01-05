@@ -5,7 +5,7 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.OpenMp.Core;
 
 public class Interop : 
-    // ICoreEventHandler,
+    ICoreEventHandler,
     IConsoleEventHandler
 {
     private static ICore _core;
@@ -58,9 +58,9 @@ public class Interop :
         var handler = new Interop();
 
         var dispatcher = core.GetEventDispatcher();
-        Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
-        // dispatcher.AddEventHandler(handler);
-        Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count().Value}");
+        Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count()}");
+        dispatcher.AddEventHandler(handler);
+        Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count()}");
 
         componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
 

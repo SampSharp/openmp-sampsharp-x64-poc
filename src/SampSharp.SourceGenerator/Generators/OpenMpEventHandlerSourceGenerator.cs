@@ -357,7 +357,9 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     {
         var targetNode = (InterfaceDeclarationSyntax)ctx.TargetNode;
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
+        {
             return null;
+        }
 
         var attribute = ctx.Attributes.Single();
 
@@ -367,22 +369,23 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
         var nativeTypeName = attribute.NamedArguments.FirstOrDefault(x => x.Key == "NativeTypeName")
             .Value.Value as string ?? (symbol.Name.StartsWith("I") ? symbol.Name.Substring(1) : symbol.Name);
 
-        var wellKnownMarshallerTypes = MarshallingCodeGenerator.GetWellKnownMarshallerTypes(ctx.SemanticModel.Compilation);
+        var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
+        var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
 
         // filter methods: non-static
         var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
             .Where(x => !x.HasModifier(SyntaxKind.StaticKeyword))
-            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is not { } methodSymbol
-                ? (null, null)
-                : (methodDeclaration, methodSymbol))
+            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is { } methodSymbol
+                ? (methodDeclaration, methodSymbol)
+                : (null, null))
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, MarshallerShapeFactory.GetMarshallerShape(parameter, wellKnownMarshallerTypes)))
+                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshallingDirection.UnmanagedToManaged)))
                     .ToArray();
 
-                var returnMarshallerShape = MarshallerShapeFactory.GetMarshallerShape(method.methodSymbol, wellKnownMarshallerTypes);
+                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshallingDirection.UnmanagedToManaged);
                 var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
 
                 if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
