@@ -1,10 +1,11 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 
 namespace SampSharp.SourceGenerator.Marshalling;
 
 public static class MarshallerHelper
 {
-    public static string GetManagedVar(IParameterSymbol? parameterSymbol)
+    public static string GetVar(IParameterSymbol? parameterSymbol)
     {
         return parameterSymbol?.Name ?? MarshallerConstants.LocalReturnValue;
     }
@@ -19,6 +20,13 @@ public static class MarshallerHelper
         return parameterSymbol == null 
             ? $"{MarshallerConstants.LocalReturnValue}_native" 
             : $"__{parameterSymbol.Name}_native";
+    }
+    
+    public static string GetManagedVar(IParameterSymbol? parameterSymbol)
+    {
+        return parameterSymbol == null 
+            ? $"{MarshallerConstants.LocalReturnValue}_managed" 
+            : $"__{parameterSymbol.Name}_managed";
     }
 
     public static string GetNativeExtraVar(IParameterSymbol? parameterSymbol, string extra)

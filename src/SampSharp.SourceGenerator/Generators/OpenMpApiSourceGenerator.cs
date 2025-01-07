@@ -171,10 +171,10 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Select(method =>
             {
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshallingDirection.ManagedToUnmanaged)))
+                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.ManagedToUnmanaged)))
                     .ToArray();
 
-                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshallingDirection.ManagedToUnmanaged);
+                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
                 var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
 
                 if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))

@@ -59,6 +59,12 @@ public partial class Testing
     
     [LibraryImport("SampSharp")]
     public static partial void ApplyAnimation(BlittableStructRef<AnimationDataMarshaller.Native> animation, PlayerAnimationSyncType syncType);
+
+
+    public delegate void MyDelegate([MarshalUsing(typeof(StringViewMarshaller))]string myString);
+
+    [LibraryImport("SampSharp")]
+    public static partial void SomethingWithDelegate(MyDelegate del);
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]

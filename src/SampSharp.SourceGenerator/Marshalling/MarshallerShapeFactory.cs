@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using SampSharp.SourceGenerator.Helpers;
@@ -18,7 +19,7 @@ public class MarshallerShapeFactory
     /// <summary>
     /// Returns the marshaller shape for the return value of the specified <paramref name="method"/>.
     /// </summary>
-    public IMarshallerShape? GetMarshallerShape(IMethodSymbol method, MarshallingDirection direction)
+    public IMarshallerShape? GetMarshallerShape(IMethodSymbol method, MarshalDirection direction)
     {
         if (method.ReturnsVoid)
         {
@@ -31,34 +32,36 @@ public class MarshallerShapeFactory
         var marshallerType = GetMarshallerTypeForParameterType(typeMarshaller, marshalUsing, method.ReturnType);
 
         // Always handle return parameter as "out"
-        return GetMarshallerShape(marshallerType, method.ReturnType, RefKind.Out, GetDirectionInfo(direction));
+        return GetMarshallerShape(marshallerType, method.ReturnType, RefKind.Out, direction);
     }
 
     /// <summary>
     /// Returns the marshaller shape for the specified <paramref name="parameter"/>.
     /// </summary>
-    public IMarshallerShape? GetMarshallerShape(IParameterSymbol parameter, MarshallingDirection direction)
+    public IMarshallerShape? GetMarshallerShape(IParameterSymbol parameter, MarshalDirection direction)
     {
         var marshalUsing = parameter.GetAttribute(Constants.MarshalUsingAttributeFQN);
         var typeMarshaller = parameter.Type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
         
         var marshallerType = GetMarshallerTypeForParameterType(typeMarshaller, marshalUsing, parameter.Type);
 
-        return GetMarshallerShape(marshallerType, parameter.Type, parameter.RefKind, GetDirectionInfo(direction));
+        return GetMarshallerShape(marshallerType, parameter.Type, parameter.RefKind, direction);
     }
 
-    private static MarshallingDirectionInfo GetDirectionInfo(MarshallingDirection direction)
+    private static MarshallingDirectionInfo GetDirectionInfo(MarshalDirection direction)
     {
         return direction switch
         {
-            MarshallingDirection.ManagedToUnmanaged => MarshallingDirectionInfo.ManagedToUnmanaged,
-            MarshallingDirection.UnmanagedToManaged => MarshallingDirectionInfo.UnmanagedToManaged,
+            MarshalDirection.ManagedToUnmanaged => MarshallingDirectionInfo.ManagedToUnmanaged,
+            MarshalDirection.UnmanagedToManaged => MarshallingDirectionInfo.UnmanagedToManaged,
             _ => throw new ArgumentOutOfRangeException(nameof(direction))
         };
     }
 
-    private static IMarshallerShape? GetMarshallerShape(ITypeSymbol? marshallerType, ITypeSymbol parameterType, RefKind refKind, MarshallingDirectionInfo direction)
+    private static IMarshallerShape? GetMarshallerShape(ITypeSymbol? marshallerType, ITypeSymbol parameterType, RefKind refKind, MarshalDirection direction)
     {
+        var dir = GetDirectionInfo(direction);
+
         if (marshallerType == null)
         {
             return null;
@@ -73,30 +76,32 @@ public class MarshallerShapeFactory
             return null;
         }
 
+        // Select best fitting marshaller mode for the parameter
         var marshallerMode = refKind 
             switch
         {
-            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => filteredModes.FirstOrDefault(x => x.Mode == direction.In),
-            RefKind.Out => filteredModes.FirstOrDefault(x => x.Mode == direction.Out),
-            RefKind.Ref => filteredModes.FirstOrDefault(x => x.Mode == direction.Ref),
+            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => filteredModes.FirstOrDefault(x => x.Mode == dir.In),
+            RefKind.Out => filteredModes.FirstOrDefault(x => x.Mode == dir.Out),
+            RefKind.Ref => filteredModes.FirstOrDefault(x => x.Mode == dir.Ref),
             _ => null
         };
 
         var defaultInfo = filteredModes.FirstOrDefault(x => x.Mode == MarshallerModeValue.Default);
 
+        //  Create a shape instance for the selected marshaller mode
         var shape = marshallerMode == null 
             ? null 
-            : GetMarshallerShapeForMarshallerMode(marshallerMode, refKind);
+            : CreateMarshaller(marshallerMode, refKind, direction);
 
         if (shape == null && defaultInfo != null)
         {
-            shape = GetMarshallerShapeForMarshallerMode(defaultInfo, refKind);
+            shape = CreateMarshaller(defaultInfo, refKind, direction);
         }
 
         return shape;
     }
 
-    private ITypeSymbol? GetMarshallerTypeForParameterType( AttributeData? typeMarshallerAttrib, AttributeData? marshalUsingAttrib,
+    private ITypeSymbol? GetMarshallerTypeForParameterType(AttributeData? typeMarshallerAttrib, AttributeData? marshalUsingAttrib,
         ITypeSymbol type)
     {
         var marshaller = typeMarshallerAttrib?.ConstructorArguments[0].Value as ITypeSymbol;
@@ -119,35 +124,47 @@ public class MarshallerShapeFactory
             .marshaller;
     }
 
-    private static IMarshallerShape? GetMarshallerShapeForMarshallerMode(MarshallerModeInfo marshallerInfo, RefKind refKind)
+    private static IMarshallerShape? CreateMarshaller(MarshallerModeInfo marshallerInfo, RefKind refKind, MarshalDirection direction)
     {
-        if (marshallerInfo.MarshallerType.IsStatic)
+        var isStateful = !marshallerInfo.MarshallerType.IsStatic;
+
+        if (isStateful && !marshallerInfo.MarshallerType.IsValueType)
         {
-            // stateless
-            return refKind switch
+            return null;
+        }
+
+        var refDirection = GetDirectionForRefKind(refKind);
+
+        // If the direction is unmanaged to managed, we need to invert the ref direction
+        if (direction == MarshalDirection.UnmanagedToManaged)
+        {
+            refDirection = refDirection switch
             {
-                RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallerShapeActivator.GetStatelessManagedToUnmanaged(marshallerInfo, refKind),
-                RefKind.Out => MarshallerShapeActivator.GetStatelessUnmanagedToManaged(marshallerInfo),
-                RefKind.Ref => MarshallerShapeActivator.GetStatelessBidirectional(marshallerInfo, refKind),
-                _ => null
+                MarshallingDirection.ManagedToUnmanaged => MarshallingDirection.UnmanagedToManaged,
+                MarshallingDirection.UnmanagedToManaged => MarshallingDirection.ManagedToUnmanaged,
+                _ => refDirection
             };
         }
 
-        if (marshallerInfo.MarshallerType.IsValueType)
+        if (!refDirection.HasValue)
         {
-            // stateful
-            return refKind switch
-            {
-                RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallerShapeActivator.GetStatefulManagedToUnmanaged(marshallerInfo, refKind),
-                RefKind.Out => MarshallerShapeActivator.GetStatefulUnmanagedToManaged(marshallerInfo),
-                RefKind.Ref => MarshallerShapeActivator.GetStatefulBidirectional(marshallerInfo, refKind),
-                _ => null
-            };
+            return null;
         }
 
-        return null;
+        return MarshallerShapeActivator.Create(marshallerInfo, refKind, isStateful, refDirection.Value, direction);
     }
 
+    private static MarshallingDirection? GetDirectionForRefKind(RefKind refKind)
+    {
+        return refKind switch
+        {
+            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallingDirection.ManagedToUnmanaged,
+            RefKind.Out => MarshallingDirection.UnmanagedToManaged,
+            RefKind.Ref => MarshallingDirection.Bidirectional,
+            _ => null
+        };
+    }
+    
     /// <summary>
     /// Returns all available marshaller modes for the specified marshaller type.
     /// </summary>

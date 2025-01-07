@@ -6,8 +6,11 @@ using System.Text;
 namespace SampSharp.OpenMp.Core.Api;
 
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToUnmanagedIn))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToUnmanagedIn))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToUnmanagedOut))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedIn, typeof(ManagedToUnmanagedOut))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToUnmanagedRef))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(ManagedToUnmanagedRef))]
 public static unsafe class StringViewMarshaller
 {
     public ref struct ManagedToUnmanagedIn

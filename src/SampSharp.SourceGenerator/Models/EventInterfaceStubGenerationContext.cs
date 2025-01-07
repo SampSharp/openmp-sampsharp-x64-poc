@@ -6,6 +6,6 @@ namespace SampSharp.SourceGenerator.Models;
 public record EventInterfaceStubGenerationContext(
     INamedTypeSymbol Symbol,
     InterfaceDeclarationSyntax Syntax,
-    EventMethodStubGenerationContext[] Methods,
+    MarshallingStubGenerationContext[] Methods,
     string Library,
     string NativeTypeName);

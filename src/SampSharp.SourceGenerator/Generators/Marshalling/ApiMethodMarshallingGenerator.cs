@@ -1,20 +1,21 @@
 ﻿using System.Linq;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Helpers;
+using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public class ApiMethodMarshallingGenerator : MarshallingGeneratorBase
+public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBase(MarshalDirection.ManagedToUnmanaged)
 {
     private const string MethodPInvoke = "__PInvoke";
     private const string FieldHandle = "_handle";
 
     public MemberDeclarationSyntax GenerateNativeMethod(ApiMethodStubGenerationContext ctx)
     {
-        return SyntaxFactory.MethodDeclaration(TypeSyntaxFactory.TypeNameGlobal(ctx.Symbol), ctx.Declaration.Identifier)
+        return MethodDeclaration(TypeSyntaxFactory.TypeNameGlobal(ctx.Symbol), ctx.Declaration.Identifier)
             .WithModifiers(ctx.Declaration.Modifiers)
             .WithParameterList(HelperSyntaxFactory.ToParameterListSyntax(ctx.Symbol.Parameters, false))
             .WithBody(GetMarshallingBlock(ctx));
@@ -33,12 +34,12 @@ public class ApiMethodMarshallingGenerator : MarshallingGeneratorBase
 
     protected override ExpressionSyntax GetInvocation(MarshallingStubGenerationContext ctx)
     {
-        return SyntaxFactory.InvocationExpression(SyntaxFactory.IdentifierName(MethodPInvoke))
+        return InvocationExpression(IdentifierName(MethodPInvoke))
             .WithArgumentList(
-                SyntaxFactory.ArgumentList(
-                    SyntaxFactory.SingletonSeparatedList(SyntaxFactory.Argument(SyntaxFactory.IdentifierName(FieldHandle)))
+                ArgumentList(
+                    SingletonSeparatedList(Argument(IdentifierName(FieldHandle)))
                         .AddRange(
-                            GetInvocationArgugments(ctx))
+                            GetInvocationArguments(ctx))
                 )
             );
     }
@@ -52,12 +53,12 @@ public class ApiMethodMarshallingGenerator : MarshallingGeneratorBase
         if(ctx.ReturnsByRef)
         {
             externReturnType = ctx.RequiresMarshalling
-                ? SyntaxFactory.PointerType(externReturnType)
-                : SyntaxFactory.RefType(externReturnType);
+                ? PointerType(externReturnType)
+                : RefType(externReturnType);
         }
 
         
-        var handleParam = SyntaxFactory.Parameter(SyntaxFactory.Identifier("handle_")).WithType(TypeSyntaxFactory.IntPtrType);
+        var handleParam = Parameter(Identifier("handle_")).WithType(TypeSyntaxFactory.IntPtrType);
 
         return HelperSyntaxFactory.GenerateExternFunction(
             library: ctx.Library, 

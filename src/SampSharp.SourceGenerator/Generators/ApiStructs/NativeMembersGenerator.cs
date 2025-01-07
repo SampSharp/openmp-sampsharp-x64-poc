@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.Marshalling;
+using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Models;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;

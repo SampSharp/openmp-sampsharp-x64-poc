@@ -87,21 +87,9 @@ public class Interop :
         return false;
     }
 
-    public bool OnConsoleText(StringView command, StringView parameters, ref ConsoleCommandSenderData sender)
+    public void OnRconLoginAttempt(IPlayer player, string password, bool success)
     {
-        if (command.ToString() == "banana")
-        {
-            Console.WriteLine($"BANANA!!! {parameters}");
-            return true;
-        }
-
-        Console.WriteLine($"cmd (SV): {command}; params: {parameters}");
-        return false;
-    }
-
-    public void OnRconLoginAttempt(IPlayer player, StringView password, bool success)
-    {
-        Console.WriteLine($"login attempt by player {player.Handle} w/pw {password}; {success}");
+        Console.WriteLine($"login attempt by player {player.GetName()}({player.Handle:X}) w/pw {password}; {success}");
     }
 
     public void OnConsoleCommandListRequest(FlatHashSetStringView commands)

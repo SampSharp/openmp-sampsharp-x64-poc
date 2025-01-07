@@ -10,7 +10,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 /// <summary>
 /// Stateless Managed->Unmanaged with pinnable reference.
 /// </summary>
-public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : StatelessMarshallerShape(nativeType, marshallerType)
+public class StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, MarshalDirection direction) : StatelessMarshallerShape(nativeType, marshallerType, direction)
 {
     public override bool RequiresLocal => false;
 

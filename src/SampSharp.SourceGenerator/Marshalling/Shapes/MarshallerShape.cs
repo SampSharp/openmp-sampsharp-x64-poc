@@ -7,8 +7,9 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.Shapes;
 
-public abstract class MarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : IMarshallerShape
+public abstract class MarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, MarshalDirection direction) : IMarshallerShape
 {
+    public MarshalDirection Direction => direction;
     protected ITypeSymbol NativeType => nativeType;
     protected ITypeSymbol MarshallerType => marshallerType;
     protected string NativeTypeName { get; } = TypeSyntaxFactory.ToGlobalTypeString(nativeType);
@@ -68,14 +69,21 @@ public abstract class MarshallerShape(ITypeSymbol nativeType, ITypeSymbol marsha
 
     public virtual ArgumentSyntax GetArgument(ParameterStubGenerationContext ctx)
     {
-        ExpressionSyntax expr = IdentifierName(GetNativeVar(ctx.Symbol));
-
-        if (ctx.Symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        if (direction == MarshalDirection.ManagedToUnmanaged)
         {
-            expr = PrefixUnaryExpression(SyntaxKind.AddressOfExpression, expr);
-        }
+            ExpressionSyntax expr = IdentifierName(GetNativeVar(ctx.Symbol));
 
-        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
+            if (ctx.Symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+            {
+                expr = PrefixUnaryExpression(SyntaxKind.AddressOfExpression, expr);
+            }
+
+            return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
+        }
+        else
+        {
+            return Argument(IdentifierName(GetManagedVar(ctx.Symbol)));
+        }
     }
 
     public virtual SyntaxList<StatementSyntax> GuaranteedUnmarshal(IParameterSymbol? parameterSymbol)
@@ -83,22 +91,26 @@ public abstract class MarshallerShape(ITypeSymbol nativeType, ITypeSymbol marsha
         return List<StatementSyntax>();
     }
     
-    protected static string GetManagedVar(IParameterSymbol? parameterSymbol)
+    protected string GetManagedVar(IParameterSymbol? parameterSymbol)
     {
-        return MarshallerHelper.GetManagedVar(parameterSymbol);
+        return Direction == MarshalDirection.UnmanagedToManaged 
+            ? MarshallerHelper.GetManagedVar(parameterSymbol) 
+            : MarshallerHelper.GetVar(parameterSymbol);
     }
     
-    protected static string GetMarshallerVar(IParameterSymbol? parameterSymbol)
+    protected string GetMarshallerVar(IParameterSymbol? parameterSymbol)
     {
         return MarshallerHelper.GetMarshallerVar(parameterSymbol);
     }
 
-    protected static string GetNativeVar(IParameterSymbol? parameterSymbol)
+    protected string GetNativeVar(IParameterSymbol? parameterSymbol)
     {
-        return MarshallerHelper.GetNativeVar(parameterSymbol);
+        return Direction == MarshalDirection.UnmanagedToManaged 
+            ? MarshallerHelper.GetVar(parameterSymbol) 
+            : MarshallerHelper.GetNativeVar(parameterSymbol);
     }
 
-    protected static string GetNativeExtraVar(IParameterSymbol? parameterSymbol, string extra)
+    protected string GetNativeExtraVar(IParameterSymbol? parameterSymbol, string extra)
     {
         return MarshallerHelper.GetNativeExtraVar(parameterSymbol, extra);
     }

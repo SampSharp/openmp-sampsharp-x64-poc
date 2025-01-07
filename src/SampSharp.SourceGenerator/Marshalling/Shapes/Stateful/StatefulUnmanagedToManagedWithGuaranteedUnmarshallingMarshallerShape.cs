@@ -8,7 +8,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 /// <summary>
 /// Stateful Unmanaged->Managed with Guaranteed Unmarshalling
 /// </summary>
-public class StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType) : StatefulUnmanagedToManagedMarshallerShape(nativeType, marshallerType)
+public class StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, MarshalDirection direction) : StatefulUnmanagedToManagedMarshallerShape(nativeType, marshallerType, direction)
 {
     public override SyntaxList<StatementSyntax> Unmarshal(IParameterSymbol? parameterSymbol)
     {

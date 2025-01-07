@@ -6,6 +6,7 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SampSharp.SourceGenerator.Generators.Marshalling;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Models;
@@ -26,6 +27,15 @@ namespace SampSharp.SourceGenerator.Generators;
 [Generator]
 public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 {
+    private const string ClassNativeEventHandlerManager = "NativeEventHandlerManager";
+    private const string LocalHandle = "handle";
+    private const string ParamHandle = "handle";
+    private const string MethodPInvoke = "__PInvoke";
+    private static readonly SyntaxToken _idToken = Identifier("Manager");
+    private static readonly SyntaxToken _idInstance = Identifier("Instance");
+
+    private static readonly ApiEventDelegateMarshallingGenerator _marshallingGenerator = new();
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var attributedInterfaces = context.SyntaxProvider
@@ -75,7 +85,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             GenerateManagerClass(ctx)
         ]);
     }
-    
+
     private static MemberDeclarationSyntax GenerateManagerPropertyMember(EventInterfaceStubGenerationContext ctx)
     { 
         return PropertyDeclaration(
@@ -88,7 +98,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                             TypeArgumentList(
                                 SingletonSeparatedList<TypeSyntax>(
                                     IdentifierName(ctx.Symbol.Name))))),
-                Identifier("Manager"))
+                _idToken)
             .WithModifiers(
                 TokenList(
                     Token(SyntaxKind.StaticKeyword)))
@@ -107,7 +117,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 ArrowExpressionClause(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName("NativeEventHandlerManager"),
+                        IdentifierName(ClassNativeEventHandlerManager),
                         IdentifierName("Instance"))))
             .WithSemicolonToken(
                 Token(SyntaxKind.SemicolonToken));
@@ -115,7 +125,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
     private static MemberDeclarationSyntax GenerateManagerClass(EventInterfaceStubGenerationContext ctx)
     {
-        return ClassDeclaration(Identifier("NativeEventHandlerManager"))
+        return ClassDeclaration(Identifier(ClassNativeEventHandlerManager))
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
             .WithBaseList(BaseList(
                 SingletonSeparatedList<BaseTypeSyntax>(
@@ -139,8 +149,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     private static MemberDeclarationSyntax GenerateInstancePropertyMember()
     {
         return PropertyDeclaration(
-                IdentifierName("NativeEventHandlerManager"),
-                Identifier("Instance"))
+                IdentifierName(ClassNativeEventHandlerManager),
+                _idInstance)
             .WithModifiers(
                 TokenList(
                     Token(SyntaxKind.PublicKeyword),
@@ -161,19 +171,12 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
     private static MemberDeclarationSyntax GenerateCreateMember(EventInterfaceStubGenerationContext ctx)
     {
-        // TODO: marshalling
-
         var delegateVars = ctx.Methods.Select(method =>
             VariableDeclarator(
                     Identifier($"__{method.Symbol.Name}_delegate"))
                 .WithInitializer(
                     EqualsValueClause(
-                        CastExpression(
-                            IdentifierName($"{method.Symbol.Name}_"),
-                            MemberAccessExpression(
-                                SyntaxKind.SimpleMemberAccessExpression,
-                                IdentifierName("handler"),
-                                IdentifierName(method.Symbol.Name))))));
+                        GenerateDelegateExpression(method))));
 
         
         var functionPointerVars = ctx.Methods.Select(method => 
@@ -257,11 +260,11 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                             .WithVariables(
                                 SingletonSeparatedList(
                                     VariableDeclarator(
-                                            Identifier("handle"))
+                                            Identifier(LocalHandle))
                                         .WithInitializer(
                                             EqualsValueClause(
                                                 InvocationExpression(
-                                                        IdentifierName("__PInvoke"))
+                                                        IdentifierName(MethodPInvoke))
                                                     .WithArgumentList(
                                                         ArgumentList(
                                                             SeparatedList(ctx.Methods.Select(method =>
@@ -273,13 +276,18 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         TupleExpression(
                             SeparatedList([
                                 Argument(
-                                        IdentifierName("handle")),
+                                        IdentifierName(LocalHandle)),
                                     Argument(
                                         IdentifierName("data"))]))),
 
                     // static extern nint __PInvoke(...);
                     GenerateExternFunctionCreate(ctx)
                 ])));
+    }
+
+    private static ExpressionSyntax GenerateDelegateExpression(MarshallingStubGenerationContext method)
+    {
+        return _marshallingGenerator.GenerateDelegateExpression(method);
     }
 
     private static MemberDeclarationSyntax GenerateFreeMember(EventInterfaceStubGenerationContext ctx)
@@ -296,18 +304,18 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 ParameterList(
                     SingletonSeparatedList(
                         Parameter(
-                                Identifier("handle"))
+                                Identifier(ParamHandle))
                             .WithType(IntPtrType))))
             .WithBody(
                 Block(
                     ExpressionStatement(
                         InvocationExpression(
-                                IdentifierName("__PInvoke"))
+                                IdentifierName(MethodPInvoke))
                             .WithArgumentList(
                                 ArgumentList(
                                     SingletonSeparatedList(
                                         Argument(
-                                            IdentifierName("handle")))))),
+                                            IdentifierName(ParamHandle)))))),
                     GenerateExternFunctionDelete(ctx)
                 ));
     }
@@ -382,10 +390,10 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             .Select(method =>
             {
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshallingDirection.UnmanagedToManaged)))
+                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.UnmanagedToManaged)))
                     .ToArray();
 
-                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshallingDirection.UnmanagedToManaged);
+                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.UnmanagedToManaged);
                 var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
 
                 if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
@@ -395,7 +403,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     return null;
                 }
 
-                return new EventMethodStubGenerationContext(method.methodDeclaration!, method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling);
+                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling);
             })
             .Where(x => x != null)
             .ToArray();

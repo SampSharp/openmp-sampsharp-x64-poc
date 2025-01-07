@@ -8,7 +8,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 /// <summary>
 /// Stateful Managed->Unmanaged
 /// </summary>
-public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool notify, bool pinMarshaller) : StatefulMarshallerShape(nativeType, marshallerType)
+public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool notify, bool pinMarshaller, MarshalDirection direction) : StatefulMarshallerShape(nativeType, marshallerType, direction)
 {
     public override FixedStatementSyntax? Pin(IParameterSymbol? parameterSymbol)
     {
