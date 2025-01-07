@@ -21,7 +21,7 @@ public readonly partial struct ICore
 
     public partial void SetWeather(int weather);
 
-    public partial void SetWorldTime(Hours time);
+    public partial void SetWorldTime(int time);
 
     public partial void UseStuntBonuses(bool enable);
 

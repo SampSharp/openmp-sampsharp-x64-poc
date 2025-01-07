@@ -76,8 +76,8 @@ public readonly partial struct IPlayer
     public partial void UnsetMapIcon(int id);
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
-    public partial void SetTime(Hours hr, Minutes min);
-    public partial Pair<Hours, Minutes> getTime();
+    public partial void SetTime(int hr, int min);
+    public partial Pair<int, int> getTime();
     public partial void UseClock(bool enable);
     public partial bool HasClock();
     public partial void UseWidescreen(bool enable);
@@ -91,7 +91,7 @@ public readonly partial struct IPlayer
     public partial float GetArmour();
     public partial void SetGravity(float gravity);
     public partial float GetGravity();
-    public partial void SetWorldTime(Hours time);
+    public partial void SetWorldTime(int time);
     public partial void ApplyAnimation(AnimationData animation, PlayerAnimationSyncType syncType);
     public partial void ClearAnimations(PlayerAnimationSyncType syncType);
     public partial PlayerAnimationData GetAnimationData();
