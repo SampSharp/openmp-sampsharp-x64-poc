@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -38,8 +39,8 @@ public readonly partial struct IVehicle
     public partial ref VehicleParams GetParams();
     public partial bool IsDead();
     public partial void Respawn();
-    public partial Seconds GetRespawnDelay();
-    public partial void SetRespawnDelay(Seconds delay);
+    [return:MarshalUsing(typeof(SecondsMarshaller))]public partial TimeSpan GetRespawnDelay();
+    public partial void SetRespawnDelay([MarshalUsing(typeof(SecondsMarshaller))]TimeSpan delay);
     public partial bool IsRespawning();
     public partial void SetInterior(int InteriorID);
     public partial int GetInterior();

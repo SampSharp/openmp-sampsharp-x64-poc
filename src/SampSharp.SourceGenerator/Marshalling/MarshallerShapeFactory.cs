@@ -48,12 +48,12 @@ public class MarshallerShapeFactory
         return GetMarshallerShape(marshallerType, parameter.Type, parameter.RefKind, direction);
     }
 
-    private static MarshallingDirectionInfo GetDirectionInfo(MarshalDirection direction)
+    private static MarshalDirectionInfo GetDirectionInfo(MarshalDirection direction)
     {
         return direction switch
         {
-            MarshalDirection.ManagedToUnmanaged => MarshallingDirectionInfo.ManagedToUnmanaged,
-            MarshalDirection.UnmanagedToManaged => MarshallingDirectionInfo.UnmanagedToManaged,
+            MarshalDirection.ManagedToUnmanaged => MarshalDirectionInfo.ManagedToUnmanaged,
+            MarshalDirection.UnmanagedToManaged => MarshalDirectionInfo.UnmanagedToManaged,
             _ => throw new ArgumentOutOfRangeException(nameof(direction))
         };
     }
@@ -86,7 +86,7 @@ public class MarshallerShapeFactory
             _ => null
         };
 
-        var defaultInfo = filteredModes.FirstOrDefault(x => x.Mode == MarshallerModeValue.Default);
+        var defaultInfo = filteredModes.FirstOrDefault(x => x.Mode == MarshalMode.Default);
 
         //  Create a shape instance for the selected marshaller mode
         var shape = marshallerMode == null 
@@ -140,8 +140,8 @@ public class MarshallerShapeFactory
         {
             refDirection = refDirection switch
             {
-                MarshallingDirection.ManagedToUnmanaged => MarshallingDirection.UnmanagedToManaged,
-                MarshallingDirection.UnmanagedToManaged => MarshallingDirection.ManagedToUnmanaged,
+                MarshallerShapeDirection.ManagedToUnmanaged => MarshallerShapeDirection.UnmanagedToManaged,
+                MarshallerShapeDirection.UnmanagedToManaged => MarshallerShapeDirection.ManagedToUnmanaged,
                 _ => refDirection
             };
         }
@@ -154,13 +154,13 @@ public class MarshallerShapeFactory
         return MarshallerShapeActivator.Create(marshallerInfo, refKind, isStateful, refDirection.Value, direction);
     }
 
-    private static MarshallingDirection? GetDirectionForRefKind(RefKind refKind)
+    private static MarshallerShapeDirection? GetDirectionForRefKind(RefKind refKind)
     {
         return refKind switch
         {
-            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallingDirection.ManagedToUnmanaged,
-            RefKind.Out => MarshallingDirection.UnmanagedToManaged,
-            RefKind.Ref => MarshallingDirection.Bidirectional,
+            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallerShapeDirection.ManagedToUnmanaged,
+            RefKind.Out => MarshallerShapeDirection.UnmanagedToManaged,
+            RefKind.Ref => MarshallerShapeDirection.Bidirectional,
             _ => null
         };
     }
@@ -231,10 +231,10 @@ public class MarshallerShapeFactory
             : namedType;
     }
 
-    private static MarshallerModeValue ModeForValue(object constant)
+    private static MarshalMode ModeForValue(object constant)
     {
         return constant is int number 
-            ? (MarshallerModeValue)number 
-            : MarshallerModeValue.Other;
+            ? (MarshalMode)number 
+            : MarshalMode.Other;
     }
 }

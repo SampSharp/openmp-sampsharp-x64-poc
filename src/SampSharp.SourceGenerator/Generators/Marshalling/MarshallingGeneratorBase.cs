@@ -64,28 +64,28 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
     {
         // The generated method consists of the following content:
         //
-        // LocalsInit - Generate locals for marshalled types and return value.
-        // Setup - Perform required setup.
+        // LocalsInit
+        // Setup
         // try
         // {
-        //   Marshal - Convert managed data to native data.
+        //   Marshal
         //   {
-        //     PinnedMarshal - Convert managed data to native data that requires the managed data to be pinned.
-        //     p/invoke 
+        //     PinnedMarshal
+        //     Invoke 
         //   }
         //   [[__invokeSucceeded = true;]]
-        //   NotifyForSuccessfulInvoke - Keep alive any managed objects that need to stay alive across the call.
-        //   UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.
-        //   Unmarshal - Convert native data to managed data.
+        //   NotifyForSuccessfulInvoke
+        //   UnmarshalCapture
+        //   Unmarshal
         // }
         // finally
         // {
         //   if (__invokeSucceeded)
         //   {
-        //      GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
-        //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
+        //      GuaranteedUnmarshal
+        //      CleanupCalleeAllocated
         //   }
-        //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
+        //   CleanupCallerAllocated
         // }
         //
         // return: retVal
@@ -140,40 +140,39 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
     {
         // NOTE: We support only unmarshalling options for unmanaged to managed marshalling. 
         //
-        // LocalsInit - Generate locals for marshalled types and return value.
-        // Setup - Perform required setup.
+        // LocalsInit
+        // Setup
         // try
         // {
-        //   UnmarshalCapture - Capture the native data into marshaller instances in case conversion to managed data throws an exception.
-        //   Unmarshal - Convert native data to managed data.
-        //   GuaranteedUnmarshal - Convert native data to managed data even in the case of an exception during the non-cleanup phases.
+        //   GuaranteedUnmarshal
+        //   UnmarshalCapture
+        //   Unmarshal
         //   {
         //     p/invoke 
         //   }
         //   [[__invokeSucceeded = true;]]
+        //   NotifyForSuccessfulInvoke
+        //   Marshal
+        //   PinnedMarshal
         // }
         // finally
         // {
-        //   if (__invokeSucceeded)
-        //   {
-        //      CleanupCalleeAllocated - Perform cleanup of callee allocated resources.
-        //   }
-        //   CleanupCallerAllocated - Perform cleanup of caller allocated resources.
+        //   CleanupCallerAllocated
         // }
         //
         // return: retVal
 
-        // TODO: which free when for unmanaged to managed marshalling?
-
         var steps = CollectPhases(ctx);
+
+        if (steps.CleanupCallee.Count > 0)
+        {
+            throw new InvalidOperationException("cannot cleanup callee allocated");
+        }
 
         var initLocals = GenerateInitLocals(ctx);
 
         // if callee cleanup or guaranteed unmarshalling is required, we need to keep track of invocation success
-        var guaranteedStatements = steps.CleanupCallee;
         var notify = steps.Notify;
-
-        GenerateGuaranteedBlock(ref guaranteedStatements, ref initLocals, ref notify);
 
         var invoke = ExpressionStatement(AddReturnValueAssignmentToInvoke(ctx, GetInvocation(ctx)));
 
@@ -187,8 +186,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
                         .AddRange(steps.GuaranteedUnmarshal)
                         .Add(invoke)
                         .AddRange(notify),
-                    finallyBlock: guaranteedStatements
-                        .AddRange(steps.CleanupCaller)));
+                    finallyBlock: steps.CleanupCaller));
 
         // add return statement if the method returns a value
         if (!ctx.Symbol.ReturnsVoid)
@@ -197,6 +195,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 
             if (ctx.ReturnsByRef)
             {
+                // TODO: this may be wrong
                 returnExpression = RefExpression(
                     PrefixUnaryExpression(
                         SyntaxKind.PointerIndirectionExpression,

@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -22,7 +23,7 @@ public readonly partial struct IPlayerPool
     public partial bool IsNameTaken(string name, IPlayer skip);
     public partial void SendClientMessageToAll(ref Colour colour, string message);
     public partial void SendChatMessageToAll(IPlayer from, string message);
-    public partial void SendGameTextToAll(string message, Milliseconds time, int style);
+    public partial void SendGameTextToAll(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);
     public partial void HideGameTextForAll(int style);
     public partial void SendDeathMessageToAll(IPlayer killer, IPlayer killee, int weapon);
     public partial void SendEmptyDeathMessageToAll();

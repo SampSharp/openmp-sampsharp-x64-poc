@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.SourceGenerator.Marshalling;
 
-public enum MarshallerModeValue
+public enum MarshalMode
 {
     Default,
     ManagedToUnmanagedIn,

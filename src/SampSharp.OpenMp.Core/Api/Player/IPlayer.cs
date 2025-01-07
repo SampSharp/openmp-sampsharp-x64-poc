@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -104,14 +105,14 @@ public readonly partial struct IPlayer
     public partial int GetTeam();
     public partial void SetSkin(int skin, bool send = true);
     public partial int GetSkin();
-    public partial void SetChatBubble(string text, ref Colour colour, float drawDist, Milliseconds expire);
+    public partial void SetChatBubble(string text, ref Colour colour, float drawDist, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan expire);
     public partial void SendClientMessage(ref Colour colour, string message);
     public partial void SendChatMessage(IPlayer sender, string message);
     public partial void SendCommand(string message);
-    public partial void SendGameText(string message, Milliseconds time, int style);
+    public partial void SendGameText(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);
     public partial void HideGameText(int style);
     public partial bool HasGameText(int style);
-    public partial bool GetGameText(int style, ref string message, ref Milliseconds time, ref Milliseconds remaining);
+    public partial bool GetGameText(int style, ref string message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
     public partial void SetWeather(int weatherID);
     public partial int GetWeather();
     public partial void SetWorldBounds(Vector4 coords);

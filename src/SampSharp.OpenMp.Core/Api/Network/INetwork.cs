@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using System.Runtime.InteropServices.Marshalling;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi(typeof(IExtensible))]
 public readonly partial struct INetwork
@@ -14,7 +16,7 @@ public readonly partial struct INetwork
     public partial NetworkStats GetStatistics(IPlayer player = default);
     public partial uint GetPing(IPlayer peer);
     public partial void Disconnect(IPlayer peer);
-    public partial void Ban(BanEntry entry, Milliseconds expire);
+    public partial void Ban(BanEntry entry, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan expire);
     public partial void Unban(BanEntry entry);
     public partial void Update();
     

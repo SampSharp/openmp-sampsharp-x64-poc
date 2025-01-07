@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.SourceGenerator.Marshalling;
 
-public enum MarshallingDirection
+public enum MarshallerShapeDirection
 {
     ManagedToUnmanaged,
     UnmanagedToManaged,

@@ -26,16 +26,16 @@ public static class MarshallerShapeActivator
     //
     // NOTE: No collection marshallers have been implemented but so far we don't need them.
 
-    public static IMarshallerShape? Create(MarshallerModeInfo info, RefKind refKind, bool stateful, MarshallingDirection direction, MarshalDirection mDirection)
+    public static IMarshallerShape? Create(MarshallerModeInfo info, RefKind refKind, bool stateful, MarshallerShapeDirection direction, MarshalDirection mDirection)
     {
         return (direction, stateful) switch
         {
-            (MarshallingDirection.ManagedToUnmanaged, true) => CreateStatefulManagedToUnmanaged(info, refKind, mDirection),
-            (MarshallingDirection.UnmanagedToManaged, true) => CreateStatefulUnmanagedToManaged(info, mDirection),
-            (MarshallingDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, mDirection),
-            (MarshallingDirection.ManagedToUnmanaged, false) => CreateStatelessManagedToUnmanaged(info, refKind, mDirection),
-            (MarshallingDirection.UnmanagedToManaged, false) => CreateStatelessUnmanagedToManaged(info, mDirection),
-            (MarshallingDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, mDirection),
+            (MarshallerShapeDirection.ManagedToUnmanaged, true) => CreateStatefulManagedToUnmanaged(info, refKind, mDirection),
+            (MarshallerShapeDirection.UnmanagedToManaged, true) => CreateStatefulUnmanagedToManaged(info, mDirection),
+            (MarshallerShapeDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, mDirection),
+            (MarshallerShapeDirection.ManagedToUnmanaged, false) => CreateStatelessManagedToUnmanaged(info, refKind, mDirection),
+            (MarshallerShapeDirection.UnmanagedToManaged, false) => CreateStatelessUnmanagedToManaged(info, mDirection),
+            (MarshallerShapeDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, mDirection),
             _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
         };
     }

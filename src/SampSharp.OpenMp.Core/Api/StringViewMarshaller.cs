@@ -7,8 +7,8 @@ namespace SampSharp.OpenMp.Core.Api;
 
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToUnmanagedIn))]
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToUnmanagedIn))]
-[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(ManagedToUnmanagedOut))]
-[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedIn, typeof(ManagedToUnmanagedOut))]
+[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedIn, typeof(NativeToManaged))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToUnmanagedRef))]
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(ManagedToUnmanagedRef))]
 public static unsafe class StringViewMarshaller
@@ -75,23 +75,12 @@ public static unsafe class StringViewMarshaller
             }
         }
     }
-
-    public ref struct ManagedToUnmanagedOut
+    
+    public static class NativeToManaged
     {
-        private string? _result;
-
-        public void FromUnmanaged(StringView unmanaged)
+        public static string ConvertToManaged(StringView unmanaged)
         {
-            _result = unmanaged.ToString();
-        }
-        
-        public readonly string ToManaged()
-        {
-            return _result!;
-        }
-
-        public void Free()
-        {
+            return unmanaged.ToString();
         }
     }
 
