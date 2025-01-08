@@ -1,4 +1,10 @@
 #include "sampsharp-component.hpp"
+#include "compat.hpp"
+
+#define CFG_FOLDER "sampsharp.folder"
+#define CFG_ASSEMBLY "sampsharp.assembly"
+#define CFG_ENTRY_POINT_TYPE "sampsharp.entry_point_type"
+#define CFG_ENTRY_POINT_METHOD "sampsharp.entry_point_method"
 
 StringView SampSharpComponent::componentName() const
 {
@@ -15,7 +21,7 @@ void SampSharpComponent::onLoad(ICore* c)
 	core_ = c;
 }
 
-void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& config, bool defaults)
+void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& config, const bool defaults)
 {
     #define initConfigString(key, value) \
         if(defaults) { \
@@ -24,53 +30,43 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
             config.setString(key, value); \
         }
 	
-	initConfigString("sampsharp.folder", "gamemode");
-	initConfigString("sampsharp.assembly", "GameMode");
-	initConfigString("sampsharp.entry_point_type", "SampSharp.OpenMp.Core.Interop");
-	initConfigString("sampsharp.entry_point_method", "OnInit");
-}
-
-std::wstring widen(std::string const &in)
-{
-    std::wstring out{};
-
-    if (in.length() > 0)
-    {
-        const int len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                                      in.c_str(), in.size(), nullptr, 0);
-        if ( len == 0 )
-        {
-            throw std::runtime_error("Invalid character sequence.");
-        }
-
-        out.resize(len);
-        MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
-                            in.c_str(), in.size(), out.data(), out.size());
-    }
-
-    return out;
+	initConfigString(CFG_FOLDER, "gamemode");
+	initConfigString(CFG_ASSEMBLY, "GameMode");
+	initConfigString(CFG_ENTRY_POINT_TYPE, "SampSharp.OpenMp.Core.Interop");
+	initConfigString(CFG_ENTRY_POINT_METHOD, "OnInit");
 }
 
 void SampSharpComponent::onInit(IComponentList* components)
 {
 	const IConfig& config = core_->getConfig();
 
-	auto folder = config.getString("sampsharp.folder");
-	auto assembly = config.getString("sampsharp.assembly");
-	auto entry_point_type = config.getString("sampsharp.entry_point_type");
-	auto entry_point_method = config.getString("sampsharp.entry_point_method");
+	const auto folder = config.getString(CFG_FOLDER);
+	const auto assembly = config.getString(CFG_ASSEMBLY);
+	const auto entry_point_type = config.getString(CFG_ENTRY_POINT_TYPE);
+	const auto entry_point_method = config.getString(CFG_ENTRY_POINT_METHOD);
 
-	auto full_entry_point = entry_point_type.to_string() + ", " + assembly.to_string(); // namespace.class, assembly
+	const auto folder_w = widen(folder.to_string());
+	const auto assembly_w = widen(assembly.to_string());
+	const auto full_entry_point_w = widen(entry_point_type.to_string() + ", " + assembly.to_string()); // namespace.class, assembly
+	const auto entry_point_method_w = widen(entry_point_method.to_string());
 
-	// TODO: this is windows-only
-	auto folder_w = widen(folder.to_string());
-	auto assembly_w = widen(assembly.to_string());
-	auto full_entry_point_w = widen(full_entry_point);
-	auto entry_point_method_w = widen(entry_point_method.to_string());
+    if(!managed_host_.initialize())
+	{
+		core_->logLn(LogLevel::Error, "Failed to initialize the .NET host framework resolver. Has the .NET runtime been installed?");
+		return;
+	}
 
-    managed_host_.initialize();
-    managed_host_.loadFor(folder_w.c_str(), assembly_w.c_str());
-	managed_host_.getEntryPoint(full_entry_point_w.c_str(), entry_point_method_w.c_str(), (void**)&on_init_);
+    if(!managed_host_.loadFor(folder_w.c_str(), assembly_w.c_str()))
+	{
+		core_->logLn(LogLevel::Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.dll.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
+		return;
+	}
+
+	if(!managed_host_.getEntryPoint(full_entry_point_w.c_str(), entry_point_method_w.c_str(), reinterpret_cast<void**>(&on_init_)))
+	{
+		core_->logLn(LogLevel::Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
+		return;
+	}
 
 	on_init_(core_, components);
 }
@@ -81,6 +77,7 @@ void SampSharpComponent::onReady()
 
 void SampSharpComponent::free()
 {
+	// TODO: hook for cleaning up event handlers
 	delete this;
 }
 

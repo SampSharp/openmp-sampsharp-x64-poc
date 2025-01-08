@@ -4,6 +4,7 @@
 #ifndef __CORECLR_DELEGATES_H__
 #define __CORECLR_DELEGATES_H__
 
+#include <stdlib.h>
 #include <stdint.h>
 
 #if defined(_WIN32)

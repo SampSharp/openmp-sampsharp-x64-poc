@@ -4,8 +4,6 @@
 
 #include "managed-host.hpp"
 
-using namespace Impl;
-
 typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *, IComponentList*);
 
 struct ISampSharpComponent : IComponent
@@ -18,7 +16,7 @@ class SampSharpComponent final
 {
 private:
 	ICore* core_ = nullptr;
-	ManagedHost managed_host_;
+	ManagedHost managed_host_ {};
 	inline static SampSharpComponent* instance_ = nullptr;
 	on_init_fn on_init_ = nullptr;
 
@@ -40,6 +38,4 @@ public:
 	void reset() override;
 	
 	static SampSharpComponent* getInstance();
-
-	~SampSharpComponent() = default;
 };

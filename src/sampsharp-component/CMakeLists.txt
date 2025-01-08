@@ -5,44 +5,60 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory("../../external/sdk" "${CMAKE_BINARY_DIR}/external/sdk")
 include_directories(
-	.
-	"../../external/dotnet"
+    .
+    "../../external/dotnet"
 )
 
 add_definitions(
-	-DHAVE_STDINT_H=1
+    -DHAVE_STDINT_H=1
 )
-
-set(NETHOST_LIB_DIR "../../external/dotnet")
 
 set(PROJECT_NAME "SampSharp")
 
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
-
 # can be specified as arugment cmake -DCOMPONENTS_DIR="path/to/x64/server/components"
 if(DEFINED COMPONENTS_DIR AND NOT COMPONENTS_DIR STREQUAL "")
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
-	
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
-	
-	set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
-	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${COMPONENTS_DIR}")
+    
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${COMPONENTS_DIR}")
+    
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
+    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${COMPONENTS_DIR}")
 endif()
 
-link_directories(${NETHOST_LIB_DIR})
+link_directories("../../external/dotnet")
+
+
+# attempt to get static lib linking working...
+#
+# IF (WIN32)
+#     set(LIB_NETHOST "libnethost.lib")
+# ELSE()
+#     set(LIB_NETHOST "libnethost.a")
+# ENDIF()
+# 
+# find_library(nethost
+#     NAMES ${LIB_NETHOST}
+#     PATHS "../../external/dotnet"
+#     NO_DEFAULT_PATH
+# )
+# 
+# if (NOT nethost)
+#     message(FATAL_ERROR "Could not find ${LIB_NETHOST}")
+# endif()
+# 
+# message("resolved ${nethost}")
 
 file(GLOB_RECURSE component_source_list "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/*.hpp")
 
 add_library(${PROJECT_NAME} SHARED ${component_source_list})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE
+target_link_libraries(${PROJECT_NAME} PRIVATE 
     OMP-SDK
-	nethost
+    nethost
 )
 

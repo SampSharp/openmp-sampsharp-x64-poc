@@ -66,27 +66,50 @@ supported by MS and may have stability issues.
 the initial performance of the server should be better, it easier to diagnose issues in generated code and easier to
 improve the generated code since we generate c# code instead of itermediate code (IL).  
 
-## How to Compile/Run?
+Building the project
+--------------------
 
-##### Requirements
+### Requirements
 
+On Windows, the following software is required to build the project
 - [Install CMake 3.19 +](https://cmake.org/download/)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/en-us/vs/)
   - Install the Development to desktop with .NET
   - Install the Development to desktop with C++
-- (included with Visual Studio) [.NET 9 SDK x64](https://dotnet.microsoft.com/en-us/download)
-  - Download and install the .NET 9.0 SDK
-- [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions/workflows/build.yml)
+- [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions?query=branch%3Amaster)
   - Find and click in the last sucessfully run in `master` branch
-  - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file
+  - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file for windows or `open.mp-linux-x86_64-v*` for linux
 
-##### Instructions
+### Instructions
 
 - Clone the repository including all submodules: `git clone https://github.com/SampSharp/openmp-sampsharp-x64-poc
 --recursive` 
 - **NOTE*** If you forgot to clone the submodules (directories in `external/sdk` empty), you can do it after cloning the
   repository: `git submodule update --init --recursive` 
-- Have the directory where open.mp x64 server is located at hand
+
+#### open.mp component (Windows)
+
+```
+cmake -S . -B build -A x64 -T ClangCL
+cmake --build build --config RelWithDebInfo
+```
+
+After building, copy the built library (`build/src/sampsharp-component/RelWithDebInfo/SampSharp.dll`) to the components directory of your open.mp server
+
+#### open.mp component (Linux)
+```
+cmake -S . -B build
+cmake --build build
+```
+
+After building, copy the built library (`build/src/sampsharp-component/libSampSharp.so`) to the components directory of your open.mp server
+
+#### .NET libraries (build on any platform)
+```
+dotnet build SampSharp.sln
+```
+
+#### .NET libraries (run/develop on Windows)
 - Setup the launchSettings.json:
   - Navigate to `src/SampSharp.OpenMp.Core/Properties/launchSettings.json`.
   - Replace the content with te following configuration and replace the `executablePath` and `workingDirectory` values:
@@ -106,14 +129,6 @@ improve the generated code since we generate c# code instead of itermediate code
 }
 ```
 
-- Compile the C++ project (replace the path with the correct server path):
-  - `mkdir build && cd build && cmake .. -A x64 -T ClangCL -DCOMPONENTS_DIR="C:\path\to\openmp_x64_server\components"`
-
-- Open the `build/sampsharp.sln` file with the Visual Studio
-- Build the solution using `CTRL+SHIFT+B` or select `Build -> Build Solution` from the menu
-
 - Build the dotnet project and run the open.mp server
   - Open the `<root>/SampSharp.sln` file with the Visual Studio
   - Run the `open.mp` profile on VS
-
-- Let's go
