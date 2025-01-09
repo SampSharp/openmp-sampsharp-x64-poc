@@ -29,8 +29,8 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string>
 
     public unsafe void Emplace(string value)
     {
-        scoped StringViewMarshaller.ManagedToUnmanagedIn valueMarshaller = new();
-        Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToUnmanagedIn.BufferSize];
+        scoped StringViewMarshaller.ManagedToNative valueMarshaller = new();
+        Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToNative.BufferSize];
         valueMarshaller.FromManaged(value, buffer);
 
         var valueMarshalled = valueMarshaller.ToUnmanaged();

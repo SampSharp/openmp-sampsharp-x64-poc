@@ -77,7 +77,7 @@ public readonly partial struct IPlayer
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
     public partial void SetTime(int hr, int min);
-    public partial Pair<int, int> getTime();
+    public partial Pair<int, int> GetTime();
     public partial void UseClock(bool enable);
     public partial bool HasClock();
     public partial void UseWidescreen(bool enable);
@@ -113,7 +113,7 @@ public readonly partial struct IPlayer
     public partial void HideGameText(int style);
     public partial bool HasGameText(int style);
     public partial bool GetGameText(int style, ref string message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
-    public partial void SetWeather(int weatherID);
+    public partial void SetWeather(int weatherId);
     public partial int GetWeather();
     public partial void SetWorldBounds(Vector4 coords);
     public partial Vector4 GetWorldBounds();

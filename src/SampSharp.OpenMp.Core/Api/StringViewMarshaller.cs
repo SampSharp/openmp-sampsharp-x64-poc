@@ -5,15 +5,15 @@ using System.Text;
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToUnmanagedIn))]
-[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToUnmanagedIn))]
+[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedIn, typeof(NativeToManaged))]
-[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedRef, typeof(ManagedToUnmanagedRef))]
-[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(ManagedToUnmanagedRef))]
+[CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedRef, typeof(Bidirectional))]
+[CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(Bidirectional))]
 public static unsafe class StringViewMarshaller
 {
-    public ref struct ManagedToUnmanagedIn
+    public ref struct ManagedToNative
     {
         public static int BufferSize => 128;
 
@@ -84,7 +84,7 @@ public static unsafe class StringViewMarshaller
         }
     }
 
-    public ref struct ManagedToUnmanagedRef
+    public ref struct Bidirectional
     {
         private byte* _heapBuffer;
         private int _byteCount;
