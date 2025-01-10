@@ -65,6 +65,10 @@ public partial class Testing
 
     [LibraryImport("SampSharp")]
     public static partial void SomethingWithDelegate(MyDelegate del);
+    
+    [LibraryImport("SampSharp")]
+    public static partial void Burp([MarshalUsing(typeof(MicrosecondsMarshaller))]TimeSpan value);
+
 }
 
 [CustomMarshaller(typeof(Foo), MarshalMode.ManagedToUnmanagedIn, typeof(SFManagedToUnmanagedInPin))]

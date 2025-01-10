@@ -2,13 +2,7 @@
 
 public enum MarshallerShapeDirection
 {
-    ManagedToUnmanaged,
-    UnmanagedToManaged,
+    ManagedToNative,
+    NativeToManaged,
     Bidirectional
-}
-
-public enum MarshalDirection
-{
-    ManagedToUnmanaged,
-    UnmanagedToManaged
 }

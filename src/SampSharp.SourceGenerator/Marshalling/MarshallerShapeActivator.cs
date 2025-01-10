@@ -1,12 +1,24 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.CodeAnalysis;
-using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
 using SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 using SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 
 namespace SampSharp.SourceGenerator.Marshalling;
+
+[Flags]
+public enum MarshallerShape
+{
+    None = 0x0,
+    ToUnmanaged = 0x1,
+    CallerAllocatedBuffer = 0x2,
+    StatelessPinnableReference = 0x4,
+    StatefulPinnableReference = 0x8,
+    ToManaged = 0x10,
+    GuaranteedUnmarshal = 0x20,
+    Free = 0x40,
+    OnInvoked = 0x80,
+}
 
 public static class MarshallerShapeActivator
 {
@@ -26,41 +38,44 @@ public static class MarshallerShapeActivator
     //
     // NOTE: No collection marshallers have been implemented but so far we don't need them.
 
-    public static IMarshallerShape? Create(MarshallerModeInfo info, RefKind refKind, bool stateful, MarshallerShapeDirection direction, MarshalDirection mDirection)
+    public static IMarshallerShape? Create(CustomMarshallerInfo info, RefKind refKind, MarshallerShapeDirection direction, MarshalDirection mDirection)
     {
-        return (direction, stateful) switch
-        {
-            (MarshallerShapeDirection.ManagedToUnmanaged, true) => CreateStatefulManagedToUnmanaged(info, refKind, mDirection),
-            (MarshallerShapeDirection.UnmanagedToManaged, true) => CreateStatefulUnmanagedToManaged(info, mDirection),
-            (MarshallerShapeDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, mDirection),
-            (MarshallerShapeDirection.ManagedToUnmanaged, false) => CreateStatelessManagedToUnmanaged(info, refKind, mDirection),
-            (MarshallerShapeDirection.UnmanagedToManaged, false) => CreateStatelessUnmanagedToManaged(info, mDirection),
-            (MarshallerShapeDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, mDirection),
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
-        };
-    }
+        var stateful = !info.MarshallerType.IsStatic;
 
-    private static IMarshallerShape? CreateStatefulUnmanagedToManaged(MarshallerModeInfo info, MarshalDirection direction)
-    {
-        
-        var fromUnmanaged = GetMethod(info.MarshallerType, true, ShapeConstants.MethodFromUnmanaged, _ => true);
-        var free = GetMethod(info.MarshallerType, true, ShapeConstants.MethodFree);
-        var toManaged = GetMethod(info.MarshallerType, true, ShapeConstants.MethodToManaged);
-        var toManagedFinally = GetMethod(info.MarshallerType, true, ShapeConstants.MethodToManagedFinally);
-
-        if (fromUnmanaged == null || free == null)
+        if (stateful && !info.MarshallerType.IsValueType)
         {
             return null;
         }
 
-        var unmanagedType = fromUnmanaged.Parameters[0].Type;
+        var methods = MarshalInspector.GetMembers(info);
+
+        return (direction, stateful) switch
+        {
+            (MarshallerShapeDirection.ManagedToNative, true) => CreateStatefulManagedToUnmanaged(info, refKind, mDirection, methods),
+            (MarshallerShapeDirection.NativeToManaged, true) => CreateStatefulUnmanagedToManaged(info, mDirection, methods),
+            (MarshallerShapeDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, mDirection, methods),
+            (MarshallerShapeDirection.ManagedToNative, false) => CreateStatelessManagedToUnmanaged(info, refKind, mDirection, methods),
+            (MarshallerShapeDirection.NativeToManaged, false) => CreateStatelessUnmanagedToManaged(info, mDirection, methods),
+            (MarshallerShapeDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, mDirection, methods),
+            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+        };
+    }
+
+    private static IMarshallerShape? CreateStatefulUnmanagedToManaged(CustomMarshallerInfo info, MarshalDirection direction, MarshalMembers members)
+    {
+        if (members.StatefulFromUnmanagedMethod == null || members.StatefulFreeMethod == null)
+        {
+            return null;
+        }
+
+        var unmanagedType = members.StatefulFromUnmanagedMethod.Parameters[0].Type;
         
-        if (toManaged != null && SymbolEqualityComparer.Default.Equals(toManaged.ReturnType, info.ManagedType))
+        if (members.StatefulToManagedMethod != null && SymbolEqualityComparer.Default.Equals(members.StatefulToManagedMethod.ReturnType, info.ManagedType))
         {
             return new StatefulUnmanagedToManagedMarshallerShape(unmanagedType, info.MarshallerType, direction);
         }
 
-        if (toManagedFinally != null && SymbolEqualityComparer.Default.Equals(toManagedFinally.ReturnType, info.ManagedType))
+        if (members.StatefulToManagedFinallyMethod != null && SymbolEqualityComparer.Default.Equals(members.StatefulToManagedFinallyMethod.ReturnType, info.ManagedType))
         {
             return new StatefulUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(unmanagedType, info.MarshallerType, direction);
         }
@@ -68,64 +83,49 @@ public static class MarshallerShapeActivator
         return null;
     }
 
-    private static IMarshallerShape? CreateStatefulManagedToUnmanaged(MarshallerModeInfo info, RefKind refKind, MarshalDirection direction)
+    private static IMarshallerShape? CreateStatefulManagedToUnmanaged(CustomMarshallerInfo info, RefKind refKind, MarshalDirection direction, MarshalMembers members)
     {
-        var fromManaged = GetMethod(info.MarshallerType, true, ShapeConstants.MethodFromManaged, info.ManagedType);
-        var toUnmanaged = GetMethod(info.MarshallerType, true, ShapeConstants.MethodToUnmanaged);
-        var free = GetMethod(info.MarshallerType, true, ShapeConstants.MethodFree);
-
-        var fromManagedBuffer = GetMethod(info.MarshallerType, true, ShapeConstants.MethodFromManaged, x => SymbolEqualityComparer.Default.Equals(x.Type, info.ManagedType), x => IsSpanByte(x.Type));
-        var bufferSize = GetProperty(info.MarshallerType, true, ShapeConstants.PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32);
-
-        var hasOnInvoked = GetMethod(info.MarshallerType, true, ShapeConstants.MethodOnInvoked) != null;
-
-        if (toUnmanaged == null || free == null)
+        if (members.StatefulToUnmanagedMethod == null || members.StatefulFreeMethod == null)
         {
             return null;
         }
         
-        var unmanagedType = toUnmanaged.ReturnType;
-        
-        var getPinnableReferenceStatic = GetMethod(info.MarshallerType, false, ShapeConstants.MethodGetPinnableReference, info.ManagedType);
-        if (getPinnableReferenceStatic?.ReturnsByRef == true && refKind == RefKind.None)
+        var unmanagedType = members.StatefulToUnmanagedMethod.ReturnType;
+
+        if (members.StatelessGetPinnableReferenceMethod?.ReturnsByRef == true && refKind == RefKind.None)
         {
             return new StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(
                 unmanagedType, 
                 info.MarshallerType, direction);
         }
 
-        var getPinnableReference = GetMethod(info.MarshallerType, true, ShapeConstants.MethodGetPinnableReference);
-        if (getPinnableReference?.ReturnsByRef == false)
-        {
-            getPinnableReference = null;
-        }
-        if (fromManaged != null)
+        if (members.StatefulFromManagedMethod != null)
         {
             // no buffer
             return new StatefulManagedToUnmanagedMarshallerShape(
                 unmanagedType, 
                 info.MarshallerType, 
-                hasOnInvoked, 
-                getPinnableReference != null, direction);
+                members.StatefulOnInvokedMethod != null, 
+                members.StatefulGetPinnableReferenceMethod != null, direction);
         }
 
-        if (fromManagedBuffer != null && bufferSize != null)
+        if (members.StatefulFromManagedWithBufferMethod != null && members.BufferSizeProperty != null)
         {
             // with buffer;
             return new StatefulManagedToUnmanagedWithBufferMarshallerShape(
                 unmanagedType, 
                 info.MarshallerType, 
-                hasOnInvoked,
-                getPinnableReference != null, direction);
+                members.StatefulOnInvokedMethod != null,
+                members.StatefulGetPinnableReferenceMethod != null, direction);
         }
 
         return null;
     }
 
-    private static IMarshallerShape? CreateStatefulBidirectional(MarshallerModeInfo info, RefKind refKind, MarshalDirection direction)
+    private static IMarshallerShape? CreateStatefulBidirectional(CustomMarshallerInfo info, RefKind refKind, MarshalDirection direction, MarshalMembers members)
     {
-        var inShape = CreateStatefulManagedToUnmanaged(info, refKind, direction);
-        var outShape = CreateStatefulUnmanagedToManaged(info, direction);
+        var inShape = CreateStatefulManagedToUnmanaged(info, refKind, direction, members);
+        var outShape = CreateStatefulUnmanagedToManaged(info, direction,members);
 
         if(inShape == null || outShape == null)
         {
@@ -135,145 +135,59 @@ public static class MarshallerShapeActivator
         return new BidirectionalMarshallerShape(inShape, outShape);
     }
 
-    private static IMarshallerShape? CreateStatelessManagedToUnmanaged(MarshallerModeInfo info, RefKind refKind, MarshalDirection direction)
+    private static IMarshallerShape? CreateStatelessManagedToUnmanaged(CustomMarshallerInfo info, RefKind refKind, MarshalDirection direction, MarshalMembers members)
     {
-        var toUnmanaged = GetMethod(info.MarshallerType, false, ShapeConstants.MethodConvertToUnmanaged, info.ManagedType);
-        
-        var bufferSize = GetProperty(info.MarshallerType, true, ShapeConstants.PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32);
-       
-        var toUnmanagedBuffer = bufferSize == null 
-            ? null
-            : GetMethod(info.MarshallerType, false, ShapeConstants.MethodConvertToUnmanaged, x => SymbolEqualityComparer.Default.Equals(x.Type, info.ManagedType), x => IsSpanByte(x.Type));
-      
-        if (toUnmanaged != null)
+        if (members.StatelessConvertToUnmanagedMethod != null)
         {
-            var getPinnableReference = GetMethod(info.MarshallerType, false, ShapeConstants.MethodGetPinnableReference, info.ManagedType);
-
-            if (getPinnableReference?.ReturnsByRef == true && refKind == RefKind.None)
+            if (members.StatelessGetPinnableReferenceMethod != null && refKind == RefKind.None)
             {
                 return new StatelessManagedToUnmanagedWithPinnableReferenceMarshallerShape(
-                    toUnmanaged.ReturnType, 
+                    members.StatelessConvertToUnmanagedMethod.ReturnType, 
                     info.MarshallerType, direction);
             }
 
-            var hasFree = GetMethod(info.MarshallerType, false, ShapeConstants.MethodFree, toUnmanaged.ReturnType) != null;
-            return new StatelessManagedToUnmanagedMarshallerShape(toUnmanaged.ReturnType, info.MarshallerType, hasFree, direction);
+
+            return new StatelessManagedToUnmanagedMarshallerShape(members.StatelessConvertToUnmanagedMethod.ReturnType, info.MarshallerType, members.StatelessFreeMethod != null, direction);
         }
 
-        if (bufferSize != null && toUnmanagedBuffer != null)
+        if (members is { BufferSizeProperty: not null, StatelessConvertToUnmanagedWithBufferMethod: not null })
         {
-            var hasFree = GetMethod(info.MarshallerType, false, ShapeConstants.MethodFree, toUnmanagedBuffer.ReturnType) != null;
-
             return new StatelessManagedToUnmanagedWithCallerAllocatedBufferMarshallerShape(
-                toUnmanagedBuffer.ReturnType, 
+                members.StatelessConvertToUnmanagedWithBufferMethod.ReturnType, 
                 info.MarshallerType, 
-                hasFree, direction);
+                members.StatelessFreeMethod != null, direction);
         }
 
         return null;
     }
     
-    private static IMarshallerShape? CreateStatelessUnmanagedToManaged(MarshallerModeInfo info, MarshalDirection direction)
+    private static IMarshallerShape? CreateStatelessUnmanagedToManaged(CustomMarshallerInfo info, MarshalDirection direction, MarshalMembers members)
     {
-        var toManaged = GetMethod(info.MarshallerType, false, ShapeConstants.MethodConvertToManaged, _ => true);
-          
-        
-        if (toManaged is { Parameters.Length: 1 })
+        if (members.StatelessConvertToManagedMethod is { Parameters.Length: 1 } toManaged)
         {
             var unmanagedType = toManaged.Parameters[0].Type;
-            var hasFree = GetMethod(info.MarshallerType, false, ShapeConstants.MethodFree, unmanagedType) != null;
 
-            return new StatelessUnmanagedToManagedMarshallerShape(unmanagedType, info.MarshallerType, hasFree, direction);
+            return new StatelessUnmanagedToManagedMarshallerShape(unmanagedType, info.MarshallerType, members.StatelessFreeMethod != null, direction);
         }
 
-        var toManagedFinally = GetMethod(info.MarshallerType, false, ShapeConstants.MethodConvertToManagedFinally, _ => true);
-
-        if (toManagedFinally is { Parameters.Length: 1 })
+        if (members.StatelessConvertToManagedFinallyMethod is { Parameters.Length: 1 } toManagedFinally)
         {
             var unmanagedType = toManagedFinally.Parameters[0].Type;
-            var hasFree = GetMethod(info.MarshallerType, false, ShapeConstants.MethodFree, unmanagedType) != null;
 
-            return new StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(unmanagedType, info.MarshallerType, hasFree, direction);
+            return new StatelessUnmanagedToManagedWithGuaranteedUnmarshallingMarshallerShape(unmanagedType, info.MarshallerType, members.StatelessFreeMethod != null, direction);
         }
 
         return null;
     }
     
-    private static IMarshallerShape? CreateStatelessBidirectional(MarshallerModeInfo info, RefKind refKind, MarshalDirection direction)
+    private static IMarshallerShape? CreateStatelessBidirectional(CustomMarshallerInfo info, RefKind refKind, MarshalDirection direction, MarshalMembers members)
     {
-        var inShape = CreateStatelessManagedToUnmanaged(info, refKind, direction);
-        var outShape = CreateStatelessUnmanagedToManaged(info, direction);
+        var inShape = CreateStatelessManagedToUnmanaged(info, refKind, direction, members);
+        var outShape = CreateStatelessUnmanagedToManaged(info, direction, members);
 
         return inShape != null && outShape != null 
             ? new BidirectionalMarshallerShape(inShape, outShape)
             : null;
     }
-
-    /// <summary>
-    /// Gets a method without parameters.
-    /// </summary>
-    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name)
-    {
-        return GetMethod(type, stateful, name, Array.Empty<ITypeSymbol>());
-    }
-
-    /// <summary>
-    /// Gets a method with the specified parameter types.
-    /// </summary>
-    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name, params ITypeSymbol[] paramTypes)
-    {
-        return type
-            .GetMembers(name)
-            .OfType<IMethodSymbol>()
-            .FirstOrDefault(x =>
-            {
-                if (stateful == x.IsStatic || x.Parameters.Length != paramTypes.Length)
-                {
-                    return false;
-                }
-
-                return !paramTypes.Where((t, i) => !x.Parameters[i].Type.IsSame(t))
-                    .Any();
-            });
-
-    }
     
-    /// <summary>
-    /// Gets a method with the specified parameter types.
-    /// </summary>
-    private static IMethodSymbol? GetMethod(ITypeSymbol type, bool stateful, string name, params Func<IParameterSymbol, bool>[] paramTypes)
-    {
-        return type
-            .GetMembers(name)
-            .OfType<IMethodSymbol>()
-            .FirstOrDefault(x =>
-            {
-                if (stateful == x.IsStatic || x.Parameters.Length != paramTypes.Length)
-                {
-                    return false;
-                }
-
-                return !paramTypes.Where((check, i) => !check(x.Parameters[i]))
-                    .Any();
-            });
-
-    }
-
-    /// <summary>
-    /// Gets a property with the specified type.
-    /// </summary>
-    private static IPropertySymbol? GetProperty(ITypeSymbol type, bool isStatic, string name, Func<ITypeSymbol, bool> propertyType)
-    {
-        return type
-            .GetMembers(name)
-            .OfType<IPropertySymbol>()
-            .FirstOrDefault(x => isStatic == x.IsStatic && propertyType(x.Type));
-
-    }
-
-    private static bool IsSpanByte(ITypeSymbol type)
-    {
-        return type is INamedTypeSymbol named && named.ToDisplayString() == Constants.SpanOfBytesFQN;
-    }
-
 }
