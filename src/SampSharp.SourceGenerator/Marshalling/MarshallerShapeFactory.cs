@@ -132,8 +132,8 @@ public class MarshallerShapeFactory
         {
             refDirection = refDirection switch
             {
-                MarshallerShapeDirection.ManagedToNative => MarshallerShapeDirection.NativeToManaged,
-                MarshallerShapeDirection.NativeToManaged => MarshallerShapeDirection.ManagedToNative,
+                ValueDirection.ManagedToNative => ValueDirection.NativeToManaged,
+                ValueDirection.NativeToManaged => ValueDirection.ManagedToNative,
                 _ => refDirection
             };
         }
@@ -146,13 +146,13 @@ public class MarshallerShapeFactory
         return MarshallerShapeActivator.Create(customMarshallerInfo, refKind, refDirection.Value, direction);
     }
 
-    private static MarshallerShapeDirection? GetDirectionForRefKind(RefKind refKind)
+    private static ValueDirection? GetDirectionForRefKind(RefKind refKind)
     {
         return refKind switch
         {
-            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => MarshallerShapeDirection.ManagedToNative,
-            RefKind.Out => MarshallerShapeDirection.NativeToManaged,
-            RefKind.Ref => MarshallerShapeDirection.Bidirectional,
+            RefKind.In or RefKind.RefReadOnlyParameter or RefKind.None => ValueDirection.ManagedToNative,
+            RefKind.Out => ValueDirection.NativeToManaged,
+            RefKind.Ref => ValueDirection.Bidirectional,
             _ => null
         };
     }

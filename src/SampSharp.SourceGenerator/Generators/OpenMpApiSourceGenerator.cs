@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.ApiStructs;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
+using SampSharp.SourceGenerator.Marshalling.V2;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -35,6 +37,8 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        // Debugger.Launch();
+
         var attributedStructs = context.SyntaxProvider.ForAttributeWithMetadataName(
                 Constants.ApiAttributeFQN,
                 static (s, _) => s is StructDeclarationSyntax str && str.IsPartial(), 
@@ -151,6 +155,8 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
 
         var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
         var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
+        var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
+
 
         // TODO implementingTypes for inheritance with depth > 1
         var implementingTypes = attribute.ConstructorArguments[0]
@@ -170,8 +176,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
+                
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.ManagedToUnmanaged)))
+                    {
+                        var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged);
+
+                        var v1Shape = marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.ManagedToUnmanaged);
+                        return new ParameterStubGenerationContext(parameter, v1Shape, v2Ctx);
+                    })
                     .ToArray();
 
                 var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
@@ -183,11 +195,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     // TODO: diagnostic
                     return null;
                 }
-                
+
+
+                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
                 return new ApiMethodStubGenerationContext(
                     method.methodDeclaration!,
                     method.methodSymbol, 
                     parameters, 
+                    v2Ctx,
                     returnMarshallerShape,
                     requiresMarshalling, 
                     library,

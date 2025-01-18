@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.Marshalling;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
+using SampSharp.SourceGenerator.Marshalling.V2;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -379,6 +380,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
         var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
         var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
+        var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
 
         // filter methods: non-static
         var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
@@ -390,7 +392,12 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             .Select(method =>
             {
                 var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                        new ParameterStubGenerationContext(parameter, marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.UnmanagedToManaged)))
+                    {
+                        var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.UnmanagedToManaged);
+
+                        var v1Shape = marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.UnmanagedToManaged);
+                        return new ParameterStubGenerationContext(parameter, v1Shape, v2Ctx);
+                    })
                     .ToArray();
 
                 var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.UnmanagedToManaged);
@@ -403,7 +410,9 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     return null;
                 }
 
-                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnMarshallerShape, requiresMarshalling);
+                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
+
+                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnMarshallerShape, v2Ctx, requiresMarshalling);
             })
             .Where(x => x != null)
             .ToArray();

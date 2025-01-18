@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBase(MarshalDirection.ManagedToUnmanaged)
+public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(MarshalDirection.ManagedToUnmanaged)
 {
     private const string MethodPInvoke = "__PInvoke";
     private const string FieldHandle = "_handle";
@@ -47,8 +47,8 @@ public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBase(MarshalD
     private static LocalFunctionStatementSyntax GenerateExternFunction(ApiMethodStubGenerationContext ctx)
     {
         // Extern P/Invoke
-        var externReturnType = ctx.ReturnMarshallerShape?.GetNativeType() ?? 
-                               TypeSyntaxFactory.TypeNameGlobal(ctx.Symbol.ReturnType);
+
+        var externReturnType = ctx.ReturnV2Ctx.Generator.GetNativeType(ctx.ReturnV2Ctx);
 
         if(ctx.ReturnsByRef)
         {

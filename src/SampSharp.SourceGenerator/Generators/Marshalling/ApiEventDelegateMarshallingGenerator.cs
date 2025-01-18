@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -7,11 +6,10 @@ using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
-using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBase(MarshalDirection.UnmanagedToManaged)
+public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBaseV2(MarshalDirection.UnmanagedToManaged)
 {
     private const string LocalHandler = "handler";
     public ExpressionSyntax GenerateDelegateExpression(MarshallingStubGenerationContext ctx)
@@ -19,6 +17,7 @@ public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBase(M
         ExpressionSyntax expr;
         if (!ctx.RequiresMarshalling)
         {
+            // (DelegateType_) MethodName;
             expr = MemberAccessExpression(
                 SyntaxKind.SimpleMemberAccessExpression,
                 IdentifierName(LocalHandler),
@@ -26,7 +25,8 @@ public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBase(M
         }
         else
         {
-            var parameters = ToParameterListSyntax([], ctx.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, false)));
+            // (DelegateType_) ((TypeOne one, TypeTwoNative __two_native) => { ... });
+            var parameters = ToParameterListSyntax([], ctx.Parameters.Select(x => ToForwardInfo(x.V2Ctx)));
 
             expr = ParenthesizedExpression(
                 ParenthesizedLambdaExpression()

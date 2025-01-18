@@ -11,7 +11,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool notify, bool pinMarshaller, MarshalDirection direction) : StatefulMarshallerShape(nativeType, marshallerType, direction)
 {
     public override FixedStatementSyntax? Pin(IParameterSymbol? parameterSymbol)
-    {
+    {//
         if (!pinMarshaller)
         {
             return null;
@@ -33,7 +33,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, I
     }
 
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
-    {
+    {//
         // marshaller.FromManaged(managed);
         return SingletonList<StatementSyntax>(
             ExpressionStatement(
@@ -50,7 +50,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, I
     }
 
     public override SyntaxList<StatementSyntax> PinnedMarshal(IParameterSymbol? parameterSymbol)
-    {
+    {//
         // native = marshaller.ToUnmanaged();
         return SingletonList<StatementSyntax>(
             ExpressionStatement(
@@ -65,7 +65,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, I
     }
 
     public override SyntaxList<StatementSyntax> NotifyForSuccessfulInvoke(IParameterSymbol? parameterSymbol)
-    {
+    {//
         if (!notify)
         {
             return base.NotifyForSuccessfulInvoke(parameterSymbol);
@@ -82,7 +82,7 @@ public class StatefulManagedToUnmanagedMarshallerShape(ITypeSymbol nativeType, I
     }
 
     public override SyntaxList<StatementSyntax> CleanupCallerAllocated(IParameterSymbol? parameterSymbol)
-    {
+    {//
         // marshaller.Free();
         return SingletonList<StatementSyntax>(
             ExpressionStatement(

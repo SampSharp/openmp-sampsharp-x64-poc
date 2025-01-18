@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
 using SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
@@ -6,58 +7,26 @@ using SampSharp.SourceGenerator.Marshalling.Shapes.Stateless;
 
 namespace SampSharp.SourceGenerator.Marshalling;
 
-[Flags]
-public enum MarshallerShape
-{
-    None = 0x0,
-    ToUnmanaged = 0x1,
-    CallerAllocatedBuffer = 0x2,
-    StatelessPinnableReference = 0x4,
-    StatefulPinnableReference = 0x8,
-    ToManaged = 0x10,
-    GuaranteedUnmarshal = 0x20,
-    Free = 0x40,
-    OnInvoked = 0x80,
-}
-
 public static class MarshallerShapeActivator
 {
-    // The following value marshaller shapes are documented here
-    // https://github.com/dotnet/runtime/blob/main/docs/design/libraries/LibraryImportGenerator/UserTypeMarshallingV2.md
-    //
-    // Stateless Managed->Unmanaged
-    // Stateless Managed->Unmanaged with Caller-Allocated Buffer
-    // Stateless Unmanaged->Managed
-    // Stateless Unmanaged->Managed with Guaranteed Unmarshalling
-    // Stateless Bidirectional
-    // Stateful Managed->Unmanaged
-    // Stateful Managed->Unmanaged with Caller Allocated Buffer
-    // Stateful Unmanaged->Managed
-    // Stateful Unmanaged->Managed with Guaranteed Unmarshalling
-    // Stateful Bidirectional
-    //
-    // NOTE: No collection marshallers have been implemented but so far we don't need them.
-
-    public static IMarshallerShape? Create(CustomMarshallerInfo info, RefKind refKind, MarshallerShapeDirection direction, MarshalDirection mDirection)
+    public static IMarshallerShape? Create(CustomMarshallerInfo info, RefKind refKind, ValueDirection valueDirection, MarshalDirection marshalDirection)
     {
-        var stateful = !info.MarshallerType.IsStatic;
-
-        if (stateful && !info.MarshallerType.IsValueType)
+        if (!info.IsValid)
         {
             return null;
         }
 
         var methods = MarshalInspector.GetMembers(info);
 
-        return (direction, stateful) switch
+        return (direction: valueDirection, info.IsStateful) switch
         {
-            (MarshallerShapeDirection.ManagedToNative, true) => CreateStatefulManagedToUnmanaged(info, refKind, mDirection, methods),
-            (MarshallerShapeDirection.NativeToManaged, true) => CreateStatefulUnmanagedToManaged(info, mDirection, methods),
-            (MarshallerShapeDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, mDirection, methods),
-            (MarshallerShapeDirection.ManagedToNative, false) => CreateStatelessManagedToUnmanaged(info, refKind, mDirection, methods),
-            (MarshallerShapeDirection.NativeToManaged, false) => CreateStatelessUnmanagedToManaged(info, mDirection, methods),
-            (MarshallerShapeDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, mDirection, methods),
-            _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null)
+            (ValueDirection.ManagedToNative, true) => CreateStatefulManagedToUnmanaged(info, refKind, marshalDirection, methods),
+            (ValueDirection.NativeToManaged, true) => CreateStatefulUnmanagedToManaged(info, marshalDirection, methods),
+            (ValueDirection.Bidirectional, true) => CreateStatefulBidirectional(info, refKind, marshalDirection, methods),
+            (ValueDirection.ManagedToNative, false) => CreateStatelessManagedToUnmanaged(info, refKind, marshalDirection, methods),
+            (ValueDirection.NativeToManaged, false) => CreateStatelessUnmanagedToManaged(info, marshalDirection, methods),
+            (ValueDirection.Bidirectional, false) => CreateStatelessBidirectional(info, refKind, marshalDirection, methods),
+            _ => throw new ArgumentOutOfRangeException(nameof(valueDirection), valueDirection, null)
         };
     }
 

@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Marshalling.Shapes;
+using SampSharp.SourceGenerator.Marshalling.V2;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
@@ -57,6 +58,7 @@ public static class HelperSyntaxFactory
     
     public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape, bool toExtern)
     {
+        // TODO: remove this overload
         var paramType = marshallerShape?.GetNativeType() ?? TypeNameGlobal(symbol.Type);
 
         var refKind = symbol.RefKind;
@@ -68,6 +70,29 @@ public static class HelperSyntaxFactory
         }
 
         return new ParamForwardInfo(symbol.Name, paramType, refKind);
+    }
+    
+    public static ParamForwardInfo ToForwardInfo(IdentifierStubContext context, bool toExtern = false)
+    {
+        var paramType = context.Generator.GetNativeType(context);
+
+        
+        var refKind = context.Parameter!.RefKind;
+
+        // TODO: get InReferenceHandlingStrategy from generator
+        if (toExtern && refKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        {
+            paramType = PointerType(paramType);
+            refKind = RefKind.None;
+        }
+
+        var name = context.Parameter!.Name;
+        if (context.Generator.UsesNativeIdentifier && context.Direction == MarshalDirection.UnmanagedToManaged)
+        {
+            name = context.GetNativeVar();
+        }
+
+        return new ParamForwardInfo(name, paramType, refKind);
     }
 
     private static SyntaxTokenList GetRefTokens(RefKind refKind, bool removeIn)

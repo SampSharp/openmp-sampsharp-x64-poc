@@ -12,7 +12,7 @@ namespace SampSharp.SourceGenerator.Marshalling.Shapes.Stateful;
 public class StatefulManagedToUnmanagedWithBufferMarshallerShape(ITypeSymbol nativeType, ITypeSymbol marshallerType, bool notify, bool pinMarshaller, MarshalDirection direction) : StatefulManagedToUnmanagedMarshallerShape(nativeType, marshallerType, notify, pinMarshaller, direction)
 {
     public override SyntaxList<StatementSyntax> Marshal(IParameterSymbol? parameterSymbol)
-    {
+    {//
         var bufferVar = GetNativeExtraVar(parameterSymbol, "buffer");
         
         return List<StatementSyntax>([
