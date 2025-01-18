@@ -5,7 +5,7 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.OpenMp.Core;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct FlatHashSetStringView : IReadOnlyCollection<string>
+public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 {
     private readonly nint _data;
 
@@ -16,7 +16,7 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string>
 
     public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();
 
-    public IEnumerator<string> GetEnumerator()
+    public IEnumerator<string?> GetEnumerator()
     {
         var iter = RobinHood.FlatHashSetStringView_begin(_data);
 

@@ -12,7 +12,7 @@ public partial interface IVehicleEventHandler
     bool OnVehiclePaintJob(IPlayer player, IVehicle vehicle, int paintJob);
     bool OnVehicleMod(IPlayer player, IVehicle vehicle, int component);
     bool OnVehicleRespray(IPlayer player, IVehicle vehicle, int colour1, int colour2);
-    void OnEnterExitModShop(IPlayer player, bool enterexit, int interiorID);
+    void OnEnterExitModShop(IPlayer player, bool enterexit, int interiorId);
     void OnVehicleSpawn(IVehicle vehicle);
     bool OnUnoccupiedVehicleUpdate(IVehicle vehicle, IPlayer player, UnoccupiedVehicleUpdate updateData);
     bool OnTrailerUpdate(IPlayer player, IVehicle trailer);

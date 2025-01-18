@@ -25,14 +25,14 @@ public readonly unsafe struct StringView : ISpanFormattable
         return new ReadOnlySpan<byte>(_reference, _size.Value.ToInt32());
     }
 
-    public override string ToString()
+    public override string? ToString()
     {
-        return Encoding.UTF8.GetString(AsSpan());
+        return _reference == null ? null : Encoding.UTF8.GetString(AsSpan());
     }
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return ToString();
+        return ToString() ?? string.Empty;
     }
 
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
@@ -40,7 +40,7 @@ public readonly unsafe struct StringView : ISpanFormattable
         return Encoding.UTF8.TryGetChars(AsSpan(), destination, out charsWritten);
     }
 
-    public static implicit operator string(StringView view)
+    public static implicit operator string?(StringView view)
     {
         return view.ToString();
     }

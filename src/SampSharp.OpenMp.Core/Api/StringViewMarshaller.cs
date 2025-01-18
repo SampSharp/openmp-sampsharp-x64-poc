@@ -53,12 +53,6 @@ public static unsafe class StringViewMarshaller
             
         }
 
-        // public ref byte GetPinnableReference()
-        // {
-        //     // should not be required, but let's be safe
-        //     return ref _buffer.GetPinnableReference();
-        // }
-
         public readonly StringView ToUnmanaged()
         {
             return _heapBuffer == null 
@@ -78,7 +72,7 @@ public static unsafe class StringViewMarshaller
     
     public static class NativeToManaged
     {
-        public static string ConvertToManaged(StringView unmanaged)
+        public static string? ConvertToManaged(StringView unmanaged)
         {
             return unmanaged.ToString();
         }

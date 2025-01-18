@@ -3,6 +3,6 @@
 [OpenMpEventHandler]
 public partial interface IPlayerTextEventHandler
 {
-    bool OnPlayerText(IPlayer player, StringView message);
-    bool OnPlayerCommandText(IPlayer player, StringView message);
+    bool OnPlayerText(IPlayer player, string message);
+    bool OnPlayerCommandText(IPlayer player, string message);
 }
