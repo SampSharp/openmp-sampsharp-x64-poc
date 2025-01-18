@@ -22,13 +22,6 @@ public static class MarshallerHelper
             : $"__{parameterSymbol.Name}_native";
     }
     
-    public static string GetManagedVar(IParameterSymbol? parameterSymbol)
-    {
-        return parameterSymbol == null 
-            ? $"{MarshallerConstants.LocalReturnValue}_managed" 
-            : $"__{parameterSymbol.Name}_managed";
-    }
-
     public static string GetNativeExtraVar(IParameterSymbol? parameterSymbol, string extra)
     {
         return $"{GetNativeVar(parameterSymbol)}__{extra}";

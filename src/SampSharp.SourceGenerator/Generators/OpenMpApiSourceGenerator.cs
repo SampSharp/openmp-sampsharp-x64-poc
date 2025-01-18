@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.ApiStructs;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
-using SampSharp.SourceGenerator.Marshalling.V2;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -154,7 +153,6 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Value.Value as string ?? symbol.Name;
 
         var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
-        var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
         var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
 
 
@@ -181,15 +179,15 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     {
                         var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged);
 
-                        var v1Shape = marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.ManagedToUnmanaged);
-                        return new ParameterStubGenerationContext(parameter, v1Shape, v2Ctx);
+                        return new ParameterStubGenerationContext(parameter, v2Ctx);
                     })
                     .ToArray();
+                
+                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
 
-                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
-                var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
+                var requiresMarshalling = v2Ctx.Shape != MarshallerShape.None || parameters.Any(x => x.V2Ctx.Shape != MarshallerShape.None);
 
-                if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
+                if (v2Ctx.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
                     // TODO: diagnostic
@@ -197,13 +195,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                 }
 
 
-                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
                 return new ApiMethodStubGenerationContext(
                     method.methodDeclaration!,
                     method.methodSymbol, 
                     parameters, 
                     v2Ctx,
-                    returnMarshallerShape,
                     requiresMarshalling, 
                     library,
                     nativeTypeName);

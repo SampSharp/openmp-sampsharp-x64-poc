@@ -5,8 +5,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Marshalling;
-using SampSharp.SourceGenerator.Marshalling.Shapes;
-using SampSharp.SourceGenerator.Marshalling.V2;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
@@ -40,9 +38,9 @@ public static class HelperSyntaxFactory
             .WithLeadingTrivia(Comment(MarshallingCodeGenDocumentation.COMMENT_P_INVOKE));
     }
     
-    public static ParameterListSyntax ToParameterListSyntax(ImmutableArray<IParameterSymbol> parameters, bool toExtern)
+    public static ParameterListSyntax ToParameterListSyntax(ImmutableArray<IParameterSymbol> parameters)
     {
-        return ToParameterListSyntax([], parameters.Select(x => ToForwardInfo(x, null, toExtern)));
+        return ToParameterListSyntax([], parameters.Select(x => new ParamForwardInfo(x.Name, TypeNameGlobal(x.Type), x.RefKind)));
     }
 
     public static ParameterListSyntax ToParameterListSyntax(ParameterSyntax[] prefix, IEnumerable<ParamForwardInfo> parameters, bool removeIn = false)
@@ -55,23 +53,7 @@ public static class HelperSyntaxFactory
                             .WithType(parameter.Type)
                             .WithModifiers(GetRefTokens(parameter.RefKind, removeIn)))));
     }
-    
-    public static ParamForwardInfo ToForwardInfo(IParameterSymbol symbol, IMarshallerShape? marshallerShape, bool toExtern)
-    {
-        // TODO: remove this overload
-        var paramType = marshallerShape?.GetNativeType() ?? TypeNameGlobal(symbol.Type);
 
-        var refKind = symbol.RefKind;
-
-        if (marshallerShape != null && toExtern && symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
-        {
-            paramType = PointerType(paramType);
-            refKind = RefKind.None;
-        }
-
-        return new ParamForwardInfo(symbol.Name, paramType, refKind);
-    }
-    
     public static ParamForwardInfo ToForwardInfo(IdentifierStubContext context, bool toExtern = false)
     {
         var paramType = context.Generator.GetNativeType(context);
@@ -79,7 +61,7 @@ public static class HelperSyntaxFactory
         
         var refKind = context.Parameter!.RefKind;
 
-        // TODO: get InReferenceHandlingStrategy from generator
+        // TODO: get InReferenceHandlingStrategy from generator???
         if (toExtern && refKind is RefKind.In or RefKind.RefReadOnlyParameter)
         {
             paramType = PointerType(paramType);

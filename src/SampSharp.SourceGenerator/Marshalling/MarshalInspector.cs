@@ -2,7 +2,7 @@
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using SampSharp.SourceGenerator.Helpers;
-using static SampSharp.SourceGenerator.Marshalling.Shapes.ShapeConstants;
+using static SampSharp.SourceGenerator.Marshalling.ShapeConstants;
 
 namespace SampSharp.SourceGenerator.Marshalling;
 

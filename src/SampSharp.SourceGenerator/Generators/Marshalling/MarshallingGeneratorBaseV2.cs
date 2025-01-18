@@ -6,7 +6,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Marshalling;
-using SampSharp.SourceGenerator.Marshalling.V2;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -276,7 +275,7 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
             // TODO: GetVarName should go
             return direction == MarshalDirection.ManagedToUnmanaged
                 ? MarshallerHelper.GetNativeVar(parameterSymbol)
-                : MarshallerHelper.GetManagedVar(parameterSymbol);
+                : MarshallerHelper.GetVar(parameterSymbol);
         }
     }
 
@@ -373,17 +372,18 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
         var arg = ctx.V2Ctx.Parameter!.Name;
         if (ctx.V2Ctx.Generator.UsesNativeIdentifier)
         {
-            arg = MarshallerHelper.GetNativeVar(ctx.Symbol);
+            arg = ctx.V2Ctx.GetNativeVar();
         }
         
         ExpressionSyntax expr = IdentifierName(arg);
 
-        if (ctx.Symbol.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        
+        if (ctx.V2Ctx.Parameter.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
         {
             expr = PrefixUnaryExpression(SyntaxKind.AddressOfExpression, expr);
         }
 
-        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.Symbol);
+        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.V2Ctx.Parameter);
     }
     
     private static SyntaxList<StatementSyntax> PhaseV2(

@@ -1,7 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
-using SampSharp.SourceGenerator.Marshalling.Shapes;
-using SampSharp.SourceGenerator.Marshalling.V2;
+using SampSharp.SourceGenerator.Marshalling;
 
 namespace SampSharp.SourceGenerator.Models;
 
-public record struct ParameterStubGenerationContext(IParameterSymbol Symbol, IMarshallerShape? MarshallerShape, IdentifierStubContext V2Ctx);
+public record struct ParameterStubGenerationContext(IParameterSymbol Symbol, IdentifierStubContext V2Ctx);

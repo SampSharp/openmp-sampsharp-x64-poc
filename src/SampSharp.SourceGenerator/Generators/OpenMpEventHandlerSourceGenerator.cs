@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.Marshalling;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
-using SampSharp.SourceGenerator.Marshalling.V2;
 using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -325,10 +324,9 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     {
         return ctx.Methods.Select(method =>
         {
-            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x.Symbol, x.MarshallerShape, false)));
-            var returnType = method.ReturnMarshallerShape?.GetNativeType() ?? 
-                             TypeNameGlobal(method.Symbol.ReturnType);
-
+            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x.V2Ctx)));
+            var returnType = method.ReturnV2Ctx.Generator.GetNativeType(method.ReturnV2Ctx);
+            
             return DelegateDeclaration(
                     returnType,
                     Identifier($"{method.Symbol.Name}_"))
@@ -379,7 +377,6 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             .Value.Value as string ?? (symbol.Name.StartsWith("I") ? symbol.Name.Substring(1) : symbol.Name);
 
         var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
-        var marshallerShapeFactory = new MarshallerShapeFactory(wellKnownMarshallerTypes);
         var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
 
         // filter methods: non-static
@@ -395,24 +392,22 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     {
                         var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.UnmanagedToManaged);
 
-                        var v1Shape = marshallerShapeFactory.GetMarshallerShape(parameter, MarshalDirection.UnmanagedToManaged);
-                        return new ParameterStubGenerationContext(parameter, v1Shape, v2Ctx);
+                        return new ParameterStubGenerationContext(parameter, v2Ctx);
                     })
                     .ToArray();
+                
+                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
 
-                var returnMarshallerShape = marshallerShapeFactory.GetMarshallerShape(method.methodSymbol, MarshalDirection.UnmanagedToManaged);
-                var requiresMarshalling = returnMarshallerShape != null || parameters.Any(x => x.MarshallerShape != null);
+                var requiresMarshalling = v2Ctx.Shape != MarshallerShape.None || parameters.Any(x => x.V2Ctx.Shape != MarshallerShape.None);
 
-                if (returnMarshallerShape != null && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
+                if (v2Ctx.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
                     // TODO: diagnostic
                     return null;
                 }
 
-                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
-
-                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnMarshallerShape, v2Ctx, requiresMarshalling);
+                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, v2Ctx, requiresMarshalling);
             })
             .Where(x => x != null)
             .ToArray();

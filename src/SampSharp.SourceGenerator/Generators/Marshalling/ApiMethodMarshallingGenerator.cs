@@ -17,7 +17,7 @@ public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(Marsha
     {
         return MethodDeclaration(TypeSyntaxFactory.TypeNameGlobal(ctx.Symbol), ctx.Declaration.Identifier)
             .WithModifiers(ctx.Declaration.Modifiers)
-            .WithParameterList(HelperSyntaxFactory.ToParameterListSyntax(ctx.Symbol.Parameters, false))
+            .WithParameterList(HelperSyntaxFactory.ToParameterListSyntax(ctx.Symbol.Parameters))
             .WithBody(GetMarshallingBlock(ctx));
     }
 
@@ -64,7 +64,7 @@ public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(Marsha
             library: ctx.Library, 
             externName: ToExternName(ctx),
             externReturnType: externReturnType, 
-            parameters: ctx.Parameters.Select(x => HelperSyntaxFactory.ToForwardInfo(x.Symbol, x.MarshallerShape, true)), 
+            parameters: ctx.Parameters.Select(x => HelperSyntaxFactory.ToForwardInfo(x.V2Ctx, true)), 
             parametersPrefix: handleParam);
     }
 

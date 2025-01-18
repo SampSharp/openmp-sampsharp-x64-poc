@@ -29,7 +29,7 @@ public static class ForwardingMembersGenerator
                 var method = MethodDeclaration(
                         TypeNameGlobal(implementingMethod), 
                         implementingMethod.Name)
-                    .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters, false))
+                    .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters))
                     .WithModifiers(
                         TokenList(
                             Token(SyntaxKind.PublicKeyword)));
