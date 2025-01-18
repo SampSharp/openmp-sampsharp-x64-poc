@@ -30,7 +30,7 @@ public class StatefulFree(IMarshalShapeGenerator innerGenerator) : IMarshalShape
             InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(context.GetMarshallerVar()),
+                    IdentifierName(context.GetMarshallerId()),
                     IdentifierName(ShapeConstants.MethodFree))));
     }
 }

@@ -73,7 +73,7 @@ public static class ForwardingMembersGenerator
                         .WithArgumentList(
                             ArgumentList(
                                 SeparatedList(
-                                    implementingMethod.Parameters.Select(symbol => WithPInvokeParameterRefToken(Argument(IdentifierName(symbol.Name)), symbol)))));
+                                    implementingMethod.Parameters.Select(symbol => WithPInvokeParameterRefToken(Argument(IdentifierName(symbol.Name)), symbol.RefKind)))));
                 
                 if (implementingMethod.ReturnsVoid)
                 {

@@ -29,14 +29,14 @@ public class StatelessFree(IMarshalShapeGenerator innerGenerator) : IMarshalShap
             InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.Marshaller!.TypeName),
+                        context.MarshallerType!.TypeName,
                         IdentifierName(ShapeConstants.MethodFree)
                     )
                 )
                 .WithArgumentList(
                     ArgumentList(
                         SingletonSeparatedList(
-                            Argument(IdentifierName(context.GetNativeVar()))
+                            Argument(IdentifierName(context.GetNativeId()))
                         )
                     )
                 ));

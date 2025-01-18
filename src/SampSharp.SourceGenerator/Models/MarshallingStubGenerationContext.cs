@@ -5,8 +5,8 @@ namespace SampSharp.SourceGenerator.Models;
 
 public record MarshallingStubGenerationContext(
     IMethodSymbol Symbol,
-    ParameterStubGenerationContext[] Parameters,
-    IdentifierStubContext ReturnV2Ctx,
+    IdentifierStubContext[] Parameters,
+    IdentifierStubContext ReturnValue,
     bool RequiresMarshalling)
 {
     public bool ReturnsByRef => Symbol.ReturnsByRef || Symbol.ReturnsByRefReadonly;

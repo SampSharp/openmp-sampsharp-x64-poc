@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,7 +27,7 @@ public class CallerAllocatedBuffer(IMarshalShapeGenerator innerGenerator) : IMar
 
     private IEnumerable<StatementSyntax> GenerateMarshal(IdentifierStubContext context)
     {
-        var bufferVar = context.GetNativeExtraVar("buffer");
+        var bufferVar = context.GetNativeExtraId("buffer");
 
         // global::System.Span<byte> __varName_native__buffer = stackalloc byte[MarshallerType.BufferSize];
         yield return LocalDeclarationStatement(
@@ -48,7 +47,7 @@ public class CallerAllocatedBuffer(IMarshalShapeGenerator innerGenerator) : IMar
                                                     ArrayRankSpecifier(SingletonSeparatedList<ExpressionSyntax>(
                                                         MemberAccessExpression(
                                                             SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName(context.Marshaller!.TypeName),
+                                                            context.MarshallerType!.TypeName,
                                                             IdentifierName(ShapeConstants.PropertyBufferSize))))))))))));
 
         // append argument to the method call

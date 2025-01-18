@@ -30,7 +30,7 @@ public class StatefulNotifyForSuccesfulInvokeMarshaller(IMarshalShapeGenerator i
             InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(context.GetMarshallerVar()),
+                    IdentifierName(context.GetMarshallerId()),
                     IdentifierName(ShapeConstants.MethodOnInvoked))));
     }
 }

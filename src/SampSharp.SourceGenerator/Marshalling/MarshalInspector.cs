@@ -10,21 +10,22 @@ public static class MarshalInspector
 {
     public static MarshalMembers GetMembers(CustomMarshallerInfo info)
     {
+        var type = info.MarshallerType.Symbol;
         if (info.IsStateful)
         {
             return new MarshalMembers(
-                StatefulFreeMethod: GetMethod(info.MarshallerType, true, MethodFree), 
-                StatefulFromManagedMethod: GetMethod(info.MarshallerType, true, MethodFromManaged, false, info.ManagedType),
-                StatefulFromManagedWithBufferMethod: GetMethod(info.MarshallerType, true, MethodFromManaged, false, x => x.Type.IsSame(info.ManagedType), x => IsSpanByte(x.Type)),
-                StatefulFromUnmanagedMethod: GetMethod(info.MarshallerType, true, MethodFromUnmanaged, parameterCount: 1),
+                StatefulFreeMethod: GetMethod(type, true, MethodFree), 
+                StatefulFromManagedMethod: GetMethod(type, true, MethodFromManaged, false, info.ManagedType.Symbol),
+                StatefulFromManagedWithBufferMethod: GetMethod(type, true, MethodFromManaged, false, x => x.Type.IsSame(info.ManagedType.Symbol), x => IsSpanByte(x.Type)),
+                StatefulFromUnmanagedMethod: GetMethod(type, true, MethodFromUnmanaged, parameterCount: 1),
 
-                StatefulToManagedMethod: GetMethod(info.MarshallerType, true, MethodToManaged),
-                StatefulToManagedFinallyMethod: GetMethod(info.MarshallerType, true, MethodToManagedFinally),
-                StatefulToUnmanagedMethod: GetMethod(info.MarshallerType, true, MethodToUnmanaged),
+                StatefulToManagedMethod: GetMethod(type, true, MethodToManaged),
+                StatefulToManagedFinallyMethod: GetMethod(type, true, MethodToManagedFinally),
+                StatefulToUnmanagedMethod: GetMethod(type, true, MethodToUnmanaged),
 
-                StatefulOnInvokedMethod: GetMethod(info.MarshallerType, true, MethodOnInvoked),
-                StatefulGetPinnableReferenceMethod: GetMethod(info.MarshallerType, true, MethodGetPinnableReference, true),
-                StatelessGetPinnableReferenceMethod: GetMethod(info.MarshallerType, false, MethodGetPinnableReference, true, info.ManagedType),
+                StatefulOnInvokedMethod: GetMethod(type, true, MethodOnInvoked),
+                StatefulGetPinnableReferenceMethod: GetMethod(type, true, MethodGetPinnableReference, true),
+                StatelessGetPinnableReferenceMethod: GetMethod(type, false, MethodGetPinnableReference, true, info.ManagedType.Symbol),
 
                 StatelessConvertToUnmanagedMethod: null,
                 StatelessConvertToUnmanagedWithBufferMethod: null,
@@ -32,7 +33,7 @@ public static class MarshalInspector
                 StatelessConvertToManagedFinallyMethod: null,
                 StatelessFreeMethod: null,
 
-                BufferSizeProperty: GetStaticProperty(info.MarshallerType, PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32)
+                BufferSizeProperty: GetStaticProperty(type, PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32)
             );
         }
 
@@ -48,15 +49,15 @@ public static class MarshalInspector
 
             StatefulOnInvokedMethod: null,
             StatefulGetPinnableReferenceMethod: null,
-            StatelessGetPinnableReferenceMethod: GetMethod(info.MarshallerType, false, MethodGetPinnableReference, true, info.ManagedType),
+            StatelessGetPinnableReferenceMethod: GetMethod(type, false, MethodGetPinnableReference, true, info.ManagedType.Symbol),
 
-            StatelessConvertToUnmanagedMethod: GetMethod(info.MarshallerType, false, MethodConvertToUnmanaged, false, info.ManagedType),
-            StatelessConvertToUnmanagedWithBufferMethod: GetMethod(info.MarshallerType, false, MethodConvertToUnmanaged, false, x => x.Type.IsSame(info.ManagedType), x => IsSpanByte(x.Type)),
-            StatelessConvertToManagedMethod: GetMethod(info.MarshallerType, false, MethodConvertToManaged, parameterCount: 1),
-            StatelessConvertToManagedFinallyMethod: GetMethod(info.MarshallerType, false, MethodConvertToManagedFinally, parameterCount: 1),
-            StatelessFreeMethod: GetMethod(info.MarshallerType, false, MethodFree, parameterCount: 1),
+            StatelessConvertToUnmanagedMethod: GetMethod(type, false, MethodConvertToUnmanaged, false, info.ManagedType.Symbol),
+            StatelessConvertToUnmanagedWithBufferMethod: GetMethod(type, false, MethodConvertToUnmanaged, false, x => x.Type.IsSame(info.ManagedType.Symbol), x => IsSpanByte(x.Type)),
+            StatelessConvertToManagedMethod: GetMethod(type, false, MethodConvertToManaged, parameterCount: 1),
+            StatelessConvertToManagedFinallyMethod: GetMethod(type, false, MethodConvertToManagedFinally, parameterCount: 1),
+            StatelessFreeMethod: GetMethod(type, false, MethodFree, parameterCount: 1),
 
-            BufferSizeProperty: GetStaticProperty(info.MarshallerType, PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32)
+            BufferSizeProperty: GetStaticProperty(type, PropertyBufferSize, x => x.SpecialType == SpecialType.System_Int32)
         );
     }
 

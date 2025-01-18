@@ -3,31 +3,34 @@
 namespace SampSharp.SourceGenerator.Marshalling;
 
 public record IdentifierStubContext(
-    IParameterSymbol? Parameter, // TODO: make parameter disappear to avoid null checks
     MarshalDirection Direction,
-    ITypeSymbol ManagedType,
-    CustomMarshallerInfo? Marshaller,
-    MarshalMembers? MarshallerMembers,
+    ManagedType ManagedType,
+    ManagedType? MarshallerType, 
+    ManagedType? NativeType,
     MarshallerShape Shape,
-    IMarshalShapeGenerator Generator)
+    IMarshalShapeGenerator Generator,
+    RefKind RefKind,
+    string ManagedIdentifier)
 {
-    public string GetManagedVar()
+    public string GetManagedId()
     {
-        return MarshallerHelper.GetVar(Parameter);
+        return ManagedIdentifier;
     }
 
-    public string GetMarshallerVar()
+    public string GetMarshallerId()
     {
-        return MarshallerHelper.GetMarshallerVar(Parameter);
+        return GetNativeExtraId("marshaller");
     }
 
-    public string GetNativeVar()
+    public string GetNativeId()
     {
-        return MarshallerHelper.GetNativeVar(Parameter);
+        return ManagedIdentifier == MarshallerConstants.LocalReturnValue 
+            ? $"{MarshallerConstants.LocalReturnValue}_native" 
+            : $"__{ManagedIdentifier}_native";
     }
 
-    public string GetNativeExtraVar(string extra)
+    public string GetNativeExtraId(string extra)
     {
-        return MarshallerHelper.GetNativeExtraVar(Parameter, extra);
+        return $"{GetNativeId()}__{extra}";
     }
 }

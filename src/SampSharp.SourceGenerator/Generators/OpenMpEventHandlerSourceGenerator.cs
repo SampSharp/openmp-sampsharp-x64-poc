@@ -324,8 +324,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     {
         return ctx.Methods.Select(method =>
         {
-            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x.V2Ctx)));
-            var returnType = method.ReturnV2Ctx.Generator.GetNativeType(method.ReturnV2Ctx);
+            var parameters = ToParameterListSyntax([], method.Parameters.Select(x => ToForwardInfo(x)));
+            var returnType = method.ReturnValue.Generator.GetNativeType(method.ReturnValue);
             
             return DelegateDeclaration(
                     returnType,
@@ -388,26 +388,21 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
-                var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                    {
-                        var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.UnmanagedToManaged);
-
-                        return new ParameterStubGenerationContext(parameter, v2Ctx);
-                    })
+                var parameters = method.methodSymbol!.Parameters.Select(parameter => ctxFactory.Create(parameter, MarshalDirection.UnmanagedToManaged))
                     .ToArray();
                 
-                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
+                var returnValueContext = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
 
-                var requiresMarshalling = v2Ctx.Shape != MarshallerShape.None || parameters.Any(x => x.V2Ctx.Shape != MarshallerShape.None);
+                var requiresMarshalling = returnValueContext.Shape != MarshallerShape.None || parameters.Any(x => x.Shape != MarshallerShape.None);
 
-                if (v2Ctx.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
+                if (returnValueContext.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
                     // TODO: diagnostic
                     return null;
                 }
 
-                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, v2Ctx, requiresMarshalling);
+                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnValueContext, requiresMarshalling);
             })
             .Where(x => x != null)
             .ToArray();

@@ -1,95 +1,93 @@
-﻿namespace SampSharp.SourceGenerator.Marshalling;
+﻿using System.Runtime.InteropServices;
+
+namespace SampSharp.SourceGenerator.Marshalling;
 
 /// <summary>
 /// Provides methods for determining the shape of a custom marshaller.
 /// </summary>
 public static class ShapeDetector
 {
-    //
-    // stages:
-    // during context building:
-    // 1. Decide which marshaller implementation to use based on entry point of the specified custom marshaller ( CustomMarshallerTypeFinder )
-    // 2. Deduce shape based on the implementation ( ShapeTool )
-    // during generation:
-    // 3. Activate ShapeGenerator based on shape (CustomMarshalGeneratorFactory.Create)
-    // 4. Generate marshaling code and combine with invocation code
-    //
-
-    public static MarshallerShape GetShapeOfMarshaller(CustomMarshallerInfo marshaller)
+    public static (MarshallerShape shape, ManagedType nativeType) GetShapeOfMarshaller(CustomMarshallerInfo marshaller)
     {
-        var methods = MarshalInspector.GetMembers(marshaller);
-
+        var members = MarshalInspector.GetMembers(marshaller);
+        var nativeType = marshaller.ManagedType;
         var shape = MarshallerShape.None;
         if (marshaller.IsStateless)
         {
-            if (methods.StatelessConvertToManagedFinallyMethod != null)
+            if (members.StatelessConvertToManagedFinallyMethod != null)
             {
                 shape |= MarshallerShape.GuaranteedUnmarshal;
+                nativeType = new ManagedType(members.StatelessConvertToManagedFinallyMethod.Parameters[0].Type);
             }
 
-            if (methods.StatelessConvertToManagedMethod != null)
+            if (members.StatelessConvertToManagedMethod != null)
             {
                 shape |= MarshallerShape.ToManaged;
+                nativeType = new ManagedType(members.StatelessConvertToManagedMethod.Parameters[0].Type);
             }
 
-            if (methods.StatelessConvertToUnmanagedWithBufferMethod != null)
+            if (members.StatelessConvertToUnmanagedWithBufferMethod != null)
             {
                 shape |= MarshallerShape.CallerAllocatedBuffer | MarshallerShape.ToUnmanaged;
+                nativeType = new ManagedType(members.StatelessConvertToUnmanagedWithBufferMethod.ReturnType);
             }
 
-            if (methods.StatelessConvertToUnmanagedMethod != null)
+            if (members.StatelessConvertToUnmanagedMethod != null)
             {
                 shape |= MarshallerShape.ToUnmanaged;
+                nativeType = new ManagedType(members.StatelessConvertToUnmanagedMethod.ReturnType);
             }
 
-            if (methods.StatelessFreeMethod != null)
+            if (members.StatelessFreeMethod != null)
             {
                 shape |= MarshallerShape.Free;
             }
 
-            if (methods.StatelessGetPinnableReferenceMethod != null)
+            if (members.StatelessGetPinnableReferenceMethod != null)
             {
                 shape |= MarshallerShape.StatelessPinnableReference;
             }
         }
         else if (marshaller.IsStateful)
         {
-            if (methods.StatefulToUnmanagedMethod != null)
+            if (members.StatefulToUnmanagedMethod != null)
             {
                 shape |= MarshallerShape.ToUnmanaged;
+                nativeType = new ManagedType(members.StatefulToUnmanagedMethod.ReturnType);
 
-                if (methods.StatefulFromManagedWithBufferMethod != null)
+                if (members.StatefulFromManagedWithBufferMethod != null)
                 {
                     shape |= MarshallerShape.CallerAllocatedBuffer;
                 }
             }
 
-            if (methods.StatefulToManagedMethod != null)
+            if (members.StatefulFromUnmanagedMethod != null)
             {
+                nativeType = new ManagedType(members.StatefulFromUnmanagedMethod.Parameters[0].Type);
                 shape |= MarshallerShape.ToManaged;
             }
-
-            if (methods.StatefulFreeMethod != null)
+            
+            if (members.StatefulFreeMethod != null)
             {
                 shape |= MarshallerShape.Free;
             }
 
-            if (methods.StatefulOnInvokedMethod != null)
+            if (members.StatefulOnInvokedMethod != null)
             {
                 shape |= MarshallerShape.OnInvoked;
             }
 
-            if (methods.StatefulGetPinnableReferenceMethod != null)
+            if (members.StatefulGetPinnableReferenceMethod != null)
             {
                 shape |= MarshallerShape.StatefulPinnableReference;
             }
 
-            if (methods.StatelessGetPinnableReferenceMethod != null)
+            if (members.StatelessGetPinnableReferenceMethod != null)
             {
                 shape |= MarshallerShape.StatelessPinnableReference;
             }
         }
 
-        return shape;
+        return (shape, nativeType);
     }
 }

@@ -7,8 +7,8 @@ namespace SampSharp.SourceGenerator.Models;
 public record ApiMethodStubGenerationContext(
     MethodDeclarationSyntax Declaration,
     IMethodSymbol Symbol,
-    ParameterStubGenerationContext[] Parameters,
-    IdentifierStubContext ReturnV2Ctx,
+    IdentifierStubContext[] Parameters,
+    IdentifierStubContext ReturnValue,
     bool RequiresMarshalling,
     string Library,
-    string NativeTypeName) : MarshallingStubGenerationContext(Symbol, Parameters, ReturnV2Ctx, RequiresMarshalling);
+    string NativeTypeName) : MarshallingStubGenerationContext(Symbol, Parameters, ReturnValue, RequiresMarshalling);

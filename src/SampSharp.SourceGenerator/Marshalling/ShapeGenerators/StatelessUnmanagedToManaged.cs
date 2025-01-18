@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
@@ -12,7 +11,7 @@ public class StatelessUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) 
 
     public TypeSyntax GetNativeType(IdentifierStubContext context)
     {
-        return TypeSyntaxFactory.TypeNameGlobal(context.MarshallerMembers!.StatelessConvertToManagedMethod!.Parameters[0].Type);
+        return context.NativeType!.TypeName;
     }
 
     public IEnumerable<StatementSyntax> Generate(MarshalPhase phase, IdentifierStubContext context)
@@ -30,18 +29,18 @@ public class StatelessUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) 
         yield return ExpressionStatement(
             AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetManagedVar()),
+                IdentifierName(context.GetManagedId()),
                 InvocationExpression(
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            IdentifierName(context.Marshaller!.TypeName),
+                            context.MarshallerType!.TypeName,
                             IdentifierName(ShapeConstants.MethodConvertToManaged)
                         )
                     )
                     .WithArgumentList(
                         ArgumentList(
                             SingletonSeparatedList(
-                                Argument(IdentifierName(context.GetNativeVar()))
+                                Argument(IdentifierName(context.GetNativeId()))
                             )
                         )
                     )));

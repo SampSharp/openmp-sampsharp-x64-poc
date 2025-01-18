@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
@@ -12,8 +11,7 @@ public class StatelessManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) 
 
     public TypeSyntax GetNativeType(IdentifierStubContext context)
     {
-        return TypeSyntaxFactory.TypeNameGlobal(context.MarshallerMembers!.StatelessConvertToUnmanagedWithBufferMethod?.ReturnType
-                                                ?? context.MarshallerMembers!.StatelessConvertToUnmanagedMethod!.ReturnType);
+        return context.NativeType!.TypeName;
     }
 
     public IEnumerable<StatementSyntax> Generate(MarshalPhase phase, IdentifierStubContext context)
@@ -31,18 +29,18 @@ public class StatelessManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) 
         yield return ExpressionStatement(
             AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetNativeVar()),
+                IdentifierName(context.GetNativeId()),
                 InvocationExpression(
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            IdentifierName(context.Marshaller!.TypeName),
+                            context.MarshallerType!.TypeName,
                             IdentifierName(ShapeConstants.MethodConvertToUnmanaged)
                         )
                     )
                     .WithArgumentList(
                         ArgumentList(
                             SingletonSeparatedList(
-                                Argument(IdentifierName(context.GetManagedVar()))
+                                Argument(IdentifierName(context.GetManagedId()))
                             )
                         )
                     )));

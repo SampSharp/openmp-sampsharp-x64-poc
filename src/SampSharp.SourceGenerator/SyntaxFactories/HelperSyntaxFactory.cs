@@ -57,9 +57,7 @@ public static class HelperSyntaxFactory
     public static ParamForwardInfo ToForwardInfo(IdentifierStubContext context, bool toExtern = false)
     {
         var paramType = context.Generator.GetNativeType(context);
-
-        
-        var refKind = context.Parameter!.RefKind;
+        var refKind = context.RefKind;
 
         // TODO: get InReferenceHandlingStrategy from generator???
         if (toExtern && refKind is RefKind.In or RefKind.RefReadOnlyParameter)
@@ -68,11 +66,10 @@ public static class HelperSyntaxFactory
             refKind = RefKind.None;
         }
 
-        var name = context.Parameter!.Name;
-        if (context.Generator.UsesNativeIdentifier && context.Direction == MarshalDirection.UnmanagedToManaged)
-        {
-            name = context.GetNativeVar();
-        }
+        var name = context.Generator.UsesNativeIdentifier && 
+                   context.Direction == MarshalDirection.UnmanagedToManaged 
+            ? context.GetNativeId() 
+            : context.GetManagedId();
 
         return new ParamForwardInfo(name, paramType, refKind);
     }
@@ -89,9 +86,9 @@ public static class HelperSyntaxFactory
         };
     }
 
-    public static ArgumentSyntax WithPInvokeParameterRefToken(ArgumentSyntax argument, IParameterSymbol parameter)
+    public static ArgumentSyntax WithPInvokeParameterRefToken(ArgumentSyntax argument, RefKind refKind)
     {
-        switch (parameter.RefKind)
+        switch (refKind)
         {
             case RefKind.Ref:
                 return argument.WithRefKindKeyword(Token(SyntaxKind.RefKeyword));
@@ -125,12 +122,12 @@ public static class HelperSyntaxFactory
                 ))
             .WithParameterList(
                 ParameterList(
-                    SeparatedList(new []{
+                    SeparatedList([
                         Parameter(Identifier("lhs"))
                             .WithType(lhsType),
                         Parameter(Identifier("rhs"))
                             .WithType(rhsType)
-                    })))
+                    ])))
             .WithBody(block);
     }
 

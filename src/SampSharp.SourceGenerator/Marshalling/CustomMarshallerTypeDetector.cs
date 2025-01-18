@@ -60,7 +60,7 @@ public class CustomMarshallerTypeDetector
     {
         var dir = GetDirectionInfo(direction);
 
-        var filteredModes = GetModesFromEntryPoint(entryPoint, managedType).Where(x => managedType.IsSame(x.ManagedType)).ToList();
+        var filteredModes = GetModesFromEntryPoint(entryPoint, managedType).Where(x => managedType.IsSame(x.ManagedType.Symbol)).ToList();
 
         if (filteredModes.Count == 0)
         {
@@ -121,7 +121,7 @@ public class CustomMarshallerTypeDetector
         }
 
 
-        return new CustomMarshallerInfo(managedType, mode, marshallerType);
+        return new CustomMarshallerInfo(new ManagedType(managedType), mode, new ManagedType(marshallerType));
     }
 
     private static INamedTypeSymbol ReplacePlaceholderWithType(INamedTypeSymbol namedType, ITypeSymbol type)

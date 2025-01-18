@@ -33,9 +33,9 @@ public class StatefulPinnableManagedValueMarshaller(IMarshalShapeGenerator inner
             .WithVariables(
                 SingletonSeparatedList(
                     VariableDeclarator(
-                            Identifier(context.GetNativeExtraVar("unused")))
+                            Identifier(context.GetNativeExtraId("unused")))
                         .WithInitializer(
                             EqualsValueClause(
-                                IdentifierName(context.GetMarshallerVar()))))), Block());
+                                IdentifierName(context.GetMarshallerId()))))), Block());
     }
 }

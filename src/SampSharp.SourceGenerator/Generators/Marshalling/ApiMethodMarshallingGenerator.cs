@@ -8,7 +8,7 @@ using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(MarshalDirection.ManagedToUnmanaged)
+public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBase(MarshalDirection.ManagedToUnmanaged)
 {
     private const string MethodPInvoke = "__PInvoke";
     private const string FieldHandle = "_handle";
@@ -48,7 +48,7 @@ public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(Marsha
     {
         // Extern P/Invoke
 
-        var externReturnType = ctx.ReturnV2Ctx.Generator.GetNativeType(ctx.ReturnV2Ctx);
+        var externReturnType = ctx.ReturnValue.Generator.GetNativeType(ctx.ReturnValue);
 
         if(ctx.ReturnsByRef)
         {
@@ -64,7 +64,7 @@ public class ApiMethodMarshallingGenerator() : MarshallingGeneratorBaseV2(Marsha
             library: ctx.Library, 
             externName: ToExternName(ctx),
             externReturnType: externReturnType, 
-            parameters: ctx.Parameters.Select(x => HelperSyntaxFactory.ToForwardInfo(x.V2Ctx, true)), 
+            parameters: ctx.Parameters.Select(x => HelperSyntaxFactory.ToForwardInfo(x, true)), 
             parametersPrefix: handleParam);
     }
 

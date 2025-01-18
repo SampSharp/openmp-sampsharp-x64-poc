@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
@@ -12,7 +11,7 @@ public class StatefulManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) :
 
     public TypeSyntax GetNativeType(IdentifierStubContext context)
     {
-        return TypeSyntaxFactory.TypeNameGlobal(context.MarshallerMembers!.StatefulToUnmanagedMethod!.ReturnType);
+        return context.NativeType!.TypeName;
     }
 
     public IEnumerable<StatementSyntax> Generate(MarshalPhase phase, IdentifierStubContext context)
@@ -32,11 +31,11 @@ public class StatefulManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) :
         yield return ExpressionStatement(
             AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetNativeVar()),
+                IdentifierName(context.GetNativeId()),
                 InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerVar()),
+                        IdentifierName(context.GetMarshallerId()),
                         IdentifierName(ShapeConstants.MethodToUnmanaged)))));
     }
 
@@ -47,13 +46,13 @@ public class StatefulManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) :
             InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerVar()),
+                        IdentifierName(context.GetMarshallerId()),
                         IdentifierName(ShapeConstants.MethodFromManaged)))
                 .WithArgumentList(
                     ArgumentList(
                         SingletonSeparatedList(
                             Argument(
-                                IdentifierName(context.GetManagedVar()))))));
+                                IdentifierName(context.GetManagedId()))))));
     }
 
     private static IEnumerable<StatementSyntax> Setup(IdentifierStubContext context)
@@ -62,9 +61,9 @@ public class StatefulManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) :
         // scoped type marshaller = new();
         yield return LocalDeclarationStatement(
                 VariableDeclaration(
-                    IdentifierName(context.Marshaller!.TypeName),
+                    context.MarshallerType!.TypeName,
                     SingletonSeparatedList(
-                        VariableDeclarator(Identifier(context.GetMarshallerVar()))
+                        VariableDeclarator(Identifier(context.GetMarshallerId()))
                             .WithInitializer(
                                 EqualsValueClause(
                                     ImplicitObjectCreationExpression()

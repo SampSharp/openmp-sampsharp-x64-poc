@@ -9,7 +9,7 @@ using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBaseV2(MarshalDirection.UnmanagedToManaged)
+public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBase(MarshalDirection.UnmanagedToManaged)
 {
     private const string LocalHandler = "handler";
     public ExpressionSyntax GenerateDelegateExpression(MarshallingStubGenerationContext ctx)
@@ -26,7 +26,7 @@ public class ApiEventDelegateMarshallingGenerator() : MarshallingGeneratorBaseV2
         else
         {
             // (DelegateType_) ((TypeOne one, TypeTwoNative __two_native) => { ... });
-            var parameters = ToParameterListSyntax([], ctx.Parameters.Select(x => ToForwardInfo(x.V2Ctx)));
+            var parameters = ToParameterListSyntax([], ctx.Parameters.Select(x => ToForwardInfo(x)));
 
             expr = ParenthesizedExpression(
                 ParenthesizedLambdaExpression()

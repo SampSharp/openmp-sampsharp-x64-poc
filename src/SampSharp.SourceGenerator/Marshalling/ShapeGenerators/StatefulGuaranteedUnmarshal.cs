@@ -30,11 +30,11 @@ public class StatefulGuaranteedUnmarshal(IMarshalShapeGenerator innerGenerator) 
         yield return ExpressionStatement(
             AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetManagedVar()),
+                IdentifierName(context.GetManagedId()),
                 InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerVar()),
+                        IdentifierName(context.GetMarshallerId()),
                         IdentifierName(ShapeConstants.MethodToManagedFinally)))));
     }
 }

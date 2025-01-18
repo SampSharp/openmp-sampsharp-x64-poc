@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -14,7 +13,7 @@ using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
-public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
+public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 {
     private const string LocalInvokeSucceeded =  "__invokeSucceeded";
 
@@ -231,20 +230,20 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
     {
         foreach(var p in ctx.Parameters)
         {
-            if (!p.V2Ctx.Generator.UsesNativeIdentifier)
+            if (!p.Generator.UsesNativeIdentifier)
             {
                 continue;
             }
 
-            if (p.V2Ctx.Direction == MarshalDirection.ManagedToUnmanaged)
+            if (p.Direction == MarshalDirection.ManagedToUnmanaged)
             {
                 
-                yield return CreateLocalDeclarationWithDefaultValue(p.V2Ctx.Generator.GetNativeType(p.V2Ctx), p.V2Ctx.GetNativeVar());
+                yield return CreateLocalDeclarationWithDefaultValue(p.Generator.GetNativeType(p), p.GetNativeId());
             }
             else
             {
                 // UnmanagedToManaged
-                yield return CreateLocalDeclarationWithDefaultValue(TypeNameGlobal(p.V2Ctx.ManagedType),  p.V2Ctx.GetManagedVar());
+                yield return CreateLocalDeclarationWithDefaultValue(p.ManagedType.TypeName,  p.GetManagedId());
             }
         }
         
@@ -258,13 +257,13 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
                     MarshallerConstants.LocalReturnValue);
             
             
-            if (ctx.ReturnV2Ctx.Generator.UsesNativeIdentifier)
+            if (ctx.ReturnValue.Generator.UsesNativeIdentifier)
             {
                 // TODO: both dirs?
                 yield return
                     CreateLocalDeclarationWithDefaultValue(
                         direction == MarshalDirection.ManagedToUnmanaged 
-                            ? ctx.ReturnV2Ctx.Generator.GetNativeType(ctx.ReturnV2Ctx) 
+                            ? ctx.ReturnValue.Generator.GetNativeType(ctx.ReturnValue) 
                             : TypeNameGlobal(ctx.Symbol.ReturnType), 
                         GetVarName(null));
             }
@@ -343,7 +342,7 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
             invoke = 
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression, 
-                    IdentifierName(ctx.ReturnV2Ctx.Generator.UsesNativeIdentifier ? MarshallerHelper.GetNativeVar(null) : MarshallerConstants.LocalReturnValue), 
+                    IdentifierName(ctx.ReturnValue.Generator.UsesNativeIdentifier ? MarshallerHelper.GetNativeVar(null) : MarshallerConstants.LocalReturnValue), 
                     invoke);
         }
 
@@ -352,48 +351,47 @@ public abstract class MarshallingGeneratorBaseV2(MarshalDirection direction)
     
     private static MarshallingPhases CollectPhases(MarshallingStubGenerationContext ctx)
     {
-        var setup = PhaseV2(ctx, MarshalPhase.Setup, MarshallingCodeGenDocumentation.COMMENT_SETUP);
-        var marshal = PhaseV2(ctx, MarshalPhase.Marshal, MarshallingCodeGenDocumentation.COMMENT_MARSHAL);
-        var pinnedMarshal = PhaseV2(ctx, MarshalPhase.PinnedMarshal, MarshallingCodeGenDocumentation.COMMENT_PINNED_MARSHAL);
-        var pin = PhaseV2(ctx, MarshalPhase.Pin, MarshallingCodeGenDocumentation.COMMENT_PIN);
-        var notify = PhaseV2(ctx, MarshalPhase.NotifyForSuccessfulInvoke, MarshallingCodeGenDocumentation.COMMENT_NOTIFY);
-        var unmarshalCapture = PhaseV2(ctx, MarshalPhase.UnmarshalCapture, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL_CAPTURE);
-        var unmarshal = PhaseV2(ctx, MarshalPhase.Unmarshal, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL);
-        var guaranteedUnmarshal = PhaseV2(ctx, MarshalPhase.GuaranteedUnmarshal, MarshallingCodeGenDocumentation.COMMENT_GUARANTEED_UNMARSHAL);
-        var cleanupCallee = PhaseV2(ctx, MarshalPhase.CleanupCalleeAllocated, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLEE);
-        var cleanupCaller = PhaseV2(ctx, MarshalPhase.CleanupCallerAllocated, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLER);
+        var setup = Phase(ctx, MarshalPhase.Setup, MarshallingCodeGenDocumentation.COMMENT_SETUP);
+        var marshal = Phase(ctx, MarshalPhase.Marshal, MarshallingCodeGenDocumentation.COMMENT_MARSHAL);
+        var pinnedMarshal = Phase(ctx, MarshalPhase.PinnedMarshal, MarshallingCodeGenDocumentation.COMMENT_PINNED_MARSHAL);
+        var pin = Phase(ctx, MarshalPhase.Pin, MarshallingCodeGenDocumentation.COMMENT_PIN);
+        var notify = Phase(ctx, MarshalPhase.NotifyForSuccessfulInvoke, MarshallingCodeGenDocumentation.COMMENT_NOTIFY);
+        var unmarshalCapture = Phase(ctx, MarshalPhase.UnmarshalCapture, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL_CAPTURE);
+        var unmarshal = Phase(ctx, MarshalPhase.Unmarshal, MarshallingCodeGenDocumentation.COMMENT_UNMARSHAL);
+        var guaranteedUnmarshal = Phase(ctx, MarshalPhase.GuaranteedUnmarshal, MarshallingCodeGenDocumentation.COMMENT_GUARANTEED_UNMARSHAL);
+        var cleanupCallee = Phase(ctx, MarshalPhase.CleanupCalleeAllocated, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLEE);
+        var cleanupCaller = Phase(ctx, MarshalPhase.CleanupCallerAllocated, MarshallingCodeGenDocumentation.COMMENT_CLEANUP_CALLER);
 
         return new MarshallingPhases(setup, marshal, pinnedMarshal, pin, notify, unmarshalCapture, unmarshal, guaranteedUnmarshal, cleanupCallee, cleanupCaller);
     }
 
-    private static ArgumentSyntax GetArgumentForPInvokeParameter(ParameterStubGenerationContext ctx)
+    private static ArgumentSyntax GetArgumentForPInvokeParameter(IdentifierStubContext ctx)
     {
-        
-        var arg = ctx.V2Ctx.Parameter!.Name;
-        if (ctx.V2Ctx.Generator.UsesNativeIdentifier)
+        var arg = ctx.GetManagedId();
+        if (ctx.Generator.UsesNativeIdentifier)
         {
-            arg = ctx.V2Ctx.GetNativeVar();
+            arg = ctx.GetNativeId();
         }
         
         ExpressionSyntax expr = IdentifierName(arg);
 
         
-        if (ctx.V2Ctx.Parameter.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
+        if (ctx.RefKind is RefKind.In or RefKind.RefReadOnlyParameter)
         {
             expr = PrefixUnaryExpression(SyntaxKind.AddressOfExpression, expr);
         }
 
-        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.V2Ctx.Parameter);
+        return HelperSyntaxFactory.WithPInvokeParameterRefToken(Argument(expr), ctx.RefKind);
     }
     
-    private static SyntaxList<StatementSyntax> PhaseV2(
+    private static SyntaxList<StatementSyntax> Phase(
         MarshallingStubGenerationContext ctx,
         MarshalPhase phase,
         string? comment)
     {
         var elements = ctx.Parameters
-            .SelectMany(x => x.V2Ctx.Generator.Generate(phase, x.V2Ctx))
-            .Concat(ctx.ReturnV2Ctx.Generator.Generate(phase, ctx.ReturnV2Ctx));
+            .SelectMany(x => x.Generator.Generate(phase, x))
+            .Concat(ctx.ReturnValue.Generator.Generate(phase, ctx.ReturnValue));
 
         var result = List(elements);
 

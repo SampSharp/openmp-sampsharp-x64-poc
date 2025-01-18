@@ -33,7 +33,7 @@ public class StaticPinnableManagedValueMarshaller(IMarshalShapeGenerator innerGe
             .WithVariables(
                 SingletonSeparatedList(
                     VariableDeclarator(
-                            Identifier(context.GetNativeVar()))
+                            Identifier(context.GetNativeId()))
                         .WithInitializer(
                             EqualsValueClause(
                                 PrefixUnaryExpression(
@@ -41,12 +41,12 @@ public class StaticPinnableManagedValueMarshaller(IMarshalShapeGenerator innerGe
                                     InvocationExpression(
                                             MemberAccessExpression(
                                                 SyntaxKind.SimpleMemberAccessExpression,
-                                                ParseTypeName(context.Marshaller!.TypeName),
+                                                context.MarshallerType!.TypeName,
                                                 IdentifierName(ShapeConstants.MethodGetPinnableReference)))
                                         .WithArgumentList(
                                             ArgumentList(
                                                 SingletonSeparatedList(
                                                     Argument(
-                                                        IdentifierName(context.GetManagedVar())))))))))), Block());
+                                                        IdentifierName(context.GetManagedId())))))))))), Block());
     }
 }

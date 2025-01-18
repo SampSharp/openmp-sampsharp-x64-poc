@@ -175,19 +175,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Select(method =>
             {
                 
-                var parameters = method.methodSymbol!.Parameters.Select(parameter =>
-                    {
-                        var v2Ctx = ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged);
-
-                        return new ParameterStubGenerationContext(parameter, v2Ctx);
-                    })
+                var parameters = method.methodSymbol!.Parameters.Select(parameter => ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged))
                     .ToArray();
                 
-                var v2Ctx = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
+                var returnValueContext = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
 
-                var requiresMarshalling = v2Ctx.Shape != MarshallerShape.None || parameters.Any(x => x.V2Ctx.Shape != MarshallerShape.None);
+                var requiresMarshalling = returnValueContext.Shape != MarshallerShape.None || parameters.Any(x => x.Shape != MarshallerShape.None);
 
-                if (v2Ctx.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
+                if (returnValueContext.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
                     // TODO: diagnostic
@@ -199,7 +194,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     method.methodDeclaration!,
                     method.methodSymbol, 
                     parameters, 
-                    v2Ctx,
+                    returnValueContext,
                     requiresMarshalling, 
                     library,
                     nativeTypeName);

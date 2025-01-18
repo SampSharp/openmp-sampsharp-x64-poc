@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SampSharp.SourceGenerator.SyntaxFactories;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -16,7 +15,7 @@ public class EmptyMarshalShapeGenerator : IMarshalShapeGenerator
 
     public TypeSyntax GetNativeType(IdentifierStubContext context)
     {
-        return TypeSyntaxFactory.TypeNameGlobal(context.ManagedType);
+        return context.ManagedType.TypeName;
     }
 
     public IEnumerable<StatementSyntax> Generate(MarshalPhase phase, IdentifierStubContext context)

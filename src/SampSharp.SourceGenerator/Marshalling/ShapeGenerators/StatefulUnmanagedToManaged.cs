@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
@@ -12,7 +11,7 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
 
     public TypeSyntax GetNativeType(IdentifierStubContext context)
     {
-        return TypeSyntaxFactory.TypeNameGlobal(context.MarshallerMembers!.StatefulFromUnmanagedMethod!.Parameters[0].Type);
+        return context.NativeType!.TypeName;
     }
 
     public IEnumerable<StatementSyntax> Generate(MarshalPhase phase, IdentifierStubContext context)
@@ -33,9 +32,9 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
         // scoped type marshaller = new();
         yield return LocalDeclarationStatement(
                 VariableDeclaration(
-                    IdentifierName(context.Marshaller!.TypeName),
+                    context.MarshallerType!.TypeName,
                     SingletonSeparatedList(
-                        VariableDeclarator(Identifier(context.GetMarshallerVar()))
+                        VariableDeclarator(Identifier(context.GetMarshallerId()))
                             .WithInitializer(
                                 EqualsValueClause(
                                     ImplicitObjectCreationExpression()
@@ -54,7 +53,7 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
             InvocationExpression(
                 MemberAccessExpression(
                     SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(context.GetMarshallerVar()),
+                    IdentifierName(context.GetMarshallerId()),
                     IdentifierName(ShapeConstants.MethodFree))));
     }
 
@@ -64,11 +63,11 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
         yield return ExpressionStatement(
             AssignmentExpression(
                 SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetManagedVar()),
+                IdentifierName(context.GetManagedId()),
                 InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerVar()),
+                        IdentifierName(context.GetMarshallerId()),
                         IdentifierName(ShapeConstants.MethodToManaged)))));
     }
 
@@ -79,12 +78,12 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
             InvocationExpression(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerVar()),
+                        IdentifierName(context.GetMarshallerId()),
                         IdentifierName(ShapeConstants.MethodFromUnmanaged)))
                 .WithArgumentList(
                     ArgumentList(
                         SingletonSeparatedList(
                             Argument(
-                                IdentifierName(context.GetNativeVar()))))));
+                                IdentifierName(context.GetNativeId()))))));
     }
 }
