@@ -59,7 +59,6 @@ public static class HelperSyntaxFactory
         var paramType = context.Generator.GetNativeType(context);
         var refKind = context.RefKind;
 
-        // TODO: get InReferenceHandlingStrategy from generator???
         if (toExtern && refKind is RefKind.In or RefKind.RefReadOnlyParameter)
         {
             paramType = PointerType(paramType);

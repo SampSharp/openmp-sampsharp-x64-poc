@@ -193,11 +193,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 
             if (ctx.ReturnsByRef)
             {
-                // TODO: this may be wrong
-                returnExpression = RefExpression(
-                    PrefixUnaryExpression(
-                        SyntaxKind.PointerIndirectionExpression,
-                        returnExpression));
+                returnExpression = RefExpression(returnExpression);
             }
 
             statements = statements.Add(ReturnStatement(returnExpression));
@@ -237,7 +233,6 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 
             if (p.Direction == MarshalDirection.ManagedToUnmanaged)
             {
-                
                 yield return DeclareLocal(p.Generator.GetNativeType(p), p.GetNativeId());
             }
             else
@@ -250,44 +245,26 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 
         if (!ctx.Symbol.ReturnsVoid)
         {
-            
+            var managedReturnType = ctx.ReturnValue.ManagedType.TypeName;
+            if (ctx.ReturnsByRef)
+            {
+                // when marshalling ref-return types are marshalled as pointers
+                managedReturnType = PointerType(managedReturnType);
+            }
+
             yield return
                 DeclareLocal(
-                    GetReturnType(ctx),
-                    MarshallerConstants.LocalReturnValue);
-            
+                    managedReturnType,
+                    ctx.ReturnValue.GetManagedId());
             
             if (ctx.ReturnValue.Generator.UsesNativeIdentifier)
             {
-                // TODO: both dirs?
                 yield return
                     DeclareLocal(
-                        direction == MarshalDirection.ManagedToUnmanaged 
-                            ? ctx.ReturnValue.Generator.GetNativeType(ctx.ReturnValue) 
-                            : TypeNameGlobal(ctx.Symbol.ReturnType), 
-                        GetVarName(null));
+                        ctx.ReturnValue.Generator.GetNativeType(ctx.ReturnValue),
+                        ctx.ReturnValue.GetNativeId());
             }
         }
-        
-        string GetVarName(IParameterSymbol? parameterSymbol)
-        {
-            // TODO: GetVarName should go
-            return direction == MarshalDirection.ManagedToUnmanaged
-                ? MarshallerHelper.GetNativeVar(parameterSymbol)
-                : MarshallerHelper.GetVar(parameterSymbol);
-        }
-    }
-
-    private static TypeSyntax GetReturnType(MarshallingStubGenerationContext ctx)
-    {
-        var returnType = TypeNameGlobal(ctx.Symbol.ReturnType);
-
-        if (ctx.ReturnsByRef)
-        {
-            returnType = PointerType(returnType);
-        }
-
-        return returnType;
     }
 
     private static LocalDeclarationStatementSyntax GenerateInvokeSucceededLocal()
@@ -339,10 +316,21 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
     {
         if (!ctx.Symbol.ReturnsVoid)
         {
+            string assignedLocal;
+            if (ctx.ReturnValue.Direction == MarshalDirection.ManagedToUnmanaged)
+            {
+                assignedLocal = ctx.ReturnValue.Generator.UsesNativeIdentifier ? ctx.ReturnValue.GetNativeId() : ctx.ReturnValue.GetManagedId();
+            }
+            else
+            {
+                // UnmanagedToManaged
+                assignedLocal = ctx.ReturnValue.Generator.UsesNativeIdentifier ? ctx.ReturnValue.GetManagedId() : ctx.ReturnValue.GetNativeId();
+            }
+
             invoke = 
                 AssignmentExpression(
                     SyntaxKind.SimpleAssignmentExpression, 
-                    IdentifierName(ctx.ReturnValue.Generator.UsesNativeIdentifier ? MarshallerHelper.GetNativeVar(null) : MarshallerConstants.LocalReturnValue), 
+                    IdentifierName(assignedLocal), 
                     invoke);
         }
 

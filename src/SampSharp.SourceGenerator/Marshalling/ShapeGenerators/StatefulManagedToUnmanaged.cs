@@ -51,12 +51,21 @@ public class StatefulManagedToUnmanaged(IMarshalShapeGenerator innerGenerator) :
 
     private static IEnumerable<StatementSyntax> Setup(IdentifierStubContext context)
     {
-        // TODO: not always scoped
         // scoped type marshaller = new();
-        yield return DeclareLocal(
+        var local = DeclareLocal(
             context.MarshallerType!.TypeName,
             context.GetMarshallerId(),
-            ImplicitObjectCreationExpression())
-            .WithModifiers(TokenList(Token(SyntaxKind.ScopedKeyword)));
+            ImplicitObjectCreationExpression());
+
+        if (context.MarshallerType.Symbol.IsRefLikeType)
+        {
+            local = local.WithModifiers(
+                TokenList(
+                    Token(
+                        SyntaxKind.ScopedKeyword)));
+
+        }
+
+        yield return local;
     }
 }
