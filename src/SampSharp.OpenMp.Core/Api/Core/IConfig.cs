@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using System.Runtime.InteropServices;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi(typeof(IExtensible))]
 public readonly partial struct IConfig
@@ -9,9 +11,36 @@ public readonly partial struct IConfig
     
     public partial ref float GetFloat(string key);
 
-    public partial Size GetStrings(string key, SpanLite<StringView> output);
+    [OpenMpApiFunction("getStrings")]
+    private partial Size GetStringsImpl(string key, SpanLite<StringView> output);
 
-    public partial Size GetStringsCount(string key);
+    private partial Size GetStringsCount(string key);
+
+    public unsafe string?[] GetStrings(string key)
+    {
+        var count = GetStringsCount(key);
+
+        var ptr = Marshal.AllocHGlobal(count.Value.ToInt32() * sizeof(StringView));
+
+        try
+        {
+            var output = new SpanLite<StringView>((StringView*)ptr, count);
+            GetStringsImpl(key, output);
+
+            var result = new string?[count.Value.ToInt32()];
+            var index = 0;
+            foreach (var value in output.AsSpan())
+            {
+                result[index++] = value;
+            }
+
+            return result;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+    }
     
     [OpenMpApiFunction("getType")]
     public partial ConfigOptionType GetValueType(string key);
@@ -35,7 +64,14 @@ public readonly partial struct IConfig
 
     public partial bool IsBanned(BanEntry entry);
 
-    public partial Pair<BlittableBoolean, StringView> GetNameFromAlias(string alias);
+    [OpenMpApiFunction("getNameFromAlias")]
+    private partial Pair<BlittableBoolean, StringView> GetNameFromAliasImpl(string alias);
+
+    public (bool, string?) GetNameFromAlias(string alias)
+    {
+        var pair = GetNameFromAliasImpl(alias);
+        return (pair.First, pair.Second);
+    }
 
     // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 
