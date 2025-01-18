@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -26,11 +27,8 @@ public class StatefulNotifyForSuccesfulInvokeMarshaller(IMarshalShapeGenerator i
     private static IEnumerable<StatementSyntax> GenerateNotifyForSuccessfulInvoke(IdentifierStubContext context)
     {
         // marshaller.OnInvoked();
-        yield return ExpressionStatement(
-            InvocationExpression(
-                MemberAccessExpression(
-                    SyntaxKind.SimpleMemberAccessExpression,
-                    IdentifierName(context.GetMarshallerId()),
-                    IdentifierName(ShapeConstants.MethodOnInvoked))));
+        yield return Invoke(
+            context.GetMarshallerId(), 
+            ShapeConstants.MethodOnInvoked);
     }
 }

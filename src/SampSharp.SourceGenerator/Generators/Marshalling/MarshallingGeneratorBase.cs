@@ -238,12 +238,12 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
             if (p.Direction == MarshalDirection.ManagedToUnmanaged)
             {
                 
-                yield return CreateLocalDeclarationWithDefaultValue(p.Generator.GetNativeType(p), p.GetNativeId());
+                yield return DeclareLocal(p.Generator.GetNativeType(p), p.GetNativeId());
             }
             else
             {
                 // UnmanagedToManaged
-                yield return CreateLocalDeclarationWithDefaultValue(p.ManagedType.TypeName,  p.GetManagedId());
+                yield return DeclareLocal(p.ManagedType.TypeName,  p.GetManagedId());
             }
         }
         
@@ -252,7 +252,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
         {
             
             yield return
-                CreateLocalDeclarationWithDefaultValue(
+                DeclareLocal(
                     GetReturnType(ctx),
                     MarshallerConstants.LocalReturnValue);
             
@@ -261,7 +261,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
             {
                 // TODO: both dirs?
                 yield return
-                    CreateLocalDeclarationWithDefaultValue(
+                    DeclareLocal(
                         direction == MarshalDirection.ManagedToUnmanaged 
                             ? ctx.ReturnValue.Generator.GetNativeType(ctx.ReturnValue) 
                             : TypeNameGlobal(ctx.Symbol.ReturnType), 
@@ -292,7 +292,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
 
     private static LocalDeclarationStatementSyntax GenerateInvokeSucceededLocal()
     {
-        return CreateLocalDeclarationWithDefaultValue(PredefinedType(Token(SyntaxKind.BoolKeyword)), LocalInvokeSucceeded);
+        return DeclareLocal(PredefinedType(Token(SyntaxKind.BoolKeyword)), LocalInvokeSucceeded);
     }
 
     private static ExpressionStatementSyntax GenerateSetInvokeSucceeded()

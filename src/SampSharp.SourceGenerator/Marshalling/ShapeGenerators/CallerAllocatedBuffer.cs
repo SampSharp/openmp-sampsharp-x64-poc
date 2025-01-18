@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -30,25 +31,20 @@ public class CallerAllocatedBuffer(IMarshalShapeGenerator innerGenerator) : IMar
         var bufferVar = context.GetNativeExtraId("buffer");
 
         // global::System.Span<byte> __varName_native__buffer = stackalloc byte[MarshallerType.BufferSize];
-        yield return LocalDeclarationStatement(
-            VariableDeclaration(TypeSyntaxFactory.SpanOfBytes)
-                .WithVariables(
-                    SingletonSeparatedList(
-                        VariableDeclarator(
-                                Identifier(bufferVar))
-                            .WithInitializer(
-                                EqualsValueClause(
-                                    StackAllocArrayCreationExpression(
-                                        ArrayType(
-                                                PredefinedType(
-                                                    Token(SyntaxKind.ByteKeyword)))
-                                            .WithRankSpecifiers(
-                                                SingletonList(
-                                                    ArrayRankSpecifier(SingletonSeparatedList<ExpressionSyntax>(
-                                                        MemberAccessExpression(
-                                                            SyntaxKind.SimpleMemberAccessExpression,
-                                                            context.MarshallerType!.TypeName,
-                                                            IdentifierName(ShapeConstants.PropertyBufferSize))))))))))));
+        yield return DeclareLocal(
+            TypeSyntaxFactory.SpanOfBytes,
+            bufferVar,
+            StackAllocArrayCreationExpression(
+                ArrayType(
+                        PredefinedType(
+                            Token(SyntaxKind.ByteKeyword)))
+                    .WithRankSpecifiers(
+                        SingletonList(
+                            ArrayRankSpecifier(SingletonSeparatedList<ExpressionSyntax>(
+                                MemberAccessExpression(
+                                    SyntaxKind.SimpleMemberAccessExpression,
+                                    context.MarshallerType!.TypeName,
+                                    IdentifierName(ShapeConstants.PropertyBufferSize))))))));
 
         // append argument to the method call
         var rewriter = new InvocationRewriter(bufferVar);

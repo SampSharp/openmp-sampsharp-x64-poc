@@ -2,6 +2,8 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.ExpressionFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -25,24 +27,12 @@ internal class StatelessUnmanagedToManagedGuaranteed(IMarshalShapeGenerator inne
 
     private static IEnumerable<StatementSyntax> GuaranteedUnmarshal(IdentifierStubContext context)
     {
-        // managed = Marshaller.ConvertToManagedFinally(unmanaged);
-        yield return ExpressionStatement(
-            AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetManagedId()),
-                InvocationExpression(
-                        MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            context.MarshallerType!.TypeName,
-                            IdentifierName(ShapeConstants.MethodConvertToManagedFinally)
-                        )
-                    )
-                    .WithArgumentList(
-                        ArgumentList(
-                            SingletonSeparatedList(
-                                Argument(IdentifierName(context.GetNativeId()))
-                            )
-                        )
-                    )));
+        // managed = Marshaller.ConvertToManaged(unmanaged);
+        yield return Assign(
+            context.GetManagedId(),
+            InvocationExpression(
+                context.MarshallerType!.TypeName,
+                ShapeConstants.MethodConvertToManagedFinally, 
+                Argument(IdentifierName(context.GetNativeId()))));
     }
 }

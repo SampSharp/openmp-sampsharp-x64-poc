@@ -2,6 +2,7 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -25,20 +26,12 @@ public class StatelessFree(IMarshalShapeGenerator innerGenerator) : IMarshalShap
 
     private static IEnumerable<StatementSyntax> CleanupCallerAllocated(IdentifierStubContext context)
     {
-        yield return ExpressionStatement(
-            InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        context.MarshallerType!.TypeName,
-                        IdentifierName(ShapeConstants.MethodFree)
-                    )
-                )
-                .WithArgumentList(
-                    ArgumentList(
-                        SingletonSeparatedList(
-                            Argument(IdentifierName(context.GetNativeId()))
-                        )
-                    )
-                ));
+        // Marshaller.Free(native);
+        yield return Invoke(
+            context.MarshallerType!.TypeName,
+            ShapeConstants.MethodFree,
+            Argument(
+                IdentifierName(
+                    context.GetNativeId())));
     }
 }

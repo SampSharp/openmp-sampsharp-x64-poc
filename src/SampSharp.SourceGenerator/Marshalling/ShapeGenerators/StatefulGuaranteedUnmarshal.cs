@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.ExpressionFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
 
 namespace SampSharp.SourceGenerator.Marshalling.ShapeGenerators;
 
@@ -27,14 +27,11 @@ public class StatefulGuaranteedUnmarshal(IMarshalShapeGenerator innerGenerator) 
     private static IEnumerable<StatementSyntax> GuaranteedUnmarshal(IdentifierStubContext context)
     {
         // managed = marshaller.ToManagedFinally();
-        yield return ExpressionStatement(
-            AssignmentExpression(
-                SyntaxKind.SimpleAssignmentExpression,
-                IdentifierName(context.GetManagedId()),
-                InvocationExpression(
-                    MemberAccessExpression(
-                        SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(context.GetMarshallerId()),
-                        IdentifierName(ShapeConstants.MethodToManagedFinally)))));
+        yield return Assign(
+            context.GetManagedId(),
+            InvocationExpression(
+                context.GetMarshallerId(),
+                ShapeConstants.MethodToManagedFinally)
+            );
     }
 }
