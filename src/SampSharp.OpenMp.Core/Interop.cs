@@ -15,10 +15,15 @@ public class Interop :
     public void OnTick(Microseconds micros, TimePoint now)
     {
     }
-    
 
     [UnmanagedCallersOnly]
-    public static void OnInit(ICore core, IComponentList componentList, BlittableStructRef<SampSharpInfo> info)
+    public static void Cleanup()
+    {
+
+    }
+
+    [UnmanagedCallersOnly]
+    public static void Initialize(ICore core, IComponentList componentList, BlittableStructRef<SampSharpInfo> info)
     {
         _core = core;
 

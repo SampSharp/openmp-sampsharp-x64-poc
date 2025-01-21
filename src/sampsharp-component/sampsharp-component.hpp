@@ -20,6 +20,7 @@ struct SampSharpInfo
 };
 
 typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *, IComponentList *, SampSharpInfo *);
+typedef void (CORECLR_DELEGATE_CALLTYPE *on_cleanup_fn)();
 
 struct ISampSharpComponent : IComponent
 {
@@ -33,7 +34,7 @@ private:
 	ICore * core_ = nullptr;
 	ManagedHost managed_host_ {};
 	inline static SampSharpComponent * instance_ = nullptr;
-	on_init_fn on_init_ = nullptr;
+	on_cleanup_fn on_cleanup_ = nullptr;
 
 public:
 	StringView componentName() const override;

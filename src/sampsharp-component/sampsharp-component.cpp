@@ -5,6 +5,7 @@
 #define CFG_ASSEMBLY "sampsharp.assembly"
 #define CFG_ENTRY_POINT_TYPE "sampsharp.entry_point_type"
 #define CFG_ENTRY_POINT_METHOD "sampsharp.entry_point_method"
+#define CFG_CLEANUP_METHOD "sampsharp.cleanup_method"
 
 StringView SampSharpComponent::componentName() const
 {
@@ -33,7 +34,8 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
 	initConfigString(CFG_FOLDER, "gamemode");
 	initConfigString(CFG_ASSEMBLY, "GameMode");
 	initConfigString(CFG_ENTRY_POINT_TYPE, "SampSharp.OpenMp.Core.Interop");
-	initConfigString(CFG_ENTRY_POINT_METHOD, "OnInit");
+	initConfigString(CFG_ENTRY_POINT_METHOD, "Initialize");
+	initConfigString(CFG_CLEANUP_METHOD, "Cleanup");
 }
 
 void SampSharpComponent::onInit(IComponentList* components)
@@ -44,6 +46,7 @@ void SampSharpComponent::onInit(IComponentList* components)
 	const auto assembly = config.getString(CFG_ASSEMBLY);
 	const auto entry_point_type = config.getString(CFG_ENTRY_POINT_TYPE);
 	const auto entry_point_method = config.getString(CFG_ENTRY_POINT_METHOD);
+	const auto cleanup_method = config.getString(CFG_CLEANUP_METHOD);
 
 	std::string entry_point = entry_point_type.to_string() + ", " + assembly.to_string();
 	const auto full_entry_point = StringView(entry_point);
@@ -64,7 +67,15 @@ void SampSharpComponent::onInit(IComponentList* components)
 		return;
 	}
 
-	if(!managed_host_.getEntryPoint(full_entry_point, entry_point_method, reinterpret_cast<void**>(&on_init_), &error))
+	on_init_fn on_init;
+	if(!managed_host_.getEntryPoint(full_entry_point, entry_point_method, reinterpret_cast<void**>(&on_init), &error))
+	{
+		core_->logLn(Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(Error, "Error message: %s", error);
+		return;
+	}
+	
+	if(!managed_host_.getEntryPoint(full_entry_point, cleanup_method, reinterpret_cast<void**>(&on_cleanup_), &error))
 	{
 		core_->logLn(Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
 		core_->logLn(Error, "Error message: %s", error);
@@ -73,7 +84,7 @@ void SampSharpComponent::onInit(IComponentList* components)
 
 	SampSharpInfo info { sizeof(SampSharpInfo), VERSION_API, componentVersion() };
 	
-	on_init_(core_, components, &info);
+	on_init(core_, components, &info);
 }
 
 void SampSharpComponent::onReady()
@@ -82,7 +93,11 @@ void SampSharpComponent::onReady()
 
 void SampSharpComponent::free()
 {
-	// TODO: hook for cleaning up event handlers
+	if (on_cleanup_)
+	{
+		on_cleanup_();
+	}
+	
 	delete this;
 }
 
