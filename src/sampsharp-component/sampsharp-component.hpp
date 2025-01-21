@@ -4,7 +4,22 @@
 
 #include "managed-host.hpp"
 
-typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *, IComponentList*);
+struct SampSharpInfo
+{
+	SampSharpInfo(size_t size, int api_version, SemanticVersion version) : 
+		size(size), 
+		api_version(api_version),
+		version(version) { }
+
+	// sizeof(SampSharpInfo) for backwards compatibility
+	size_t size; 
+	// version of SampSharp component <> hosted API. Version mismatch will cause launch failure.
+	int api_version; 
+	// version of the SampSharp component
+	SemanticVersion version; 
+};
+
+typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *, IComponentList *, SampSharpInfo *);
 
 struct ISampSharpComponent : IComponent
 {
@@ -15,9 +30,9 @@ class SampSharpComponent final
 	: public ISampSharpComponent
 {
 private:
-	ICore* core_ = nullptr;
+	ICore * core_ = nullptr;
 	ManagedHost managed_host_ {};
-	inline static SampSharpComponent* instance_ = nullptr;
+	inline static SampSharpComponent * instance_ = nullptr;
 	on_init_fn on_init_ = nullptr;
 
 public:
@@ -25,11 +40,11 @@ public:
 
 	SemanticVersion componentVersion() const override;
 
-	void onLoad(ICore* c) override;
+	void onLoad(ICore * c) override;
 
-	void provideConfiguration(ILogger& logger, IEarlyConfig& config, bool defaults) override;
+	void provideConfiguration(ILogger & logger, IEarlyConfig & config, bool defaults) override;
 	
-	void onInit(IComponentList* components) override;
+	void onInit(IComponentList * components) override;
 
 	void onReady() override;
 
@@ -37,5 +52,5 @@ public:
 
 	void reset() override;
 	
-	static SampSharpComponent* getInstance();
+	static SampSharpComponent * getInstance();
 };

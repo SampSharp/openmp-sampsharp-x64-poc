@@ -1,4 +1,5 @@
 #include "sampsharp-component.hpp"
+#include "version.hpp"
 
 #define CFG_FOLDER "sampsharp.folder"
 #define CFG_ASSEMBLY "sampsharp.assembly"
@@ -12,7 +13,7 @@ StringView SampSharpComponent::componentName() const
 
 SemanticVersion SampSharpComponent::componentVersion() const
 {
-	return { 0, 0, 1, 0 };
+	return { VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_BUILD };
 }
 
 void SampSharpComponent::onLoad(ICore* c)
@@ -44,31 +45,35 @@ void SampSharpComponent::onInit(IComponentList* components)
 	const auto entry_point_type = config.getString(CFG_ENTRY_POINT_TYPE);
 	const auto entry_point_method = config.getString(CFG_ENTRY_POINT_METHOD);
 
-	const auto full_entry_point = StringView(entry_point_type.to_string() + ", " + assembly.to_string());
+	std::string entry_point = entry_point_type.to_string() + ", " + assembly.to_string();
+	const auto full_entry_point = StringView(entry_point);
 
 	const char * error = nullptr;
+	
     if(!managed_host_.initialize(&error))
 	{
-		core_->logLn(LogLevel::Error, "Failed to initialize the .NET host framework resolver. Has the .NET runtime been installed?");
-		core_->logLn(LogLevel::Error, "Error message: %s", error);
+		core_->logLn(Error, "Failed to initialize the .NET host framework resolver. Has the .NET runtime been installed?");
+		core_->logLn(Error, "Error message: %s", error);
 		return;
 	}
 
     if(!managed_host_.loadFor(folder, assembly, &error))
 	{
-		core_->logLn(LogLevel::Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
-		core_->logLn(LogLevel::Error, "Error message: %s", error);
+		core_->logLn(Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(Error, "Error message: %s", error);
 		return;
 	}
 
 	if(!managed_host_.getEntryPoint(full_entry_point, entry_point_method, reinterpret_cast<void**>(&on_init_), &error))
 	{
-		core_->logLn(LogLevel::Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
-		core_->logLn(LogLevel::Error, "Error message: %s", error);
+		core_->logLn(Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(Error, "Error message: %s", error);
 		return;
 	}
 
-	on_init_(core_, components);
+	SampSharpInfo info { sizeof(SampSharpInfo), VERSION_API, componentVersion() };
+	
+	on_init_(core_, components, &info);
 }
 
 void SampSharpComponent::onReady()

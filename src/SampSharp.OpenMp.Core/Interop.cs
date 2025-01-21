@@ -18,11 +18,15 @@ public class Interop :
     
 
     [UnmanagedCallersOnly]
-    public static void OnInit(ICore core, IComponentList componentList)
+    public static void OnInit(ICore core, IComponentList componentList, BlittableStructRef<SampSharpInfo> info)
     {
         _core = core;
 
         Console.WriteLine("OnInit from managed c# code!");
+
+        var infoValue = info.GetValue();
+        Console.WriteLine($"Component version: {infoValue.Version}");
+        Console.WriteLine($"size {infoValue.Size.Value} api {infoValue.ApiVersion}");
         Console.WriteLine($"Network bit stream version: {core.GetNetworkBitStreamVersion()}");
 
         Console.WriteLine($"core version: {core.GetVersion()}");
