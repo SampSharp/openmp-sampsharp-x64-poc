@@ -1,5 +1,4 @@
 #include "sampsharp-component.hpp"
-#include "compat.hpp"
 
 #define CFG_FOLDER "sampsharp.folder"
 #define CFG_ASSEMBLY "sampsharp.assembly"
@@ -45,26 +44,27 @@ void SampSharpComponent::onInit(IComponentList* components)
 	const auto entry_point_type = config.getString(CFG_ENTRY_POINT_TYPE);
 	const auto entry_point_method = config.getString(CFG_ENTRY_POINT_METHOD);
 
-	const auto folder_w = widen(folder.to_string());
-	const auto assembly_w = widen(assembly.to_string());
-	const auto full_entry_point_w = widen(entry_point_type.to_string() + ", " + assembly.to_string()); // namespace.class, assembly
-	const auto entry_point_method_w = widen(entry_point_method.to_string());
+	const auto full_entry_point = StringView(entry_point_type.to_string() + ", " + assembly.to_string());
 
-    if(!managed_host_.initialize())
+	const char * error = nullptr;
+    if(!managed_host_.initialize(&error))
 	{
 		core_->logLn(LogLevel::Error, "Failed to initialize the .NET host framework resolver. Has the .NET runtime been installed?");
+		core_->logLn(LogLevel::Error, "Error message: %s", error);
 		return;
 	}
 
-    if(!managed_host_.loadFor(folder_w.c_str(), assembly_w.c_str()))
+    if(!managed_host_.loadFor(folder, assembly, &error))
 	{
-		core_->logLn(LogLevel::Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.dll.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(LogLevel::Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(LogLevel::Error, "Error message: %s", error);
 		return;
 	}
 
-	if(!managed_host_.getEntryPoint(full_entry_point_w.c_str(), entry_point_method_w.c_str(), reinterpret_cast<void**>(&on_init_)))
+	if(!managed_host_.getEntryPoint(full_entry_point, entry_point_method, reinterpret_cast<void**>(&on_init_), &error))
 	{
 		core_->logLn(LogLevel::Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(LogLevel::Error, "Error message: %s", error);
 		return;
 	}
 

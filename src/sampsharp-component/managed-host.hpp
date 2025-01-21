@@ -3,6 +3,7 @@
 #include <hostfxr.h>
 #include <coreclr_delegates.h>
 #include <string>
+#include "types.hpp"
 #include "compat.hpp"
 
 class ManagedHost final
@@ -19,12 +20,14 @@ private:
     static void * load_library(const char_t *);
     static void * get_export(void *, const char *);
 
-    bool load_hostfxr(const char_t * assembly_path);
-    load_assembly_and_get_function_pointer_fn load_runtime(const char_t * config_path) const;
+    int load_hostfxr(const char_t * assembly_path);
+
+    int load_runtime(const char_t * config_path, load_assembly_and_get_function_pointer_fn * fptr) const;
+    const char * get_error(int code) const;
 
 public:
     bool isReady() const;
-    bool initialize();
-    bool loadFor(const char_t * root_path, const char_t * assembly_name);
-    bool getEntryPoint(const char_t * entry_type_name, const char_t * name, void ** delegate_ptr) const;
+    bool initialize(const char ** error_ptr);
+    bool loadFor(const StringView root_path, const StringView assembly_name, const char ** error_ptr);
+    bool getEntryPoint(const StringView entry_type_name, const StringView name, void ** delegate_ptr, const char ** error_ptr) const;
 };
