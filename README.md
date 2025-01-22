@@ -26,12 +26,11 @@ functions exposed in its API. The component is currently fully functional on Win
    - Implementations of event handler infastructure (registration/unregistration) using the `[OpenMpEventHandler]`
    attribute  
    - P/Invokes + marshalling of functions exposed in the open.mp api using the `[OpenMpApi]` attribute  
-   - (TODO) An `OnInit` entry point for the open.mp to invoke. The entry point should have a fixed namespace, class and
+   - An `Initialize` entry point for the open.mp to invoke. The entry point should have a fixed namespace, class and
    method name and should wire up the communication between the open.mp component and the .NET portion of SampSharp. It
-   should also generate a `Main` entry point. This entry point should either be empty or provide a consosle message that
-   the game mode should be launched through open.mp. The `Main` entry point is r eqquire in order for .NET to write a
-   runtimeconfig which we need to run the gamemode. The entry point generator has not be implemented yet. A manually
-   written entry point currrently resides in the `Interop` class.  
+   should also generate a `Main` entry point. This entry point should either be empty or provide a console message that
+   the game mode should be launched through open.mp. The `Main` entry point is required in order for .NET to write a
+   runtimeconfig which we need to run the gamemode.
 4) (TODO) The analyzer provides useful diagnostics for helping writing proper SampSharp code that interfaces with
 open.mp. It should provide warnings/errors when the written code cannot be marshalled or no P/Invoke can be generated.  
 5) The SampSharp.OpenMp.Core provides the open.mp API and data structures in .NET. These APIs are usable but not as
@@ -103,25 +102,7 @@ dotnet build SampSharp.sln
 ```
 
 #### .NET libraries (run/develop on Windows)
-- Setup the launchSettings.json:
-  - Navigate to `src/SampSharp.OpenMp.Core/Properties/launchSettings.json`.
-  - Replace the content with te following configuration and replace the `executablePath` and `workingDirectory` values:
-```
-{
-    "profiles": {
-    "SampSharp.OpenMp.Core": {
-        "commandName": "Project"
-    },
-    "open.mp": {
-        "commandName": "Executable",
-        "executablePath": "C:\\path\\to\\openmp_x64_server\\omp-server.exe",
-        "workingDirectory": "C:\\path\\to\\openmp_x64_server\\",
-        "commandLineArgs": "-c sampsharp.folder=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
-    }
-    }
-}
-```
-
-- Build the dotnet project and run the open.mp server
   - Open the `<root>/SampSharp.sln` file with the Visual Studio
+  - Launch a `TestMode.*` project
+  - The application will ask whether you'd like SampSharp to create a `launchSettings.json` file for you. Press `y` and enter the path to your open.mp server
   - Run the `open.mp` profile on VS
