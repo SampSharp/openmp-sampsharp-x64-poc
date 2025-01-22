@@ -16,6 +16,7 @@ public static class AttributeFactory
     private const string SkipLocalsInitFQN = "global::System.Runtime.CompilerServices.SkipLocalsInitAttribute";
     private static readonly string DllImportFQN = $"global::{typeof(DllImportAttribute).FullName}";
     private static readonly string CallingConventionFQN = $"global::{typeof(CallingConvention).FullName}";
+    private const string UnmanagedCallersOnlyFQN = "global::System.Runtime.InteropServices.UnmanagedCallersOnlyAttribute";
 
     public static AttributeListSyntax GeneratedCode()
     {
@@ -38,13 +39,21 @@ public static class AttributeFactory
                                         Literal(assemblyName.Version.ToString())))
                             ])))));
     }
-
+    
     public static AttributeListSyntax SkipLocalsInit()
     {
         return AttributeList(
             SingletonSeparatedList(
                 Attribute(
                     ParseName(SkipLocalsInitFQN))));
+    }
+
+    public static AttributeListSyntax UnmanagedCallersOnly()
+    {
+        return AttributeList(
+            SingletonSeparatedList(
+                Attribute(
+                    ParseName(UnmanagedCallersOnlyFQN))));
     }
 
     public static AttributeListSyntax DllImport(string library, string entryPoint, CallingConvention callingConvention = CallingConvention.Cdecl)

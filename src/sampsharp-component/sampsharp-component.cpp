@@ -83,8 +83,9 @@ void SampSharpComponent::onInit(IComponentList* components)
 	}
 
 	SampSharpInfo info { sizeof(SampSharpInfo), VERSION_API, componentVersion() };
+	SampSharpInitParams init { core_, components, &info };
 	
-	on_init(core_, components, &info);
+	on_init(init);
 }
 
 void SampSharpComponent::onReady()

@@ -19,7 +19,20 @@ struct SampSharpInfo
 	SemanticVersion version; 
 };
 
-typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(ICore *, IComponentList *, SampSharpInfo *);
+
+struct SampSharpInitParams
+{
+	SampSharpInitParams(ICore * core, IComponentList * componentList, SampSharpInfo * info) :
+		core(core),
+		componentList(componentList),
+		info(info) { }
+
+	ICore * core;
+	IComponentList * componentList;
+	SampSharpInfo * info;
+};
+
+typedef void (CORECLR_DELEGATE_CALLTYPE *on_init_fn)(SampSharpInitParams);
 typedef void (CORECLR_DELEGATE_CALLTYPE *on_cleanup_fn)();
 
 struct ISampSharpComponent : IComponent

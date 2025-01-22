@@ -1,42 +1,26 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices;
+using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 
-namespace SampSharp.OpenMp.Core;
+namespace TestMode.OpenMp.Core;
 
-public class Interop : 
+public class Startup : IStartup,
     ICoreEventHandler,
     IConsoleEventHandler
 {
-    private static ICore _core;
-    private static IVehiclesComponent _vehicles;
-    private static IPlayerPool _players;
+    private IVehiclesComponent _vehicles;
 
-    public void OnTick(Microseconds micros, TimePoint now)
+    public void Initialize(StartupContext context)
     {
-    }
-
-    [UnmanagedCallersOnly]
-    public static void Cleanup()
-    {
-
-    }
-
-    [UnmanagedCallersOnly]
-    public static void Initialize(ICore core, IComponentList componentList, BlittableStructRef<SampSharpInfo> info)
-    {
-        _core = core;
-
         Console.WriteLine("OnInit from managed c# code!");
 
-        var infoValue = info.GetValue();
-        Console.WriteLine($"Component version: {infoValue.Version}");
-        Console.WriteLine($"size {infoValue.Size.Value} api {infoValue.ApiVersion}");
-        Console.WriteLine($"Network bit stream version: {core.GetNetworkBitStreamVersion()}");
+        Console.WriteLine($"Component version: {context.Info.Version}");
+        Console.WriteLine($"size {context.Info.Size.Value} api {context.Info.ApiVersion}");
+        Console.WriteLine($"Network bit stream version: {context.Core.GetNetworkBitStreamVersion()}");
 
-        Console.WriteLine($"core version: {core.GetVersion()}");
+        Console.WriteLine($"core version: {context.Core.GetVersion()}");
 
-        var cfg = core.GetConfig();
+        var cfg = context.Core.GetConfig();
 
         // test config
         var name = cfg.GetString("name");
@@ -59,29 +43,23 @@ public class Interop :
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
-        _vehicles = componentList.QueryComponent<IVehiclesComponent>();
+        _vehicles = context.ComponentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
-        var players = core.GetPlayers();
-        _players = players;
-        var handler = new Interop();
-
-        var dispatcher = core.GetEventDispatcher();
+        var dispatcher = context.Core.GetEventDispatcher();
         Console.WriteLine($"COUNT before:::::::::::::::::::::::::::: {dispatcher.Count()}");
-        dispatcher.AddEventHandler(handler);
+        dispatcher.AddEventHandler(this);
         Console.WriteLine($"COUNT after:::::::::::::::::::::::::::: {dispatcher.Count()}");
 
-        componentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(handler);
+        context.ComponentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(this);
 
         var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
         v.GetColour(out var vcol);
         Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
     }
 
-    // need an entry point to build runtime config for this application
-    public static void Main()
+    public void OnTick(Microseconds micros, TimePoint now)
     {
-        /*nop*/
     }
     
     public bool OnConsoleText(string command, string parameters, ref ConsoleCommandSenderData sender)

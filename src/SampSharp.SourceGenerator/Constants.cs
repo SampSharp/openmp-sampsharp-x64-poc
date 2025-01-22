@@ -126,4 +126,7 @@ public static class Constants
     /// </summary>
     public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.Api.StringViewMarshaller";
 
+
+    public const string StartupContextFQN = "SampSharp.OpenMp.Core.StartupContext";
+    public const string InitParamsFQN = "SampSharp.OpenMp.Core.SampSharpInitParams";
 }
