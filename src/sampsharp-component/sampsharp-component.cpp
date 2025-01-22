@@ -1,7 +1,7 @@
 #include "sampsharp-component.hpp"
 #include "version.hpp"
 
-#define CFG_FOLDER "sampsharp.folder"
+#define CFG_DIRECTORY "sampsharp.directory"
 #define CFG_ASSEMBLY "sampsharp.assembly"
 #define CFG_ENTRY_POINT_TYPE "sampsharp.entry_point_type"
 #define CFG_ENTRY_POINT_METHOD "sampsharp.entry_point_method"
@@ -31,9 +31,9 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
             config.setString(key, value); \
         }
 	
-	initConfigString(CFG_FOLDER, "gamemode");
+	initConfigString(CFG_DIRECTORY, "gamemode");
 	initConfigString(CFG_ASSEMBLY, "GameMode");
-	initConfigString(CFG_ENTRY_POINT_TYPE, "SampSharp.OpenMp.Core.Interop");
+	initConfigString(CFG_ENTRY_POINT_TYPE, "SampSharp.Entrypoint");
 	initConfigString(CFG_ENTRY_POINT_METHOD, "Initialize");
 	initConfigString(CFG_CLEANUP_METHOD, "Cleanup");
 }
@@ -42,7 +42,7 @@ void SampSharpComponent::onInit(IComponentList* components)
 {
 	const IConfig& config = core_->getConfig();
 
-	const auto folder = config.getString(CFG_FOLDER);
+	const auto directory = config.getString(CFG_DIRECTORY);
 	const auto assembly = config.getString(CFG_ASSEMBLY);
 	const auto entry_point_type = config.getString(CFG_ENTRY_POINT_TYPE);
 	const auto entry_point_method = config.getString(CFG_ENTRY_POINT_METHOD);
@@ -60,9 +60,9 @@ void SampSharpComponent::onInit(IComponentList* components)
 		return;
 	}
 
-    if(!managed_host_.loadFor(folder, assembly, &error))
+    if(!managed_host_.loadFor(directory, assembly, &error))
 	{
-		core_->logLn(Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.runtimeconfig.json' file available? Is the .NET runtime available?", folder.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(Error, "Failed to initialize the .NET runtime for '%s/%s'. Is the '*.runtimeconfig.json' file available? Is the .NET runtime available?", directory.to_string().c_str(), assembly.to_string().c_str());
 		core_->logLn(Error, "Error message: %s", error);
 		return;
 	}

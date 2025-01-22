@@ -73,10 +73,10 @@ public class EntryPointSourceGenerator : IIncrementalGenerator
         var unit = CompilationUnit()
             .WithMembers(
                 SingletonList<MemberDeclarationSyntax>(
-                    NamespaceDeclaration(ParseName("SampSharp.OpenMp.Core"))
+                    NamespaceDeclaration(ParseName("SampSharp"))
                     .WithMembers(
                         SingletonList<MemberDeclarationSyntax>(
-                            ClassDeclaration("Interop")
+                            ClassDeclaration("Entrypoint")
                             .WithModifiers(
                                 TokenList(
                                     Token(SyntaxKind.PublicKeyword), 
@@ -147,16 +147,7 @@ public class EntryPointSourceGenerator : IIncrementalGenerator
                                                     Parameter(
                                                             Identifier("inf"))
                                                     .WithType(
-                                                        QualifiedName(
-                                                            QualifiedName(
-                                                                QualifiedName(
-                                                                    AliasQualifiedName(
-                                                                        IdentifierName(
-                                                                            Token(SyntaxKind.GlobalKeyword)),
-                                                                        IdentifierName("SampSharp")),
-                                                                    IdentifierName("OpenMp")),
-                                                                IdentifierName("Core")),
-                                                            IdentifierName("SampSharpInitParams"))))))
+                                                        TypeNameGlobal(Constants.InitParamsFQN)))))
                                         .WithBody(
                                             Block(
                                                 ExpressionStatement(
