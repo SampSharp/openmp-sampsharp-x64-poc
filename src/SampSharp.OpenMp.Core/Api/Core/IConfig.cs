@@ -65,11 +65,11 @@ public readonly partial struct IConfig
     public partial bool IsBanned(BanEntry entry);
 
     [OpenMpApiFunction("getNameFromAlias")]
-    private partial Pair<BlittableBoolean, StringView> GetNameFromAliasImpl(string alias);
+    private partial void GetNameFromAliasImpl(string alias, out Pair<BlittableBoolean, StringView> result);
 
     public (bool, string?) GetNameFromAlias(string alias)
     {
-        var pair = GetNameFromAliasImpl(alias);
+        GetNameFromAliasImpl(alias, out var pair);
         return (pair.First, pair.Second);
     }
 

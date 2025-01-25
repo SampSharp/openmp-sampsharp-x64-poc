@@ -22,10 +22,17 @@
 
 #include "proxy-api.hpp"
 
+#ifdef __clang__
 #pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreturn-type-c-linkage" // <FUNC> has C-linkage specified, but returns user-defined type '<TYPE>' which is incompatible with C [-Wreturn-type-c-linkage]
+#endif
 
-// func has C-linkage specified, but returns user-defined type 'ITextDrawBase &' which is incompatible with C [-Wreturn-type-c-linkage]
- #pragma clang diagnostic ignored "-Wreturn-type-c-linkage" 
+#ifdef _MSC_VER
+#  pragma warning(push)
+#  pragma warning(disable: 4190) // <FUNC> has C-linkage specified, but returns UDT '<TYPE>' which is incompatible with C
+#endif
+
+
 
 // Type aliases to prevent them from breaking proxy macros
 using IntPair = Pair<int, int>;
@@ -544,7 +551,7 @@ PROXY(IConfig, void, writeBans);
 PROXY(IConfig, void, reloadBans);
 PROXY(IConfig, void, clearBans);
 PROXY(IConfig, bool, isBanned, BanEntry&);
-PROXY(IConfig, BoolStringPair, getNameFromAlias, StringView);
+PROXY_PTR(IConfig, BoolStringPair, getNameFromAlias, StringView);
 PROXY(IConfig, void, enumOptions, OptionEnumeratorCallback&);
 PROXY(IConfig, bool *, getBool, StringView);
 
@@ -704,7 +711,7 @@ PROXY(IPlayer, void, unsetMapIcon, int);
 PROXY(IPlayer, void, useStuntBonuses, bool);
 PROXY(IPlayer, void, toggleOtherNameTag, IPlayer&, bool);
 PROXY(IPlayer, void, setTime, Hours, Minutes);
-PROXY(IPlayer, HoursMinutesPair, getTime);
+PROXY_PTR(IPlayer, HoursMinutesPair, getTime);
 PROXY(IPlayer, void, useClock, bool);
 PROXY(IPlayer, bool, hasClock);
 PROXY(IPlayer, void, useWidescreen, bool);
@@ -793,7 +800,7 @@ PROXY(IPlayerPool, void, hideGameTextForAll, int);
 PROXY(IPlayerPool, void, sendDeathMessageToAll, IPlayer*, IPlayer&, int);
 PROXY(IPlayerPool, void, sendEmptyDeathMessageToAll);
 PROXY(IPlayerPool, void, createExplosionForAll, Vector3, int, float);
-PROXY(IPlayerPool, NewConnectionPlayerPair, requestPlayer, const PeerNetworkData&, const PeerRequestParams&);
+PROXY_PTR(IPlayerPool, NewConnectionPlayerPair, requestPlayer, const PeerNetworkData&, const PeerRequestParams&);
 PROXY(IPlayerPool, void, broadcastPacket, Span<uint8_t>, int, const IPlayer*, bool);
 PROXY(IPlayerPool, void, broadcastRPC, int, Span<uint8_t>, int, const IPlayer*, bool);
 PROXY(IPlayerPool, bool, isNameValid, StringView);
@@ -903,21 +910,24 @@ extern "C" SDK_EXPORT void __CDECL PoolEventHandlerImpl_delete(const PoolEventHa
     delete handler;
 }
 
-// FlatPtrHashSet<void *>
-extern "C" SDK_EXPORT FlatPtrHashSet<void *>::iterator __CDECL FlatPtrHashSet_begin(FlatPtrHashSet<void *>& set)
+struct FlatHashSetPtr { void* a; void* b; };
+
+extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatPtrHashSet_begin(FlatPtrHashSet<void *>& set)
 {
-    return set.begin();
+    auto it = set.begin();;
+    return *(FlatHashSetPtr*)&it;
 }
 
-extern "C" SDK_EXPORT FlatPtrHashSet<void *>::iterator __CDECL FlatPtrHashSet_end(FlatPtrHashSet<void *>& set)
+extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatPtrHashSet_end(FlatPtrHashSet<void *>& set)
 {
-    return set.end();
+    auto it = set.end();
+    return *(FlatHashSetPtr*)&it;
 }
 
-extern "C" SDK_EXPORT FlatPtrHashSet<void *>::iterator __CDECL FlatPtrHashSet_inc(FlatPtrHashSet<void *>::iterator value)
+extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatPtrHashSet_inc(FlatPtrHashSet<void *>::iterator value)
 {
     value++;
-    return value;
+    return *(FlatHashSetPtr*)&value;
 }
 
 extern "C" SDK_EXPORT size_t  __CDECL FlatPtrHashSet_size(FlatPtrHashSet<void *>& set)
@@ -925,21 +935,22 @@ extern "C" SDK_EXPORT size_t  __CDECL FlatPtrHashSet_size(FlatPtrHashSet<void *>
     return set.size();
 }
 
-// FlatHashSet<StringView>
-extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_begin(FlatHashSet<StringView>& set)
+extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatHashSetStringView_begin(FlatHashSet<StringView>& set)
 {
-    return set.begin();
+    auto it = set.begin();
+    return *(FlatHashSetPtr*)&it;
 }
 
-extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_end(FlatHashSet<StringView>& set)
+extern "C" SDK_EXPORT struct FlatHashSetPtr __CDECL FlatHashSetStringView_end(FlatHashSet<StringView>& set)
 {
-    return set.end();
+    auto it = set.end();
+    return *(FlatHashSetPtr*)&it;
 }
 
-extern "C" SDK_EXPORT FlatHashSet<StringView>::iterator __CDECL FlatHashSetStringView_inc(FlatHashSet<StringView>::iterator value)
+extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatHashSetStringView_inc(FlatHashSet<StringView>::iterator value)
 {
     value++;
-    return value;
+    return *(FlatHashSetPtr*)&value;
 }
 
 extern "C" SDK_EXPORT size_t  __CDECL FlatHashSetStringView_size(FlatHashSet<StringView>& set)
@@ -973,4 +984,10 @@ extern "C" SDK_EXPORT size_t __CDECL IEventDispatcher_count(const IEventDispatch
     return dispatcher.count();
 }
 
-#pragma clang diagnostic pop
+#ifdef __clang__
+#  pragma clang diagnostic pop
+#endif
+
+#ifdef _MSC_VER
+#  pragma warning(pop)
+#endif

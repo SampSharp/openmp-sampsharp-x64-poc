@@ -5,40 +5,40 @@
 //
 
 // expand variadic args as a numbered parameter list. e.g. _EXPAND_PARAM(a, b, X, Y) -> aXb _2, aYb _1
-#define _EXPAND_PARAM(prefix,postfix,...) _EXPAND_PARAM_N(__VA_ARGS__,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)(prefix,postfix,__VA_ARGS__)
+#define _EXPAND_PARAM(prefix,postfix,...) _EXPAND_PARAM_N(__VA_ARGS__,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)(prefix,postfix,##__VA_ARGS__)
 #define _EXPAND_PARAM_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, n, ...) _EXPAND_PARAM ## n
 #define _EXPAND_PARAM1(prefix, postfix, type, ...) prefix##type##postfix _1
-#define _EXPAND_PARAM2(prefix, postfix, type, ...) prefix##type##postfix _2, _EXPAND_PARAM1(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM3(prefix, postfix, type, ...) prefix##type##postfix _3, _EXPAND_PARAM2(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM4(prefix, postfix, type, ...) prefix##type##postfix _4, _EXPAND_PARAM3(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM5(prefix, postfix, type, ...) prefix##type##postfix _5, _EXPAND_PARAM4(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM6(prefix, postfix, type, ...) prefix##type##postfix _6, _EXPAND_PARAM5(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM7(prefix, postfix, type, ...) prefix##type##postfix _7, _EXPAND_PARAM6(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM8(prefix, postfix, type, ...) prefix##type##postfix _8, _EXPAND_PARAM7(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM9(prefix, postfix, type, ...) prefix##type##postfix _9, _EXPAND_PARAM8(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM10(prefix, postfix, type, ...) prefix##type##postfix _10, _EXPAND_PARAM10(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM11(prefix, postfix, type, ...) prefix##type##postfix _11, _EXPAND_PARAM11(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM12(prefix, postfix, type, ...) prefix##type##postfix _12, _EXPAND_PARAM12(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM13(prefix, postfix, type, ...) prefix##type##postfix _13, _EXPAND_PARAM13(prefix, postfix, __VA_ARGS__)
-#define _EXPAND_PARAM14(prefix, postfix, type, ...) prefix##type##postfix _14, _EXPAND_PARAM14(prefix, postfix, __VA_ARGS__)
+#define _EXPAND_PARAM2(prefix, postfix, type, ...) prefix##type##postfix _2, _EXPAND_PARAM1(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM3(prefix, postfix, type, ...) prefix##type##postfix _3, _EXPAND_PARAM2(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM4(prefix, postfix, type, ...) prefix##type##postfix _4, _EXPAND_PARAM3(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM5(prefix, postfix, type, ...) prefix##type##postfix _5, _EXPAND_PARAM4(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM6(prefix, postfix, type, ...) prefix##type##postfix _6, _EXPAND_PARAM5(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM7(prefix, postfix, type, ...) prefix##type##postfix _7, _EXPAND_PARAM6(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM8(prefix, postfix, type, ...) prefix##type##postfix _8, _EXPAND_PARAM7(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM9(prefix, postfix, type, ...) prefix##type##postfix _9, _EXPAND_PARAM8(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM10(prefix, postfix, type, ...) prefix##type##postfix _10, _EXPAND_PARAM10(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM11(prefix, postfix, type, ...) prefix##type##postfix _11, _EXPAND_PARAM11(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM12(prefix, postfix, type, ...) prefix##type##postfix _12, _EXPAND_PARAM12(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM13(prefix, postfix, type, ...) prefix##type##postfix _13, _EXPAND_PARAM13(prefix, postfix, ##__VA_ARGS__)
+#define _EXPAND_PARAM14(prefix, postfix, type, ...) prefix##type##postfix _14, _EXPAND_PARAM14(prefix, postfix, ##__VA_ARGS__)
 
 // expand variadic args as a numbered argument list. e.g. _EXPAND_ARG(,X, Y) -> _2, _1
-#define _EXPAND_ARG(prefix, ...) _EXPAND_ARG_N(__VA_ARGS__,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)(prefix,__VA_ARGS__)
+#define _EXPAND_ARG(prefix, ...) _EXPAND_ARG_N(__VA_ARGS__,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)(prefix,##__VA_ARGS__)
 #define _EXPAND_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, n, ...) _EXPAND_ARG ## n
 #define _EXPAND_ARG1(prefix,type, ...) prefix _1
-#define _EXPAND_ARG2(prefix,type, ...) prefix _2, _EXPAND_ARG1(prefix,__VA_ARGS__)
-#define _EXPAND_ARG3(prefix,type, ...) prefix _3, _EXPAND_ARG2(prefix,__VA_ARGS__)
-#define _EXPAND_ARG4(prefix,type, ...) prefix _4, _EXPAND_ARG3(prefix,__VA_ARGS__)
-#define _EXPAND_ARG5(prefix,type, ...) prefix _5, _EXPAND_ARG4(prefix,__VA_ARGS__)
-#define _EXPAND_ARG6(prefix,type, ...) prefix _6, _EXPAND_ARG5(prefix,__VA_ARGS__)
-#define _EXPAND_ARG7(prefix,type, ...) prefix _7, _EXPAND_ARG6(prefix,__VA_ARGS__)
-#define _EXPAND_ARG8(prefix,type, ...) prefix _8, _EXPAND_ARG7(prefix,__VA_ARGS__)
-#define _EXPAND_ARG9(prefix,type, ...) prefix _9, _EXPAND_ARG8(prefix,__VA_ARGS__)
-#define _EXPAND_ARG10(prefix,type, ...) prefix _10, _EXPAND_ARG9(prefix,__VA_ARGS__)
-#define _EXPAND_ARG11(prefix,type, ...) prefix _11, _EXPAND_ARG10(prefix,__VA_ARGS__)
-#define _EXPAND_ARG12(prefix,type, ...) prefix _12, _EXPAND_ARG11(prefix,__VA_ARGS__)
-#define _EXPAND_ARG13(prefix,type, ...) prefix _13, _EXPAND_ARG12(prefix,__VA_ARGS__)
-#define _EXPAND_ARG14(prefix,type, ...) prefix _14, _EXPAND_ARG13(prefix,__VA_ARGS__)
+#define _EXPAND_ARG2(prefix,type, ...) prefix _2, _EXPAND_ARG1(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG3(prefix,type, ...) prefix _3, _EXPAND_ARG2(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG4(prefix,type, ...) prefix _4, _EXPAND_ARG3(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG5(prefix,type, ...) prefix _5, _EXPAND_ARG4(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG6(prefix,type, ...) prefix _6, _EXPAND_ARG5(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG7(prefix,type, ...) prefix _7, _EXPAND_ARG6(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG8(prefix,type, ...) prefix _8, _EXPAND_ARG7(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG9(prefix,type, ...) prefix _9, _EXPAND_ARG8(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG10(prefix,type, ...) prefix _10, _EXPAND_ARG9(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG11(prefix,type, ...) prefix _11, _EXPAND_ARG10(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG12(prefix,type, ...) prefix _12, _EXPAND_ARG11(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG13(prefix,type, ...) prefix _13, _EXPAND_ARG12(prefix,##__VA_ARGS__)
+#define _EXPAND_ARG14(prefix,type, ...) prefix _14, _EXPAND_ARG13(prefix,##__VA_ARGS__)
 
 /// expand variadic args as a numbered initializer list. e.g. _EXPAND_INIT(X, Y) -> X_(_2), Y_(_1)
 #define _EXPAND_INIT(...) _EXPAND_INIT_N(__VA_ARGS__,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0)(__VA_ARGS__)
@@ -60,19 +60,19 @@
 
 #define __PROXY_IMPL(type_subject, type_return, method, proxy_name, ...) \
     extern "C" SDK_EXPORT type_return __CDECL \
-    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__))) \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__))) \
     { \
         return subject -> method ( \
-            __VA_OPT__(_EXPAND_ARG(,__VA_ARGS__)) \
+            __VA_OPT__(_EXPAND_ARG(,##__VA_ARGS__)) \
         ); \
     }
 
 #define __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, proxy_name, ...) \
     extern "C" SDK_EXPORT void __CDECL \
-    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__)), type_return * result) \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__)), type_return * result) \
     { \
         *result = subject -> method ( \
-            __VA_OPT__(_EXPAND_ARG(,__VA_ARGS__)) \
+            __VA_OPT__(_EXPAND_ARG(,##__VA_ARGS__)) \
         ); \
     }
 
@@ -127,7 +127,7 @@
     }; \
     extern "C" SDK_EXPORT handler_type##Impl* __CDECL handler_type##Impl_create(_EXPAND_ARG(void**, __VA_ARGS__)) \
     { \
-        return new handler_type##Impl(_EXPAND_ARG(,__VA_ARGS__)); \
+        return new handler_type##Impl(_EXPAND_ARG(,##__VA_ARGS__)); \
     } \
     extern "C" SDK_EXPORT void __CDECL handler_type##Impl_delete(handler_type##Impl* handler) \
     { \
@@ -142,5 +142,5 @@
     public: \
     type_return name(_EXPAND_PARAM(, , __VA_ARGS__)) override \
     { \
-        return ((name##_fn)name##_)(_EXPAND_ARG(,__VA_ARGS__)); \
+        return ((name##_fn)name##_)(_EXPAND_ARG(,##__VA_ARGS__)); \
     }

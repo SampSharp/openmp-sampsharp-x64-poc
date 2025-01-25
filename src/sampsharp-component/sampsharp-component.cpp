@@ -77,7 +77,7 @@ void SampSharpComponent::onInit(IComponentList* components)
 	
 	if(!managed_host_.getEntryPoint(full_entry_point, cleanup_method, reinterpret_cast<void**>(&on_cleanup_), &error))
 	{
-		core_->logLn(Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), entry_point_method.to_string().c_str(), assembly.to_string().c_str());
+		core_->logLn(Error, "The entrypoint '%s.%s, %s' could not be found.", entry_point_type.to_string().c_str(), cleanup_method.to_string().c_str(), assembly.to_string().c_str());
 		core_->logLn(Error, "Error message: %s", error);
 		return;
 	}

@@ -77,7 +77,7 @@ public readonly partial struct IPlayer
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
     public partial void SetTime(int hr, int min);
-    public partial Pair<int, int> GetTime();
+    public partial void GetTime(out Pair<int, int> result);
     public partial void UseClock(bool enable);
     public partial bool HasClock();
     public partial void UseWidescreen(bool enable);
