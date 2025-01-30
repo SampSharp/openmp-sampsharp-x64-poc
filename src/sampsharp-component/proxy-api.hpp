@@ -1,5 +1,12 @@
 #pragma once
 
+
+#if defined(_WIN32)
+    #define API_CALLTYPE __stdcall
+#else
+    #define API_CALLTYPE
+#endif
+
 //
 // macros for definition of exported proxy functions
 //
@@ -137,7 +144,7 @@
 /// event handler function in event handler proxy class
 #define PROXY_EVENT_HANDLER_EVENT(type_return, name, ...) \
     private: \
-    typedef type_return(CORECLR_DELEGATE_CALLTYPE * name##_fn)(_EXPAND_PARAM(, , __VA_ARGS__)); \
+    typedef type_return(API_CALLTYPE * name##_fn)(_EXPAND_PARAM(, , __VA_ARGS__)); \
     void** name##_ = nullptr; \
     public: \
     type_return name(_EXPAND_PARAM(, , __VA_ARGS__)) override \
