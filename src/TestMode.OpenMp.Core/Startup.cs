@@ -6,7 +6,8 @@ namespace TestMode.OpenMp.Core;
 
 public class Startup : IStartup,
     ICoreEventHandler,
-    IConsoleEventHandler
+    IConsoleEventHandler, 
+    IPlayerPoolEventHandler
 {
     private IVehiclesComponent _vehicles;
 
@@ -56,6 +57,12 @@ public class Startup : IStartup,
         var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
         v.GetColour(out var vcol);
         Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
+
+        var pool = context.Core.GetPlayers().GetPoolEventDispatcher();
+        Console.WriteLine("count before " + pool.Count());
+        pool.AddEventHandler(this);
+        Console.WriteLine("count after " + pool.Count());
+        
     }
 
     public void OnTick(Microseconds micros, TimePoint now)
@@ -82,5 +89,15 @@ public class Startup : IStartup,
     public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
     {
         commands.Emplace("banana");
+    }
+
+    public void OnPoolEntryCreated(IPlayer entry)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void OnPoolEntryDestroyed(IPlayer entry)
+    {
+        throw new NotImplementedException();
     }
 }

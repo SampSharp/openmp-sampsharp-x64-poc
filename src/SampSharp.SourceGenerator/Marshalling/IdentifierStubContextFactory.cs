@@ -23,25 +23,35 @@ public class IdentifierStubContextFactory
 
     public IdentifierStubContext Create(IParameterSymbol parameter, MarshalDirection marshalDirection)
     {
-        var customMarshaller = _customMarshallerTypeDetector.GetCustomMarshaller(parameter, marshalDirection);
+        return Create(parameter, parameter.Type, marshalDirection);
+    }
+
+    public IdentifierStubContext Create(IParameterSymbol parameter, ITypeSymbol type, MarshalDirection marshalDirection)
+    {
+        var customMarshaller = _customMarshallerTypeDetector.GetCustomMarshaller(parameter, type, marshalDirection);
         var (shape, nativeType) = customMarshaller == null 
-            ? (MarshallerShape.None, new ManagedType(parameter.Type))
+            ? (MarshallerShape.None, new ManagedType(type))
             : ShapeDetector.GetShapeOfMarshaller(customMarshaller);
 
         var generator = CustomMarshalGeneratorFactory.Create(shape, customMarshaller?.IsStateful);
 
-        return new IdentifierStubContext(marshalDirection, new ManagedType(parameter.Type), customMarshaller?.MarshallerType, nativeType, shape, generator, parameter.RefKind, parameter.Name);
+        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, shape, generator, parameter.RefKind, parameter.Name);
     }
 
     public IdentifierStubContext Create(IMethodSymbol method, MarshalDirection marshalDirection)
     {
-        var customMarshaller = _customMarshallerTypeDetector.GetCustomMarshaller(method, marshalDirection);
+        return Create(method, method.ReturnType, marshalDirection);
+    }
+
+    public IdentifierStubContext Create(IMethodSymbol method, ITypeSymbol type, MarshalDirection marshalDirection)
+    {
+        var customMarshaller = _customMarshallerTypeDetector.GetCustomMarshaller(method, type, marshalDirection);
         var (shape, nativeType) = customMarshaller == null 
-            ? (MarshallerShape.None, new ManagedType(method.ReturnType)) 
+            ? (MarshallerShape.None, new ManagedType(type)) 
             : ShapeDetector.GetShapeOfMarshaller(customMarshaller);
 
         var generator = CustomMarshalGeneratorFactory.Create(shape, customMarshaller?.IsStateful);
 
-        return new IdentifierStubContext(marshalDirection, new ManagedType(method.ReturnType), customMarshaller?.MarshallerType, nativeType, shape, generator, RefKind.Out, MarshallerConstants.LocalReturnValue);
+        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, shape, generator, RefKind.Out, MarshallerConstants.LocalReturnValue);
     }
 }

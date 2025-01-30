@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -7,6 +9,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Generators.Marshalling;
+using SampSharp.SourceGenerator.Generics;
 using SampSharp.SourceGenerator.Helpers;
 using SampSharp.SourceGenerator.Marshalling;
 using SampSharp.SourceGenerator.Models;
@@ -363,8 +366,15 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     private static EventInterfaceStubGenerationContext? GetInterfaceDeclaration(GeneratorAttributeSyntaxContext ctx, CancellationToken cancellationToken)
     {
         var targetNode = (InterfaceDeclarationSyntax)ctx.TargetNode;
+        
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
         {
+            return null;
+        }
+
+        if (targetNode.TypeParameterList is { Parameters.Count: > 0 })
+        {
+            // TODO: diagnostic
             return null;
         }
 
@@ -379,30 +389,35 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
         var wellKnownMarshallerTypes = WellKnownMarshallerTypes.Create(ctx.SemanticModel.Compilation);
         var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
 
+
         // filter methods: non-static
-        var methods = targetNode.Members.OfType<MethodDeclarationSyntax>()
-            .Where(x => !x.HasModifier(SyntaxKind.StaticKeyword))
-            .Select(methodDeclaration => ctx.SemanticModel.GetDeclaredSymbol(methodDeclaration, cancellationToken) is { } methodSymbol
-                ? (methodDeclaration, methodSymbol)
-                : (null, null))
-            .Where(x => x.methodSymbol != null)
-            .Select(method =>
+        var methods = InterfaceResolver.GetInterfaces(ctx.SemanticModel, targetNode)
+            .SelectMany(iface => iface.GetInstanceMethods())
+            .Select(x =>
             {
-                var parameters = method.methodSymbol!.Parameters.Select(parameter => ctxFactory.Create(parameter, MarshalDirection.UnmanagedToManaged))
-                    .ToArray();
+                var model = ctx.SemanticModel;
+                if (x.Interface.Syntax.SyntaxTree != model.SyntaxTree)
+                {
+                    model = model.Compilation.GetSemanticModel(x.Interface.Syntax.SyntaxTree);
+                }
                 
-                var returnValueContext = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
+                return model.GetDeclaredSymbol(x.Method, cancellationToken) is { } methodSymbol ? (method: x, methodSymbol) : default;
+            })
+            .Where(x => x.methodSymbol != null)
+            .Select(x =>
+            {
+                var parameters = x.methodSymbol!.Parameters.Select(parameter => ctxFactory.Create(parameter, x.method.Interface.Resolve(parameter.Type), MarshalDirection.UnmanagedToManaged))
+                    .ToArray();
 
-                var requiresMarshalling = returnValueContext.Shape != MarshallerShape.None || parameters.Any(x => x.Shape != MarshallerShape.None);
-
-                if (returnValueContext.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
+                var returnValueContext = ctxFactory.Create(x.methodSymbol, x.method.Interface.Resolve(x.methodSymbol.ReturnType), MarshalDirection.ManagedToUnmanaged);
+                if (returnValueContext.Shape != MarshallerShape.None && (x.methodSymbol.ReturnsByRef || x.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
                     // TODO: diagnostic
                     return null;
                 }
 
-                return new MarshallingStubGenerationContext(method.methodSymbol, parameters, returnValueContext, requiresMarshalling);
+                return new MarshallingStubGenerationContext(x.methodSymbol, parameters, returnValueContext);
             })
             .Where(x => x != null)
             .ToArray();

@@ -20,22 +20,22 @@ public class CustomMarshallerTypeDetector
     /// <summary>
     /// Gets the best fitting custom marshaller for the specified parameter.
     /// </summary>
-    public CustomMarshallerInfo? GetCustomMarshaller(IParameterSymbol parameter, MarshalDirection direction)
+    public CustomMarshallerInfo? GetCustomMarshaller(IParameterSymbol parameter, ITypeSymbol type, MarshalDirection direction)
     {
         var marshalUsing = parameter.GetAttribute(Constants.MarshalUsingAttributeFQN);
-        var typeMarshaller = parameter.Type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
+        var typeMarshaller = type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
 
-        var entryPoint = GetEntryPoint(typeMarshaller, marshalUsing, parameter.Type);
+        var entryPoint = GetEntryPoint(typeMarshaller, marshalUsing, type);
 
         return entryPoint == null
             ? null
-            : GetCustomMarshaller(entryPoint, parameter.Type, direction, parameter.RefKind);
+            : GetCustomMarshaller(entryPoint,  type, direction, parameter.RefKind);
     }
 
     /// <summary>
     /// Gets the best fitting custom marshaller for the return value of the specified method.
     /// </summary>
-    public CustomMarshallerInfo? GetCustomMarshaller(IMethodSymbol method, MarshalDirection direction)
+    public CustomMarshallerInfo? GetCustomMarshaller(IMethodSymbol method, ITypeSymbol type, MarshalDirection direction)
     {
         if (method.ReturnsVoid)
         {
@@ -43,13 +43,13 @@ public class CustomMarshallerTypeDetector
         }
 
         var marshalUsing = method.GetReturnTypeAttribute(Constants.MarshalUsingAttributeFQN);
-        var typeMarshaller = method.ReturnType.GetAttribute(Constants.NativeMarshallingAttributeFQN);
+        var typeMarshaller = type.GetAttribute(Constants.NativeMarshallingAttributeFQN);
 
-        var entryPoint = GetEntryPoint(typeMarshaller, marshalUsing, method.ReturnType);
+        var entryPoint = GetEntryPoint(typeMarshaller, marshalUsing, type);
 
         return entryPoint == null
             ? null
-            : GetCustomMarshaller(entryPoint, method.ReturnType, direction, RefKind.Out);
+            : GetCustomMarshaller(entryPoint, type, direction, RefKind.Out);
     }
 
     private static CustomMarshallerInfo? GetCustomMarshaller(

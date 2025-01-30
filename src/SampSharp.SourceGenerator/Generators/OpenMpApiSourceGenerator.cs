@@ -174,13 +174,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x.methodSymbol != null)
             .Select(method =>
             {
-                
-                var parameters = method.methodSymbol!.Parameters.Select(parameter => ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged))
+                var parameters = method.methodSymbol!.Parameters
+                    .Select(parameter => ctxFactory.Create(parameter, MarshalDirection.ManagedToUnmanaged))
                     .ToArray();
                 
                 var returnValueContext = ctxFactory.Create(method.methodSymbol, MarshalDirection.ManagedToUnmanaged);
-
-                var requiresMarshalling = returnValueContext.Shape != MarshallerShape.None || parameters.Any(x => x.Shape != MarshallerShape.None);
 
                 if (returnValueContext.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
@@ -189,13 +187,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     return null;
                 }
 
-
                 return new ApiMethodStubGenerationContext(
                     method.methodDeclaration!,
                     method.methodSymbol, 
                     parameters, 
                     returnValueContext,
-                    requiresMarshalling, 
                     library,
                     nativeTypeName);
             })

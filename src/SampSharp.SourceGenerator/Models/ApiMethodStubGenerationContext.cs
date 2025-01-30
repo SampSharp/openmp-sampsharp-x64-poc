@@ -9,6 +9,5 @@ public record ApiMethodStubGenerationContext(
     IMethodSymbol Symbol,
     IdentifierStubContext[] Parameters,
     IdentifierStubContext ReturnValue,
-    bool RequiresMarshalling,
     string Library,
-    string NativeTypeName) : MarshallingStubGenerationContext(Symbol, Parameters, ReturnValue, RequiresMarshalling);
+    string NativeTypeName) : MarshallingStubGenerationContext(Symbol, Parameters, ReturnValue);
