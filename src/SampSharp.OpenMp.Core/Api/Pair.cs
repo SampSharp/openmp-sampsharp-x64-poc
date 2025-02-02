@@ -2,7 +2,6 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-// TODO: check places where Pair is used as return type and see whether hidden return parameters aren't used
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct Pair<T1, T2> 
     where T1 : unmanaged 

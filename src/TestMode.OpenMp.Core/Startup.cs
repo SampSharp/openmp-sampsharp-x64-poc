@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 
@@ -58,6 +59,22 @@ public class Startup : IStartup,
         v.GetColour(out var vcol);
         Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
 
+        Console.WriteLine("add extension");
+        v.AddExtension(new Nickname("Brum"));
+
+        Console.WriteLine("get extension");
+        var nick = v.TryGetExtension<Nickname>();
+        Console.WriteLine(nick);
+
+        Console.WriteLine("remove extension");
+        v.RemoveExtension(nick);
+
+        // TODO replicate nullability in forwarding members of api struct
+        Console.WriteLine("get extension");
+        nick = v.TryGetExtension<Nickname>();
+        Console.WriteLine(nick);
+
+        
         var pool = context.Core.GetPlayers().GetPoolEventDispatcher();
         Console.WriteLine("count before " + pool.Count());
         pool.AddEventHandler(this);
@@ -93,11 +110,27 @@ public class Startup : IStartup,
 
     public void OnPoolEntryCreated(IPlayer entry)
     {
-        throw new NotImplementedException();
     }
 
     public void OnPoolEntryDestroyed(IPlayer entry)
     {
-        throw new NotImplementedException();
+    }
+}
+
+
+public class Nickname : ManagedExtensionBase<Nickname>, IManagedExtension
+{
+    public Nickname(string name)
+    {
+        Name = name;
+    }
+
+    public static UID ExtensionId => new(0xBBDD9B761EB23037);
+
+    public string Name { get; }
+
+    public override string ToString()
+    {
+        return $"{{name: {Name}}}";
     }
 }

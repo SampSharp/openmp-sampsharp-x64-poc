@@ -20,9 +20,13 @@ public static class ForwardingMembersGenerator
 
         foreach (var implementingType in ctx.ImplementingTypes)
         {
+            // only forward public ordinary methods, excluding Equals
             var implementingMethods = implementingType.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(x => !x.IsStatic && x.MethodKind == MethodKind.Ordinary && x.Name != "Equals");
+                .Where(x => !x.IsStatic && 
+                            x.MethodKind == MethodKind.Ordinary && 
+                            x.Name != "Equals" && 
+                            x.DeclaredAccessibility == Accessibility.Public);
 
             foreach (var implementingMethod in implementingMethods)
             {
@@ -55,8 +59,7 @@ public static class ForwardingMembersGenerator
                         implementingMethod.TypeParameters
                             .Select(x => TypeParameterConstraintClause(IdentifierName(x.Name))
                                 .WithConstraints(
-                                    SeparatedList(
-                                        x.ConstraintTypes.Select(y => (TypeParameterConstraintSyntax)ToTypeConstraint(y)))))));    
+                                    ToConstraintList(x)))));    
 
                 var invocation =  
                     InvocationExpression(
@@ -105,8 +108,43 @@ public static class ForwardingMembersGenerator
         return result;
     }
 
-    private static TypeConstraintSyntax ToTypeConstraint(ITypeSymbol typeSymbol)
+    private static SeparatedSyntaxList<TypeParameterConstraintSyntax> ToConstraintList(ITypeParameterSymbol x)
     {
+        var result = SeparatedList<TypeParameterConstraintSyntax>();
+
+        if (x.HasReferenceTypeConstraint)
+        {
+            result = result.Add(ClassOrStructConstraint(SyntaxKind.ClassConstraint));
+        }
+        
+        if (x.HasValueTypeConstraint)
+        {
+            result = result.Add(ClassOrStructConstraint(SyntaxKind.StructConstraint));
+        }
+
+        if (x.HasNotNullConstraint)
+        {
+            result = result.Add(TypeConstraint(IdentifierName("notnull")));
+        }
+        
+        if (x.HasUnmanagedTypeConstraint)
+        {
+            result = result.Add(TypeConstraint(IdentifierName("unmanaged")));
+        }
+
+        result = result.AddRange(x.ConstraintTypes.Select(ToTypeConstraint));
+        
+        if (x.HasConstructorConstraint)
+        {
+            result = result.Add(ClassOrStructConstraint(SyntaxKind.ConstructorConstraint));
+        }
+
+        return result;
+    }
+
+    private static TypeParameterConstraintSyntax ToTypeConstraint(ITypeSymbol typeSymbol)
+    {
+
         var typeSyntax = ParseTypeName(typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
 
         return TypeConstraint(typeSyntax);

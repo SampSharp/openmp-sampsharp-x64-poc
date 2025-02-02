@@ -876,7 +876,6 @@ PROXY_EVENT_HANDLER_END(PlayerUpdateEventHandler, onPlayerUpdate)
 
 PROXY_EVENT_DISPATCHER_TYPE(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHandler, getPoolEventDispatcher);
 
-
 #ifdef __clang__
 #  pragma clang diagnostic pop
 #endif

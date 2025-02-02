@@ -1,12 +1,12 @@
 
 #include <sdk.hpp>
 
-#include <coreclr_delegates.h>
+#include "../proxy-api.hpp"
 
 // PoolEventHandler<void *>
 class PoolEventHandlerImpl final : PoolEventHandler<void *>
 {
-    typedef void(CORECLR_DELEGATE_CALLTYPE * handle_fn)(void *&);
+    typedef void(API_CALLTYPE * handle_fn)(void *&);
 
     handle_fn onPoolEntryCreated_;
     handle_fn onPoolEntryDestroyed_;
