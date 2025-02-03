@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 
@@ -64,7 +63,7 @@ public class Startup : IStartup,
 
         Console.WriteLine("get extension");
         var nick = v.TryGetExtension<Nickname>();
-        Console.WriteLine(nick);
+        Console.WriteLine((nick?.ToString() ?? "null"));
 
         Console.WriteLine("remove extension");
         v.RemoveExtension(nick);
@@ -72,7 +71,7 @@ public class Startup : IStartup,
         // TODO replicate nullability in forwarding members of api struct
         Console.WriteLine("get extension");
         nick = v.TryGetExtension<Nickname>();
-        Console.WriteLine(nick);
+        Console.WriteLine((nick?.ToString() ?? "null"));
 
         
         var pool = context.Core.GetPlayers().GetPoolEventDispatcher();
@@ -118,14 +117,13 @@ public class Startup : IStartup,
 }
 
 
-public class Nickname : ManagedExtensionBase<Nickname>, IManagedExtension
+[Extension(0xBBDD9B761EB23037)]
+public class Nickname : Extension
 {
     public Nickname(string name)
     {
         Name = name;
     }
-
-    public static UID ExtensionId => new(0xBBDD9B761EB23037);
 
     public string Name { get; }
 
