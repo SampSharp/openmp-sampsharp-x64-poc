@@ -27,7 +27,7 @@ public static class EqualityMembersGenerator
                     Parameter(
                         Identifier("obj"))
                     .WithType(
-                            ObjectType))))
+                            NullableType(ObjectType)))))
         .WithBody(
             Block(
                 IfStatement(

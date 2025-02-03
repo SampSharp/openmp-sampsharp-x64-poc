@@ -5,7 +5,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IExtensible))]
 public readonly partial struct IConfig
 {
-    public partial string GetString(string key);
+    public partial string? GetString(string key);
     
     public partial ref int GetInt(string key);
     
@@ -47,7 +47,7 @@ public readonly partial struct IConfig
 
     public partial Size GetBansCount();
 
-    public partial BanEntry GetBan(Size index);
+    public partial BanEntry? GetBan(Size index);
 
     public partial void AddBan(BanEntry entry);
     

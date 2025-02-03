@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
+using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
@@ -23,15 +24,16 @@ public static class ForwardingMembersGenerator
             // only forward public ordinary methods, excluding Equals
             var implementingMethods = implementingType.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(x => !x.IsStatic && 
-                            x.MethodKind == MethodKind.Ordinary && 
-                            x.Name != "Equals" && 
-                            x.DeclaredAccessibility == Accessibility.Public);
+                .Where(x => !x.IsStatic && x.MethodKind == MethodKind.Ordinary && x.Name != "Equals" && x.DeclaredAccessibility == Accessibility.Public)
+                .ToList();
 
-            foreach (var implementingMethod in implementingMethods)
+            for (var index = 0; index < implementingMethods.Count; index++)
             {
+                var implementingMethod = implementingMethods[index];
+
+
                 var method = MethodDeclaration(
-                        TypeNameGlobal(implementingMethod), 
+                        TypeNameGlobal(implementingMethod, true), 
                         implementingMethod.Name)
                     .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters))
                     .WithModifiers(
@@ -100,7 +102,7 @@ public static class ForwardingMembersGenerator
                             SingletonList(
                                 ReturnStatement(invocation))));
                 }
-
+                
                 result = result.Add(method);
             }
         }

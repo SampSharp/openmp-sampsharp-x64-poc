@@ -10,6 +10,6 @@ public readonly partial struct IPlayerFixesData
     public partial bool SendGameText(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);
     public partial bool HideGameText(int style);
     public partial bool HasGameText(int style);
-    public partial bool GetGameText(int style, ref string message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
+    public partial bool GetGameText(int style, out string? message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
     public partial void ApplyAnimation(IPlayer player, IActor actor, AnimationData animation);
 }

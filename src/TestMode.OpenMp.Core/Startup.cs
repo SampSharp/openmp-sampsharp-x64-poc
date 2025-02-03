@@ -78,7 +78,12 @@ public class Startup : IStartup,
         Console.WriteLine("count before " + pool.Count());
         pool.AddEventHandler(this);
         Console.WriteLine("count after " + pool.Count());
-        
+
+        var tds = context.ComponentList.QueryComponent<ITextDrawsComponent>();
+        var txd = tds.Create(new Vector2(0, 0), 99);
+        var txt = txd.GetText();
+        Console.WriteLine($"textdraw text: '{txt ?? "<<null>>"}'");
+        Console.WriteLine($"default plate: '{v.GetPlate() ?? "<<null>>"}'");
     }
 
     public void OnTick(Microseconds micros, TimePoint now)

@@ -18,7 +18,7 @@ public readonly partial struct IBaseObject
     public partial void AttachToVehicle(IVehicle vehicle, Vector3 offset, Vector3 rotation);
     public partial void ResetAttachment();
     public partial ref ObjectAttachmentData GetAttachmentData();
-    public partial bool GetMaterialData(uint materialIndex, out ObjectMaterialData output); // TODO: was ObjectMaterialData*& out; was this a pointer pointer?
+    public partial bool GetMaterialData(uint materialIndex, out ObjectMaterialData? output); // TODO: was ObjectMaterialData*& out; was this a pointer pointer?
     public partial void SetMaterial(uint materialIndex, int model, string textureLibrary, string textureName, Colour colour);
 
     public partial void SetMaterialText(uint materialIndex, string text, ObjectMaterialSize materialSize, string fontFace, int fontSize, bool bold, Colour fontColour,

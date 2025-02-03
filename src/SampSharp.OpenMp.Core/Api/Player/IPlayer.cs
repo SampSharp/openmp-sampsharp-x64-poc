@@ -112,7 +112,7 @@ public readonly partial struct IPlayer
     public partial void SendGameText(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);
     public partial void HideGameText(int style);
     public partial bool HasGameText(int style);
-    public partial bool GetGameText(int style, ref string message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
+    public partial bool GetGameText(int style, out string? message, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))]out TimeSpan remaining);
     public partial void SetWeather(int weatherId);
     public partial int GetWeather();
     public partial void SetWorldBounds(Vector4 coords);

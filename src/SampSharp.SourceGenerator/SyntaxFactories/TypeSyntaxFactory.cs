@@ -68,9 +68,14 @@ public static class TypeSyntaxFactory
                 : symbol.ToDisplayString());
     }
 
-    public static TypeSyntax TypeNameGlobal(IMethodSymbol returnTypeOfMethod)
+    public static TypeSyntax TypeNameGlobal(IMethodSymbol returnTypeOfMethod, bool includeNullable = false)
     {
         var result = TypeNameGlobal(returnTypeOfMethod.ReturnType);
+        
+        if (includeNullable && returnTypeOfMethod.ReturnNullableAnnotation == NullableAnnotation.Annotated)
+        {
+            result = NullableType(result);
+        }
 
         if (returnTypeOfMethod.ReturnsByRef || returnTypeOfMethod.ReturnsByRefReadonly)
         {
