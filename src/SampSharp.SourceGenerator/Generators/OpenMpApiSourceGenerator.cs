@@ -146,7 +146,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         }
 
         var attribute = ctx.Attributes.Single();
-
+        
         var library = attribute.NamedArguments.FirstOrDefault(x => x.Key == "Library")
             .Value.Value as string ?? "SampSharp";
 

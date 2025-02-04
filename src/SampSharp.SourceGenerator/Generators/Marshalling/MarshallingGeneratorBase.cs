@@ -9,7 +9,6 @@ using SampSharp.SourceGenerator.Models;
 using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.StatementFactory;
-using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.Marshalling;
 
@@ -127,6 +126,10 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
                         SyntaxKind.PointerIndirectionExpression,
                         returnExpression));
             }
+            else if (ctx.Symbol.ReturnType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.NotAnnotated })
+            {
+                returnExpression = PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression, returnExpression);
+            }
 
             statements = statements.Add(ReturnStatement(returnExpression));
         }
@@ -195,6 +198,10 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
             {
                 returnExpression = RefExpression(returnExpression);
             }
+            else if (ctx.Symbol.ReturnType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.NotAnnotated })
+            {
+                returnExpression = PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression, returnExpression);
+            }
 
             statements = statements.Add(ReturnStatement(returnExpression));
         }
@@ -242,7 +249,6 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
             }
         }
         
-
         if (!ctx.Symbol.ReturnsVoid)
         {
             var managedReturnType = ctx.ReturnValue.ManagedType.TypeName;
@@ -250,6 +256,10 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
             {
                 // when marshalling ref-return types are marshalled as pointers
                 managedReturnType = PointerType(managedReturnType);
+            }
+            else if (ctx.Symbol.ReturnType is { IsReferenceType: true, NullableAnnotation: NullableAnnotation.NotAnnotated })
+            {
+                managedReturnType = NullableType(managedReturnType);
             }
 
             yield return
