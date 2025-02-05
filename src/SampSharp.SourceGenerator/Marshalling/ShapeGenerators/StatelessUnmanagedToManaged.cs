@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -30,9 +31,10 @@ public class StatelessUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) 
         // managed = Marshaller.ConvertToManaged(unmanaged);
         yield return Assign(
             context.GetManagedId(),
-            InvocationExpression(
-                context.MarshallerType!.TypeName,
-                ShapeConstants.MethodConvertToManaged, 
-                Argument(IdentifierName(context.GetNativeId()))));
+            context.PostfixManagedNullableSuppression(
+                InvocationExpression(
+                    context.MarshallerType!.TypeName,
+                    ShapeConstants.MethodConvertToManaged, 
+                    Argument(IdentifierName(context.GetNativeId())))));
     }
 }

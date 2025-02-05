@@ -35,7 +35,7 @@ public class IdentifierStubContextFactory
 
         var generator = CustomMarshalGeneratorFactory.Create(shape, customMarshaller?.IsStateful);
 
-        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, shape, generator, parameter.RefKind, parameter.Name);
+        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, parameter.NullableAnnotation, shape, generator, parameter.RefKind, parameter.Name);
     }
 
     public IdentifierStubContext Create(IMethodSymbol method, MarshalDirection marshalDirection)
@@ -52,6 +52,11 @@ public class IdentifierStubContextFactory
 
         var generator = CustomMarshalGeneratorFactory.Create(shape, customMarshaller?.IsStateful);
 
-        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, shape, generator, RefKind.Out, MarshallerConstants.LocalReturnValue);
+        // will have been annotated by the MarshallingGeneratorBase
+        var annotation = method.ReturnType.IsReferenceType 
+            ? NullableAnnotation.Annotated
+            : NullableAnnotation.NotAnnotated;
+
+        return new IdentifierStubContext(marshalDirection, new ManagedType(type), customMarshaller?.MarshallerType, nativeType, annotation, shape, generator, RefKind.Out, MarshallerConstants.LocalReturnValue);
     }
 }

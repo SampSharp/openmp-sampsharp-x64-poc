@@ -20,3 +20,29 @@ extern "C" SDK_EXPORT size_t __CDECL IEventDispatcher_count(const IEventDispatch
 {
     return dispatcher.count();
 }
+
+// IIndexedEventDispatcher<void *>
+extern "C" SDK_EXPORT bool __CDECL IIndexedEventDispatcher_addEventHandler(IIndexedEventDispatcher<void *>& dispatcher, void ** handler, size_t index, event_order_t priority)
+{
+    return dispatcher.addEventHandler(handler, index, priority);
+}
+
+extern "C" SDK_EXPORT bool __CDECL IIndexedEventDispatcher_hasEventHandler(IIndexedEventDispatcher<void *>& dispatcher, void ** handler, size_t index, event_order_t& priority)
+{
+    return dispatcher.hasEventHandler(handler, index, priority);
+}
+
+extern "C" SDK_EXPORT bool __CDECL IIndexedEventDispatcher_removeEventHandler(IIndexedEventDispatcher<void *>& dispatcher, void ** handler, size_t index)
+{
+    return dispatcher.removeEventHandler(handler, index);
+}
+
+extern "C" SDK_EXPORT size_t __CDECL  IIndexedEventDispatcher_count(const IIndexedEventDispatcher<void *>& dispatcher)
+{
+    return dispatcher.count();
+}
+
+extern "C" SDK_EXPORT size_t __CDECL  IIndexedEventDispatcher_count_index(const IIndexedEventDispatcher<void *>& dispatcher, size_t index)
+{
+    return dispatcher.count(index);
+}

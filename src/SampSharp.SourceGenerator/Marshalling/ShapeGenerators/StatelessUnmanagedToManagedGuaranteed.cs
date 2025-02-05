@@ -27,12 +27,13 @@ internal class StatelessUnmanagedToManagedGuaranteed(IMarshalShapeGenerator inne
 
     private static IEnumerable<StatementSyntax> GuaranteedUnmarshal(IdentifierStubContext context)
     {
-        // managed = Marshaller.ConvertToManaged(unmanaged);
+        // managed = Marshaller.ConvertToManagedFinally(unmanaged);
         yield return Assign(
             context.GetManagedId(),
-            InvocationExpression(
-                context.MarshallerType!.TypeName,
-                ShapeConstants.MethodConvertToManagedFinally, 
-                Argument(IdentifierName(context.GetNativeId()))));
+            context.PostfixManagedNullableSuppression(
+                InvocationExpression(
+                    context.MarshallerType!.TypeName,
+                    ShapeConstants.MethodConvertToManagedFinally, 
+                    Argument(IdentifierName(context.GetNativeId())))));
     }
 }

@@ -19,13 +19,8 @@ public readonly partial struct INetwork
     public partial void Ban(BanEntry entry, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan expire);
     public partial void Unban(BanEntry entry);
     public partial void Update();
-    
-    // TODO: Indexed event dispatcher based not implemented
-    // Implementing these with the current handler implementation is rather useless because the current implementation only allows a single
-    // event handler to be added. This would only allow a handler for a single event. Would need to find a more dynamic implementation which allows
-    // multiple handlers to be added.
-    //public partial IIndexedEventDispatcher<ISingleNetworkInEventHandler> GetPerRPCInEventDispatcher();
-    //public partial IIndexedEventDispatcher<ISingleNetworkInEventHandler> GetPerPacketInEventDispatcher();
-    //public partial IIndexedEventDispatcher<ISingleNetworkOutEventHandler> GetPerRPCOutEventDispatcher();
-    //public partial IIndexedEventDispatcher<ISingleNetworkOutEventHandler> GetPerPacketOutEventDispatcher();
+    public partial IIndexedEventDispatcher<ISingleNetworkInEventHandler> GetPerRPCInEventDispatcher();
+    public partial IIndexedEventDispatcher<ISingleNetworkInEventHandler> GetPerPacketInEventDispatcher();
+    public partial IIndexedEventDispatcher<ISingleNetworkOutEventHandler> GetPerRPCOutEventDispatcher();
+    public partial IIndexedEventDispatcher<ISingleNetworkOutEventHandler> GetPerPacketOutEventDispatcher();
 }

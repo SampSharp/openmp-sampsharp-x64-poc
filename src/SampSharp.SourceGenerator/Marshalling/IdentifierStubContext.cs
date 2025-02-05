@@ -1,4 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SampSharp.SourceGenerator.Marshalling;
 
@@ -7,6 +9,7 @@ public record IdentifierStubContext(
     ManagedType ManagedType,
     ManagedType? MarshallerType, 
     ManagedType? NativeType,
+    NullableAnnotation ManagedTypeNullableAnnotation,
     MarshallerShape Shape,
     IMarshalShapeGenerator Generator,
     RefKind RefKind,
@@ -32,5 +35,15 @@ public record IdentifierStubContext(
     public string GetNativeExtraId(string extra)
     {
         return $"{GetNativeId()}__{extra}";
+    }
+
+    public ExpressionSyntax PostfixManagedNullableSuppression(ExpressionSyntax expr)
+    {
+        if (ManagedTypeNullableAnnotation == NullableAnnotation.NotAnnotated)
+        {
+            expr = SyntaxFactory.PostfixUnaryExpression(SyntaxKind.SuppressNullableWarningExpression, expr);
+        }
+
+        return expr;
     }
 }

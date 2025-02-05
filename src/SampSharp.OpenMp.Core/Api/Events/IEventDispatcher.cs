@@ -45,6 +45,6 @@ public readonly struct IEventDispatcher<T> : IPointer where T : class, IEventHan
 
     public int Count()
     {
-        return EventDispatcherInterop.Count(_handle).Value.ToInt32();
+        return (int)EventDispatcherInterop.Count(_handle);
     }
 }

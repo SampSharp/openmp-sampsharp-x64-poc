@@ -68,7 +68,6 @@ public class Startup : IStartup,
         Console.WriteLine("remove extension");
         v.RemoveExtension(nick);
 
-        // TODO replicate nullability in forwarding members of api struct
         Console.WriteLine("get extension");
         nick = v.TryGetExtension<Nickname>();
         Console.WriteLine((nick?.ToString() ?? "null"));

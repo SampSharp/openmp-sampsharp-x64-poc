@@ -29,9 +29,9 @@ public class StatefulGuaranteedUnmarshal(IMarshalShapeGenerator innerGenerator) 
         // managed = marshaller.ToManagedFinally();
         yield return Assign(
             context.GetManagedId(),
-            InvocationExpression(
-                context.GetMarshallerId(),
-                ShapeConstants.MethodToManagedFinally)
-            );
+            context.PostfixManagedNullableSuppression(
+                InvocationExpression(
+                    context.GetMarshallerId(),
+                    ShapeConstants.MethodToManagedFinally)));
     }
 }

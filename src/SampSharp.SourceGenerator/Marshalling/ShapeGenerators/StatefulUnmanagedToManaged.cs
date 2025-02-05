@@ -61,9 +61,10 @@ public class StatefulUnmanagedToManaged(IMarshalShapeGenerator innerGenerator) :
         // managed = marshaller.ToManaged();
         yield return Assign(
             context.GetManagedId(),
-            InvocationExpression(
-                context.GetMarshallerId(), 
-                ShapeConstants.MethodToManaged));
+            context.PostfixManagedNullableSuppression(
+                InvocationExpression(
+                    context.GetMarshallerId(), 
+                    ShapeConstants.MethodToManaged)));
     }
 
     private static IEnumerable<StatementSyntax> UnmarshalCapture(IdentifierStubContext context)
