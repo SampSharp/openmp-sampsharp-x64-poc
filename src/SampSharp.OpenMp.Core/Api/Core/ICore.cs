@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi(typeof(ILogger))]
+[OpenMpApi(typeof(IExtensible), typeof(ILogger))]
 public readonly partial struct ICore
 {
     public partial SemanticVersion GetVersion();

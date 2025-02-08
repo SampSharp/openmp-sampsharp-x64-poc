@@ -62,8 +62,8 @@ public class Startup : IStartup,
         v.AddExtension(new Nickname("Brum"));
 
         Console.WriteLine("get extension");
-        var nick = v.TryGetExtension<Nickname>();
-        Console.WriteLine((nick?.ToString() ?? "null"));
+        var nick = v.GetExtension<Nickname>();
+        Console.WriteLine((nick.ToString()));
 
         Console.WriteLine("remove extension");
         v.RemoveExtension(nick);

@@ -125,6 +125,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     {
         return List([
             ..CreationMembersGenerator.GenerateCreationMembers(ctx), 
+            ..CastMembersGenerator.GenerateCastMembers(ctx),
             ..EqualityMembersGenerator.GenerateEqualityMembers(ctx),
             ..ForwardingMembersGenerator.GenerateImplementingTypeMembers(ctx),
             ..NativeMembersGenerator.GenerateNativeMethods(ctx)
@@ -196,6 +197,6 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes, isExtension, isComponent);
+        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes, isExtension, isComponent, library);
     }
 }

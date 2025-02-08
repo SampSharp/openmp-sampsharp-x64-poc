@@ -9,4 +9,5 @@ public record StructStubGenerationContext(
     ApiMethodStubGenerationContext[] Methods,
     ITypeSymbol[] ImplementingTypes,
     bool IsExtension,
-    bool IsComponent);
+    bool IsComponent,
+    string Library);

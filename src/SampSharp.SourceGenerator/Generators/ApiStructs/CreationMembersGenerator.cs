@@ -32,17 +32,6 @@ public static class CreationMembersGenerator
         {
             yield return GenerateFromHandleMethod(ctx, Constants.ExtensionInterfaceFQN);
         }
-
-        foreach (var type in ctx.ImplementingTypes)
-        {
-            var implName = TypeNameGlobal(type);
-
-            //  public static implicit operator type(impl value)
-            yield return GenerateCastToBaseType(ctx, implName);
-            
-            // public static explicit operator impl(type value)
-            yield return GenerateCastFromBaseType(ctx, implName);
-        }
     }
 
     private static PropertyDeclarationSyntax GenerateHandleProperty()
@@ -74,69 +63,6 @@ public static class CreationMembersGenerator
                             SyntaxKind.SimpleAssignmentExpression, 
                             IdentifierName("_handle"),
                             IdentifierName("handle"))))));
-    }
-
-    private static ConversionOperatorDeclarationSyntax GenerateCastFromBaseType(StructStubGenerationContext ctx, TypeSyntax implName)
-    {
-        return ConversionOperatorDeclaration(
-                Token(SyntaxKind.ExplicitKeyword),
-                IdentifierName(ctx.Symbol.Name))
-            .WithModifiers(
-                TokenList(Token(SyntaxKind.PublicKeyword),
-                    Token(SyntaxKind.StaticKeyword)))
-            .WithParameterList(
-                ParameterList(
-                    SingletonSeparatedList(
-                        Parameter(
-                                Identifier("value"))
-                            .WithType(
-                                implName))))
-            .WithBody(
-                Block(
-                    SingletonList<StatementSyntax>(
-                        ReturnStatement(
-                            ObjectCreationExpression(
-                                    IdentifierName(ctx.Symbol.Name))
-                                .WithArgumentList(
-                                    ArgumentList(
-                                        SingletonSeparatedList(
-                                            Argument(
-                                                MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    IdentifierName("value"),
-                                                    IdentifierName("Handle"))))))))));
-    }
-
-    private static ConversionOperatorDeclarationSyntax GenerateCastToBaseType(StructStubGenerationContext ctx, TypeSyntax implName)
-    {
-        return ConversionOperatorDeclaration(
-                Token(SyntaxKind.ImplicitKeyword),
-                implName)
-            .WithModifiers(
-                TokenList(
-                    Token(SyntaxKind.PublicKeyword),
-                    Token(SyntaxKind.StaticKeyword)))
-            .WithParameterList(
-                ParameterList(
-                    SingletonSeparatedList(
-                        Parameter(
-                                Identifier("value"))
-                            .WithType(
-                                IdentifierName(ctx.Symbol.Name)))))
-            .WithBody(
-                Block(
-                    SingletonList<StatementSyntax>(
-                        ReturnStatement(
-                            ObjectCreationExpression(
-                                    implName)
-                                .WithArgumentList(
-                                    ArgumentList(
-                                        SingletonSeparatedList(
-                                            Argument(
-                                                MemberAccessExpression(
-                                                    SyntaxKind.SimpleMemberAccessExpression,
-                                                    IdentifierName("value"),
-                                                    IdentifierName("Handle"))))))))));
     }
 
     private static MethodDeclarationSyntax GenerateFromHandleMethod(StructStubGenerationContext ctx, string genericInterfaceFQN)

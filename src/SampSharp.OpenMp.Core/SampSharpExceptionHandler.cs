@@ -19,11 +19,6 @@ public static class SampSharpExceptionHandler
 
     public static void HandleException(string context, Exception exception)
     {
-        if (Debugger.IsAttached)
-        {
-            Debugger.BreakForUserUnhandledException(exception);
-        }
-
         try
         {
             _exceptionHandler(context, exception);
@@ -48,6 +43,11 @@ public static class SampSharpExceptionHandler
             {
                 // void
             }
+        }
+        
+        if (Debugger.IsAttached)
+        {
+            Debugger.BreakForUserUnhandledException(exception);
         }
     }
 }

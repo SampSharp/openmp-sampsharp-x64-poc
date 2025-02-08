@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;
@@ -84,56 +83,8 @@ public static class EqualityMembersGenerator
                                     IdentifierName("_handle"),
                                     IdentifierName("GetHashCode")))))));
 
-        //type == object
-        yield return CreateOperator(
-                SyntaxKind.EqualsEqualsToken,
-                IdentifierName(ctx.Symbol.Name),
-                ObjectType,
-                CreateEqualsInvocationLhsRhs(false)
-            );
-
-        // type != object
-        yield return CreateOperator(
-                SyntaxKind.ExclamationEqualsToken,
-                IdentifierName(ctx.Symbol.Name),
-                ObjectType,
-                CreateEqualsInvocationLhsRhs(true)
-            );
-
-        // object == type
-        yield return CreateOperator(
-                SyntaxKind.EqualsEqualsToken,
-                ObjectType,
-                IdentifierName(ctx.Symbol.Name),
-                CreateEqualsInvocationRhsLhs(false)
-            );
-
-        // object != type
-        yield return CreateOperator(
-                SyntaxKind.ExclamationEqualsToken,
-                ObjectType,
-                IdentifierName(ctx.Symbol.Name),
-                CreateEqualsInvocationRhsLhs(true)
-            );
-
         // bool Equals(type other)
         yield return CreateEqualsMethod(IdentifierName(ctx.Symbol.Name));
-
-        //type == type
-        yield return CreateOperator(
-                SyntaxKind.EqualsEqualsToken,
-                IdentifierName(ctx.Symbol.Name),
-                IdentifierName(ctx.Symbol.Name),
-                CreateEqualsInvocationLhsRhs(false)
-            );
-
-        // type != type
-        yield return CreateOperator(
-                SyntaxKind.ExclamationEqualsToken,
-                IdentifierName(ctx.Symbol.Name),
-                IdentifierName(ctx.Symbol.Name),
-                CreateEqualsInvocationLhsRhs(true)
-            );
 
         foreach (var type in ctx.ImplementingTypes)
         {
@@ -141,38 +92,6 @@ public static class EqualityMembersGenerator
 
             // public bool Equals(impl other)
             yield return CreateEqualsMethod(implName);
-
-            //type == impl
-            yield return CreateOperator(
-                    SyntaxKind.EqualsEqualsToken,
-                    IdentifierName(ctx.Symbol.Name),
-                    implName,
-                    CreateEqualsInvocationLhsRhs(false)
-                );
-
-            // type != impl
-            yield return CreateOperator(
-                    SyntaxKind.ExclamationEqualsToken,
-                    IdentifierName(ctx.Symbol.Name),
-                    implName,
-                    CreateEqualsInvocationLhsRhs(true)
-                );
-
-            // impl == type
-            yield return CreateOperator(
-                    SyntaxKind.EqualsEqualsToken,
-                    implName,
-                    IdentifierName(ctx.Symbol.Name),
-                    CreateEqualsInvocationRhsLhs(false)
-                );
-
-            // impl != type
-            yield return CreateOperator(
-                    SyntaxKind.ExclamationEqualsToken,
-                    implName,
-                    IdentifierName(ctx.Symbol.Name),
-                    CreateEqualsInvocationRhsLhs(true)
-                );
         }
     }
 

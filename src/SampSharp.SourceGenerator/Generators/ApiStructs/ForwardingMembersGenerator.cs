@@ -63,17 +63,16 @@ public static class ForwardingMembersGenerator
                                 .WithConstraints(
                                     ToConstraintList(x)))));    
 
+                var target = ParenthesizedExpression(
+                    CastExpression(
+                        TypeNameGlobal(implementingType),
+                        ThisExpression()));
+
                 var invocation =  
                     InvocationExpression(
                         MemberAccessExpression(
                             SyntaxKind.SimpleMemberAccessExpression,
-                            ObjectCreationExpression(
-                                    TypeNameGlobal(implementingType))
-                                .WithArgumentList(
-                                    ArgumentList(
-                                        SingletonSeparatedList(
-                                            Argument(
-                                                IdentifierName("_handle"))))),
+                            target,
                             memberName))
                         .WithArgumentList(
                             ArgumentList(
