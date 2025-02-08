@@ -3,7 +3,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi]
+[OpenMpApi(typeof(IExtensible))]
 public readonly partial struct IPlayerPool
 {
     public partial FlatPtrHashSet<IPlayer> Entries();

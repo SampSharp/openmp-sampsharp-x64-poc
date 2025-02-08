@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Api;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct IIndexedEventDispatcher<T> : IPointer where T : class, IEventHandler<T>
+public readonly struct IIndexedEventDispatcher<T> where T : class, IEventHandler<T>
 {
     private readonly nint _handle;
 

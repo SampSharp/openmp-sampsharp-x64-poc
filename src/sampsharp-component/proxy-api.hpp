@@ -65,6 +65,13 @@
 #define _EXPAND_INIT13(type, ...) type##_(_13), _EXPAND_INIT12(__VA_ARGS__)
 #define _EXPAND_INIT14(type, ...) type##_(_14), _EXPAND_INIT13(__VA_ARGS__)
 
+#define PROXY_CAST(type_from, type_to) \
+    extern "C" SDK_EXPORT type_to * __CDECL \
+    cast_##type_from##_to_##type_to(type_from * from) \
+    { \
+        return static_cast<type_to *>(from); \
+    }
+    
 #define __PROXY_IMPL(type_subject, type_return, method, proxy_name, ...) \
     extern "C" SDK_EXPORT type_return __CDECL \
     proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__))) \

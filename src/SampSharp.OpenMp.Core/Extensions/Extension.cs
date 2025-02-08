@@ -113,8 +113,7 @@ public abstract partial class Extension : IDisposable
         }
         catch(Exception e)
         {
-            // TODO: error handling
-            Console.WriteLine(e);
+            SampSharpExceptionHandler.HandleException($"{GetType().FullName}.FreeExtension",e);
         }
         finally
         {

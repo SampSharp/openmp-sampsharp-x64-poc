@@ -83,6 +83,19 @@ public class Startup : IStartup,
         var txt = txd.GetText();
         Console.WriteLine($"textdraw text: '{txt ?? "<<null>>"}'");
         Console.WriteLine($"default plate: '{v.GetPlate() ?? "<<null>>"}'");
+
+        Console.WriteLine("<write>");
+        context.Core.PrintLine("Hello, World!");
+        context.Core.LogLine(LogLevel.Error, "Hello, World!");
+        Console.WriteLine("</write>");
+        // try
+        // {
+        //     throw new Exception("awful");
+        // }
+        // catch(Exception e)
+        // {
+        //     SampSharpExceptionHandler.HandleException("test", e);
+        // }
     }
 
     public void OnTick(Microseconds micros, TimePoint now)

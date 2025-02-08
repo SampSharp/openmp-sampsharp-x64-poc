@@ -54,7 +54,7 @@ public static class EqualityMembersGenerator
                         IsPatternExpression(
                             IdentifierName("obj"),
                             DeclarationPattern(
-                                TypeNameGlobal(Constants.PointerFQN),
+                                IdentifierName(ctx.Symbol.Name),
                                 SingleVariableDesignation(
                                     Identifier("other")))),
                         InvocationExpression(
@@ -63,38 +63,6 @@ public static class EqualityMembersGenerator
                             ArgumentList(
                                 SingletonSeparatedList(
                                     Argument(IdentifierName("other")))))))));
-
-        // public bool Equals(IPointer other)
-        yield return MethodDeclaration(
-                PredefinedType(
-                    Token(SyntaxKind.BoolKeyword)),
-                Identifier("Equals"))
-            .WithModifiers(
-                TokenList(
-                    Token(SyntaxKind.PublicKeyword)))
-            .WithParameterList(
-                ParameterList(
-                    SingletonSeparatedList(
-                        Parameter(Identifier("other"))
-                            .WithType(IdentifierName("IPointer")))))
-            .WithBody(
-                Block(
-                    SingletonList<StatementSyntax>(
-                        ReturnStatement(
-                            BinaryExpression(
-                                SyntaxKind.EqualsExpression,
-                                IdentifierName("_handle"),
-                                ParenthesizedExpression(
-                                    BinaryExpression(
-                                        SyntaxKind.CoalesceExpression,
-                                        ConditionalAccessExpression(
-                                            IdentifierName("other"),
-                                            MemberBindingExpression(
-                                                IdentifierName("Handle"))),
-                                        MemberAccessExpression(
-                                            SyntaxKind.SimpleMemberAccessExpression,
-                                            IdentifierName("nint"),
-                                            IdentifierName("Zero")))))))));
 
         // public override int GetHashCode()
         yield return MethodDeclaration(

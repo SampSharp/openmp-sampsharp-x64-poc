@@ -35,6 +35,7 @@
 using IntPair = Pair<int, int>;
 using BoolStringPair = Pair<bool, StringView>;
 using HoursMinutesPair = Pair<Hours, Minutes>;
+using SizePair = Pair<size_t, size_t>;
 using NewConnectionPlayerPair = Pair<NewConnectionResult, IPlayer*>;
 using CarriagesArray = StaticArray<IVehicle*, MAX_VEHICLE_CARRIAGES>;
 using VehicleModelArray = StaticArray<uint8_t, MAX_VEHICLE_MODELS>;
@@ -54,6 +55,8 @@ PROXY(IActor, bool, isStreamedInForPlayer, IPlayer&);
 PROXY(IActor, void, streamInForPlayer, IPlayer&);
 PROXY(IActor, void, streamOutForPlayer, IPlayer&);
 PROXY(IActor, const ActorSpawnData&, getSpawnData);
+PROXY_CAST(IActor, IEntity);
+
 PROXY(IActorsComponent, IActor*, create, int, Vector3, float);
 
 PROXY_EVENT_DISPATCHER(IActorsComponent, ActorEventHandler, getEventDispatcher);
@@ -83,6 +86,7 @@ PROXY(IPlayerCheckpointData, IRaceCheckpointData&, getRaceCheckpoint);
 PROXY(IPlayerCheckpointData, ICheckpointData&, getCheckpoint);
 
 PROXY_EVENT_DISPATCHER(ICheckpointsComponent, PlayerCheckpointEventHandler, getEventDispatcher);
+
 PROXY_EVENT_HANDLER_BEGIN(PlayerCheckpointEventHandler)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerEnterCheckpoint, IPlayer&)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerLeaveCheckpoint, IPlayer&)
@@ -93,6 +97,7 @@ PROXY_EVENT_HANDLER_END(PlayerCheckpointEventHandler, onPlayerEnterCheckpoint, o
 // include/Server/Components/Classes
 PROXY(IClass, const PlayerClass&, getClass);
 PROXY(IClass, void, setClass, PlayerClass&);
+PROXY_CAST(IClass, IIDProvider);
 
 PROXY(IClassesComponent, IClass*, create, int, int, Vector3, float, WeaponSlots&);
 
@@ -173,6 +178,7 @@ PROXY(IBaseGangZone, Colour, getFlashingColourForPlayer, IPlayer&);
 PROXY(IBaseGangZone, Colour, getColourForPlayer, IPlayer&);
 PROXY(IBaseGangZone, void, setLegacyPlayer, IPlayer*);
 PROXY(IBaseGangZone, IPlayer*, getLegacyPlayer);
+PROXY_CAST(IBaseGangZone, IIDProvider);
 
 PROXY(IGangZonesComponent, IGangZone*, create, GangZonePos);
 PROXY(IGangZonesComponent, const FlatHashSet<IGangZone*>&, getCheckingGangZones);
@@ -221,6 +227,7 @@ PROXY(IMenu, StringView, getCell, MenuColumn, MenuRow);
 PROXY(IMenu, void, initForPlayer, IPlayer&);
 PROXY(IMenu, void, showForPlayer, IPlayer&);
 PROXY(IMenu, void, hideForPlayer, IPlayer&);
+PROXY_CAST(IMenu, IIDProvider);
 
 PROXY(IPlayerMenuData, uint8_t, getMenuID);
 PROXY(IPlayerMenuData, void, setMenuID, uint8_t);
@@ -250,6 +257,7 @@ PROXY(IBaseObject, const ObjectAttachmentData&, getAttachmentData);
 PROXY(IBaseObject, bool, getMaterialData, uint32_t, const ObjectMaterialData*&);
 PROXY(IBaseObject, void, setMaterial, uint32_t, int, StringView, StringView, Colour);
 PROXY(IBaseObject, void, setMaterialText, uint32_t, StringView, ObjectMaterialSize, StringView, int, bool, Colour, Colour, ObjectMaterialTextAlign);
+PROXY_CAST(IBaseObject, IEntity);
 
 PROXY(IObject, void, attachToPlayer, IPlayer&, Vector3, Vector3);
 PROXY(IObject, void, attachToObject, IObject&, Vector3, Vector3, bool);
@@ -301,6 +309,7 @@ PROXY(IBasePickup, void, setPickupHiddenForPlayer, IPlayer&, bool);
 PROXY(IBasePickup, bool, isPickupHiddenForPlayer, IPlayer&);
 PROXY(IBasePickup, void, setLegacyPlayer, IPlayer*);
 PROXY(IBasePickup, IPlayer*, getLegacyPlayer);
+PROXY_CAST(IBasePickup, IEntity);
 
 PROXY(IPickupsComponent, IPickup*, create, int, PickupType, Vector3, uint32_t, bool);
 PROXY(IPickupsComponent, int, toLegacyID, int);
@@ -367,6 +376,7 @@ PROXY_PTR(ITextDrawBase, IntPair, getPreviewVehicleColour);
 PROXY(ITextDrawBase, ITextDrawBase&, setPreviewZoom, float);
 PROXY(ITextDrawBase, float, getPreviewZoom);
 PROXY(ITextDrawBase, void, restream);
+PROXY_CAST(ITextDrawBase, IIDProvider);
 
 PROXY(ITextDraw, void, showForPlayer, IPlayer&);
 PROXY(ITextDraw, void, hideForPlayer, IPlayer&);
@@ -408,6 +418,7 @@ PROXY(ITextLabelBase, void, detachFromVehicle, Vector3);
 PROXY(ITextLabelBase, void, setTestLOS, bool);
 PROXY(ITextLabelBase, bool, getTestLOS);
 PROXY(ITextLabelBase, void, setColourAndText, Colour, StringView);
+PROXY_CAST(ITextLabelBase, IEntity);
 
 PROXY(ITextLabel, bool, isStreamedInForPlayer, IPlayer&);
 PROXY(ITextLabel, void, streamInForPlayer, IPlayer&);
@@ -494,6 +505,7 @@ PROXY(IVehicle, uint8_t, getSirenState);
 PROXY(IVehicle, uint32_t, getHydraThrustAngle);
 PROXY(IVehicle, float, getTrainSpeed);
 PROXY(IVehicle, int, getLastDriverPoolID);
+PROXY_CAST(IVehicle, IEntity);
 
 PROXY(IVehiclesComponent, VehicleModelArray&, models);
 PROXY(IVehiclesComponent, IVehicle*, create, bool, int, Vector3, float, int, int, Seconds, bool);
@@ -530,6 +542,7 @@ PROXY_OVERLOAD(IExtensible, bool, removeExtension, _uid, UID);
 
 PROXY(IComponent, int, supportedVersion);
 PROXY(IComponent, StringView, componentName);
+PROXY_CAST(IComponent, IUIDProvider);
 
 PROXY(IComponentList, IComponent*, queryComponent, UID);
 
@@ -553,7 +566,10 @@ PROXY_PTR(IConfig, BoolStringPair, getNameFromAlias, StringView);
 PROXY(IConfig, void, enumOptions, OptionEnumeratorCallback&);
 PROXY(IConfig, bool *, getBool, StringView);
 
-// @skip: ILogger due to varargs; need to write a wrapper w/a vararg
+PROXY(ILogger, void, printLn, const char *);
+PROXY(ILogger, void, logLn, LogLevel, const char *);
+PROXY(ILogger, void, printLnU8, const char *);
+PROXY(ILogger, void, logLnU8, LogLevel, const char *);
 
 PROXY(ICore, SemanticVersion, getVersion);
 PROXY(ICore, int, getNetworkBitStreamVersion);
@@ -575,6 +591,7 @@ PROXY(ICore, StringView, getWeaponName, PlayerWeapon);
 PROXY(ICore, void, connectBot, StringView, StringView);
 PROXY(ICore, unsigned, tickRate);
 PROXY(ICore, StringView, getVersionHash);
+PROXY_CAST(ICore, ILogger);
 
 PROXY_EVENT_DISPATCHER(ICore, CoreEventHandler, getEventDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(CoreEventHandler)
@@ -786,6 +803,7 @@ PROXY(IPlayer, bool, areWeaponsAllowed);
 PROXY(IPlayer, void, allowTeleport, bool);
 PROXY(IPlayer, bool, isTeleportAllowed);
 PROXY(IPlayer, bool, isUsingOfficialClient);
+PROXY_CAST(IPlayer, IEntity);
 
 PROXY(IPlayerPool, const FlatPtrHashSet<IPlayer>&, entries);
 PROXY(IPlayerPool, const FlatPtrHashSet<IPlayer>&, players);
@@ -805,6 +823,9 @@ PROXY(IPlayerPool, bool, isNameValid, StringView);
 PROXY(IPlayerPool, void, allowNickNameCharacter, char, bool);
 PROXY(IPlayerPool, bool, isNickNameCharacterAllowed, char);
 PROXY(IPlayerPool, Colour, getDefaultColour, int);
+PROXY(IPlayerPool, IPlayer*, get, int);
+PROXY_PTR(IPlayerPool, SizePair, bounds);
+// note: get and bounds are actually in the IReadOnlyPool<T> struct, but this is the only usage so it's here for now
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerSpawnEventHandler, getPlayerSpawnDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerSpawnEventHandler)
@@ -883,3 +904,5 @@ PROXY_EVENT_DISPATCHER_TYPE(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHan
 #ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
+
+// TODO: IPool / IPoolComponent

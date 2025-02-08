@@ -74,11 +74,6 @@ public static class Constants
     /// </summary>
     public const string NumberedTypeGeneratorAttributeFQN = "SampSharp.OpenMp.Core.NumberedTypeGeneratorAttribute";
 
-    /// <summary>
-    /// SampSharp.OpenMp.Core.IPointer
-    /// </summary>
-    public const string PointerFQN = "SampSharp.OpenMp.Core.IPointer";
-
     // SampSharp.OpenMp.Core.Api
 
     /// <summary>

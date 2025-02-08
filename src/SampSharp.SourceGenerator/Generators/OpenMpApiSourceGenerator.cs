@@ -20,7 +20,6 @@ namespace SampSharp.SourceGenerator.Generators;
 /// This source generator generates the marshalling interop methods for open.mp API structs. The generator generates the
 /// following:
 /// <list type="bullet">
-///     <item>Implementation of the IPointer interface</item>
 ///     <item>Implementation of the IEquatable{self} interface</item>
 ///     <item>P/Invoke every partial method in the interface with marshalling of every parameter and return value</item>
 ///     <item>For every "implementing" interface specified in the CodeGen attribute generate the following:
@@ -99,9 +98,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     GenericType(Constants.IEquatableFQN, TypeNameGlobal(x))))
             .Concat([
                 SimpleBaseType(
-                        GenericType(Constants.IEquatableFQN, ParseTypeName(ctx.Symbol.Name))),
-                SimpleBaseType(
-                    TypeNameGlobal(Constants.PointerFQN))
+                        GenericType(Constants.IEquatableFQN, ParseTypeName(ctx.Symbol.Name)))
             ]);
         
         if (ctx.IsComponent)
