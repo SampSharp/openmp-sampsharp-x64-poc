@@ -7,7 +7,9 @@ public record StructStubGenerationContext(
     ISymbol Symbol,
     StructDeclarationSyntax Syntax,
     ApiMethodStubGenerationContext[] Methods,
-    ITypeSymbol[] ImplementingTypes,
+    ImplementingType[] ImplementingTypes,
     bool IsExtension,
     bool IsComponent,
     string Library);
+
+public readonly record struct ImplementingType(ITypeSymbol Type, ITypeSymbol[] CastPath);

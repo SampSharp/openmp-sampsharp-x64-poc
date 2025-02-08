@@ -40,7 +40,7 @@ public class Startup : IStartup,
 
         for (nint i = 0; i < cfg.GetBansCount().Value; i++)
         {
-            var b = cfg.GetBan(new Size(i));
+            var b = cfg.GetBan(new Size(i))!;
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
@@ -80,9 +80,13 @@ public class Startup : IStartup,
 
         var tds = context.ComponentList.QueryComponent<ITextDrawsComponent>();
         var txd = tds.Create(new Vector2(0, 0), 99);
+        var txd2 = tds.Create(new Vector2(0, 0), 99);
         var txt = txd.GetText();
         Console.WriteLine($"textdraw text: '{txt ?? "<<null>>"}'");
         Console.WriteLine($"default plate: '{v.GetPlate() ?? "<<null>>"}'");
+
+        Console.WriteLine($"id of textdraw: {txd.GetID()}, {txd2.GetID()}");
+
 
         Console.WriteLine("<write>");
         context.Core.PrintLine("Hello, World!");

@@ -19,8 +19,9 @@ public static class ForwardingMembersGenerator
     {
         var result = List<MemberDeclarationSyntax>();
 
-        foreach (var implementingType in ctx.ImplementingTypes)
+        foreach (var impl in ctx.ImplementingTypes)
         {
+            var implementingType = impl.Type;
             // only forward public ordinary methods, excluding Equals
             var implementingMethods = implementingType.GetMembers()
                 .OfType<IMethodSymbol>()

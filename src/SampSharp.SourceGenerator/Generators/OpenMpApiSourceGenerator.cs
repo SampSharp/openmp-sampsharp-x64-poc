@@ -35,8 +35,6 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Debugger.Launch();
-
         var attributedStructs = context.SyntaxProvider.ForAttributeWithMetadataName(
                 Constants.ApiAttributeFQN,
                 static (s, _) => s is StructDeclarationSyntax str && str.IsPartial(), 
@@ -95,7 +93,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     {
         var result = ctx.ImplementingTypes.Select(x => 
                 SimpleBaseType(
-                    GenericType(Constants.IEquatableFQN, TypeNameGlobal(x))))
+                    GenericType(Constants.IEquatableFQN, TypeNameGlobal(x.Type))))
             .Concat([
                 SimpleBaseType(
                         GenericType(Constants.IEquatableFQN, ParseTypeName(ctx.Symbol.Name)))
@@ -155,13 +153,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         var ctxFactory = new IdentifierStubContextFactory(wellKnownMarshallerTypes);
 
 
-        // TODO implementingTypes for inheritance with depth > 1
-        var implementingTypes = attribute.ConstructorArguments[0]
-            .Values.Select(x => (ITypeSymbol)x.Value!)
-            .ToArray();
+        var implementingTypes = new List<ImplementingType>();
+        AddImplementingTypes(implementingTypes, attribute, [], []);
 
-        var isComponent = implementingTypes.Any(x => x.ToDisplayString() == Constants.ComponentFQN);
-        var isExtension = implementingTypes.Any(x => x.ToDisplayString() == Constants.ExtensionFQN);
+        var isComponent = implementingTypes.Any(x => x.Type.ToDisplayString() == Constants.ComponentFQN);
+        var isExtension = implementingTypes.Any(x => x.Type.ToDisplayString() == Constants.ExtensionFQN);
 
         // filter methods: partial, non-static, non-generic
         var methods = targetNode.Members
@@ -197,6 +193,43 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes, isExtension, isComponent, library);
+        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, library);
+    }
+
+    private static void AddImplementingTypes(List<ImplementingType> implementingTypes, AttributeData attribute, ITypeSymbol[] castPath, List<ITypeSymbol> trace)
+    {
+        var typesImplementedHere = attribute.ConstructorArguments[0].Values
+            .Select(x => (ITypeSymbol)x.Value!)
+            .ToArray();
+    
+        foreach (var type in typesImplementedHere)
+        {
+            if (implementingTypes.Any(x => x.Type.IsSame(type)))
+            {
+                continue;
+            }
+
+            implementingTypes.Add(new ImplementingType(type, [..castPath, type]));
+        }
+
+        foreach (var type in typesImplementedHere)
+        {
+            var nestedAttribute = type.GetAttribute(Constants.ApiAttributeFQN);
+
+            if (nestedAttribute == null)
+            {
+                continue;
+            }
+            
+            if (trace.Any(x => x.IsSame(type)))
+            {
+                continue;
+            }
+            
+            trace.Add(type);
+
+            AddImplementingTypes(implementingTypes, nestedAttribute!, [..castPath, type], trace);
+
+        }
     }
 }

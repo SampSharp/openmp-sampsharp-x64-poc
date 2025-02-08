@@ -86,8 +86,9 @@ public static class EqualityMembersGenerator
         // bool Equals(type other)
         yield return CreateEqualsMethod(IdentifierName(ctx.Symbol.Name));
 
-        foreach (var type in ctx.ImplementingTypes)
+        foreach (var impl in ctx.ImplementingTypes)
         {
+            var type = impl.Type;
             var implName = TypeNameGlobal(type);
 
             // public bool Equals(impl other)

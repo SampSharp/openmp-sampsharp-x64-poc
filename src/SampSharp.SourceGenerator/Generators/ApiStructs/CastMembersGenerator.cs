@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,8 +17,9 @@ public static class CastMembersGenerator
     public static IEnumerable<MemberDeclarationSyntax> GenerateCastMembers(StructStubGenerationContext ctx)
     {
         var isFirst = true;
-        foreach (var type in ctx.ImplementingTypes)
+        foreach (var impl in ctx.ImplementingTypes)
         {
+            var type = impl.Type;
             BlockSyntax block;
 
             if (isFirst)
@@ -35,32 +39,42 @@ public static class CastMembersGenerator
             }
             else
             {
-                var func = GenerateExternFunctionCast(ctx, type);
+                if (impl.CastPath.Length == 1)
+                {
+                    var func = GenerateExternFunctionCast(ctx, type);
 
-                var invoke = InvocationExpression(
-                        IdentifierName("__PInvoke"))
-                    .WithArgumentList(
-                        ArgumentList(
-                            SingletonSeparatedList(
-                                Argument(
-                                    MemberAccessExpression(
-                                        SyntaxKind.SimpleMemberAccessExpression,
-                                        IdentifierName("value"),
-                                        IdentifierName("Handle"))))));
-
-                var ret = ReturnStatement(
-                    ObjectCreationExpression(
-                            TypeNameGlobal(type))
+                    var invoke = InvocationExpression(
+                            IdentifierName("__PInvoke"))
                         .WithArgumentList(
                             ArgumentList(
                                 SingletonSeparatedList(
-                                    Argument(invoke)))));
+                                    Argument(
+                                        MemberAccessExpression(
+                                            SyntaxKind.SimpleMemberAccessExpression,
+                                            IdentifierName("value"),
+                                            IdentifierName("Handle"))))));
 
-                block = Block(
-                    List<StatementSyntax>([
-                        ret,
-                        func
-                    ]));
+                    var ret = ReturnStatement(
+                        ObjectCreationExpression(
+                                TypeNameGlobal(type))
+                            .WithArgumentList(
+                                ArgumentList(
+                                    SingletonSeparatedList(
+                                        Argument(invoke)))));
+
+                    block = Block(
+                        List<StatementSyntax>([
+                            ret,
+                            func
+                        ]));
+                }
+                else
+                {
+                    var cast = impl.CastPath.Aggregate((ExpressionSyntax)IdentifierName("value"), (current, c) => CastExpression(TypeNameGlobal(c), current));
+
+                    block = Block(SingletonList<StatementSyntax>(
+                        ReturnStatement(cast)));
+                }
             }
             yield return ConversionOperatorDeclaration(
                     Token(SyntaxKind.ExplicitKeyword),
