@@ -82,21 +82,19 @@ On Windows, the following software is required to build the project
 #### open.mp component (Windows)
 
 ```
-cmake -S . -B build -A x64 -T ClangCL
-cmake --build build --config RelWithDebInfo
+./build.cmd
 ```
 
-After building, copy the built library (`build/src/sampsharp-component/RelWithDebInfo/SampSharp.dll`) to the components directory of your open.mp server
+After building, copy the built library (`build/artifacts/SampSharp.dll`) to the components directory of your open.mp server
 
 #### open.mp component (Linux)
 ```
-cmake -S . -B build
-cmake --build build
+./build.sh
 ```
 
-After building, copy the built library (`build/src/sampsharp-component/libSampSharp.so`) to the components directory of your open.mp server
+After building, copy the built library (`build/artifacts/libSampSharp.so`) to the components directory of your open.mp server
 
-#### .NET libraries (build on any platform)
+#### .NET libraries (any platform)
 ```
 dotnet build SampSharp.sln
 ```
