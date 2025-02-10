@@ -137,8 +137,7 @@ public class Startup : IStartup,
     }
 }
 
-
-[Extension(0xBBDD9B761EB23037)]
+[Extension(0x57a6f80937089f8b)]
 public class Nickname : Extension
 {
     public Nickname(string name)
