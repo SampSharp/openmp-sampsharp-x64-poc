@@ -19,7 +19,7 @@ namespace SampSharp.CodeFixes;
     {
         private const string Title = "Add 'ExtensionAttribute'";
 
-        public sealed override ImmutableArray<string> FixableDiagnosticIds => [Analyzers.MissingExtensionAttribute.Id];
+        public sealed override ImmutableArray<string> FixableDiagnosticIds => [Analyzers.Sash0001MissingExtensionAttribute.Id];
 
         public sealed override FixAllProvider GetFixAllProvider()
         {

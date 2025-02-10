@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace SampSharp.Analyzer;
+namespace SampSharp.Analyzer.Helpers;
 
 public static class SemanticModelExtensions
 {
@@ -13,7 +13,7 @@ public static class SemanticModelExtensions
         {
             foreach (var attribute in attributeList.Attributes)
             {
-                
+
                 var symbol = semanticModel.GetTypeInfo(attribute).Type;
                 if (symbol == null)
                 {
@@ -28,6 +28,17 @@ public static class SemanticModelExtensions
         }
 
         return false;
+    }
+
+    public static bool HasAttribute(this SemanticModel semanticModel, TypeSyntax type, INamedTypeSymbol attributeType)
+    {
+        return semanticModel.GetSymbolInfo(type).Symbol is INamedTypeSymbol sym &&
+               sym.GetAttributes().Any(x => SymbolEqualityComparer.Default.Equals(x.AttributeClass, attributeType));
+    }
+
+    public static bool HasAttribute(this SemanticModel semanticModel, AttributeListSyntax attributeList, INamedTypeSymbol attributeType)
+    {
+        return attributeList.Attributes.Any(x => SymbolEqualityComparer.Default.Equals(semanticModel.GetTypeInfo(x).Type, attributeType));
     }
 
     public static bool IsBaseType(this SemanticModel semanticModel, ClassDeclarationSyntax classDeclaration, INamedTypeSymbol baseType)
