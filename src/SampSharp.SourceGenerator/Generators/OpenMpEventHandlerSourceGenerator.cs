@@ -374,7 +374,6 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
         if (targetNode.TypeParameterList is { Parameters.Count: > 0 })
         {
-            // TODO: diagnostic
             return null;
         }
 

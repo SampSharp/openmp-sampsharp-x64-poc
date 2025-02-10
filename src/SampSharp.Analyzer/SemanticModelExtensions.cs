@@ -7,10 +7,9 @@ namespace SampSharp.Analyzer;
 
 public static class SemanticModelExtensions
 {
-    
-    public static bool HasAttribute(this SemanticModel semanticModel, ClassDeclarationSyntax classDeclaration, INamedTypeSymbol attributeType)
+    public static bool HasAttribute(this SemanticModel semanticModel, BaseTypeDeclarationSyntax declaration, INamedTypeSymbol attributeType)
     {
-        foreach (var attributeList in classDeclaration.AttributeLists)
+        foreach (var attributeList in declaration.AttributeLists)
         {
             foreach (var attribute in attributeList.Attributes)
             {

@@ -49,3 +49,45 @@ public class ExtensionAttributeAnalyzer : DiagnosticAnalyzer
         }
     }
 }
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public class EventHandlerWithGenericParametersAnalyzer : DiagnosticAnalyzer
+{
+    public const string EventHandlernAttributeTypeFQN = "SampSharp.OpenMp.Core.OpenMpEventHandlerAttribute";
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Analyzers.GenericEventHandlerUnsuported];
+
+    public override void Initialize(AnalysisContext context)
+    {
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+        context.EnableConcurrentExecution();
+        context.RegisterSyntaxNodeAction(AnalyzeSyntaxNode, SyntaxKind.InterfaceDeclaration);
+    }
+
+    private static void AnalyzeSyntaxNode(SyntaxNodeAnalysisContext context)
+    {
+        var eventHandlerAttributeType = context.Compilation.GetTypeByMetadataName(EventHandlernAttributeTypeFQN);
+
+        if(eventHandlerAttributeType == null)
+        {
+            return;
+        }
+
+        var ifaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
+
+        if(ifaceDeclaration.TypeParameterList == null || ifaceDeclaration.TypeParameterList.Parameters.Count == 0)
+        {
+            return;
+        }
+
+        if (context.SemanticModel.HasAttribute(ifaceDeclaration, eventHandlerAttributeType))
+        {
+            var diagnostic = Diagnostic.Create(
+                Analyzers.GenericEventHandlerUnsuported, 
+                ifaceDeclaration.Identifier.GetLocation(), 
+                ifaceDeclaration.Identifier.ToString());
+
+            context.ReportDiagnostic(diagnostic);
+        }
+    }
+}

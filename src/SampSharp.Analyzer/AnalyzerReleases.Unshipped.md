@@ -6,3 +6,4 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 SASH0001 | Correctness | Error | Analyzers
+SASH0002 | Correctness | Error | Analyzers
