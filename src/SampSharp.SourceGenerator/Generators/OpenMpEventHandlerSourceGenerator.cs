@@ -412,7 +412,6 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 if (returnValueContext.Shape != MarshallerShape.None && (x.methodSymbol.ReturnsByRef || x.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
-                    // TODO: diagnostic
                     return null;
                 }
 

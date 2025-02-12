@@ -1,6 +1,4 @@
 ﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 

@@ -15,70 +15,72 @@ internal static class LaunchInstructions
         Console.WriteLine("See <<TODO: Documentation URL>> for more information.");
         Console.WriteLine();
 
-        if (IsRunningInVisualStudio())
+        if (!IsRunningInVisualStudio())
         {
-            var dir = GetProjectDir();
-            if (dir != null)
-            {
-                Console.WriteLine("It appears you are running this application in Visual Studio. Would you like SampSharp to update your launchSettings.json with the following configuration?");
+            return;
+        }
 
-                Console.WriteLine();
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("""
-                                  -------------------------------------
-                                  {
-                                    "profiles": {
-                                      "open.mp": {
-                                        "commandName": "Executable",
-                                        "executablePath": "C:\path\to\server\omp-server.exe",
-                                        "workingDirectory": "C:\path\to\server\",
-                                        "commandLineArgs": "-c sampsharp.directory=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
-                                      }
-                                    }
+        var dir = GetProjectDir();
+        if (dir != null)
+        {
+            Console.WriteLine("It appears you are running this application in Visual Studio. Would you like SampSharp to update your launchSettings.json with the following configuration?");
+
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkGray;
+            Console.WriteLine("""
+                              -------------------------------------
+                              {
+                                "profiles": {
+                                  "open.mp": {
+                                    "commandName": "Executable",
+                                    "executablePath": "C:\path\to\server\omp-server.exe",
+                                    "workingDirectory": "C:\path\to\server\",
+                                    "commandLineArgs": "-c sampsharp.directory=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
                                   }
-                                  -------------------------------------
-                                  """);
-                Console.WriteLine();
-                Console.ResetColor();
+                                }
+                              }
+                              -------------------------------------
+                              """);
+            Console.WriteLine();
+            Console.ResetColor();
 
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("WARNING: This will replace any existing launch profiles for your project.");
-                Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("WARNING: This will replace any existing launch profiles for your project.");
+            Console.ResetColor();
 
-                if (!PromptYesNo())
-                {
-                    return;
-                }
+            if (!PromptYesNo())
+            {
+                return;
+            }
                 
-                var props = dir.CreateSubdirectory("Properties");
+            var props = dir.CreateSubdirectory("Properties");
 
-                var serverDir = PromptServerDirectory();
+            var serverDir = PromptServerDirectory();
                 
-                var launchSettingsPath = Path.Combine(props.FullName, "launchSettings.json");
+            var launchSettingsPath = Path.Combine(props.FullName, "launchSettings.json");
 
-                serverDir = serverDir.Replace(@"\", @"\\");
+            serverDir = serverDir.Replace(@"\", @"\\");
 
-                File.WriteAllText(launchSettingsPath, 
-                    $$"""
-                    {
-                      "profiles": {
-                        "open.mp": {
-                          "commandName": "Executable",
-                          "executablePath": "{{serverDir}}omp-server.exe",
-                          "workingDirectory": "{{serverDir}}",
-                          "commandLineArgs": "-c sampsharp.directory=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
-                        }
+            File.WriteAllText(launchSettingsPath, 
+                $$"""
+                  {
+                    "profiles": {
+                      "open.mp": {
+                        "commandName": "Executable",
+                        "executablePath": "{{serverDir}}omp-server.exe",
+                        "workingDirectory": "{{serverDir}}",
+                        "commandLineArgs": "-c sampsharp.directory=$(TargetDir) -c sampsharp.assembly=\"$(TargetName)\""
                       }
                     }
-                    """);
+                  }
+                  """);
 
-                Console.WriteLine($"File written to {launchSettingsPath}");
-                Console.WriteLine();
+            Console.WriteLine($"File written to {launchSettingsPath}");
+            Console.WriteLine();
                 
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("You will find the 'open.mp' launch option in the dropdown next to the 'Start' button in Visual Studio.");
-                Console.ResetColor();
-            }
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("You will find the 'open.mp' launch option in the dropdown next to the 'Start' button in Visual Studio.");
+            Console.ResetColor();
         }
     }
 
