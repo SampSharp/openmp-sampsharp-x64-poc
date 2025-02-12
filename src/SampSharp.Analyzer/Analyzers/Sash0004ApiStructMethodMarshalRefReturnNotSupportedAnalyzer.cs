@@ -6,12 +6,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SampSharp.Analyzer.Helpers;
 
-namespace SampSharp.Analyzer;
+namespace SampSharp.Analyzer.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class Sash0004ApiStructMethodMarshalRefReturnNotSupportedAnalyzer : DiagnosticAnalyzer
 {
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Analyzers.Sash0004ApiStructMarshalRefReturnUnsupported];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [AnalyzerIds.Sash0004ApiStructMarshalRefReturnUnsupported];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -26,13 +26,13 @@ public class Sash0004ApiStructMethodMarshalRefReturnNotSupportedAnalyzer : Diagn
         var marshalUsingAttribute = context.Compilation.GetTypeByMetadataName(Constants.MarshalUsingAttributeFQN);
         var nativeMarshallingAttribute = context.Compilation.GetTypeByMetadataName(Constants.NativeMarshallingAttributeFQN);
 
-        if(apiAttributeType == null || marshalUsingAttribute == null || nativeMarshallingAttribute == null)
+        if (apiAttributeType == null || marshalUsingAttribute == null || nativeMarshallingAttribute == null)
         {
             return;
         }
 
         var structDeclaration = (StructDeclarationSyntax)context.Node;
-        
+
         if (!context.SemanticModel.HasAttribute(structDeclaration, apiAttributeType))
         {
             return;
@@ -52,7 +52,7 @@ public class Sash0004ApiStructMethodMarshalRefReturnNotSupportedAnalyzer : Diagn
                     context.SemanticModel.HasAttribute(refType.Type, nativeMarshallingAttribute))
                 {
                     var diagnostic = Diagnostic.Create(
-                        Analyzers.Sash0004ApiStructMarshalRefReturnUnsupported,
+                        AnalyzerIds.Sash0004ApiStructMarshalRefReturnUnsupported,
                         method.Identifier.GetLocation(),
                         method.Identifier.ToString());
 

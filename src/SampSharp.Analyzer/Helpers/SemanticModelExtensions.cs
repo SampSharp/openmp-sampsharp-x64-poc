@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -28,6 +29,12 @@ public static class SemanticModelExtensions
         }
 
         return false;
+    }
+
+    public static bool IsAttribute(this SemanticModel semanticModel, AttributeSyntax attribute, INamedTypeSymbol attributeType)
+    {
+        var symbol = semanticModel.GetTypeInfo(attribute).Type;
+        return symbol != null && SymbolEqualityComparer.Default.Equals(symbol, attributeType);
     }
 
     public static bool HasAttribute(this SemanticModel semanticModel, TypeSyntax type, INamedTypeSymbol attributeType)

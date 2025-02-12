@@ -13,11 +13,6 @@ public static class Constants
     public const string SpanOfBytesFQN = "System.Span<byte>";
 
     /// <summary>
-    /// System.IEquatable
-    /// </summary>
-    public const string IEquatableFQN = "System.IEquatable";
-    
-    /// <summary>
     /// System.Delegate
     /// </summary>
     public static readonly string DelegateFQN = typeof(Delegate).FullName!;

@@ -5,14 +5,14 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SampSharp.Analyzer.Helpers;
 
-namespace SampSharp.Analyzer;
+namespace SampSharp.Analyzer.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class Sash0002EventHandlerWithGenericParametersAnalyzer : DiagnosticAnalyzer
 {
     public const string EventHandlerAttributeTypeFQN = "SampSharp.OpenMp.Core.OpenMpEventHandlerAttribute";
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Analyzers.Sash0002GenericEventHandlerUnsupported];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [AnalyzerIds.Sash0002GenericEventHandlerUnsupported];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -25,14 +25,14 @@ public class Sash0002EventHandlerWithGenericParametersAnalyzer : DiagnosticAnaly
     {
         var eventHandlerAttributeType = context.Compilation.GetTypeByMetadataName(EventHandlerAttributeTypeFQN);
 
-        if(eventHandlerAttributeType == null)
+        if (eventHandlerAttributeType == null)
         {
             return;
         }
 
         var ifaceDeclaration = (InterfaceDeclarationSyntax)context.Node;
 
-        if(ifaceDeclaration.TypeParameterList == null || ifaceDeclaration.TypeParameterList.Parameters.Count == 0)
+        if (ifaceDeclaration.TypeParameterList == null || ifaceDeclaration.TypeParameterList.Parameters.Count == 0)
         {
             return;
         }
@@ -40,8 +40,8 @@ public class Sash0002EventHandlerWithGenericParametersAnalyzer : DiagnosticAnaly
         if (context.SemanticModel.HasAttribute(ifaceDeclaration, eventHandlerAttributeType))
         {
             var diagnostic = Diagnostic.Create(
-                Analyzers.Sash0002GenericEventHandlerUnsupported, 
-                ifaceDeclaration.Identifier.GetLocation(), 
+                AnalyzerIds.Sash0002GenericEventHandlerUnsupported,
+                ifaceDeclaration.Identifier.GetLocation(),
                 ifaceDeclaration.Identifier.ToString());
 
             context.ReportDiagnostic(diagnostic);

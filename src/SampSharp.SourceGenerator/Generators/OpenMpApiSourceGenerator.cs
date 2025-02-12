@@ -20,11 +20,9 @@ namespace SampSharp.SourceGenerator.Generators;
 /// This source generator generates the marshalling interop methods for open.mp API structs. The generator generates the
 /// following:
 /// <list type="bullet">
-///     <item>Implementation of the IEquatable{self} interface</item>
 ///     <item>P/Invoke every partial method in the interface with marshalling of every parameter and return value</item>
 ///     <item>For every "implementing" interface specified in the CodeGen attribute generate the following:
 ///        <list type="bullet">
-///             <item>Implementation of the IEquatable{other} interface</item>
 ///             <item>Pass-through implementations of all methods in the implementing interface</item>
 ///         </list>
 ///     </item>
@@ -61,13 +59,20 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
         }
         
+        var baseListElements = GenerateBaseTypes(info).ToList();
+
+        BaseListSyntax? baseList = null;
+        if(baseListElements.Count > 0)
+        {
+            baseList = BaseList(
+                    SeparatedList<BaseTypeSyntax>(
+                        GenerateBaseTypes(info)));
+        }
+
         var structDeclaration = StructDeclaration(info.Syntax.Identifier)
             .WithModifiers(modifiers)
             .WithMembers(GenerateStructMembers(info))
-            .WithBaseList(
-                BaseList(
-                    SeparatedList<BaseTypeSyntax>(
-                        GenerateBaseTypes(info))))
+            .WithBaseList(baseList)
             .WithAttributeLists(
                 List([
                     AttributeFactory.GeneratedCode(),
@@ -91,13 +96,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     /// </summary>
     private static IEnumerable<SimpleBaseTypeSyntax> GenerateBaseTypes(StructStubGenerationContext ctx)
     {
-        var result = ctx.ImplementingTypes.Select(x => 
-                SimpleBaseType(
-                    GenericType(Constants.IEquatableFQN, TypeNameGlobal(x.Type))))
-            .Concat([
-                SimpleBaseType(
-                        GenericType(Constants.IEquatableFQN, ParseTypeName(ctx.Symbol.Name)))
-            ]);
+        IEnumerable<SimpleBaseTypeSyntax> result = [];
         
         if (ctx.IsComponent)
         {
@@ -178,7 +177,6 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                 if (returnValueContext.Shape != MarshallerShape.None && (method.methodSymbol.ReturnsByRef || method.methodSymbol.ReturnsByRefReadonly))
                 {
                     // marshalling return-by-ref not supported.
-                    // TODO: diagnostic
                     return null;
                 }
 

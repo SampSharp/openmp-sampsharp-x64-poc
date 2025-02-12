@@ -3,6 +3,7 @@
 public static class Constants
 {
     public const string ApiAttributeFQN = "SampSharp.OpenMp.Core.OpenMpApiAttribute";
+    public const string EventHandlerAttributeFQN = "SampSharp.OpenMp.Core.OpenMpEventHandlerAttribute";
     public const string ExtensionFQN = "SampSharp.OpenMp.Core.Extension";
     public const string ExtensionAttributeFQN = "SampSharp.OpenMp.Core.ExtensionAttribute";
 

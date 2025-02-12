@@ -1,4 +1,5 @@
-﻿using SampSharp.OpenMp.Core.Api;
+﻿using System.Runtime.InteropServices.Marshalling;
+using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.OpenMp.Core;
 

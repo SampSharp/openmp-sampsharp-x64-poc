@@ -8,16 +8,16 @@
 /// the C function will be <c>IConfig_removeBan</c>. The overload appendix can be controlled using the <see
 /// cref="OpenMpApiOverloadAttribute"/>.
 /// </summary>
-/// <param name="implements">Specifies which open.mp API interface struct types this struct implements. Equality
+/// <param name="baseTypeList">Specifies which open.mp API interface struct types this struct implements. Equality
 /// members, cast operators and forwarding methods will be generated for all specified interfaces.</param>
 [AttributeUsage(AttributeTargets.Struct)]
-public class OpenMpApiAttribute(params Type[] implements) : Attribute
+public class OpenMpApiAttribute(params Type[] baseTypeList) : Attribute
 {
     /// <summary>
     /// Gets which open.mp API interface struct types this struct implements. Equality members, cast operators and
     /// forwarding methods will be generated for all specified interfaces.
     /// </summary>
-    public Type[] Implements { get; } = implements;
+    public Type[] BaseTypeList { get; } = baseTypeList;
 
     /// <summary>
     /// Gets or sets the name of the component library that contains the open.mp API functions. Defaults to "SampSharp".

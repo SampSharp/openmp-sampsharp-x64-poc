@@ -5,12 +5,12 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using SampSharp.Analyzer.Helpers;
 
-namespace SampSharp.Analyzer;
+namespace SampSharp.Analyzer.Analyzers;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public class Sash0001ExtensionAttributeAnalyzer : DiagnosticAnalyzer
 {
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Analyzers.Sash0001MissingExtensionAttribute];
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [AnalyzerIds.Sash0001MissingExtensionAttribute];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -24,7 +24,7 @@ public class Sash0001ExtensionAttributeAnalyzer : DiagnosticAnalyzer
         var extensionType = context.Compilation.GetTypeByMetadataName(Constants.ExtensionFQN);
         var extensionAttributeType = context.Compilation.GetTypeByMetadataName(Constants.ExtensionAttributeFQN);
 
-        if(extensionType == null || extensionAttributeType == null)
+        if (extensionType == null || extensionAttributeType == null)
         {
             return;
         }
@@ -36,11 +36,11 @@ public class Sash0001ExtensionAttributeAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        if(!context.SemanticModel.HasAttribute(classDeclaration, extensionAttributeType))
+        if (!context.SemanticModel.HasAttribute(classDeclaration, extensionAttributeType))
         {
             var diagnostic = Diagnostic.Create(
-                Analyzers.Sash0001MissingExtensionAttribute, 
-                classDeclaration.Identifier.GetLocation(), 
+                AnalyzerIds.Sash0001MissingExtensionAttribute,
+                classDeclaration.Identifier.GetLocation(),
                 classDeclaration.Identifier.ToString());
 
             context.ReportDiagnostic(diagnostic);

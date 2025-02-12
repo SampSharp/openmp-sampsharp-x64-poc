@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
@@ -136,13 +137,6 @@ public class Startup : IStartup,
     public void OnPoolEntryDestroyed(IPlayer entry)
     {
     }
-}
-
-[OpenMpApi]
-public partial struct IFoo
-{
-    // [return: MarshalUsing(typeof(MicrosecondsMarshaller))]
-    public partial ref int Bar();
 }
 
 [Extension(0x57a6f80937089f8b)]
