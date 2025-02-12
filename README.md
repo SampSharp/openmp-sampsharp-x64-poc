@@ -5,8 +5,8 @@ proof-of-concept code. Attempt to run x64 .NET code with an up-to-date well supp
 Goal
 ----
 
-The goal of this project is to create a ready-for-production concept that can be easily used to generate a bridge
-between .NET and the open.mp component/data structure.
+The goal of this project is to create a replacement for SA-MP-based SampSharp libraries that can be easily used to
+generate a bridge between .NET and the open.mp component/data structure.
 
 Status
 ------
@@ -23,7 +23,7 @@ for registering event handlers which can be created and deleted using declared C
 library for hash tables which are exposed in the open.mp API. Therefore we also provide proxy functions for a subset of
 functions exposed in its API. The component is currently fully functional on Windows, but lacks Linux support.  
 2) The source generator generates various structures. The source generator generates the following code structures:  
-   - Implementations of event handler infastructure (registration/unregistration) using the `[OpenMpEventHandler]`
+   - Implementations of event handler infrastructure (registration/unregistration) using the `[OpenMpEventHandler]`
    attribute  
    - P/Invokes + marshalling of functions exposed in the open.mp api using the `[OpenMpApi]` attribute  
    - An `Initialize` entry point for the open.mp to invoke. The entry point should have a fixed namespace, class and
@@ -31,11 +31,11 @@ functions exposed in its API. The component is currently fully functional on Win
    should also generate a `Main` entry point. This entry point should either be empty or provide a console message that
    the game mode should be launched through open.mp. The `Main` entry point is required in order for .NET to write a
    runtimeconfig which we need to run the gamemode.
-4) (TODO) The analyzer provides useful diagnostics for helping writing proper SampSharp code that interfaces with
-open.mp. It should provide warnings/errors when the written code cannot be marshalled or no P/Invoke can be generated.  
-5) The SampSharp.OpenMp.Core provides the open.mp API and data structures in .NET. These APIs are usable but not as
+3) The analyzer provides useful diagnostics for helping writing proper SampSharp code that interfaces with open.mp. It
+   should provide warnings/errors when the written code cannot be marshalled or no P/Invoke can be generated.  
+4) The SampSharp.OpenMp.Core provides the open.mp API and data structures in .NET. These APIs are usable but not as
    user-friendly as we'd like to see in SampSharp.  
-7) (TODO) Lastly we need a user-friendly library which allows the user to easily write game modes in .NET. It will be
+5) (TODO) Lastly we need a user-friendly library which allows the user to easily write game modes in .NET. It will be
 based on the ECS library SampSharp.Entities. Since the ECS framework seems more flexible and performant due to the way
 events propagate I'll not be rewriting SampSharp.GameMode for open.mp. Maintaining two versions of SampSharp greatly
 increases the amount of effort required from maintainers. When the open.mp version of SampSharp is ready, the old
@@ -56,7 +56,7 @@ provide x86 binaries for Linux (they do for Windows). While 3rd party x86 .NET b
 supported by MS and may have stability issues.  
 - The bridge between the .NET API and server API are generated at compile-time instead of at run-time. This means that
 the initial performance of the server should be better, it easier to diagnose issues in generated code and easier to
-improve the generated code since we generate c# code instead of itermediate code (IL).  
+improve the generated code since we generate c# code instead of intermediate  code (IL).  
 
 Building the project
 --------------------
@@ -64,13 +64,13 @@ Building the project
 ### Requirements
 
 On Windows, the following software is required to build the project
-- [Install CMake 3.19 +](https://cmake.org/download/)
+- [Install CMake 3.19+](https://cmake.org/download/)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/en-us/vs/)
-  - Install the Development to desktop with .NET
-  - Install the Development to desktop with C++
+  - Install the Development for desktop with .NET
+  - Install the Development for desktop with C++
 - [Open.MP Server x64](https://github.com/openmultiplayer/open.mp/actions?query=branch%3Amaster)
-  - Find and click in the last sucessfully run in `master` branch
-  - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file for windows or `open.mp-linux-x86_64-v*` for linux
+  - Find and click on the last sucessful run in `master` branch
+  - Scroll to the bottom of the page and download the `open.mp-win-x64-v*` file for Windows or `open.mp-linux-x86_64-v*` for Linux
 
 ### Instructions
 
@@ -103,4 +103,4 @@ dotnet build SampSharp.sln
   - Open the `<root>/SampSharp.sln` file with the Visual Studio
   - Launch a `TestMode.*` project
   - The application will ask whether you'd like SampSharp to create a `launchSettings.json` file for you. Press `y` and enter the path to your open.mp server
-  - Run the `open.mp` profile on VS
+  - Run the `open.mp` profile from Visual Studio
