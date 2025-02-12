@@ -13,6 +13,8 @@ public class Startup : IStartup,
 
     public void Initialize(StartupContext context)
     {
+        context.ForwardConsoleOutputToOpenMpLogger();
+
         Console.WriteLine("OnInit from managed c# code!");
 
         Console.WriteLine($"Component version: {context.Info.Version}");

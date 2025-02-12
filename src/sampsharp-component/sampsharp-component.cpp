@@ -40,9 +40,6 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
 
 void SampSharpComponent::onInit(IComponentList* components)
 {
-	ILogger * log = core_;
-	IExtensible * ext = core_;
-	log->logLn(Error, "I'm a fish! log:%p core:%p ext:%p", log, core_, ext);
 	const IConfig& config = core_->getConfig();
 
 	const auto directory = config.getString(CFG_DIRECTORY);
