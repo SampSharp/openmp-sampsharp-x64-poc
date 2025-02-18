@@ -8,7 +8,7 @@
 #endif
 
 //
-// macros for definition of exported proxy functions
+// internal macros
 //
 
 // expand variadic args as a numbered parameter list. e.g. _EXPAND_PARAM(a, b, X, Y) -> aXb _2, aYb _1
@@ -65,13 +65,6 @@
 #define _EXPAND_INIT13(type, ...) type##_(_13), _EXPAND_INIT12(__VA_ARGS__)
 #define _EXPAND_INIT14(type, ...) type##_(_14), _EXPAND_INIT13(__VA_ARGS__)
 
-#define PROXY_CAST(type_from, type_to) \
-    extern "C" SDK_EXPORT type_to * __CDECL \
-    cast_##type_from##_to_##type_to(type_from * from) \
-    { \
-        return static_cast<type_to *>(from); \
-    }
-    
 #define __PROXY_IMPL(type_subject, type_return, method, proxy_name, ...) \
     extern "C" SDK_EXPORT type_return __CDECL \
     proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__))) \
@@ -83,13 +76,28 @@
 
 #define __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, proxy_name, ...) \
     extern "C" SDK_EXPORT void __CDECL \
-    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__)), type_return * result) \
+    proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__)), type_return * result) \
     { \
         *result = subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(,##__VA_ARGS__)) \
         ); \
     }
 
+//
+// macros for definition of exported proxy functions
+//
+
+/// proxy function for casting from one type to another e.g. PROXY_CAST_NAMED(IFoo, foo, IBar, bar) -> IBar * cast_foo_to_bar(IFoo * from) { return static_cast<IBar *>(from); }
+#define PROXY_CAST_NAMED(type_from, type_from_name, type_to, type_to_name) \
+    extern "C" SDK_EXPORT type_to * __CDECL \
+    cast_##type_from_name##_to_##type_to_name(type_from * from) \
+    { \
+        return static_cast<type_to *>(from); \
+    }
+
+/// proxy function for casting from one type to another e.g. PROXY_CAST(IFoo, IBar) -> IBar * cast_IFoo_to_IBar(IFoo * from) { return static_cast<IBar *>(from); }
+#define PROXY_CAST(type_from, type_to) PROXY_CAST_NAMED(type_from, type_from, type_to, type_to)
+ 
 /// proxy function macro. e.g. PROXY(subj, int, foo, bool) -> int subj_foo(subj * x, bool _1) { return x->foo(_1); }
 #define PROXY(type_subject, type_return, method, ...) __PROXY_IMPL(type_subject, type_return, method, type_subject##_##method, __VA_ARGS__)
 
@@ -102,32 +110,29 @@
 /// proxy function macro for an overload. output is similar to PROXY_PTR macro, except the function name is post-fixed by overload argument
 #define PROXY_OVERLOAD_PTR(type_subject, type_return, method, overload, ...) __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, type_subject##_##method##overload, __VA_ARGS__)
 
-#define __PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
-    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, addEventHandler, IEventDispatcher_##handler_name##_addEventHandler, handler_type *, event_order_t); \
-    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, removeEventHandler, IEventDispatcher_##handler_name##_removeEventHandler, handler_type *); \
-    __PROXY_IMPL(IEventDispatcher<handler_type>, bool, hasEventHandler, IEventDispatcher_##handler_name##_hasEventHandler, handler_type *, event_order_t); \
-    __PROXY_IMPL(IEventDispatcher<handler_type>, size_t, count, IEventDispatcher_##handler_name##_count);
+/// proxy function macro. e.g. PROXY(subj, int, foo, bool) -> int subj_foo(subj * x, bool _1) { return x->foo(_1); }
+#define PROXY_NAMED(type_subject, name_subject, type_return, method, ...) __PROXY_IMPL(type_subject, type_return, method, name_subject##_##method, __VA_ARGS__)
+
+/// proxy function macro. e.g. PROXY_RESULT_PTR(subj, int, foo, bool) -> void subj_foo(subj * x, bool _1, int * result) { *result = x->foo(_1); }
+#define PROXY_NAMED_PTR(type_subject, name_subject, type_return, method, ...) __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, name_subject##_##method, __VA_ARGS__)
+
+/// proxy function macro for an overload. output is similar to PROXY macro, except the function name is post-fixed by overload argument
+#define PROXY_NAMED_OVERLOAD(type_subject, name_subject, type_return, method, overload, ...) __PROXY_IMPL(type_subject, type_return, method, name_subject##_##method##overload, __VA_ARGS__)
+
+/// proxy function macro for an overload. output is similar to PROXY_PTR macro, except the function name is post-fixed by overload argument
+#define PROXY_NAMED_OVERLOAD_PTR(type_subject, name_subject, type_return, method, overload, ...) __PROXY_IMPL_RESULT_PTR(type_subject, type_return, method, name_subject##_##method##overload, __VA_ARGS__)
 
 /// proxy for event dispatcher functions and function to get the event dispatcher
 #define PROXY_EVENT_DISPATCHER(type_subject, type_handler, method) \
-	PROXY(type_subject, IEventDispatcher<type_handler>&, method); \
-	__PROXY_EVENT_DISPATCHER_IMPL(type_handler, type_handler)
+	PROXY(type_subject, IEventDispatcher<type_handler>&, method);
 
-#define PROXY_EVENT_DISPATCHER_TYPE(type_subject, handler_type, handler_name, method) \
-	PROXY(type_subject, IEventDispatcher<handler_type>&, method); \
-	__PROXY_EVENT_DISPATCHER_IMPL(handler_name, handler_type)
-
-#define __PROXY_INDEXED_EVENT_DISPATCHER_IMPL(handler_name, handler_type) \
-    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, addEventHandler, IIndexedEventDispatcher_##handler_name##_addEventHandler, handler_type *, size_t, event_order_t); \
-    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, removeEventHandler, IIndexedEventDispatcher_##handler_name##_removeEventHandler, handler_type *, size_t); \
-    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, bool, hasEventHandler, IIndexedEventDispatcher_##handler_name##_hasEventHandler, handler_type *, size_t, event_order_t); \
-    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, size_t, count, IIndexedEventDispatcher_##handler_name##_count_index, size_t); \
-    __PROXY_IMPL(IIndexedEventDispatcher<handler_type>, size_t, count, IIndexedEventDispatcher_##handler_name##_count);
+/// proxy for event dispatcher functions and function to get the event dispatcher wit specific handler name
+#define PROXY_EVENT_DISPATCHER_NAMED(type_subject, handler_type, handler_name, method) \
+	PROXY(type_subject, IEventDispatcher<handler_type>&, method);
 
 /// proxy for event dispatcher functions and function to get the event dispatcher
 #define PROXY_INDEXED_EVENT_DISPATCHER(type_subject, type_handler, method) \
-	PROXY(type_subject, IIndexedEventDispatcher<type_handler>&, method); \
-	__PROXY_INDEXED_EVENT_DISPATCHER_IMPL(type_handler, type_handler)
+	PROXY(type_subject, IIndexedEventDispatcher<type_handler>&, method);
 
 /// start of event handler proxy class 
 #define PROXY_EVENT_HANDLER_BEGIN(handler_type) \

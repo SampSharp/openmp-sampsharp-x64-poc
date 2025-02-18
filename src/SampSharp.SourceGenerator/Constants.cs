@@ -43,11 +43,16 @@ public static class Constants
     public const string GenericPlaceholderFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute.GenericPlaceholder";
     
     // SampSharp.OpenMp.Core
-
+    
     /// <summary>
     /// SampSharp.OpenMp.Core.OpenMpApiAttribute
     /// </summary>
     public const string ApiAttributeFQN = "SampSharp.OpenMp.Core.OpenMpApiAttribute";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.OpenMpApiPartialAttribute
+    /// </summary>
+    public const string ApiPartialAttributeFQN = "SampSharp.OpenMp.Core.OpenMpApiPartialAttribute";
 
     /// <summary>
     /// SampSharp.OpenMp.Core.OpenMpEventHandlerAttribute

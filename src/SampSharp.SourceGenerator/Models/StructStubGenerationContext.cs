@@ -1,5 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System.Linq;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Models;
 
@@ -10,6 +12,26 @@ public record StructStubGenerationContext(
     ImplementingType[] ImplementingTypes,
     bool IsExtension,
     bool IsComponent,
-    string Library);
+    string Library)
+{
+    public TypeSyntax Type { get; } = GetSelfType(Symbol, Syntax);
+    
+    private static TypeSyntax GetSelfType(ISymbol symbol, StructDeclarationSyntax syntax)
+    {
+        if (syntax.TypeParameterList == null)
+        {
+            return ParseTypeName(symbol.Name);
+        }
 
-public readonly record struct ImplementingType(ITypeSymbol Type, ITypeSymbol[] CastPath);
+        return GenericName(
+                Identifier(symbol.Name))
+            .WithTypeArgumentList(
+                TypeArgumentList(
+                    SeparatedList<TypeSyntax>(
+                        syntax.TypeParameterList!.Parameters.Select(x => IdentifierName(x.Identifier)))));
+    }
+}
+
+public readonly record struct ImplementingType(DefiniteType Type, DefiniteType[] CastPath);
+
+public readonly record struct DefiniteType(ITypeSymbol Symbol, TypeSyntax Syntax);

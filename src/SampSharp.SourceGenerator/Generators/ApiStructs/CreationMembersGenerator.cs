@@ -68,7 +68,7 @@ public static class CreationMembersGenerator
     private static MethodDeclarationSyntax GenerateFromHandleMethod(StructStubGenerationContext ctx, string genericInterfaceFQN)
     {
         return MethodDeclaration(
-                IdentifierName(ctx.Symbol.Name),
+                ctx.Type,
                 Identifier("FromHandle"))
             .WithModifiers(
                 TokenList(
@@ -79,8 +79,7 @@ public static class CreationMembersGenerator
                             IdentifierGlobal(genericInterfaceFQN))
                         .WithTypeArgumentList(
                             TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name))))))
+                                SingletonSeparatedList(ctx.Type)))))
             .WithParameterList(
                 ParameterList(
                     SingletonSeparatedList(
@@ -92,8 +91,7 @@ public static class CreationMembersGenerator
                 Block(
                     SingletonList<StatementSyntax>(
                         ReturnStatement(
-                            ObjectCreationExpression(
-                                    IdentifierName(ctx.Symbol.Name))
+                            ObjectCreationExpression(ctx.Type)
                                 .WithArgumentList(
                                     ArgumentList(
                                         SingletonSeparatedList(

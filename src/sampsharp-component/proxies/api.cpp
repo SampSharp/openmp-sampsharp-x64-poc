@@ -608,6 +608,18 @@ PROXY(IEntity, void, setRotation, GTAQuat);
 PROXY(IEntity, int, getVirtualWorld);
 PROXY(IEntity, void, setVirtualWorld, int);
 
+// include/events
+PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, bool, addEventHandler, void **, event_order_t);
+PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, bool, hasEventHandler, void **, event_order_t);
+PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, bool, removeEventHandler, void **);
+PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, size_t, count);
+
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, addEventHandler, void **, size_t, event_order_t);
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, hasEventHandler, void **, size_t, event_order_t);
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, removeEventHandler, void **, size_t);
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, size_t, count, size_t);
+PROXY_NAMED_OVERLOAD(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, size_t, count, _index, size_t);
+
 // include/network
 PROXY_EVENT_HANDLER_BEGIN(NetworkEventHandler)
     PROXY_EVENT_HANDLER_EVENT(void, onPeerConnect, IPlayer&)
@@ -636,10 +648,10 @@ PROXY(INetwork, ENetworkType, getNetworkType);
 PROXY(INetwork, IEventDispatcher<NetworkEventHandler>&, getEventDispatcher);
 PROXY(INetwork, IEventDispatcher<NetworkInEventHandler>&, getInEventDispatcher);
 PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkInEventHandler, getPerRPCInEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkInEventHandler>&, getPerPacketInEventDispatcher); // same dispatcher as getPerRPCInEventDispatcher
+PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkInEventHandler, getPerPacketInEventDispatcher);
 PROXY_EVENT_DISPATCHER(INetwork, NetworkOutEventHandler, getOutEventDispatcher);
 PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkOutEventHandler, getPerRPCOutEventDispatcher);
-PROXY(INetwork, IIndexedEventDispatcher<SingleNetworkOutEventHandler>&, getPerPacketOutEventDispatcher); // same dispatcher as getPerRPCOutEventDispatcher
+PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkOutEventHandler, getPerPacketOutEventDispatcher);
 PROXY(INetwork, bool, sendPacket, IPlayer&, Span<uint8_t>, int, bool);
 PROXY(INetwork, bool, broadcastPacket, Span<uint8_t>, int, const IPlayer* , bool);
 PROXY(INetwork, bool, sendRPC, IPlayer&, int, Span<uint8_t>, int, bool);
@@ -823,9 +835,6 @@ PROXY(IPlayerPool, bool, isNameValid, StringView);
 PROXY(IPlayerPool, void, allowNickNameCharacter, char, bool);
 PROXY(IPlayerPool, bool, isNickNameCharacterAllowed, char);
 PROXY(IPlayerPool, Colour, getDefaultColour, int);
-PROXY(IPlayerPool, IPlayer*, get, int);
-PROXY_PTR(IPlayerPool, SizePair, bounds);
-// note: get and bounds are actually in the IReadOnlyPool<T> struct, but this is the only usage so it's here for now
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerSpawnEventHandler, getPlayerSpawnDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerSpawnEventHandler)
@@ -895,7 +904,18 @@ PROXY_EVENT_HANDLER_BEGIN(PlayerUpdateEventHandler)
 	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerUpdate, IPlayer&, TimePoint)
 PROXY_EVENT_HANDLER_END(PlayerUpdateEventHandler, onPlayerUpdate)
 
-PROXY_EVENT_DISPATCHER_TYPE(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHandler, getPoolEventDispatcher);
+PROXY_EVENT_DISPATCHER_NAMED(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHandler, getPoolEventDispatcher);
+
+// include/pool
+PROXY_CAST_NAMED(IPoolComponent<void*>, IPoolComponent, IPool<void*>, IPool);
+PROXY_NAMED(IReadOnlyPool<void*>, IReadOnlyPool, void*, get, int);
+PROXY_NAMED_PTR(IReadOnlyPool<void*>, IReadOnlyPool, SizePair, bounds);
+
+PROXY_NAMED(IPool<void*>, IPool, void, release, int);
+PROXY_NAMED(IPool<void*>, IPool, void, lock, int);
+PROXY_NAMED(IPool<void*>, IPool, bool, unlock, int);
+PROXY_NAMED(IPool<void*>, IPool, IEventDispatcher<PoolEventHandler<void*>>&, getPoolEventDispatcher);
+PROXY_NAMED(IPool<void*>, IPool, size_t, count);
 
 #ifdef __clang__
 #  pragma clang diagnostic pop
@@ -904,5 +924,3 @@ PROXY_EVENT_DISPATCHER_TYPE(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHan
 #ifdef _MSC_VER
 #  pragma warning(pop)
 #endif
-
-// TODO: IPool / IPoolComponent

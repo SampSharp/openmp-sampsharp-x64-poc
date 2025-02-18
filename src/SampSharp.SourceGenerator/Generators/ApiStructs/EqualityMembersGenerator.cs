@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;
 
