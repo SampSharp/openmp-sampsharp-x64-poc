@@ -4,6 +4,11 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace TestMode.OpenMp.Core;
 
+file class Test123
+{
+    public static string? Abc { get; set; }
+}
+
 public class Startup : IStartup,
     ICoreEventHandler,
     IConsoleEventHandler, 
