@@ -58,7 +58,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     BaseList(SingletonSeparatedList<BaseTypeSyntax>(
                         SimpleBaseType(
                             GenericType(
-                                Constants.EventHandlerFQN, info.Type)))))
+                                Constants.EventHandlerFQN, 
+                                ParseTypeName(info.Syntax.Identifier.ToString()))))))
                 .WithAttributeLists(List([
                     AttributeFactory.GeneratedCode()
                 ]));
@@ -137,7 +138,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     SimpleBaseType(
                         GenericType(
                             Constants.NativeEventHandlerManagerFQN, 
-                            ctx.Type)))))
+                            ParseTypeName(ctx.Symbol.Name))))))
             .WithMembers(GenerateManagerMembers(ctx));
     }
 
@@ -217,7 +218,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     SingletonSeparatedList(
                         Parameter(
                                 Identifier("handler"))
-                            .WithType(ctx.Type))))
+                            .WithType(ParseTypeName(ctx.Symbol.Name)))))
             .WithBody(
                 Block(List<StatementSyntax>([
                     // Delegate __x_delegate = (Method_)handler.Method, ...;
