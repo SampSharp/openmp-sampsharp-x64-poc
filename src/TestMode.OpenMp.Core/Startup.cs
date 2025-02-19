@@ -7,10 +7,8 @@ namespace TestMode.OpenMp.Core;
 public class Startup : IStartup,
     ICoreEventHandler,
     IConsoleEventHandler, 
-    IPlayerPoolEventHandler
+    IPoolEventHandler<IPlayer>
 {
-    private IVehiclesComponent _vehicles;
-
     public void Initialize(StartupContext context)
     {
         context.ForwardConsoleOutputToOpenMpLogger();
@@ -46,7 +44,7 @@ public class Startup : IStartup,
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
-        _vehicles = context.ComponentList.QueryComponent<IVehiclesComponent>();
+        var vehiclesComponent = context.ComponentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
         var dispatcher = context.Core.GetEventDispatcher();
@@ -56,7 +54,7 @@ public class Startup : IStartup,
 
         context.ComponentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(this);
 
-        var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
+        var v = vehiclesComponent.Create(false, 401, new Vector3(5, 0, 10));
         v.GetColour(out var vcol);
         Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
 
@@ -75,10 +73,10 @@ public class Startup : IStartup,
         Console.WriteLine((nick?.ToString() ?? "null"));
 
         
-        var pool = context.Core.GetPlayers().GetPoolEventDispatcher();
-        Console.WriteLine("count before " + pool.Count());
-        pool.AddEventHandler(this);
-        Console.WriteLine("count after " + pool.Count());
+        var playerPoolEventDispatcher = context.Core.GetPlayers().GetPoolEventDispatcher();
+        Console.WriteLine("count before " + playerPoolEventDispatcher.Count());
+        playerPoolEventDispatcher.AddEventHandler(this);
+        Console.WriteLine("count after " + playerPoolEventDispatcher.Count());
 
         var tds = context.ComponentList.QueryComponent<ITextDrawsComponent>();
         var txd = tds.Create(new Vector2(0, 0), 99);
@@ -102,6 +100,12 @@ public class Startup : IStartup,
         // {
         //     SampSharpExceptionHandler.HandleException("test", e);
         // }
+
+        var pool = vehiclesComponent.AsPool();
+
+        var vehCount = pool.Count();
+
+        Console.WriteLine($"Veh count: {vehCount.ToInt32()}");
     }
 
     public void OnTick(Microseconds micros, TimePoint now)
