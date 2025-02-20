@@ -14,4 +14,9 @@ public readonly partial struct IPlayerTextDrawData
 
     [OpenMpApiOverload("_model")]
     public partial IPlayerTextDraw Create(Vector2 position, int model);
+    
+    public IPool<IPlayerTextDraw> AsPool()
+    {
+        return new IPool<IPlayerTextDraw>(_handle);
+    }
 }
