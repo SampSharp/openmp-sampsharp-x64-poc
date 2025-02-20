@@ -2,8 +2,6 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-internal delegate void PoolDelegate(nint entry);
-
 public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> where T : unmanaged
 {
     void OnPoolEntryCreated(T entry);
@@ -19,14 +17,8 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
 
         protected override (nint, object) Create(IPoolEventHandler<T> handler)
         {
-            Delegate onPoolEntryCreatedDelegate = (PoolDelegate)(h =>
-                {
-                    handler.OnPoolEntryCreated(Pointer.AsStruct<T>(h));
-                }),
-                onPoolEntryDestroyedDelegate = (PoolDelegate)(h =>
-                {
-                    handler.OnPoolEntryDestroyed(Pointer.AsStruct<T>(h));
-                });
+            Delegate onPoolEntryCreatedDelegate = (PoolDelegate)(h => handler.OnPoolEntryCreated(Pointer.AsStruct<T>(h))),
+                onPoolEntryDestroyedDelegate = (PoolDelegate)(h => handler.OnPoolEntryDestroyed(Pointer.AsStruct<T>(h)));
 
             nint onPoolEntryCreatedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryCreatedDelegate),
                 onPoolEntryDestroyedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryDestroyedDelegate);
