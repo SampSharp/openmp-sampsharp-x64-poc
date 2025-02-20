@@ -79,7 +79,7 @@ public class Startup : IStartup,
         Console.WriteLine("count after " + playerPoolEventDispatcher.Count());
 
         var tds = context.ComponentList.QueryComponent<ITextDrawsComponent>();
-        var txd = tds.Create(new Vector2(0, 0), 99);
+        var txd = tds.Create(new Vector2(0, 0), 98);
         var txd2 = tds.Create(new Vector2(0, 0), 99);
         var txt = txd.GetText();
         Console.WriteLine($"textdraw text: '{txt ?? "<<null>>"}'");
@@ -113,6 +113,13 @@ public class Startup : IStartup,
             Console.WriteLine($"id: {vehicle.GetID()} model: {vehicle.GetModel()} @ {vehicle.GetPosition()}");
         }
         Console.WriteLine("Vehicle iterator end");
+
+        var tdPool = tds.AsPool();
+
+        foreach (var td in tdPool)
+        {
+            Console.WriteLine($"TD: {td.GetID()}, prev mdl: {td.GetPreviewModel()}");
+        }
     }
 
     public void OnTick(Microseconds micros, TimePoint now)

@@ -8,6 +8,11 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
 {
     private readonly nint _data;
 
+    internal FlatPtrHashSet(IntPtr data)
+    {
+        _data = data;
+    }
+
     private static unsafe T Dereference(ref FlatPtrHashSetIterator iterator)
     {
         return *(T*)iterator.Value;

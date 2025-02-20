@@ -16,11 +16,8 @@ internal static class IPoolInterop
     [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "IPool_getPoolEventDispatcher", ExactSpelling = true)]
     public static extern nint IPool_getPoolEventDispatcher(nint handle);
 
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "IPool_begin", ExactSpelling = true)]
-    public static extern MarkedPoolIteratorData IPool_begin(nint handle);
-
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "IPool_end", ExactSpelling = true)]
-    public static extern MarkedPoolIteratorData IPool_end(nint handle);
+    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "IPool_entries", ExactSpelling = true)]
+    public static extern nint IPool_entries(nint handle);
 
     [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "IPool_count", ExactSpelling = true)]
     public static extern Size IPool_count(nint handle);

@@ -1,30 +1,16 @@
 #include <sdk.hpp>
 
-struct wrap {
-    IPool<IIDProvider>::Iterator it;
-    wrap(IPool<IIDProvider>::Iterator it) : it(it) {}
+template <typename T>
+struct IPoolHack : public IPool<T> {
+    const FlatPtrHashSet<T>& exposeEntries() {
+        return this->entries(); // Accessing protected method
+    }
 };
 
-extern "C" SDK_EXPORT wrap __CDECL IPool_begin(IPool<IIDProvider>* pool)
+extern "C" SDK_EXPORT const void* __CDECL IPool_entries(IPool<IIDProvider>* pool)
 {
-    return wrap(pool->begin());
-}
+    IPoolHack<IIDProvider>* hack = static_cast<IPoolHack<IIDProvider>*>(pool);
+    const FlatPtrHashSet<IIDProvider>& entriesRef = hack->exposeEntries();
 
-extern "C" SDK_EXPORT wrap __CDECL IPool_end(IPool<IIDProvider>* pool)
-{
-    return wrap(pool->end());
-}
-
-extern "C" SDK_EXPORT void __CDECL IPool_inc(wrap& wrap)
-{
-    ++wrap.it;
-}
-
-void test123(IPool<IIDProvider>* pool)
-{
-    IPlayer p
-    for(auto it = pool->begin(); it != pool->end(); ++it)
-    {
-        // Do something with the iterator
-    }
+    return static_cast<const void*>(&entriesRef);
 }
