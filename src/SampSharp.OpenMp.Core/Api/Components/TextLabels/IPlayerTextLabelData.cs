@@ -14,4 +14,9 @@ public readonly partial struct IPlayerTextLabelData
 
     [OpenMpApiOverload("_vehicle")]
     public partial IPlayerTextLabel Create(string text, Colour colour, Vector3 pos, float drawDist, bool los, IVehicle attach);
+     
+    public IPool<IPlayerTextLabel> AsPool()
+    {
+        return new IPool<IPlayerTextLabel>(_handle);
+    }
 }

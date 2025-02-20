@@ -19,4 +19,9 @@ public readonly partial struct IPlayerObjectData
     public partial void BeginEditing(IPlayerObject objekt);
     public partial bool EditingObject();
     public partial void EditAttachedObject(int index);
+
+    public IPool<IPlayerObject> AsPool()
+    {
+        return new IPool<IPlayerObject>(_handle);
+    }
 }

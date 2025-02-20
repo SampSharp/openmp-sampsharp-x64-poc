@@ -7,10 +7,8 @@ namespace TestMode.OpenMp.Core;
 public class Startup : IStartup,
     ICoreEventHandler,
     IConsoleEventHandler, 
-    IPlayerPoolEventHandler
+    IPoolEventHandler<IPlayer>
 {
-    private IVehiclesComponent _vehicles;
-
     public void Initialize(StartupContext context)
     {
         context.ForwardConsoleOutputToOpenMpLogger();
@@ -46,7 +44,7 @@ public class Startup : IStartup,
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
-        _vehicles = context.ComponentList.QueryComponent<IVehiclesComponent>();
+        var vehiclesComponent = context.ComponentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers
         var dispatcher = context.Core.GetEventDispatcher();
@@ -56,7 +54,7 @@ public class Startup : IStartup,
 
         context.ComponentList.QueryComponent<IConsoleComponent>().GetEventDispatcher().AddEventHandler(this);
 
-        var v = _vehicles.Create(false, 401, new Vector3(5, 0, 10));
+        var v = vehiclesComponent.Create(false, 401, new Vector3(5, 0, 10));
         v.GetColour(out var vcol);
         Console.WriteLine($"vehicle color: <1: {vcol.First}, 2: {vcol.Second}>");
 
@@ -75,13 +73,13 @@ public class Startup : IStartup,
         Console.WriteLine((nick?.ToString() ?? "null"));
 
         
-        var pool = context.Core.GetPlayers().GetPoolEventDispatcher();
-        Console.WriteLine("count before " + pool.Count());
-        pool.AddEventHandler(this);
-        Console.WriteLine("count after " + pool.Count());
+        var playerPoolEventDispatcher = context.Core.GetPlayers().GetPoolEventDispatcher();
+        Console.WriteLine("count before " + playerPoolEventDispatcher.Count());
+        playerPoolEventDispatcher.AddEventHandler(this);
+        Console.WriteLine("count after " + playerPoolEventDispatcher.Count());
 
         var tds = context.ComponentList.QueryComponent<ITextDrawsComponent>();
-        var txd = tds.Create(new Vector2(0, 0), 99);
+        var txd = tds.Create(new Vector2(0, 0), 98);
         var txd2 = tds.Create(new Vector2(0, 0), 99);
         var txt = txd.GetText();
         Console.WriteLine($"textdraw text: '{txt ?? "<<null>>"}'");
@@ -102,6 +100,26 @@ public class Startup : IStartup,
         // {
         //     SampSharpExceptionHandler.HandleException("test", e);
         // }
+
+        var pool = vehiclesComponent.AsPool();
+
+        var vehCount = pool.Count();
+        
+        Console.WriteLine($"Vehicle count: {vehCount.ToInt32()}");
+
+        Console.WriteLine("Vehicle iterator begin");
+        foreach (var vehicle in pool)
+        {
+            Console.WriteLine($"id: {vehicle.GetID()} model: {vehicle.GetModel()} @ {vehicle.GetPosition()}");
+        }
+        Console.WriteLine("Vehicle iterator end");
+
+        var tdPool = tds.AsPool();
+
+        foreach (var td in tdPool)
+        {
+            Console.WriteLine($"TD: {td.GetID()}, prev mdl: {td.GetPreviewModel()}");
+        }
     }
 
     public void OnTick(Microseconds micros, TimePoint now)

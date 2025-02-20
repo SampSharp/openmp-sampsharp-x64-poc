@@ -43,11 +43,16 @@ public static class Constants
     public const string GenericPlaceholderFQN = "System.Runtime.InteropServices.Marshalling.CustomMarshallerAttribute.GenericPlaceholder";
     
     // SampSharp.OpenMp.Core
-
+    
     /// <summary>
     /// SampSharp.OpenMp.Core.OpenMpApiAttribute
     /// </summary>
     public const string ApiAttributeFQN = "SampSharp.OpenMp.Core.OpenMpApiAttribute";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.OpenMpApiPartialAttribute
+    /// </summary>
+    public const string ApiPartialAttributeFQN = "SampSharp.OpenMp.Core.OpenMpApiPartialAttribute";
 
     /// <summary>
     /// SampSharp.OpenMp.Core.OpenMpEventHandlerAttribute
@@ -92,9 +97,19 @@ public static class Constants
     public const string ExtensionFQN = "SampSharp.OpenMp.Core.Api.IExtension";
 
     /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IExtensionInterface{T}
+    /// SampSharp.OpenMp.Core.Api.IExtensionInterface
     /// </summary>
     public const string ExtensionInterfaceFQN = "SampSharp.OpenMp.Core.Api.IExtensionInterface";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.Api.IIDProviderInterface
+    /// </summary>
+    public const string IdProviderInterfaceFQN = "SampSharp.OpenMp.Core.Api.IIDProviderInterface";
+    
+    /// <summary>
+    /// SampSharp.OpenMp.Core.Api.IIDProvider
+    /// </summary>
+    public const string IdProviderFQN = "SampSharp.OpenMp.Core.Api.IIDProvider";
 
     /// <summary>
     /// SampSharp.OpenMp.Core.Api.IComponent
@@ -102,7 +117,7 @@ public static class Constants
     public const string ComponentFQN = "SampSharp.OpenMp.Core.Api.IComponent";
 
     /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IComponentInterface{T}
+    /// SampSharp.OpenMp.Core.Api.IComponentInterface
     /// </summary>
     public const string ComponentInterfaceFQN = "SampSharp.OpenMp.Core.Api.IComponentInterface";
 

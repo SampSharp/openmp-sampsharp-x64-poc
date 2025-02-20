@@ -2,7 +2,7 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi(typeof(IComponent))]
+[OpenMpApi(typeof(IPoolComponent<ITextDraw>))]
 public readonly partial struct ITextDrawsComponent
 {
     public static UID ComponentId => new(0x9b5dc2b1d15c992a);

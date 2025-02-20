@@ -4,7 +4,7 @@ struct FlatHashSetPtr { void* a; void* b; };
 
 extern "C" SDK_EXPORT FlatHashSetPtr __CDECL FlatPtrHashSet_begin(FlatPtrHashSet<void *>& set)
 {
-    auto it = set.begin();;
+    auto it = set.begin();
     return *(FlatHashSetPtr*)&it;
 }
 

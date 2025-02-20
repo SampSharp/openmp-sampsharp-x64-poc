@@ -9,6 +9,11 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
 
     public nint Handle => _handle;
 
+    public IEventDispatcher(nint handle)
+    {
+        _handle = handle;
+    }
+
     public bool AddEventHandler(T handler, EventPriority priority = EventPriority.Default)
     {
         var handlerHandle = T.Manager.Get(handler).Create();

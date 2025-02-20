@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -64,6 +62,11 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     AttributeFactory.GeneratedCode()
                 ]));
 
+            if (info.Syntax.TypeParameterList != null)
+            {
+                interfaceDeclaration = interfaceDeclaration.WithTypeParameterList(info.Syntax.TypeParameterList);
+            }
+
             var namespaceDeclaration = NamespaceDeclaration(
                     ParseName(
                         info.Symbol.ContainingNamespace.ToDisplayString()))
@@ -99,8 +102,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                             Identifier(Constants.INativeEventHandlerManagerFQN))
                         .WithTypeArgumentList(
                             TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name))))),
+                                SingletonSeparatedList(ctx.Type)))),
                 _idToken)
             .WithModifiers(
                 TokenList(
@@ -114,8 +116,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                                 Identifier(Constants.EventHandlerFQN))
                             .WithTypeArgumentList(
                                 TypeArgumentList(
-                                    SingletonSeparatedList<TypeSyntax>(
-                                        IdentifierName(ctx.Symbol.Name)))))))
+                                    SingletonSeparatedList(ctx.Type))))))
             .WithExpressionBody(
                 ArrowExpressionClause(
                     MemberAccessExpression(
@@ -368,11 +369,6 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
         var targetNode = (InterfaceDeclarationSyntax)ctx.TargetNode;
         
         if (ctx.TargetSymbol is not INamedTypeSymbol symbol)
-        {
-            return null;
-        }
-
-        if (targetNode.TypeParameterList is { Parameters.Count: > 0 })
         {
             return null;
         }

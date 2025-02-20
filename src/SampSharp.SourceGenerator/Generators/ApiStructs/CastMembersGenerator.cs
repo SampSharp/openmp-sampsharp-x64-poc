@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -26,8 +24,7 @@ public static class CastMembersGenerator
             {
                 block = Block(SingletonList<StatementSyntax>(
                         ReturnStatement(
-                            ObjectCreationExpression(
-                                    TypeNameGlobal(type))
+                            ObjectCreationExpression(type.Syntax)
                                 .WithArgumentList(
                                     ArgumentList(
                                         SingletonSeparatedList(
@@ -41,7 +38,7 @@ public static class CastMembersGenerator
             {
                 if (impl.CastPath.Length == 1)
                 {
-                    var func = GenerateExternFunctionCast(ctx, type);
+                    var func = GenerateExternFunctionCast(ctx, type.Symbol);
 
                     var invoke = InvocationExpression(
                             IdentifierName("__PInvoke"))
@@ -55,8 +52,7 @@ public static class CastMembersGenerator
                                             IdentifierName("Handle"))))));
 
                     var ret = ReturnStatement(
-                        ObjectCreationExpression(
-                                TypeNameGlobal(type))
+                        ObjectCreationExpression(type.Syntax)
                             .WithArgumentList(
                                 ArgumentList(
                                     SingletonSeparatedList(
@@ -70,7 +66,7 @@ public static class CastMembersGenerator
                 }
                 else
                 {
-                    var cast = impl.CastPath.Aggregate((ExpressionSyntax)IdentifierName("value"), (current, c) => CastExpression(TypeNameGlobal(c), current));
+                    var cast = impl.CastPath.Aggregate((ExpressionSyntax)IdentifierName("value"), (current, c) => CastExpression(c.Syntax, current));
 
                     block = Block(SingletonList<StatementSyntax>(
                         ReturnStatement(cast)));
@@ -78,7 +74,7 @@ public static class CastMembersGenerator
             }
             yield return ConversionOperatorDeclaration(
                     Token(SyntaxKind.ExplicitKeyword),
-                    TypeNameGlobal(type))
+                    type.Syntax)
                 .WithModifiers(
                     TokenList(
                         Token(SyntaxKind.PublicKeyword), 
@@ -89,7 +85,7 @@ public static class CastMembersGenerator
                             Parameter(
                                     Identifier("value"))
                                 .WithType(
-                                    IdentifierName(ctx.Symbol.Name)))))
+                                    ctx.Type))))
                 .WithBody(block);
 
             isFirst = false;

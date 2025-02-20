@@ -3,15 +3,14 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
-using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;
 
 public static class CreationMembersGenerator
 {
     /// <summary>
-    /// Returns members for the creation of values. This includes the handle field and property, the constructor,
-    /// FromHandle methods, and implicit/explicit conversion operators.
+    /// Returns members for the creation of values. This includes the handle field and property, the constructor, and
+    /// implicit/explicit conversion operators.
     /// </summary>
     public static IEnumerable<MemberDeclarationSyntax> GenerateCreationMembers(StructStubGenerationContext ctx)
     {
@@ -23,15 +22,6 @@ public static class CreationMembersGenerator
 
         // public nint Handle => _handle;
         yield return GenerateHandleProperty();
-
-        if (ctx.IsComponent)
-        {
-            yield return GenerateFromHandleMethod(ctx, Constants.ComponentInterfaceFQN);
-        }
-        if (ctx.IsExtension)
-        {
-            yield return GenerateFromHandleMethod(ctx, Constants.ExtensionInterfaceFQN);
-        }
     }
 
     private static PropertyDeclarationSyntax GenerateHandleProperty()
@@ -63,41 +53,5 @@ public static class CreationMembersGenerator
                             SyntaxKind.SimpleAssignmentExpression, 
                             IdentifierName("_handle"),
                             IdentifierName("handle"))))));
-    }
-
-    private static MethodDeclarationSyntax GenerateFromHandleMethod(StructStubGenerationContext ctx, string genericInterfaceFQN)
-    {
-        return MethodDeclaration(
-                IdentifierName(ctx.Symbol.Name),
-                Identifier("FromHandle"))
-            .WithModifiers(
-                TokenList(
-                    Token(SyntaxKind.StaticKeyword)))
-            .WithExplicitInterfaceSpecifier(
-                ExplicitInterfaceSpecifier(
-                    GenericName(
-                            IdentifierGlobal(genericInterfaceFQN))
-                        .WithTypeArgumentList(
-                            TypeArgumentList(
-                                SingletonSeparatedList<TypeSyntax>(
-                                    IdentifierName(ctx.Symbol.Name))))))
-            .WithParameterList(
-                ParameterList(
-                    SingletonSeparatedList(
-                        Parameter(
-                                Identifier("handle"))
-                            .WithType(
-                                ParseTypeName("nint")))))
-            .WithBody(
-                Block(
-                    SingletonList<StatementSyntax>(
-                        ReturnStatement(
-                            ObjectCreationExpression(
-                                    IdentifierName(ctx.Symbol.Name))
-                                .WithArgumentList(
-                                    ArgumentList(
-                                        SingletonSeparatedList(
-                                            Argument(
-                                                IdentifierName("handle")))))))));
     }
 }

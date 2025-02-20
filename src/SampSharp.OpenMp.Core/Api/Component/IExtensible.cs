@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SampSharp.OpenMp.Core.Api;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi]
 public readonly partial struct IExtensible
@@ -83,9 +81,9 @@ public readonly partial struct IExtensible
         return Extension.Get(ext) as T;
     }
 
-    public T QueryExtension<T>() where T : IExtensionInterface<T>
+    public T QueryExtension<T>() where T : unmanaged, IExtensionInterface
     {
         var extension = GetExtension(T.ExtensionId).Handle;
-        return T.FromHandle(extension);
+        return Pointer.AsStruct<T>(extension);
     }
 }

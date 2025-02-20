@@ -3,7 +3,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
-using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.HelperSyntaxFactory;
 using static SampSharp.SourceGenerator.SyntaxFactories.TypeSyntaxFactory;
@@ -23,7 +22,7 @@ public static class ForwardingMembersGenerator
         {
             var implementingType = impl.Type;
             // only forward public ordinary methods, excluding Equals
-            var implementingMethods = implementingType.GetMembers()
+            var implementingMethods = implementingType.Symbol.GetMembers()
                 .OfType<IMethodSymbol>()
                 .Where(x => !x.IsStatic && x.MethodKind == MethodKind.Ordinary && x.Name != "Equals" && x.DeclaredAccessibility == Accessibility.Public)
                 .ToList();
@@ -66,7 +65,7 @@ public static class ForwardingMembersGenerator
 
                 var target = ParenthesizedExpression(
                     CastExpression(
-                        TypeNameGlobal(implementingType),
+                        implementingType.Syntax,
                         ThisExpression()));
 
                 var invocation =  
@@ -119,7 +118,11 @@ public static class ForwardingMembersGenerator
             result = result.Add(ClassOrStructConstraint(SyntaxKind.ClassConstraint));
         }
         
-        if (x.HasValueTypeConstraint)
+        if (x.HasUnmanagedTypeConstraint)
+        {
+            result = result.Add(TypeConstraint(IdentifierName("unmanaged")));
+        }
+        else if (x.HasValueTypeConstraint)
         {
             result = result.Add(ClassOrStructConstraint(SyntaxKind.StructConstraint));
         }
@@ -129,10 +132,6 @@ public static class ForwardingMembersGenerator
             result = result.Add(TypeConstraint(IdentifierName("notnull")));
         }
         
-        if (x.HasUnmanagedTypeConstraint)
-        {
-            result = result.Add(TypeConstraint(IdentifierName("unmanaged")));
-        }
 
         result = result.AddRange(x.ConstraintTypes.Select(ToTypeConstraint));
         

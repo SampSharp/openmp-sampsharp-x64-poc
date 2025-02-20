@@ -19,7 +19,7 @@ public readonly partial struct IPlayerPool
     public partial IEventDispatcher<IPlayerClickEventHandler> GetPlayerClickDispatcher();
     public partial IEventDispatcher<IPlayerCheckEventHandler> GetPlayerCheckDispatcher();
     public partial IEventDispatcher<IPlayerUpdateEventHandler> GetPlayerUpdateDispatcher();
-    public partial IEventDispatcher<IPlayerPoolEventHandler> GetPoolEventDispatcher();
+    public partial IEventDispatcher<IPoolEventHandler<IPlayer>> GetPoolEventDispatcher();
     public partial bool IsNameTaken(string name, IPlayer skip);
     public partial void SendClientMessageToAll(ref Colour colour, string message);
     public partial void SendChatMessageToAll(IPlayer from, string message);
@@ -35,4 +35,9 @@ public readonly partial struct IPlayerPool
     public partial void AllowNickNameCharacter(char character, bool allow);
     public partial bool IsNickNameCharacterAllowed(char character);
     public partial Colour GetDefaultColour(int pid);
+
+    public IReadOnlyPool<IPlayer> AsPool()
+    {
+        return new IReadOnlyPool<IPlayer>(_handle);
+    }
 }

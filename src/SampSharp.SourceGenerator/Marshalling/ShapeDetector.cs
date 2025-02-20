@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SampSharp.SourceGenerator.Marshalling;
+﻿namespace SampSharp.SourceGenerator.Marshalling;
 
 /// <summary>
 /// Provides methods for determining the shape of a custom marshaller.

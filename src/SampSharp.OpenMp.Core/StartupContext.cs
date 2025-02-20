@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Runtime.InteropServices.Marshalling;
-using System.Text;
+﻿using System.Text;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.OpenMp.Core;

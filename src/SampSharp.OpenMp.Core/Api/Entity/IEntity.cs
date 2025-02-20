@@ -2,7 +2,7 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi]
+[OpenMpApi(typeof(IIDProvider))]
 public readonly partial struct IEntity
 {
     public partial Vector3 GetPosition();

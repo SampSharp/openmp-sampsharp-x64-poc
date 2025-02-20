@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -66,7 +65,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         {
             baseList = BaseList(
                     SeparatedList<BaseTypeSyntax>(
-                        GenerateBaseTypes(info)));
+                        baseListElements));
         }
 
         var structDeclaration = StructDeclaration(info.Syntax.Identifier)
@@ -78,6 +77,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     AttributeFactory.GeneratedCode(),
                     AttributeFactory.SkipLocalsInit()
                 ]));
+
+        if(info.Syntax.TypeParameterList != null)
+        {
+            structDeclaration = structDeclaration.WithTypeParameterList(info.Syntax.TypeParameterList);
+        }
 
         var namespaceDeclaration = NamespaceDeclaration(
                 ParseName(info.Symbol.ContainingNamespace.ToDisplayString()))
@@ -97,19 +101,26 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     private static IEnumerable<SimpleBaseTypeSyntax> GenerateBaseTypes(StructStubGenerationContext ctx)
     {
         IEnumerable<SimpleBaseTypeSyntax> result = [];
-        
+
         if (ctx.IsComponent)
         {
             result = result.Append(
                 SimpleBaseType(
-                    GenericType(Constants.ComponentInterfaceFQN, ParseTypeName(ctx.Symbol.Name))));
+                    ParseTypeName(Constants.ComponentInterfaceFQN)));
         }
 
         if (ctx.IsExtension)
         {
             result = result.Append(
                 SimpleBaseType(
-                    GenericType(Constants.ExtensionInterfaceFQN, ParseTypeName(ctx.Symbol.Name))));
+                    ParseTypeName(Constants.ExtensionInterfaceFQN)));
+        }
+
+        if (ctx.IsIdProvider)
+        {
+            result = result.Append(
+                SimpleBaseType(
+                    ParseTypeName(Constants.IdProviderInterfaceFQN)));
         }
 
         return result;
@@ -141,6 +152,8 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         }
 
         var attribute = ctx.Attributes.Single();
+
+        var isPartial = symbol.GetAttribute(Constants.ApiPartialAttributeFQN) != null;
         
         var library = attribute.NamedArguments.FirstOrDefault(x => x.Key == "Library")
             .Value.Value as string ?? "SampSharp";
@@ -153,11 +166,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
 
 
         var implementingTypes = new List<ImplementingType>();
-        AddImplementingTypes(implementingTypes, attribute, [], []);
+        AddImplementingTypes(implementingTypes, attribute, [], [], targetNode);
 
-        var isComponent = implementingTypes.Any(x => x.Type.ToDisplayString() == Constants.ComponentFQN);
-        var isExtension = implementingTypes.Any(x => x.Type.ToDisplayString() == Constants.ExtensionFQN);
-
+        var isComponent = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ComponentFQN);
+        var isExtension = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ExtensionFQN);
+        var isIdProvider = implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.IdProviderFQN);
         // filter methods: partial, non-static, non-generic
         var methods = targetNode.Members
             .OfType<MethodDeclarationSyntax>()
@@ -191,23 +204,41 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, library);
+        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, isIdProvider, library);
     }
 
-    private static void AddImplementingTypes(List<ImplementingType> implementingTypes, AttributeData attribute, ITypeSymbol[] castPath, List<ITypeSymbol> trace)
+    private static void AddImplementingTypes(List<ImplementingType> implementingTypes, AttributeData attribute, DefiniteType[] castPath, List<ITypeSymbol> trace,
+        StructDeclarationSyntax structDecl)
     {
         var typesImplementedHere = attribute.ConstructorArguments[0].Values
-            .Select(x => (ITypeSymbol)x.Value!)
+            .Select(x => (INamedTypeSymbol)x.Value!)
             .ToArray();
     
         foreach (var type in typesImplementedHere)
         {
-            if (implementingTypes.Any(x => x.Type.IsSame(type)))
+            TypeSyntax syntax;
+            if (type.IsGenericType && structDecl.TypeParameterList != null)
+            {
+                syntax = GenericName(
+                        Identifier(type.Name))
+                    .WithTypeArgumentList(
+                        TypeArgumentList(
+                            SeparatedList<TypeSyntax>(
+                                structDecl.TypeParameterList.Parameters.Select(x => IdentifierName(x.Identifier)))));
+            }
+            else
+            {
+                syntax = TypeNameGlobal(type);
+            }
+
+            var def = new DefiniteType(type, syntax);
+
+            if (implementingTypes.Any(x => x.Type.Symbol.IsSame(type)))
             {
                 continue;
             }
 
-            implementingTypes.Add(new ImplementingType(type, [..castPath, type]));
+            implementingTypes.Add(new ImplementingType(def, [..castPath, def]));
         }
 
         foreach (var type in typesImplementedHere)
@@ -225,8 +256,11 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             }
             
             trace.Add(type);
+            
+            var syntax = TypeNameGlobal(type);
+            var def = new DefiniteType(type, syntax);
 
-            AddImplementingTypes(implementingTypes, nestedAttribute!, [..castPath, type], trace);
+            AddImplementingTypes(implementingTypes, nestedAttribute!, [..castPath, def], trace, structDecl);
 
         }
     }
