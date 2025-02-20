@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -107,14 +106,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         {
             result = result.Append(
                 SimpleBaseType(
-                    GenericType(Constants.ComponentInterfaceFQN, ctx.Type)));
+                    ParseTypeName(Constants.ComponentInterfaceFQN)));
         }
 
         if (ctx.IsExtension)
         {
             result = result.Append(
                 SimpleBaseType(
-                    GenericType(Constants.ExtensionInterfaceFQN, ctx.Type)));
+                    ParseTypeName(Constants.ExtensionInterfaceFQN)));
         }
 
         if (ctx.IsIdProvider)

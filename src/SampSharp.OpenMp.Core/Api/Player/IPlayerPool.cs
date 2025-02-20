@@ -35,4 +35,9 @@ public readonly partial struct IPlayerPool
     public partial void AllowNickNameCharacter(char character, bool allow);
     public partial bool IsNickNameCharacterAllowed(char character);
     public partial Colour GetDefaultColour(int pid);
+
+    public IReadOnlyPool<IPlayer> AsPool()
+    {
+        return new IReadOnlyPool<IPlayer>(_handle);
+    }
 }

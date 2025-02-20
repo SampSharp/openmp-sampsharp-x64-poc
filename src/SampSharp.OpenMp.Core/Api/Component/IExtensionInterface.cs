@@ -1,7 +1,6 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
-public interface IExtensionInterface<out T>
+public interface IExtensionInterface
 {
     static abstract UID ExtensionId { get; }
-    static abstract T FromHandle(nint handle);
 }

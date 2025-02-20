@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SampSharp.SourceGenerator.Marshalling;
+﻿namespace SampSharp.SourceGenerator.Marshalling;
 
 /// <summary>
 /// Information about a marshaller mode as provided by the CustomMarshallerAttribute on the marshaller entry point.
