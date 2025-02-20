@@ -104,8 +104,15 @@ public class Startup : IStartup,
         var pool = vehiclesComponent.AsPool();
 
         var vehCount = pool.Count();
+        
+        Console.WriteLine($"Vehicle count: {vehCount.ToInt32()}");
 
-        Console.WriteLine($"Veh count: {vehCount.ToInt32()}");
+        Console.WriteLine("Vehicle iterator begin");
+        foreach (var vehicle in pool)
+        {
+            Console.WriteLine($"id: {vehicle.GetID()} model: {vehicle.GetModel()} @ {vehicle.GetPosition()}");
+        }
+        Console.WriteLine("Vehicle iterator end");
     }
 
     public void OnTick(Microseconds micros, TimePoint now)

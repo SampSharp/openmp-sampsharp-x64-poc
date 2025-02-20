@@ -102,6 +102,16 @@ public static class Constants
     public const string ExtensionInterfaceFQN = "SampSharp.OpenMp.Core.Api.IExtensionInterface";
 
     /// <summary>
+    /// SampSharp.OpenMp.Core.Api.IIDProviderInterface
+    /// </summary>
+    public const string IdProviderInterfaceFQN = "SampSharp.OpenMp.Core.Api.IIDProviderInterface";
+    
+    /// <summary>
+    /// SampSharp.OpenMp.Core.Api.IIDProvider
+    /// </summary>
+    public const string IdProviderFQN = "SampSharp.OpenMp.Core.Api.IIDProvider";
+
+    /// <summary>
     /// SampSharp.OpenMp.Core.Api.IComponent
     /// </summary>
     public const string ComponentFQN = "SampSharp.OpenMp.Core.Api.IComponent";

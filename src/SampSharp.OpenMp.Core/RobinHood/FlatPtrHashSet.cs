@@ -13,17 +13,27 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
         return *(T*)iterator.Value;
     }
 
-    public int Count => RobinHood.FlatPtrHashSet_size(_data).Value.ToInt32();
+    public int Count => RobinHood.FlatPtrHashSet_size(_data).ToInt32();
 
     public IEnumerator<T> GetEnumerator()
     {
-        var iter = RobinHood.FlatPtrHashSet_begin(_data);
-
-        while (iter != RobinHood.FlatPtrHashSet_end(_data))
+        // TODO: non alloc
+        var iter = Begin();
+        while (iter != End())
         {
             yield return Dereference(ref iter);
-            iter = RobinHood.FlatPtrHashSet_inc(iter);
+            iter++;
         }
+    }
+
+    internal FlatPtrHashSetIterator Begin()
+    {
+        return RobinHood.FlatPtrHashSet_begin(_data);
+    }
+
+    internal FlatPtrHashSetIterator End()
+    {
+        return RobinHood.FlatPtrHashSet_end(_data);
     }
 
     IEnumerator IEnumerable.GetEnumerator()

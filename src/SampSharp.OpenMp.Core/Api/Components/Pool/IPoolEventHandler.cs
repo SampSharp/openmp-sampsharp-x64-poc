@@ -21,15 +21,11 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
         {
             Delegate onPoolEntryCreatedDelegate = (PoolDelegate)(h =>
                 {
-                    Union u = default;
-                    u.Handle = h;
-                    handler.OnPoolEntryCreated(u.Ptr);
+                    handler.OnPoolEntryCreated(Pointer.ToStruct<T>(h));
                 }),
                 onPoolEntryDestroyedDelegate = (PoolDelegate)(h =>
                 {
-                    Union u = default;
-                    u.Handle = h;
-                    handler.OnPoolEntryDestroyed(u.Ptr);
+                    handler.OnPoolEntryDestroyed(Pointer.ToStruct<T>(h));
                 });
 
             nint onPoolEntryCreatedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryCreatedDelegate),
@@ -44,13 +40,6 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
         protected override void Free(nint handle)
         {
             PoolEventHandlerInterop.PoolEventHandlerImpl_delete(handle);
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct Union
-        {
-            [FieldOffset(0)] public nint Handle;
-            [FieldOffset(0)] public T Ptr;
         }
     }
 }

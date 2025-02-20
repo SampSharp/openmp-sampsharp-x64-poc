@@ -12,6 +12,7 @@ public record StructStubGenerationContext(
     ImplementingType[] ImplementingTypes,
     bool IsExtension,
     bool IsComponent,
+    bool IsIdProvider,
     string Library)
 {
     public TypeSyntax Type { get; } = GetSelfType(Symbol, Syntax);

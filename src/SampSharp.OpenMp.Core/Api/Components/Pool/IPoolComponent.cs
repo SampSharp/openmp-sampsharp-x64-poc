@@ -4,7 +4,7 @@ namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi(typeof(IComponent))]
 [OpenMpApiPartial]
-public readonly partial struct IPoolComponent<T> where T : unmanaged
+public readonly partial struct IPoolComponent<T> where T : unmanaged, IIDProviderInterface
 {
     public IPool<T> AsPool()
     {

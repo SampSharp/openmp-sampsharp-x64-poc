@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SampSharp.OpenMp.Core.Api;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 public readonly struct IReadOnlyPool<T> where T : unmanaged
 {
@@ -21,23 +19,11 @@ public readonly struct IReadOnlyPool<T> where T : unmanaged
     public T Get(int index)
     {
         var data =  IReadOnlyPoolInterop.IReadOnlyPool_get(_handle, index);
-        Union un = default;
-        un.handle = data;
-        return un.ptr!;
+        return Pointer.ToStruct<T>(data);
     }
 
     public void Bounds(out Pair<Size, Size> bounds)
     {
         IReadOnlyPoolInterop.IReadOnlyPool_bounds(_handle, out bounds);
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    private struct Union
-    {
-        [FieldOffset(0)]
-        public T ptr;
-        
-        [FieldOffset(0)]
-        public nint handle;
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SampSharp.OpenMp.Core.Api;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi]
 public readonly partial struct IExtensible

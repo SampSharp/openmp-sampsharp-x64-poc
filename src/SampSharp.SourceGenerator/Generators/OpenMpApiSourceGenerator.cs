@@ -117,6 +117,13 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     GenericType(Constants.ExtensionInterfaceFQN, ctx.Type)));
         }
 
+        if (ctx.IsIdProvider)
+        {
+            result = result.Append(
+                SimpleBaseType(
+                    ParseTypeName(Constants.IdProviderInterfaceFQN)));
+        }
+
         return result;
     }
 
@@ -164,7 +171,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
 
         var isComponent = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ComponentFQN);
         var isExtension = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ExtensionFQN);
-
+        var isIdProvider = implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.IdProviderFQN);
         // filter methods: partial, non-static, non-generic
         var methods = targetNode.Members
             .OfType<MethodDeclarationSyntax>()
@@ -198,7 +205,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, library);
+        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, isIdProvider, library);
     }
 
     private static void AddImplementingTypes(List<ImplementingType> implementingTypes, AttributeData attribute, DefiniteType[] castPath, List<ITypeSymbol> trace,
