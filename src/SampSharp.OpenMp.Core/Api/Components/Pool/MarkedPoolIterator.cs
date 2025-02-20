@@ -36,7 +36,7 @@ public struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterator
         Debug.Assert(_lockedId == -1);
         if (_iter != _entries.End())
         {
-            _lockedId = Pointer.ToStruct<T>(_iter.Value).GetID();
+            _lockedId = _iter.Get<T>().GetID();
             _pool.Lock(_lockedId);
         }
     }
@@ -50,7 +50,7 @@ public struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterator
         }
     }
 
-    public T Current => Pointer.ToStruct<T>(_iter.Value);
+    public T Current => _iter.Get<T>();
 
     public bool Equals(MarkedPoolIterator<T> other)
     {

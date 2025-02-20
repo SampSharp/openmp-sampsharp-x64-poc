@@ -118,7 +118,11 @@ public static class ForwardingMembersGenerator
             result = result.Add(ClassOrStructConstraint(SyntaxKind.ClassConstraint));
         }
         
-        if (x.HasValueTypeConstraint)
+        if (x.HasUnmanagedTypeConstraint)
+        {
+            result = result.Add(TypeConstraint(IdentifierName("unmanaged")));
+        }
+        else if (x.HasValueTypeConstraint)
         {
             result = result.Add(ClassOrStructConstraint(SyntaxKind.StructConstraint));
         }
@@ -128,10 +132,6 @@ public static class ForwardingMembersGenerator
             result = result.Add(TypeConstraint(IdentifierName("notnull")));
         }
         
-        if (x.HasUnmanagedTypeConstraint)
-        {
-            result = result.Add(TypeConstraint(IdentifierName("unmanaged")));
-        }
 
         result = result.AddRange(x.ConstraintTypes.Select(ToTypeConstraint));
         

@@ -81,9 +81,11 @@ public readonly partial struct IExtensible
         return Extension.Get(ext) as T;
     }
 
-    public T QueryExtension<T>() where T : IExtensionInterface<T>
+    public T QueryExtension<T>() where T : unmanaged, IExtensionInterface<T>
     {
         var extension = GetExtension(T.ExtensionId).Handle;
+        return Pointer.AsStruct<T>(extension);
+
         return T.FromHandle(extension);
     }
 }

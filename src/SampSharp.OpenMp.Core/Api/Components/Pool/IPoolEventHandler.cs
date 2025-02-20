@@ -21,11 +21,11 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
         {
             Delegate onPoolEntryCreatedDelegate = (PoolDelegate)(h =>
                 {
-                    handler.OnPoolEntryCreated(Pointer.ToStruct<T>(h));
+                    handler.OnPoolEntryCreated(Pointer.AsStruct<T>(h));
                 }),
                 onPoolEntryDestroyedDelegate = (PoolDelegate)(h =>
                 {
-                    handler.OnPoolEntryDestroyed(Pointer.ToStruct<T>(h));
+                    handler.OnPoolEntryDestroyed(Pointer.AsStruct<T>(h));
                 });
 
             nint onPoolEntryCreatedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryCreatedDelegate),

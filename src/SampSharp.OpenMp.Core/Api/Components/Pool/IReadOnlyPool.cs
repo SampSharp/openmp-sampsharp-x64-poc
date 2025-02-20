@@ -19,7 +19,7 @@ public readonly struct IReadOnlyPool<T> where T : unmanaged
     public T Get(int index)
     {
         var data =  IReadOnlyPoolInterop.IReadOnlyPool_get(_handle, index);
-        return Pointer.ToStruct<T>(data);
+        return Pointer.AsStruct<T>(data);
     }
 
     public void Bounds(out Pair<Size, Size> bounds)

@@ -13,11 +13,6 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
         _data = data;
     }
 
-    private static unsafe T Dereference(ref FlatPtrHashSetIterator iterator)
-    {
-        return *(T*)iterator.Value;
-    }
-
     public int Count => RobinHood.FlatPtrHashSet_size(_data).ToInt32();
 
     public IEnumerator<T> GetEnumerator()
@@ -26,7 +21,7 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
         var iter = Begin();
         while (iter != End())
         {
-            yield return Dereference(ref iter);
+            yield return iter.Get<T>();
             iter++;
         }
     }

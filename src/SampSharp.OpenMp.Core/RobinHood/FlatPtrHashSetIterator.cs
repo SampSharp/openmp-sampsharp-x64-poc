@@ -8,7 +8,10 @@ internal readonly struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetItera
     private readonly nint _value; // NodePtr mKeyVals{nullptr};
     private readonly nint _info; // uint8_t const* mInfo{nullptr};
 
-    public nint Value => _value;
+    public T Get<T>() where T : unmanaged
+    {
+        return Pointer.Dereference<T>(_value);
+    }
 
     public bool Equals(FlatPtrHashSetIterator other)
     {

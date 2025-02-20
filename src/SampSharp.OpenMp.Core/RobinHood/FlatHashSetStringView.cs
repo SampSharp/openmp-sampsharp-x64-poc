@@ -9,9 +9,9 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 {
     private readonly nint _data;
 
-    private static unsafe StringView Dereference(ref FlatPtrHashSetIterator iterator)
+    private static StringView Dereference(ref FlatPtrHashSetIterator iterator)
     {
-        return *(StringView*)iterator.Value;
+        return iterator.Get<StringView>();
     }
 
     public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();
@@ -27,7 +27,7 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
         }
     }
 
-    public unsafe void Emplace(string value)
+    public void Emplace(string value)
     {
         scoped StringViewMarshaller.ManagedToNative valueMarshaller = new();
         Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToNative.BufferSize];
