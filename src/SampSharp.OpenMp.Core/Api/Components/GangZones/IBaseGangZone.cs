@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.RobinHood;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct IBaseGangZone

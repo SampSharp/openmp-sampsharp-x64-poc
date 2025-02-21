@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.RobinHood;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpApi(typeof(IPoolComponent<IGangZone>))]
 public readonly partial struct IGangZonesComponent

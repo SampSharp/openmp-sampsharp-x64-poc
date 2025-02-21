@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.RobinHood;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpEventHandler]
 public partial interface IConsoleEventHandler

@@ -1,6 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
+using SampSharp.OpenMp.Core.Chrono;
 
 namespace SampSharp.OpenMp.Core.Api;
 

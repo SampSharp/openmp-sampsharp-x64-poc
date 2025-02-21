@@ -2,23 +2,23 @@
 using System.Runtime.InteropServices;
 using SampSharp.OpenMp.Core.Api;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.RobinHood;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 {
     private readonly nint _data;
 
-    public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();
+    public int Count => RobinHoodInterop.FlatHashSetStringView_size(_data).Value.ToInt32();
 
     public IEnumerator<string?> GetEnumerator()
     {
-        var iter = RobinHood.FlatHashSetStringView_begin(_data);
+        var iter = RobinHoodInterop.FlatHashSetStringView_begin(_data);
 
-        while (iter != RobinHood.FlatHashSetStringView_end(_data))
+        while (iter != RobinHoodInterop.FlatHashSetStringView_end(_data))
         {
             yield return iter.Get<StringView>().ToString();
-            iter = RobinHood.FlatHashSetStringView_inc(iter);
+            iter = RobinHoodInterop.FlatHashSetStringView_inc(iter);
         }
     }
 
@@ -32,7 +32,7 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
             valueMarshaller.FromManaged(value, buffer);
             var valueMarshalled = valueMarshaller.ToUnmanaged();
 
-            RobinHood.FlatHashSetStringView_emplace(_data, valueMarshalled);
+            RobinHoodInterop.FlatHashSetStringView_emplace(_data, valueMarshalled);
         }
         finally
         {

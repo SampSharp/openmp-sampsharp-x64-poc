@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Chrono;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct Milliseconds(long value)

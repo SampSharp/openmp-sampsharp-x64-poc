@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.Chrono;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 [OpenMpEventHandler]
 public partial interface ICoreEventHandler

@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices.Marshalling;
+using SampSharp.OpenMp.Core.Chrono;
+using SampSharp.OpenMp.Core.RobinHood;
 
 namespace SampSharp.OpenMp.Core.Api;
 

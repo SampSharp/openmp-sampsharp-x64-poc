@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices.Marshalling;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Chrono;
 
 [CustomMarshaller(typeof(DateTimeOffset), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(DateTimeOffset), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]

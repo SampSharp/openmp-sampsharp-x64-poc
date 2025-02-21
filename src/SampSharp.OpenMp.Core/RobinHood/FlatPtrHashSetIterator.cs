@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.RobinHood;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetIterator>
@@ -30,7 +30,7 @@ internal struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetIterator>
 
     public void Advance()
     {
-        this = RobinHood.FlatPtrHashSet_inc(this);
+        this = RobinHoodInterop.FlatPtrHashSet_inc(this);
     }
 
     public static bool operator ==(FlatPtrHashSetIterator a, FlatPtrHashSetIterator b)

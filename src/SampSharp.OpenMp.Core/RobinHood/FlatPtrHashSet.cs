@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.RobinHood;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unmanaged
@@ -13,7 +13,7 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
         _data = data;
     }
 
-    public int Count => RobinHood.FlatPtrHashSet_size(_data).ToInt32();
+    public int Count => RobinHoodInterop.FlatPtrHashSet_size(_data).ToInt32();
 
     public Enumerator GetEnumerator()
     {
@@ -22,12 +22,12 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
 
     internal FlatPtrHashSetIterator Begin()
     {
-        return RobinHood.FlatPtrHashSet_begin(_data);
+        return RobinHoodInterop.FlatPtrHashSet_begin(_data);
     }
 
     internal FlatPtrHashSetIterator End()
     {
-        return RobinHood.FlatPtrHashSet_end(_data);
+        return RobinHoodInterop.FlatPtrHashSet_end(_data);
     }
 
     IEnumerator<T> IEnumerable<T>.GetEnumerator()

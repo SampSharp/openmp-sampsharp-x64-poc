@@ -7,8 +7,6 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
 {
     private readonly nint _handle;
 
-    public nint Handle => _handle;
-
     public IEventDispatcher(nint handle)
     {
         _handle = handle;

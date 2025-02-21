@@ -1,16 +1,11 @@
 ﻿using System.Collections;
+using SampSharp.OpenMp.Core.RobinHood;
 
 namespace SampSharp.OpenMp.Core.Api;
 
-public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProviderInterface
+[OpenMpApi]
+public readonly partial struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProviderInterface
 {
-    private readonly nint _handle;
-
-    public IPool(nint handle)
-    {
-        _handle = handle;
-    }
-
     public T Get(int index)
     {
         return ((IReadOnlyPool<T>)this).Get(index);
@@ -62,11 +57,6 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
     {
         var entries = Entries();
         return new MarkedPoolIterator<T>(this, entries, entries.End());
-    }
-
-    public override int GetHashCode()
-    {
-        return _handle.GetHashCode();
     }
 
     public Enumerator GetEnumerator()

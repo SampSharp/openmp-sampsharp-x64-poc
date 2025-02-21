@@ -1,21 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
-public readonly struct IReadOnlyPool<T> where T : unmanaged
+[OpenMpApi]
+public readonly partial struct IReadOnlyPool<T> where T : unmanaged
 {
-    private readonly nint _handle;
-
-    public IReadOnlyPool(nint handle)
-    {
-        _handle = handle;
-    }
-
-    public nint Handle => _handle;
-
-    public override int GetHashCode()
-    {
-        return _handle.GetHashCode();
-    }
-
     public T Get(int index)
     {
         var data =  IReadOnlyPoolInterop.IReadOnlyPool_get(_handle, index);

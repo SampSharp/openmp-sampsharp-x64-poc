@@ -1,9 +1,9 @@
 ﻿using System.Runtime.InteropServices;
 using SampSharp.OpenMp.Core.Api;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.RobinHood;
 
-internal static class RobinHood
+internal static class RobinHoodInterop
 {
     [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl)]
     public static extern FlatPtrHashSetIterator FlatPtrHashSet_begin(nint data);

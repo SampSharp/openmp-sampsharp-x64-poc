@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices.Marshalling;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.RobinHood;
 
 [CustomMarshaller(typeof(IEnumerable<string>), MarshalMode.UnmanagedToManagedIn, typeof(FlatHashSetStringViewMarshaller))]
 public static class FlatHashSetStringViewMarshaller
