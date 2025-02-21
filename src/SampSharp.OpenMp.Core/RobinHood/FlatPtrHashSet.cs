@@ -15,15 +15,9 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
 
     public int Count => RobinHood.FlatPtrHashSet_size(_data).ToInt32();
 
-    public IEnumerator<T> GetEnumerator()
+    public Enumerator GetEnumerator()
     {
-        // TODO: non alloc
-        var iter = Begin();
-        while (iter != End())
-        {
-            yield return iter.Get<T>();
-            iter++;
-        }
+        return new Enumerator(this);
     }
 
     internal FlatPtrHashSetIterator Begin()
@@ -36,8 +30,55 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
         return RobinHood.FlatPtrHashSet_end(_data);
     }
 
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public struct Enumerator : IEnumerator<T>
+    {
+        private readonly FlatPtrHashSet<T> _set;
+        private FlatPtrHashSetIterator? _iterator;
+
+        internal Enumerator(FlatPtrHashSet<T> set)
+        {
+            _set = set;
+        }
+
+        public bool MoveNext()
+        {
+            if (!_iterator.HasValue)
+            {
+                _iterator = _set.Begin();
+                return _iterator != _set.End();
+            }
+
+            if (_iterator == _set.End())
+            {
+                return false;
+            }
+
+            _iterator++;
+            return true;
+        }
+
+        public void Reset()
+        {
+            throw new NotSupportedException();
+        }
+
+        public T Current => _iterator?.Get<T>() ?? throw new InvalidOperationException();
+
+        object IEnumerator.Current => Current;
+
+        public void Dispose()
+        {
+            _iterator = null;
+        }
     }
 }

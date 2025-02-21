@@ -1819,7 +1819,7 @@ public static class Animation
         "SAMP:FISHINGIDLE",
     ];
 
-    private static HashSet<string> _animLibs =
+    private static readonly HashSet<string> _animLibs =
     [
         "AIRPORT",
         "ATTRACTORS",

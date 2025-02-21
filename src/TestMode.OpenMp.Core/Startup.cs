@@ -44,6 +44,9 @@ public class Startup : IStartup,
             Console.WriteLine($"ban: {b.Name} {b.Address} {b.Reason} {b.Time}");
         }
 
+        var alias = cfg.GetNameFromAlias("rcon");
+        Console.WriteLine($"rcon alias: {alias}");
+
         var vehiclesComponent = context.ComponentList.QueryComponent<IVehiclesComponent>();
 
         // test handlers

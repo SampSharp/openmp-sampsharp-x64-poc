@@ -11,37 +11,6 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
         _handle = handle;
     }
 
-    public nint Handle => _handle;
-
-    public static explicit operator IReadOnlyPool<T>(IPool<T> value)
-    {
-        return new IReadOnlyPool<T>(value.Handle);
-    }
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        var iter = Begin();
-
-        // TODO: non-alloc
-        while (iter != End())
-        {
-            yield return iter.Current;
-            iter++;
-        }
-
-        iter.Dispose();
-    }
-
-    public override int GetHashCode()
-    {
-        return _handle.GetHashCode();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
     public T Get(int index)
     {
         return ((IReadOnlyPool<T>)this).Get(index);
@@ -67,6 +36,11 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
         return IPoolInterop.IPool_unlock(_handle, index);
     }
 
+    public Size Count()
+    {
+        return IPoolInterop.IPool_count(_handle);
+    }
+
     public IEventDispatcher<IPoolEventHandler<T>> GetPoolEventDispatcher()
     {
         var data = IPoolInterop.IPool_getPoolEventDispatcher(_handle);
@@ -78,20 +52,83 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
         return new FlatPtrHashSet<T>(IPoolInterop.IPool_entries(_handle));
     }
 
-    public MarkedPoolIterator<T> Begin()
+    private MarkedPoolIterator<T> Begin()
     {
         var entries = Entries();
         return new MarkedPoolIterator<T>(this, entries, entries.Begin());
     }
 
-    public MarkedPoolIterator<T> End()
+    private MarkedPoolIterator<T> End()
     {
         var entries = Entries();
         return new MarkedPoolIterator<T>(this, entries, entries.End());
     }
 
-    public Size Count()
+    public override int GetHashCode()
     {
-        return IPoolInterop.IPool_count(_handle);
+        return _handle.GetHashCode();
+    }
+
+    public Enumerator GetEnumerator()
+    {
+        return new Enumerator(this);
+    }
+
+    IEnumerator<T> IEnumerable<T>.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public static explicit operator IReadOnlyPool<T>(IPool<T> value)
+    {
+        return new IReadOnlyPool<T>(value._handle);
+    }
+
+    public struct Enumerator : IEnumerator<T>
+    {
+        private readonly IPool<T> _pool;
+        private MarkedPoolIterator<T>? _iterator;
+
+        internal Enumerator(IPool<T> pool)
+        {
+            _pool = pool;
+        }
+
+        public bool MoveNext()
+        {
+            if (!_iterator.HasValue)
+            {
+                _iterator = _pool.Begin();
+                return _iterator != _pool.End();
+            }
+
+            if (_iterator == _pool.End())
+            {
+                return false;
+            }
+
+            _iterator++;
+            return true;
+        }
+
+        public void Reset()
+        {
+            throw new InvalidOperationException();
+        }
+
+        public T Current => _iterator?.Current ?? throw new InvalidOperationException();
+
+        object IEnumerator.Current => Current;
+
+        public void Dispose()
+        {
+            _iterator?.Dispose();
+            _iterator = null;
+        }
     }
 }
