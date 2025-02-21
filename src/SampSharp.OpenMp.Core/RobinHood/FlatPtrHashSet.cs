@@ -63,7 +63,9 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
                 return false;
             }
 
-            _iterator++;
+            var iter = _iterator.Value;
+            iter.Advance();
+            _iterator = iter;
             return true;
         }
 

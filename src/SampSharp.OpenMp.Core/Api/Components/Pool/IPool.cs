@@ -97,6 +97,7 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
         internal Enumerator(IPool<T> pool)
         {
             _pool = pool;
+            _iterator = null;
         }
 
         public bool MoveNext()
@@ -107,12 +108,16 @@ public readonly struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProvide
                 return _iterator != _pool.End();
             }
 
-            if (_iterator == _pool.End())
+            
+            var iter = _iterator.Value;
+            iter.Advance();
+
+            if (iter == _pool.End())
             {
                 return false;
             }
 
-            _iterator++;
+            _iterator = iter;
             return true;
         }
 

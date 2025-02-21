@@ -24,14 +24,16 @@ public static class ForwardingMembersGenerator
             // only forward public ordinary methods, excluding Equals
             var implementingMethods = implementingType.Symbol.GetMembers()
                 .OfType<IMethodSymbol>()
-                .Where(x => !x.IsStatic && x.MethodKind == MethodKind.Ordinary && x.Name != "Equals" && x.DeclaredAccessibility == Accessibility.Public)
+                .Where(x => !x.IsStatic && x is
+                {
+                    MethodKind: MethodKind.Ordinary,
+                    Name: not "Equals" and not "GetHashCode",
+                    DeclaredAccessibility: Accessibility.Public
+                })
                 .ToList();
 
-            for (var index = 0; index < implementingMethods.Count; index++)
+            foreach (var implementingMethod in implementingMethods)
             {
-                var implementingMethod = implementingMethods[index];
-
-
                 var method = MethodDeclaration(
                         TypeNameGlobal(implementingMethod, true), 
                         implementingMethod.Name)
@@ -70,10 +72,10 @@ public static class ForwardingMembersGenerator
 
                 var invocation =  
                     InvocationExpression(
-                        MemberAccessExpression(
-                            SyntaxKind.SimpleMemberAccessExpression,
-                            target,
-                            memberName))
+                            MemberAccessExpression(
+                                SyntaxKind.SimpleMemberAccessExpression,
+                                target,
+                                memberName))
                         .WithArgumentList(
                             ArgumentList(
                                 SeparatedList(

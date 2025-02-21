@@ -67,12 +67,11 @@ internal struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterat
         return _iter.GetHashCode();
     }
     
-    public static MarkedPoolIterator<T> operator ++(MarkedPoolIterator<T> self)
+    public void Advance()
     {
-        self._iter++;
-        self.Unlock();
-        self.Lock();
-        return self;
+        _iter.Advance();
+        Unlock();
+        Lock();
     }
 
     public static bool operator ==(MarkedPoolIterator<T> a, MarkedPoolIterator<T> b)

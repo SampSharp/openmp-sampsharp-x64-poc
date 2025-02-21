@@ -2,7 +2,7 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi(typeof(IExtension))]
+[OpenMpApi(typeof(IExtension), typeof(IPool<IPlayerObject>))]
 public readonly partial struct IPlayerObjectData
 {
     public static UID ExtensionId => new(0x93d4ed2344b07456);
@@ -20,8 +20,8 @@ public readonly partial struct IPlayerObjectData
     public partial bool EditingObject();
     public partial void EditAttachedObject(int index);
 
-    public IPool<IPlayerObject> AsPool()
-    {
-        return new IPool<IPlayerObject>(_handle);
-    }
+    // public IPool<IPlayerObject> AsPool()
+    // {
+    //     return new IPool<IPlayerObject>(_handle);
+    // }
 }

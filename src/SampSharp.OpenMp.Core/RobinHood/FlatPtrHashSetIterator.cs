@@ -3,11 +3,11 @@
 namespace SampSharp.OpenMp.Core;
 
 [StructLayout(LayoutKind.Sequential)]
-internal readonly struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetIterator>
+internal struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetIterator>
 {
     private readonly nint _value; // NodePtr mKeyVals{nullptr};
     private readonly nint _info; // uint8_t const* mInfo{nullptr};
-
+    
     public T Get<T>() where T : unmanaged
     {
         return Pointer.Dereference<T>(_value);
@@ -28,9 +28,9 @@ internal readonly struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetItera
         return _value.GetHashCode();
     }
 
-    public static FlatPtrHashSetIterator operator ++(FlatPtrHashSetIterator iterator)
+    public void Advance()
     {
-        return RobinHood.FlatPtrHashSet_inc(iterator);
+        this = RobinHood.FlatPtrHashSet_inc(this);
     }
 
     public static bool operator ==(FlatPtrHashSetIterator a, FlatPtrHashSetIterator b)
