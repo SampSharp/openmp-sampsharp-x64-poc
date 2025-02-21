@@ -291,6 +291,7 @@ PROXY(IPlayerObjectData, void, beginEditing, IObject&);
 PROXY_OVERLOAD(IPlayerObjectData, void, beginEditing, _player, IPlayerObject&);
 PROXY(IPlayerObjectData, bool, editingObject);
 PROXY(IPlayerObjectData, void, editAttachedObject, int);
+PROXY_CAST_NAMED(IPlayerObjectData, IPlayerObjectData, IPool<IPlayerObject>, IPool);
 
 // include/Server/Components/Pawn
 // @skip
@@ -402,6 +403,7 @@ PROXY(IPlayerTextDrawData, bool, isSelecting);
 PROXY(IPlayerTextDrawData, void, endSelection);
 PROXY(IPlayerTextDrawData, IPlayerTextDraw*, create, Vector2, StringView);
 PROXY_OVERLOAD(IPlayerTextDrawData, IPlayerTextDraw*, create, _model, Vector2, int);
+PROXY_CAST_NAMED(IPlayerTextDrawData, IPlayerTextDrawData, IPool<IPlayerTextDraw>, IPool);
 
 // include/Server/Components/TextLabels
 PROXY(ITextLabelBase, void, setText, StringView);
@@ -431,6 +433,7 @@ PROXY_OVERLOAD(ITextLabelsComponent, ITextLabel *, create, _vehicle, StringView,
 PROXY(IPlayerTextLabelData, IPlayerTextLabel *, create, StringView, Colour, Vector3, float, bool);
 PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _player, StringView, Colour, Vector3, float, bool, IPlayer&);
 PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _vehicle, StringView, Colour, Vector3, float, bool, IVehicle&);
+PROXY_CAST_NAMED(IPlayerTextLabelData, IPlayerTextLabelData, IPool<IPlayerTextLabel>, IPool);
 
 // include/Server/Components/Timers
 // @skip
@@ -835,6 +838,7 @@ PROXY(IPlayerPool, bool, isNameValid, StringView);
 PROXY(IPlayerPool, void, allowNickNameCharacter, char, bool);
 PROXY(IPlayerPool, bool, isNickNameCharacterAllowed, char);
 PROXY(IPlayerPool, Colour, getDefaultColour, int);
+PROXY_CAST_NAMED(IPlayerPool, IPlayerPool, IReadOnlyPool<IPlayer>, IReadOnlyPool);
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerSpawnEventHandler, getPlayerSpawnDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerSpawnEventHandler)

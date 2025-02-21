@@ -9,11 +9,6 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 {
     private readonly nint _data;
 
-    private static StringView Dereference(ref FlatPtrHashSetIterator iterator)
-    {
-        return iterator.Get<StringView>();
-    }
-
     public int Count => RobinHood.FlatHashSetStringView_size(_data).Value.ToInt32();
 
     public IEnumerator<string?> GetEnumerator()
@@ -22,7 +17,7 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 
         while (iter != RobinHood.FlatHashSetStringView_end(_data))
         {
-            yield return Dereference(ref iter).ToString();
+            yield return iter.Get<StringView>().ToString();
             iter = RobinHood.FlatHashSetStringView_inc(iter);
         }
     }
@@ -30,14 +25,19 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
     public void Emplace(string value)
     {
         scoped StringViewMarshaller.ManagedToNative valueMarshaller = new();
-        Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToNative.BufferSize];
-        valueMarshaller.FromManaged(value, buffer);
 
-        var valueMarshalled = valueMarshaller.ToUnmanaged();
+        try
+        {
+            Span<byte> buffer = stackalloc byte[StringViewMarshaller.ManagedToNative.BufferSize];
+            valueMarshaller.FromManaged(value, buffer);
+            var valueMarshalled = valueMarshaller.ToUnmanaged();
 
-        RobinHood.FlatHashSetStringView_emplace(_data, valueMarshalled);
-
-        valueMarshaller.Free();
+            RobinHood.FlatHashSetStringView_emplace(_data, valueMarshalled);
+        }
+        finally
+        {
+            valueMarshaller.Free();
+        }
     }
 
     IEnumerator IEnumerable.GetEnumerator()

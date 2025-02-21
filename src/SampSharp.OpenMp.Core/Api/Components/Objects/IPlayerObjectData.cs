@@ -20,8 +20,8 @@ public readonly partial struct IPlayerObjectData
     public partial bool EditingObject();
     public partial void EditAttachedObject(int index);
 
-    // public IPool<IPlayerObject> AsPool()
-    // {
-    //     return new IPool<IPlayerObject>(_handle);
-    // }
+    public IPool<IPlayerObject> AsPool()
+    {
+        return (IPool<IPlayerObject>)this;
+    }
 }

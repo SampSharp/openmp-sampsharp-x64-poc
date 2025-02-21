@@ -3,7 +3,7 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
-[OpenMpApi(typeof(IExtensible))]
+[OpenMpApi(typeof(IExtensible), typeof(IReadOnlyPool<IPlayer>))]
 public readonly partial struct IPlayerPool
 {
     public partial FlatPtrHashSet<IPlayer> Entries();
@@ -38,6 +38,6 @@ public readonly partial struct IPlayerPool
 
     public IReadOnlyPool<IPlayer> AsPool()
     {
-        return new IReadOnlyPool<IPlayer>(_handle);
+        return (IReadOnlyPool<IPlayer>)this;
     }
 }
