@@ -2,8 +2,9 @@
 
 namespace SampSharp.OpenMp.Core;
 
-public class StartupContext
+public sealed class StartupContext
 {
+    private IStartup? _configurator;
     private ExceptionHandler _unhandledExceptionHandler;
 
     public StartupContext(SampSharpInitParams init)
@@ -22,7 +23,7 @@ public class StartupContext
     public ICore Core { get; }
     public IComponentList ComponentList { get; }
     public SampSharpInfo Info { get; }
-
+    public IStartup Configurator => _configurator ?? throw new InvalidOperationException("The configurator has not been set.");
     public ExceptionHandler UnhandledExceptionHandler
     {
         get => _unhandledExceptionHandler;
@@ -32,9 +33,32 @@ public class StartupContext
             SampSharpExceptionHandler.SetExceptionHandler(value);
         }
     }
+    
+    public event EventHandler? Cleanup;
+    public event EventHandler? Initialized;
 
-    public Action? Cleanup { get; set; }
+    /// <summary>
+    /// Internal method. Do not invoke manually.
+    /// </summary>
+    public void InitializeUsing(IStartup configurator)
+    {
+        _configurator = configurator;
 
+        configurator.Initialize(this);
+        Initialized?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Internal method. Do not invoke manually.
+    /// </summary>
+    public void InvokeCleanup()
+    {
+        Cleanup?.Invoke(this, EventArgs.Empty);
+    }
+    
+    /// <summary>
+    /// Internal method. Do not invoke manually.
+    /// </summary>
     public static void MainInfoProvider()
     {
         LaunchInstructions.Write();

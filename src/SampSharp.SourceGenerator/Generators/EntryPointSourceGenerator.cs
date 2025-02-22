@@ -124,12 +124,9 @@ public class EntryPointSourceGenerator : IIncrementalGenerator
                                                     ExpressionStatement(
                                                         ConditionalAccessExpression(
                                                             IdentifierName("_context"),
-                                                            ConditionalAccessExpression(
+                                                            InvocationExpression(
                                                                 MemberBindingExpression(
-                                                                    IdentifierName("Cleanup")),
-                                                                InvocationExpression(
-                                                                    MemberBindingExpression(
-                                                                        IdentifierName("Invoke"))))))))),
+                                                                    IdentifierName("InvokeCleanup")))))))),
                                         MethodDeclaration(
                                             PredefinedType(
                                                 Token(SyntaxKind.VoidKeyword)),
@@ -166,13 +163,13 @@ public class EntryPointSourceGenerator : IIncrementalGenerator
                                                     InvocationExpression(
                                                         MemberAccessExpression(
                                                             SyntaxKind.SimpleMemberAccessExpression,
-                                                            IdentifierName("_startup"),
-                                                            IdentifierName("Initialize")))
+                                                            IdentifierName("_context"),
+                                                            IdentifierName("InitializeUsing")))
                                                     .WithArgumentList(
                                                         ArgumentList(
                                                             SingletonSeparatedList(
                                                                 Argument(
-                                                                    IdentifierName("_context")))))))),
+                                                                    IdentifierName("_startup")))))))),
                                         MethodDeclaration(
                                             PredefinedType(
                                                 Token(SyntaxKind.VoidKeyword)),

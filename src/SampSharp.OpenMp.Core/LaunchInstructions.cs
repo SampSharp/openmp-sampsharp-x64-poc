@@ -1,9 +1,13 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace SampSharp.OpenMp.Core;
 
-internal static class LaunchInstructions
+internal static partial class LaunchInstructions
 {
+    private static Regex _slnProjectRegex = ProjectInSolutionRegex();
+
     public static void Write()
     {
         Console.WriteLine("-------------------------------------");
@@ -42,6 +46,7 @@ internal static class LaunchInstructions
                               -------------------------------------
                               """);
             Console.WriteLine();
+            Console.WriteLine($"Detected project path: {dir}");
             Console.ResetColor();
 
             Console.ForegroundColor = ConsoleColor.Yellow;
@@ -140,24 +145,72 @@ internal static class LaunchInstructions
     private static DirectoryInfo? GetProjectDir()
     {
         var dir = new DirectoryInfo(Directory.GetCurrentDirectory());
-        for (var i = 0; i < 5; i++)
+        for (var i = 0; i < 10; i++)
         {
+            // does this dir contain a .csproj file? assume this dir is the project root
             var csproj = dir.GetFiles("*.csproj");
-
-            if (csproj.Length == 0)
+            if (csproj.Length != 0)
             {
-                dir = dir.Parent;
-                if (dir == null)
-                {
-                    break;
-                }
-
-                continue;
+                return dir;
             }
 
-            return dir;
+            // does this dir contain a .sln file? read it and find the project root
+            var sln = dir.GetFiles("*.sln");
+            var result = sln.Select(GetProjectDirFromSolution).FirstOrDefault(x => x != null);
+            if (result != null)
+            {
+                return result;
+            }
+
+            dir = dir.Parent;
+            if (dir == null)
+            {
+                break;
+            }
         }
 
         return null;
     }
+
+    private static DirectoryInfo? GetProjectDirFromSolution(FileInfo sln)
+    {
+        var asmName = Assembly.GetEntryAssembly()?.GetName().Name;
+
+        if (asmName == null)
+        {
+            return null;
+        }
+
+        var matches = new List<string>();
+        var lines = File.ReadAllLines(sln.FullName);
+
+        foreach (var line in lines)
+        {
+            var match = _slnProjectRegex.Match(line);
+            if (match.Success)
+            {
+                var path = match.Groups["path"].Value;
+                var name = match.Groups["name"].Value;
+
+                if (name.Contains(asmName))
+                {
+                    matches.Add(path);
+                }
+            }
+        }
+
+        if (matches.Count > 0)
+        {
+            var best = matches.OrderBy(x => x.Length).First();
+            var file = new DirectoryInfo(Path.GetDirectoryName(Path.Combine(sln.Directory!.FullName, best))!);
+            return file;
+        }
+
+        return null;
+    }
+
+    [GeneratedRegex("""
+                    Project\("{[0-9A-Fa-f\-]+}"\)\s*=\s*"(?<name>[^"]+)"\s*,\s*"(?<path>[^"]+)"
+                    """)]
+    private static partial Regex ProjectInSolutionRegex();
 }
