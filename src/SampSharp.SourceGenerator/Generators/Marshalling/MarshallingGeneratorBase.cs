@@ -45,7 +45,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
         return Block(ReturnStatement(invoke));
     }
 
-    protected IEnumerable<ArgumentSyntax> GetInvocationArguments(MarshallingStubGenerationContext ctx)
+    protected static IEnumerable<ArgumentSyntax> GetInvocationArguments(MarshallingStubGenerationContext ctx)
     {
         return ctx.Parameters.Select(GetArgumentForPInvokeParameter);
     }
@@ -229,7 +229,7 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
         }
     }
 
-    private IEnumerable<StatementSyntax> GenerateInitLocals(MarshallingStubGenerationContext ctx)
+    private static IEnumerable<StatementSyntax> GenerateInitLocals(MarshallingStubGenerationContext ctx)
     {
         foreach(var p in ctx.Parameters)
         {

@@ -86,13 +86,13 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
     private static SyntaxList<MemberDeclarationSyntax> GenerateInterfaceMembers(EventInterfaceStubGenerationContext ctx)
     {
-        return List([
+        return List<MemberDeclarationSyntax>([
             GenerateManagerPropertyMember(ctx),
             GenerateManagerClass(ctx)
         ]);
     }
 
-    private static MemberDeclarationSyntax GenerateManagerPropertyMember(EventInterfaceStubGenerationContext ctx)
+    private static PropertyDeclarationSyntax GenerateManagerPropertyMember(EventInterfaceStubGenerationContext ctx)
     { 
         return PropertyDeclaration(
                 AliasQualifiedName(
@@ -127,7 +127,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 Token(SyntaxKind.SemicolonToken));
     }
 
-    private static MemberDeclarationSyntax GenerateManagerClass(EventInterfaceStubGenerationContext ctx)
+    private static ClassDeclarationSyntax GenerateManagerClass(EventInterfaceStubGenerationContext ctx)
     {
         return ClassDeclaration(Identifier(ClassNativeEventHandlerManager))
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
@@ -142,7 +142,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
     private static SyntaxList<MemberDeclarationSyntax> GenerateManagerMembers(EventInterfaceStubGenerationContext ctx)
     {
-        return SingletonList(GenerateInstancePropertyMember())
+        return SingletonList<MemberDeclarationSyntax>(GenerateInstancePropertyMember())
             .AddRange(GenerateDelegateMembers(ctx))
             .AddRange([
                 GenerateCreateMember(ctx),
@@ -150,7 +150,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             ]);
     }
 
-    private static MemberDeclarationSyntax GenerateInstancePropertyMember()
+    private static PropertyDeclarationSyntax GenerateInstancePropertyMember()
     {
         return PropertyDeclaration(
                 IdentifierName(ClassNativeEventHandlerManager),
@@ -173,7 +173,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 Token(SyntaxKind.SemicolonToken));
     }
 
-    private static MemberDeclarationSyntax GenerateCreateMember(EventInterfaceStubGenerationContext ctx)
+    private static MethodDeclarationSyntax GenerateCreateMember(EventInterfaceStubGenerationContext ctx)
     {
         var delegateVars = ctx.Methods.Select(method =>
             VariableDeclarator(
@@ -294,7 +294,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
         return _marshallingGenerator.GenerateDelegateExpression(method);
     }
 
-    private static MemberDeclarationSyntax GenerateFreeMember(EventInterfaceStubGenerationContext ctx)
+    private static MethodDeclarationSyntax GenerateFreeMember(EventInterfaceStubGenerationContext ctx)
     {
         return MethodDeclaration(
                 PredefinedType(

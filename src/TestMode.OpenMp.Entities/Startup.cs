@@ -4,7 +4,7 @@ using SampSharp.OpenMp.Core;
 
 namespace TestMode.OpenMp.Entities;
 
-public class Startup : IStartup, IEcsStartup
+public class Startup : IEcsStartup
 {
     public void Initialize(StartupContext context)
     {

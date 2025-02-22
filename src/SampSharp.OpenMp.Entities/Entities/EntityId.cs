@@ -45,7 +45,7 @@ public readonly struct EntityId
     /// <summary>Determines whether the specified <see cref="object" />, is equal to this value.</summary>
     /// <param name="obj">The <see cref="object" /> to compare with this value.</param>
     /// <returns><c>true</c> if the specified <see cref="object" /> is equal to this value; otherwise, <c>false</c>.</returns>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         return obj is EntityId other && Equals(other);
     }

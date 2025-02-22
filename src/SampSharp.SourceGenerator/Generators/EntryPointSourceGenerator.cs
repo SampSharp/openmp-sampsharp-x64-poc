@@ -15,13 +15,13 @@ public class EntryPointSourceGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var provider = context.SyntaxProvider.CreateSyntaxProvider(
-                (node, _) => node is ClassDeclarationSyntax cls && cls.BaseList != null,
-                (ctx, _) =>
+                (node, _) => node is ClassDeclarationSyntax { BaseList: not null },
+                (ctx, ct) =>
                 {
                     var classDeclaration = (ClassDeclarationSyntax)ctx.Node;
                     var semanticModel = ctx.SemanticModel;
 
-                    if (semanticModel.GetDeclaredSymbol(classDeclaration) is INamedTypeSymbol classSymbol)
+                    if (semanticModel.GetDeclaredSymbol(classDeclaration, ct) is { } classSymbol)
                     {
                         var interf = semanticModel.Compilation.GetTypeByMetadataName("SampSharp.OpenMp.Core.IStartup");
                         if (interf != null && classSymbol.AllInterfaces.Contains(interf))
