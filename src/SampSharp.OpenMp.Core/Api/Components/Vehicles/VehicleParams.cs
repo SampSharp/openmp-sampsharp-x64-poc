@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Api;
 
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct VehicleParams
+public readonly record struct VehicleParams
 {
     public readonly sbyte engine = -1;
     public readonly sbyte lights = -1;
@@ -21,6 +21,26 @@ public readonly struct VehicleParams
     public readonly sbyte windowPassenger = -1;
     public readonly sbyte windowBackLeft = -1;
     public readonly sbyte windowBackRight = -1;
+
+    public VehicleParams(sbyte engine, sbyte lights, sbyte alarm, sbyte doors, sbyte bonnet, sbyte boot, sbyte objective, sbyte siren, sbyte doorDriver, sbyte doorPassenger, sbyte doorBackLeft, sbyte doorBackRight, sbyte windowDriver, sbyte windowPassenger, sbyte windowBackLeft, sbyte windowBackRight)
+    {
+        this.engine = engine;
+        this.lights = lights;
+        this.alarm = alarm;
+        this.doors = doors;
+        this.bonnet = bonnet;
+        this.boot = boot;
+        this.objective = objective;
+        this.siren = siren;
+        this.doorDriver = doorDriver;
+        this.doorPassenger = doorPassenger;
+        this.doorBackLeft = doorBackLeft;
+        this.doorBackRight = doorBackRight;
+        this.windowDriver = windowDriver;
+        this.windowPassenger = windowPassenger;
+        this.windowBackLeft = windowBackLeft;
+        this.windowBackRight = windowBackRight;
+    }
 
     public VehicleParams()
     {

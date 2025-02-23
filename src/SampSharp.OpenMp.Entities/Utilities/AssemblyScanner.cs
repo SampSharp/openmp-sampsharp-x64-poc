@@ -3,7 +3,7 @@
 namespace SampSharp.Entities.Utilities;
 
 /// <summary>Represents a utility for scanning for types and members with specific attributes in loaded assemblies.</summary>
-public sealed class AssemblyScanner
+internal sealed class AssemblyScanner
 {
     private List<Assembly> _assemblies = [];
     private List<Type> _classAttributes = [];
@@ -14,9 +14,6 @@ public sealed class AssemblyScanner
     private List<Type> _memberAttributes = [];
     private bool _includeAbstract;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell",
-        "S3011:Reflection should not be used to increase accessibility of classes, methods, or fields",
-        Justification = "Searching for members of any visibility (when specified by user)")]
     private BindingFlags MemberBindingFlags =>
         (_includeInstanceMembers
             ? BindingFlags.Instance
@@ -68,9 +65,7 @@ public sealed class AssemblyScanner
 
             foreach (var assemblyRef in asm.GetReferencedAssemblies())
             {
-                if (skipSystem && (assemblyRef.Name!.StartsWith("System", StringComparison.InvariantCulture) ||
-                                   assemblyRef.Name.StartsWith("Microsoft", StringComparison.InvariantCulture) ||
-                                   assemblyRef.Name.StartsWith("netstandard", StringComparison.InvariantCulture)))
+                if (skipSystem && IsSystemAssembly(assemblyRef))
                 {
                     continue;
                 }
@@ -78,6 +73,13 @@ public sealed class AssemblyScanner
                 AddToScan(Assembly.Load(assemblyRef));
             }
         }
+    }
+
+    private static bool IsSystemAssembly(AssemblyName assemblyRef)
+    {
+        return (assemblyRef.Name!.StartsWith("System", StringComparison.InvariantCulture) ||
+                assemblyRef.Name.StartsWith("Microsoft", StringComparison.InvariantCulture) ||
+                assemblyRef.Name.StartsWith("netstandard", StringComparison.InvariantCulture));
     }
 
     /// <summary>Includes static members in the scan.</summary>
@@ -141,7 +143,9 @@ public sealed class AssemblyScanner
 
     private bool ApplyTypeFilter(Type type)
     {
-        return type.IsClass && (_includeAbstract || !type.IsAbstract) && _classImplements.All(i => i.IsAssignableFrom(type)) &&
+        return type.IsClass && 
+               (_includeAbstract || !type.IsAbstract) && 
+               _classImplements.All(i => i.IsAssignableFrom(type)) &&
                _classAttributes.All(a => type.GetCustomAttribute(a) != null);
     }
 
@@ -150,7 +154,8 @@ public sealed class AssemblyScanner
         return _memberAttributes.All(a => memberInfo.GetCustomAttribute(a) != null);
     }
 
-    /// <summary>Runs the scan for methods and provides the attribute <typeparamref name="TAttribute" /> in the results.</summary>
+    /// <summary>Runs the scan for methods and provides the attribute <typeparamref name="TAttribute" /> in the
+    /// results.</summary>
     /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
     /// <returns>The found methods with their attribute of type <typeparamref name="TAttribute" />.</returns>
     public IEnumerable<(Type type, TAttribute attribute)> ScanTypes<TAttribute>() where TAttribute : Attribute
@@ -169,7 +174,8 @@ public sealed class AssemblyScanner
             .ToArray();
     }
 
-    /// <summary>Runs the scan for methods and provides the attribute <typeparamref name="TAttribute" /> in the results.</summary>
+    /// <summary>Runs the scan for methods and provides the attribute <typeparamref name="TAttribute" /> in the
+    /// results.</summary>
     /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
     /// <returns>The found methods with their attribute of type <typeparamref name="TAttribute" />.</returns>
     public IEnumerable<(MethodInfo method, TAttribute attribute)> ScanMethods<TAttribute>() where TAttribute : Attribute
@@ -190,7 +196,8 @@ public sealed class AssemblyScanner
             .ToArray();
     }
 
-    /// <summary>Runs the scan for fields and provides the attribute <typeparamref name="TAttribute" /> in the results.</summary>
+    /// <summary>Runs the scan for fields and provides the attribute <typeparamref name="TAttribute" /> in the
+    /// results.</summary>
     /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
     /// <returns>The found fields with their attribute of type <typeparamref name="TAttribute" />.</returns>
     public IEnumerable<(FieldInfo field, TAttribute attribute)> ScanFields<TAttribute>() where TAttribute : Attribute

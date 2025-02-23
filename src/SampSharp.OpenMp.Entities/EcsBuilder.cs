@@ -14,14 +14,7 @@ internal class EcsBuilder : IEcsBuilder
     }
 
     public IServiceProvider Services { get; }
-
-    public IEcsBuilder EnableEvent(string name, Type[] parameters)
-    {
-        _eventService.EnableEvent(name, parameters);
-
-        return this;
-    }
-
+    
     public IEcsBuilder UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)
     {
         _eventService.UseMiddleware(name, middleware);

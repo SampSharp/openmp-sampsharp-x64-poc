@@ -1,10 +1,10 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SampSharp.Entities.Utilities;
+namespace SampSharp.Entities;
 
 /// <summary>Provides a compiler for an invoke method for an instance method with injected dependencies and entity-to-component conversion.</summary>
-public static class MethodInvokerFactory
+internal static class MethodInvokerFactory
 {
     private static readonly MethodInfo _getComponentInfo = typeof(IEntityManager).GetMethod(nameof(IEntityManager.GetComponent),
         BindingFlags.Public | BindingFlags.Instance, null, [typeof(EntityId)], null)!;

@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using SampSharp.Entities.SAMP;
 using SampSharp.OpenMp.Core;
-using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities;
 
@@ -70,7 +70,7 @@ internal class EcsManager : Extension
             .AddSingleton<ISystemRegistry, SystemRegistry>()
             .AddSingleton<IEntityManager, EntityManager>()
             // TODO: .AddSingleton<IServerService, ServerService>()
-            // TODO: .AddSingleton<IWorldService, WorldService>()
+            .AddSingleton<IWorldService, WorldService>()
             // TODO: .AddSingleton<IVehicleInfoService, VehicleInfoService>()
             // TODO: .AddSingleton<IPlayerCommandService, PlayerCommandService>()
             // TODO: .AddSingleton<IRconCommandService, RconCommandService>()

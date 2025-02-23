@@ -9,7 +9,7 @@ namespace SampSharp.OpenMp.Core.Api;
 public readonly partial struct IVehicle
 {
     public partial void SetSpawnData(ref VehicleSpawnData data);
-    public partial ref VehicleSpawnData GetSpawnData();
+    public partial void GetSpawnData(out VehicleSpawnData data);
     public partial bool IsStreamedInForPlayer(IPlayer player);
     public partial void StreamInForPlayer(IPlayer player);
     public partial void StreamOutForPlayer(IPlayer player);
@@ -27,7 +27,7 @@ public readonly partial struct IVehicle
     public partial void SetPlate(string plate);
     public partial string GetPlate();
     public partial void SetDamageStatus(int PanelStatus, int DoorStatus, byte LightStatus, byte TyreStatus, IPlayer vehicleUpdater = default);
-    public partial void GetDamageStatus(ref int PanelStatus, ref int DoorStatus, ref int LightStatus, ref int TyreStatus);
+    public partial void GetDamageStatus(out int PanelStatus, out int DoorStatus, out int LightStatus, out int TyreStatus);
     public partial void SetPaintJob(int paintjob);
     public partial int GetPaintJob();
     public partial void AddComponent(int component);
@@ -36,12 +36,13 @@ public readonly partial struct IVehicle
     public partial void PutPlayer(IPlayer player, int SeatID);
     public partial void SetZAngle(float angle);
     public partial float GetZAngle();
-    public partial void SetParams(ref VehicleParams parms);
-    public partial void SetParamsForPlayer(IPlayer player, ref VehicleParams parms);
-    public partial ref VehicleParams GetParams();
+    public partial void SetParams(ref VehicleParams parameters);
+    public partial void SetParamsForPlayer(IPlayer player, ref VehicleParams parameters);
+    public partial void GetParams(out VehicleParams parameters);
     public partial bool IsDead();
     public partial void Respawn();
-    [return:MarshalUsing(typeof(SecondsMarshaller))]public partial TimeSpan GetRespawnDelay();
+    [return: MarshalUsing(typeof(SecondsMarshaller))]
+    public partial TimeSpan GetRespawnDelay();
     public partial void SetRespawnDelay([MarshalUsing(typeof(SecondsMarshaller))]TimeSpan delay);
     public partial bool IsRespawning();
     public partial void SetInterior(int InteriorID);

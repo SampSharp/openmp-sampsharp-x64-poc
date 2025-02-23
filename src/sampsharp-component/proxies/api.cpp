@@ -447,7 +447,7 @@ PROXY_CAST_NAMED(IPlayerTextLabelData, IPlayerTextLabelData, IPool<IPlayerTextLa
 // include/Server/Components/Vehicles
 
 PROXY(IVehicle, void, setSpawnData, VehicleSpawnData&);
-PROXY(IVehicle, VehicleSpawnData, getSpawnData);
+PROXY_PTR(IVehicle, VehicleSpawnData, getSpawnData);
 PROXY(IVehicle, bool, isStreamedInForPlayer, IPlayer&);
 PROXY(IVehicle, void, streamInForPlayer, IPlayer&);
 PROXY(IVehicle, void, streamOutForPlayer, IPlayer&);
@@ -476,7 +476,7 @@ PROXY(IVehicle, void, setZAngle, float);
 PROXY(IVehicle, float, getZAngle);
 PROXY(IVehicle, void, setParams, VehicleParams&);
 PROXY(IVehicle, void, setParamsForPlayer, IPlayer&, VehicleParams&);
-PROXY(IVehicle, VehicleParams, getParams);
+PROXY_PTR(IVehicle, VehicleParams, getParams);
 PROXY(IVehicle, bool, isDead);
 PROXY(IVehicle, void, respawn);
 PROXY(IVehicle, Seconds, getRespawnDelay);

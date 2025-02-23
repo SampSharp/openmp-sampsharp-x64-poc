@@ -11,10 +11,4 @@ public interface IEcsBuilder
     /// <param name="middleware">The middleware to add to the event.</param>
     /// <returns>The builder.</returns>
     IEcsBuilder UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware);
-
-    /// <summary>Enables handling of the callback with the specified <paramref name="name" /> as an event.</summary>
-    /// <param name="name">The name of the callback.</param>
-    /// <param name="parameters">The types of the parameters of the callback.</param>
-    /// <returns>The builder.</returns>
-    IEcsBuilder EnableEvent(string name, params Type[] parameters);
 }

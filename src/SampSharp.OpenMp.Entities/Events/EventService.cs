@@ -1,17 +1,15 @@
 ﻿using System.Reflection;
 using SampSharp.Entities.Utilities;
+using SampSharp.OpenMp.Core;
 
 namespace SampSharp.Entities;
 
 internal class EventService : IEventService
 {
     private static readonly Type[] _defaultParameterTypes =
-    {
+    [
         typeof(string)
-        //typeof(int[]),
-        //typeof(bool[]),
-        //typeof(float[]),
-    };
+    ];
 
     private readonly Dictionary<string, Event> _events = new();
     private readonly IServiceProvider _serviceProvider;
@@ -26,13 +24,6 @@ internal class EventService : IEventService
         _runtimeInformation = runtimeInformation;
 
         CreateEventsFromAssemblies();
-    }
-
-    /// <inheritdoc />
-    public void EnableEvent(string name, Type[] parameters)
-    {
-        var handler = BuildInvoke(name);
-        // TODO: _gameModeClient.RegisterCallback(name, handler.Target, handler.Method, parameters);
     }
 
     /// <inheritdoc />
@@ -122,7 +113,7 @@ internal class EventService : IEventService
                     source.ParameterIndex = argsPtr++;
                     source.IsComponent = true;
                 }
-                else if (type.IsValueType || _defaultParameterTypes.Contains(type))
+                else if (type.IsValueType || type.IsArray || _defaultParameterTypes.Contains(type))
                 {
                     // Default types are passed straight through.
                     source.ParameterIndex = argsPtr++;
@@ -162,28 +153,34 @@ internal class EventService : IEventService
 
     private Func<object[], object?> BuildInvoke(string name)
     {
-        var context = new EventContextImpl();
-        context.SetName(name);
-        context.SetEventServices(_serviceProvider);
+        var context = new EventContextImpl(name, _serviceProvider);
 
         return args =>
         {
-            context.SetArguments(args);
-
-            if (!_events.TryGetValue(name, out var @event))
+            try
             {
+                context.SetArguments(args);
+
+                if (!_events.TryGetValue(name, out var @event))
+                {
+                    return null;
+                }
+
+                var result = @event.Invoke(context);
+
+                return result switch
+                {
+                    Task<bool> task => !task.IsCompleted ? null : task.Result,
+                    Task<int> task => !task.IsCompleted ? null : task.Result,
+                    Task => null,
+                    _ => result
+                };
+            }
+            catch(Exception ex)
+            {
+                SampSharpExceptionHandler.HandleException(name, ex);
                 return null;
             }
-
-            var result = @event.Invoke(context);
-
-            return result switch
-            {
-                Task<bool> task => !task.IsCompleted ? null : task.Result,
-                Task<int> task => !task.IsCompleted ? null : task.Result,
-                Task => null,
-                _ => result
-            };
         };
     }
 
