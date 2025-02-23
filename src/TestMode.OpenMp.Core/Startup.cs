@@ -140,6 +140,8 @@ public class Startup : IStartup,
         }
 
         Console.WriteLine($"cmd: {command}; params: {parameters}");
+
+        
         return false;
     }
 

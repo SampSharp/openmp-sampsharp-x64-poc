@@ -81,6 +81,7 @@ internal class EntityManager : IEntityManager
 
             // Create the entity
             _entities[entity] = entityNode = _entityPool.Get();
+            entityNode.Id = entity;
 
             if (parentNode != null)
             {

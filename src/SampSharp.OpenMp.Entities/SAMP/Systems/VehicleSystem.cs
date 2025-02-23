@@ -5,10 +5,10 @@ namespace SampSharp.Entities.SAMP;
 internal class VehicleSystem : ISystem, IVehicleEventHandler, IDisposable
 {
     private readonly IEventService _eventService;
-    private readonly IEntityProvider _entityProvider;
+    private readonly IOmpEntityProvider _entityProvider;
     private IDisposable? _handler;
 
-    public VehicleSystem(IEventService eventService, IEntityProvider entityProvider)
+    public VehicleSystem(IEventService eventService, IOmpEntityProvider entityProvider)
     {
         _eventService = eventService;
         _entityProvider = entityProvider;

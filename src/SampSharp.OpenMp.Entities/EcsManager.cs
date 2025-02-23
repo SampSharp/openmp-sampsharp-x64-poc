@@ -63,7 +63,7 @@ internal class EcsManager : Extension
         services.AddSingleton<IEventService, EventService>()
             .AddSingleton<ISystemRegistry, SystemRegistry>()
             .AddSingleton<IEntityManager, EntityManager>()
-            .AddSingleton<IEntityProvider, EntityProvider>()
+            .AddSingleton<IOmpEntityProvider, OmpEntityProvider>()
             // TODO: .AddSingleton<IServerService, ServerService>()
             .AddSingleton<IWorldService, WorldService>()
             // TODO: .AddSingleton<IVehicleInfoService, VehicleInfoService>()
@@ -75,6 +75,7 @@ internal class EcsManager : Extension
             // TODO: .AddSystem<TimerSystem>()
             .AddSystem<TickingSystem>()
             .AddSystem<VehicleSystem>()
+            .AddSystem<ConsoleSystem>()
             ;
 
     }

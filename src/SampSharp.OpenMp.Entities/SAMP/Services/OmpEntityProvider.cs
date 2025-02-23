@@ -2,12 +2,12 @@
 
 namespace SampSharp.Entities.SAMP;
 
-internal class EntityProvider : IEntityProvider
+internal class OmpEntityProvider : IOmpEntityProvider
 {
     private readonly IEntityManager _entityManager;
     private readonly IVehiclesComponent _vehicles;
 
-    public EntityProvider(OpenMp omp, IEntityManager entityManager)
+    public OmpEntityProvider(OpenMp omp, IEntityManager entityManager)
     {
         _entityManager = entityManager;
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
@@ -31,6 +31,11 @@ internal class EntityProvider : IEntityProvider
 
     public EntityId GetEntity(IPlayer player)
     {
+        return GetComponent(player).Entity;
+    }
+
+    public Player GetComponent(IPlayer player)
+    {
         var ext = player.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -39,6 +44,6 @@ internal class EntityProvider : IEntityProvider
             player.AddExtension(ext);
             return component;
         }
-        return ext.Component.Entity;
+        return (Player)ext.Component;
     }
 }

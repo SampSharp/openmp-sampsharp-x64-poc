@@ -477,4 +477,9 @@ public class Vehicle : Component
             _vehicles.AsPool().Release(Id);
         }
     }
+
+    public override string ToString()
+    {
+        return $"(Id: {Id}, Model: {Model})";
+    }
 }

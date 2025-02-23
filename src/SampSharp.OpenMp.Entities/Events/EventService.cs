@@ -59,7 +59,7 @@ internal class EventService : IEventService
             return null;
         }
 
-        foreach (var sysEvt in evt.Invokers)
+        foreach (var sysEvt in evt.TargetSites)
         {
             var system = _serviceProvider.GetService(sysEvt.TargetType);
 
@@ -113,7 +113,7 @@ internal class EventService : IEventService
                     source.ParameterIndex = argsPtr++;
                     source.IsComponent = true;
                 }
-                else if (type.IsValueType || type.IsArray || _defaultParameterTypes.Contains(type))
+                else if (type.IsValueType || type.IsArray || _defaultParameterTypes.Contains(type) || type.GetCustomAttribute<EventParameterAttribute>() != null)
                 {
                     // Default types are passed straight through.
                     source.ParameterIndex = argsPtr++;
@@ -125,16 +125,16 @@ internal class EventService : IEventService
                 }
             }
 
-            var invoker = CreateInvoker(method, parameterSources, argsPtr);
-            @event.Invokers.Add(invoker);
+            var targetSite = CreateTargetSite(method, parameterSources, argsPtr);
+            @event.TargetSites.Add(targetSite);
         }
     }
 
-    private InvokerInfo CreateInvoker(MethodInfo method, MethodParameterSource[] parameterInfos, int callbackParamCount)
+    private TargetSiteData CreateTargetSite(MethodInfo method, MethodParameterSource[] parameterInfos, int callbackParamCount)
     {
         var compiled = MethodInvokerFactory.Compile(method, parameterInfos);
 
-        return new InvokerInfo
+        return new TargetSiteData
         {
             TargetType = method.DeclaringType!,
             Invoke = (instance, eventContext) =>
@@ -186,7 +186,7 @@ internal class EventService : IEventService
 
     private sealed class Event
     {
-        public readonly List<InvokerInfo> Invokers = [];
+        public readonly List<TargetSiteData> TargetSites = [];
 
         public readonly List<Func<EventDelegate, EventDelegate>> Middleware = [];
 
@@ -198,7 +198,7 @@ internal class EventService : IEventService
         }
     }
 
-    private sealed class InvokerInfo
+    private sealed class TargetSiteData
     {
         public required Func<object, EventContext, object?> Invoke { get; init; }
         public required Type TargetType { get; init; }
