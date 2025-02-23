@@ -9,7 +9,7 @@ public abstract class Component
     private IEntityManager? _manager;
 
     /// <summary>Gets the manager of the entity of this component.</summary>
-    protected internal IEntityManager Manager
+    protected internal virtual IEntityManager Manager
     {
         get => _manager ?? throw new InvalidOperationException("Component not yet added to entity manager.");
         internal set => _manager = value;
@@ -19,7 +19,7 @@ public abstract class Component
     public EntityId Parent => Manager.GetParent(Entity);
 
     /// <summary>Gets the entity to which this component has been attached.</summary>
-    public EntityId Entity { get; internal set; }
+    public virtual EntityId Entity { get; internal set; }
 
     /// <summary>Gets a value indicating whether this component is alive (has not been destroyed).</summary>
     public bool IsComponentAlive { get; private set; } = true;

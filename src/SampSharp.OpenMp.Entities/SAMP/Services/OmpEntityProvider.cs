@@ -15,6 +15,38 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public EntityId GetEntity(IVehicle vehicle)
     {
+        return GetComponent(vehicle)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IPlayer player)
+    {
+        return GetComponent(player)?.Entity ?? default;
+    }
+
+    public Player? GetComponent(IPlayer player)
+    {
+        if (player.Handle == 0)
+        {
+            return null;
+        }
+        var ext = player.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            var component = _entityManager.AddComponent<Player>(EntityId.NewEntityId(), this, player);
+            ext = new ComponentExtension(component);
+            player.AddExtension(ext);
+            return component;
+        }
+        return (Player)ext.Component;
+    }
+
+    public Vehicle? GetComponent(IVehicle vehicle)
+    {
+        if (vehicle.Handle == 0)
+        {
+            return null;
+        }
+
         var ext = vehicle.TryGetExtension<ComponentExtension>();
 
         if (ext == null)
@@ -26,24 +58,11 @@ internal class OmpEntityProvider : IOmpEntityProvider
             return component;
         }
 
-        return ext.Component.Entity;
+        return (Vehicle)ext.Component;
     }
 
-    public EntityId GetEntity(IPlayer player)
+    public Vehicle? GetVehicle(int id)
     {
-        return GetComponent(player).Entity;
-    }
-
-    public Player GetComponent(IPlayer player)
-    {
-        var ext = player.TryGetExtension<ComponentExtension>();
-        if (ext == null)
-        {
-            var component = _entityManager.AddComponent<Player>(EntityId.NewEntityId(), player);
-            ext = new ComponentExtension(component);
-            player.AddExtension(ext);
-            return component;
-        }
-        return (Player)ext.Component;
+        return GetComponent(_vehicles.AsPool().Get(id));
     }
 }

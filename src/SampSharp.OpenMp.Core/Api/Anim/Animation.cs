@@ -1961,6 +1961,19 @@ public static class Animation
         return _animationNames.Contains(fullName);
     }
 
+    public static (string? lib, string? name) GetAnmiation(int id)
+    {
+        if (id <= 0 || id >= _animationNames.Count)
+        {
+            return (null, null);
+        }
+
+        var spl = _animationNames.ElementAt(id);
+        var idx = spl.IndexOf(':');
+
+        return (spl[..idx], spl[(idx + 1)..]);
+    }
+
     public static bool IsLibraryValid(string lib, bool v1_0 = true)
     {
         lib = lib.ToUpperInvariant();

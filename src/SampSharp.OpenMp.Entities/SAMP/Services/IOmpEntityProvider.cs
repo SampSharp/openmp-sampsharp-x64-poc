@@ -26,5 +26,14 @@ public interface IOmpEntityProvider
     /// </summary>
     /// <param name="player">The player to get the component for.</param>
     /// <returns>The player component.</returns>
-    Player GetComponent(IPlayer player);
+    Player? GetComponent(IPlayer player);
+
+    /// <summary>
+    /// Gets the component for the specified vehicle.
+    /// </summary>
+    /// <param name="vehicle">The vehicle to get the component for.</param>
+    /// <returns>The vehicle component.</returns>
+    Vehicle? GetComponent(IVehicle vehicle);
+
+    Vehicle? GetVehicle(int id);
 }
