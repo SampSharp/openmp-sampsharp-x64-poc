@@ -61,6 +61,15 @@ public class MyFirstSystem : ISystem
 
     }
 
+    [Event]
+    public void OnRconLoginAttempt(Player player, string password, bool success)
+    {
+        if (success)
+        {
+            player.AddComponent<AdminComponent>();
+        }
+    }
+
     private static void DumpEntities(IEntityManager entityManager, EntityId entity, int depth)
     {
 
