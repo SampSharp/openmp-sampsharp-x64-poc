@@ -5,7 +5,7 @@ using SampSharp.Entities.Utilities;
 namespace SampSharp.Entities;
 
 /// <summary>Extension methods for adding systems to an <see cref="IServiceCollection" />.</summary>
-public static class ServiceCollectionExtensions
+public static class ServiceCollectionSystemExtensions
 {
     /// <summary>Adds the system of the specified <paramref name="type" /> as a singleton and enables the system in the system registry.</summary>
     /// <param name="services">The service collection to add the system to.</param>
@@ -23,7 +23,7 @@ public static class ServiceCollectionExtensions
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddSystem<T>(this IServiceCollection services) where T : class, ISystem
     {
-        return AddSystem(services, typeof(T));
+        return services.AddSystem(typeof(T));
     }
 
     /// <summary>
@@ -40,7 +40,7 @@ public static class ServiceCollectionExtensions
             .ScanTypes();
 
         foreach (var type in types)
-            AddSystem(services, type);
+            services.AddSystem(type);
 
         return services;
     }
@@ -54,7 +54,7 @@ public static class ServiceCollectionExtensions
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddSystemsInAssembly<TTypeInAssembly>(this IServiceCollection services)
     {
-        return AddSystemsInAssembly(services, typeof(TTypeInAssembly).Assembly);
+        return services.AddSystemsInAssembly(typeof(TTypeInAssembly).Assembly);
     }
 
     /// <summary>Adds the all types which implement <see cref="ISystem" /> in the calling assembly as singletons and enable the systems in the system registry.</summary>
@@ -62,6 +62,6 @@ public static class ServiceCollectionExtensions
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddSystemsInAssembly(this IServiceCollection services)
     {
-        return AddSystemsInAssembly(services, Assembly.GetCallingAssembly());
+        return services.AddSystemsInAssembly(Assembly.GetCallingAssembly());
     }
 }

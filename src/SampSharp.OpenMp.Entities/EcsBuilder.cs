@@ -8,8 +8,7 @@ internal class EcsBuilder : IEcsBuilder
 
     internal EcsBuilder(IServiceProvider services)
     {
-        Services = services ?? throw new ArgumentNullException(nameof(services));
-
+        Services = services;
         _eventService = services.GetRequiredService<IEventService>();
     }
 
@@ -18,7 +17,6 @@ internal class EcsBuilder : IEcsBuilder
     public IEcsBuilder UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)
     {
         _eventService.UseMiddleware(name, middleware);
-
         return this;
     }
 }

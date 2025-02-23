@@ -9,7 +9,7 @@ public static class EventHelper
     /// </summary>
     /// <param name="eventResponse">The event response to check.</param>
     /// <returns><c>true</c> if the specified response indicates success; otherwise, <c>false</c>.</returns>
-    public static bool IsSuccessResponse(object eventResponse)
+    public static bool IsSuccessResponse(object? eventResponse)
     {
         return eventResponse is not (null or false or 0 or Task<bool> {IsCompleted: true, Result: false} or Task<int>
         {

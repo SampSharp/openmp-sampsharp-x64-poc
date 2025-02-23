@@ -1,11 +1,8 @@
-﻿using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using SampSharp.Entities.SAMP;
 using SampSharp.OpenMp.Core;
 
 namespace SampSharp.Entities;
-
-public record RuntimeInformation(Assembly EntryAssembly);
 
 [Extension(0x57e43771d28c5e7e)]
 internal class EcsManager : Extension
@@ -39,15 +36,12 @@ internal class EcsManager : Extension
 
     private void Run()
     {
-        _serviceProvider!.GetRequiredService<IEventService>().Invoke("OnInitialized");
+        _serviceProvider!.GetRequiredService<IEventService>().Invoke("OnGameModeInit");
     }
 
     protected override void Cleanup()
     {
-        if (_serviceProvider == null)
-        {
-            return;
-        }
+        _serviceProvider?.GetRequiredService<IEventService>().Invoke("OnGameModeExit");
 
         if (_serviceProvider is IDisposable disposable)
         {
@@ -69,6 +63,7 @@ internal class EcsManager : Extension
         services.AddSingleton<IEventService, EventService>()
             .AddSingleton<ISystemRegistry, SystemRegistry>()
             .AddSingleton<IEntityManager, EntityManager>()
+            .AddSingleton<IEntityProvider, EntityProvider>()
             // TODO: .AddSingleton<IServerService, ServerService>()
             .AddSingleton<IWorldService, WorldService>()
             // TODO: .AddSingleton<IVehicleInfoService, VehicleInfoService>()
@@ -79,6 +74,7 @@ internal class EcsManager : Extension
             // TODO: .AddSystem<DialogSystem>()
             // TODO: .AddSystem<TimerSystem>()
             .AddSystem<TickingSystem>()
+            .AddSystem<VehicleSystem>()
             ;
 
     }

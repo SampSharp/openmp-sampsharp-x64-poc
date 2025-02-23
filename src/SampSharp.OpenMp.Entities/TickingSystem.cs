@@ -6,11 +6,10 @@ namespace SampSharp.Entities;
 internal class TickingSystem : ISystem, ICoreEventHandler, IDisposable
 {
     private ITickingSystem[] _tickers = [];
-
     private IDisposable? _handler;
 
     [Event]
-    public void OnInitialized(ISystemRegistry systemRegistry, OpenMp omp)
+    public void OnGameModeInit(ISystemRegistry systemRegistry, OpenMp omp)
     {
         var tickers = systemRegistry.Get<ITickingSystem>().ToArray();
         _tickers = new ITickingSystem[tickers.Length];
@@ -30,5 +29,6 @@ internal class TickingSystem : ISystem, ICoreEventHandler, IDisposable
     public void Dispose()
     {
         _handler?.Dispose();
+        _handler = null;
     }
 }

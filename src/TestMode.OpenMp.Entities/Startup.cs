@@ -29,11 +29,31 @@ public class Startup : IEcsStartup
 public class MyFirstSystem : ISystem
 {
     [Event]
-    public void OnInitialized(IWorldService world)
+    public void OnGameModeInit(IWorldService world)
     {
-        var vehicle = world.CreateVehicle(VehicleModelType.Landstalker, Vector3.UnitZ * 15 + Vector3.UnitX, 0, 4, 4);
+        Console.WriteLine("whoop!");
+
+        var vehicle = world.CreateVehicle(VehicleModelType.Landstalker, new Vector3(0, 2, 15), 0, 4, 4);
         vehicle.ChangeColor(5, 12);
         vehicle.Bonnet = true;
         vehicle.SetNumberPlate("SampSharp");
+    }
+
+    [Event]
+    public void OnVehicleSpawn(Vehicle vehicle)
+    {
+          Console.WriteLine($"Vehicle {vehicle.Id} spawned!");
+    }
+    
+    [Event]
+    public void OnVehicleStreamIn(Vehicle vehicle, Player player)
+    {
+        Console.WriteLine($"Vehicle {vehicle.Id} streams in for player {player}");
+    }
+    
+    [Event]
+    public void OnVehicleStreamOut(Vehicle vehicle, Player player)
+    {
+        Console.WriteLine($"Vehicle {vehicle.Id} streams out for player {player}");
     }
 }
