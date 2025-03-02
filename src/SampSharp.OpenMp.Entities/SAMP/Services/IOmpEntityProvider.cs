@@ -41,6 +41,13 @@ public interface IOmpEntityProvider
     /// <param name="actor">The actor to get the entity for.</param>
     /// <returns>The actor entity.</returns>
     EntityId GetEntity(IActor actor);
+    
+    /// <summary>
+    /// Gets the entity for the specified gang zone.
+    /// </summary>
+    /// <param name="gangZone">The gang zone to get the entity for.</param>
+    /// <returns>The gang zone entity.</returns>
+    EntityId GetEntity(IGangZone gangZone);
 
     /// <summary>
     /// Gets the component for the specified player.

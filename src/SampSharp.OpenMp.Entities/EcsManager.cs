@@ -76,6 +76,7 @@ internal class EcsManager : Extension
             .AddSystem<TickingSystem>()
             .AddSystem<ActorSystem>()
             .AddSystem<ConsoleSystem>()
+            .AddSystem<GangZoneSystem>()
             .AddSystem<PlayerChangeSystem>()
             .AddSystem<PlayerCheckSystem>()
             .AddSystem<PlayerClickSystem>()

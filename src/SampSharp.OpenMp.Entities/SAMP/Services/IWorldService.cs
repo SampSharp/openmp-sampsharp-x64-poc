@@ -12,12 +12,12 @@ public interface IWorldService
     /// <exception cref="ArgumentOutOfRangeException">Thrown if value is not between -50.0 and 50.0.</exception>
     float Gravity { get; set; }
 
-    // /// <summary>Creates a new actor in the world.</summary>
-    // /// <param name="modelId">The model identifier.</param>
-    // /// <param name="position">The position of the actor.</param>
-    // /// <param name="rotation">The rotation of the actor.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The actor component of the newly created entity.</returns>
+    /// <summary>Creates a new actor in the world.</summary>
+    /// <param name="modelId">The model identifier.</param>
+    /// <param name="position">The position of the actor.</param>
+    /// <param name="rotation">The rotation of the actor.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The actor component of the newly created entity.</returns>
     Actor CreateActor(int modelId, Vector3 position, float rotation, EntityId parent = default);
 
     /// <summary>Creates a vehicle in the world.</summary>
@@ -46,14 +46,22 @@ public interface IWorldService
     Vehicle CreateStaticVehicle(VehicleModelType type, Vector3 position, float rotation, int color1, int color2, int respawnDelay = -1, bool addSiren = false,
         EntityId parent = default);
 
-    // /// <summary>Creates a gang zone in the world.</summary>
-    // /// <param name="minX">The minimum x.</param>
-    // /// <param name="minY">The minimum y.</param>
-    // /// <param name="maxX">The maximum x.</param>
-    // /// <param name="maxY">The maximum y.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created gang zone.</returns>
-    // GangZone CreateGangZone(float minX, float minY, float maxX, float maxY, EntityId parent = default);
+    /// <summary>Creates a gang zone in the world.</summary>
+    /// <param name="minX">The minimum x.</param>
+    /// <param name="minY">The minimum y.</param>
+    /// <param name="maxX">The maximum x.</param>
+    /// <param name="maxY">The maximum y.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created gang zone.</returns>
+    [Obsolete("Deprecated. Use CreateGangZone(Vector2, Vector2, EntityId) instead.")]
+    GangZone CreateGangZone(float minX, float minY, float maxX, float maxY, EntityId parent = default);
+    
+    /// <summary>Creates a gang zone in the world.</summary>
+    /// <param name="min">The minimum position.</param>
+    /// <param name="max">The maximum position.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created gang zone.</returns>
+    GangZone CreateGangZone(Vector2 min, Vector2 max, EntityId parent = default);
 
     // /// <summary>Creates a pickup in the world.</summary>
     // /// <param name="model">The model of the pickup.</param>
@@ -196,6 +204,7 @@ public interface IWorldService
     /// <param name="text">The text to be displayed.</param>
     /// <param name="time">The duration of the text being shown in milliseconds.</param>
     /// <param name="style">The style of text to be displayed.</param>
+    [Obsolete("Use GameText(string, TimeSpan, int) instead.")]
     void GameText(string text, int time, int style);
 
     /// <summary>Creates an explosion for all players.</summary>

@@ -10,6 +10,7 @@ public class WorldService : IWorldService
     private readonly IVehiclesComponent _vehicles;
     private readonly IObjectsComponent _objects;
     private readonly IActorsComponent _actors;
+    private readonly IGangZonesComponent _gangZones;
     private readonly IEntityManager _entityManager;
 
     public WorldService(OpenMp omp, IEntityManager entityManager)
@@ -20,6 +21,7 @@ public class WorldService : IWorldService
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
         _objects = omp.Components.QueryComponent<IObjectsComponent>();
         _actors = omp.Components.QueryComponent<IActorsComponent>();
+        _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
     }
 
     public float Gravity
@@ -50,6 +52,23 @@ public class WorldService : IWorldService
         EntityId parent = default)
     {
         return CreateVehicle(true, type, position, rotation, color1, color2, respawnDelay, addSiren, parent);
+    }
+
+    public GangZone CreateGangZone(float minX, float minY, float maxX, float maxY, EntityId parent = default)
+    {
+        return CreateGangZone(new Vector2(minX, minY), new Vector2(maxX, maxY), parent);
+    }
+    
+    public GangZone CreateGangZone(Vector2 min, Vector2 max, EntityId parent = default)
+    {
+        var native = _gangZones.Create(new GangZonePos(min, max));
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<GangZone>(entityId, parent, _gangZones, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
     }
 
     private Vehicle CreateVehicle(bool isStatic, VehicleModelType type, Vector3 position, float rotation, int color1, int color2, int respawnDelay = -1, bool addSiren = false,
@@ -103,7 +122,6 @@ public class WorldService : IWorldService
         _players.SendDeathMessageToAll(killer.Native, killee.Native, (int)weapon);
     }
 
-    [Obsolete("Use GameText(string, TimeSpan, int) instead.")]
     public void GameText(string text, int time, int style)
     {
         GameText(text, TimeSpan.FromMilliseconds(time), style);
