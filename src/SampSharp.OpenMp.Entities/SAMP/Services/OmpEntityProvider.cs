@@ -23,6 +23,18 @@ internal class OmpEntityProvider : IOmpEntityProvider
         return GetComponent(player)?.Entity ?? default;
     }
 
+    public EntityId GetEntity(IPlayerObject playerObject)
+    {
+        // TODO implement
+        return default;
+    }
+
+    public EntityId GetEntity(IObject @object)
+    {
+        // TODO implement
+        return default;
+    }
+
     public Player? GetComponent(IPlayer player)
     {
         if (player.Handle == 0)

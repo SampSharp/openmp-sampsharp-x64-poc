@@ -76,7 +76,16 @@ internal class EcsManager : Extension
             .AddSystem<TickingSystem>()
             .AddSystem<VehicleSystem>()
             .AddSystem<ConsoleSystem>()
-            .AddSystem<PlayerTextSystem>();
+            .AddSystem<PlayerChangeSystem>()
+            .AddSystem<PlayerCheckSystem>()
+            .AddSystem<PlayerClickSystem>()
+            .AddSystem<PlayerConnectSystem>()
+            .AddSystem<PlayerDamageSystem>()
+            .AddSystem<PlayerShotSystem>()
+            .AddSystem<PlayerSpawnSystem>()
+            .AddSystem<PlayerStreamSystem>()
+            .AddSystem<PlayerTextSystem>()
+            .AddSystem<PlayerUpdateSystem>()
             ;
 
     }

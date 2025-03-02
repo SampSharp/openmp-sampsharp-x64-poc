@@ -13,13 +13,27 @@ public interface IOmpEntityProvider
     /// <param name="vehicle">The vehicle to get the entity for.</param>
     /// <returns>The vehicle entity.</returns>
     EntityId GetEntity(IVehicle vehicle);
-
+    
     /// <summary>
     /// Gets the entity for the specified player.
     /// </summary>
     /// <param name="player">The player to get the entity for.</param>
     /// <returns>The player entity.</returns>
     EntityId GetEntity(IPlayer player);
+    
+    /// <summary>
+    /// Gets the entity for the specified player object.
+    /// </summary>
+    /// <param name="playerObject">The player object to get the entity for.</param>
+    /// <returns>The player object entity.</returns>
+    EntityId GetEntity(IPlayerObject playerObject);
+
+    /// <summary>
+    /// Gets the entity for the specified object.
+    /// </summary>
+    /// <param name="object">The object to get the entity for.</param>
+    /// <returns>The object entity.</returns>
+    EntityId GetEntity(IObject @object);
 
     /// <summary>
     /// Gets the component for the specified player.
