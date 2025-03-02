@@ -3,7 +3,7 @@ using SampSharp.OpenMp.Core.RobinHood;
 
 namespace SampSharp.Entities.SAMP;
 
-public class ConsoleSystem : ISystem, IConsoleEventHandler, IDisposable
+internal class ConsoleSystem : ISystem, IConsoleEventHandler, IDisposable
 {
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventService _eventService;

@@ -63,7 +63,13 @@
         <!-- When -->
         <RunAnalyzersDuringBuild>true</RunAnalyzersDuringBuild>
         <RunAnalyzersDuringLiveAnalysis>true</RunAnalyzersDuringLiveAnalysis>
+        
     </PropertyGroup>
+
+    <!-- Analyzer helpers -->
+    <ItemGroup>
+        <PackageReference Include="JetBrains.Annotations" Version="2024.3.0" PrivateAssets="all" />
+    </ItemGroup>
 
     <!-- Symbols / source linking  -->
     <PropertyGroup Condition="'$(IsDeliverable)' == 'True'">

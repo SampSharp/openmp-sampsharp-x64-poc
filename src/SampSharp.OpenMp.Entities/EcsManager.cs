@@ -76,6 +76,7 @@ internal class EcsManager : Extension
             .AddSystem<TickingSystem>()
             .AddSystem<VehicleSystem>()
             .AddSystem<ConsoleSystem>()
+            .AddSystem<PlayerTextSystem>();
             ;
 
     }

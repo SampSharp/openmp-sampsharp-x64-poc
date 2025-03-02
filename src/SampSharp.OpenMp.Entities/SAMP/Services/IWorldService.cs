@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using JetBrains.Annotations;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
@@ -158,7 +159,7 @@ public interface IWorldService
     /// <param name="color">The color of the message.</param>
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    // [StringFormatMethod("messageFormat")]
+    [StringFormatMethod("messageFormat")]
     void SendClientMessage(Colour color, string messageFormat, params object[] args);
 
     /// <summary>
@@ -174,7 +175,7 @@ public interface IWorldService
     /// </summary>
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    // [StringFormatMethod("messageFormat")]
+    [StringFormatMethod("messageFormat")]
     void SendClientMessage(string messageFormat, params object[] args);
 
     /// <summary>

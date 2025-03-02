@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Numerics;
 using System.Reflection;
+using JetBrains.Annotations;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
@@ -30,7 +31,7 @@ public class Player : Component
     }
 
     /// <summary>
-    /// Sets then name of this player.
+    /// Sets the name of this player.
     /// </summary>
     /// <param name="name">The name to be set.</param>
     /// <exception cref="InvalidPlayerNameException">Thrown when the name is invalid of already in use.</exception>
@@ -1147,7 +1148,7 @@ public class Player : Component
     /// <param name="color">The color of the message.</param>
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    // TODO [StringFormatMethod("messageFormat")]
+    [StringFormatMethod("messageFormat")]
     public virtual void SendClientMessage(Colour color, string messageFormat, params object[] args)
     {
         SendClientMessage(color, string.Format(messageFormat, args));
@@ -1169,7 +1170,7 @@ public class Player : Component
     /// </summary>
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
-    // TODO [StringFormatMethod("messageFormat")]
+    [StringFormatMethod("messageFormat")]
     public virtual void SendClientMessage(string messageFormat, params object[] args)
     {
         SendClientMessage(SAMP.Color.White, string.Format(messageFormat, args));
