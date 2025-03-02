@@ -18,7 +18,7 @@ public interface IWorldService
     // /// <param name="rotation">The rotation of the actor.</param>
     // /// <param name="parent">The parent of the entity to be created.</param>
     // /// <returns>The actor component of the newly created entity.</returns>
-    // Actor CreateActor(int modelId, Vector3 position, float rotation, EntityId parent = default);
+    Actor CreateActor(int modelId, Vector3 position, float rotation, EntityId parent = default);
 
     /// <summary>Creates a vehicle in the world.</summary>
     /// <param name="type">The model for the vehicle.</param>

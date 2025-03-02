@@ -2,24 +2,18 @@
 
 namespace SampSharp.Entities.SAMP;
 
-internal class VehicleSystem : ISystem, IVehicleEventHandler, IDisposable
+internal class VehicleSystem : DisposableSystem, IVehicleEventHandler
 {
     private readonly IEventService _eventService;
     private readonly IOmpEntityProvider _entityProvider;
-    private IDisposable? _handler;
 
-    public VehicleSystem(IEventService eventService, IOmpEntityProvider entityProvider)
+    public VehicleSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp omp)
     {
         _eventService = eventService;
         _entityProvider = entityProvider;
+        AddDisposable(omp.Components.QueryComponent<IVehiclesComponent>().GetEventDispatcher().Add(this));
     }
     
-    [Event]
-    public void OnGameModeInit(OpenMp omp)
-    {
-        _handler = omp.Components.QueryComponent<IVehiclesComponent>().GetEventDispatcher().Add(this);
-    }
-
     public void OnVehicleStreamIn(IVehicle vehicle, IPlayer player)
     {
         _eventService.Invoke("OnVehicleStreamIn", 
@@ -132,11 +126,5 @@ internal class VehicleSystem : ISystem, IVehicleEventHandler, IDisposable
             _entityProvider.GetEntity(vehicle),
             sirenState);
         return EventHelper.IsSuccessResponse(result);
-    }
-
-    public void Dispose()
-    {
-        _handler?.Dispose();
-        _handler = null;
     }
 }

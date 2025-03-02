@@ -38,39 +38,36 @@ internal static class MethodInvokerFactory
 
         for (var i = 0; i < parameterSources.Length; i++)
         {
-            var parameterType = parameterSources[i]
+            var source = parameterSources[i];
+            var parameterType = source
                 .Info.ParameterType;
             if (parameterType.IsByRef)
             {
                 throw new NotSupportedException("Reference parameters are not supported");
             }
 
-            if (parameterSources[i]
-                .IsComponent)
+            if (source.IsComponent)
             {
                 // Get component from entity
 
                 // Declare local variables
                 var entityArg = Expression.Parameter(typeof(EntityId), $"entity{i}");
-                var componentArg = Expression.Parameter(parameterSources[i]
+                var componentArg = Expression.Parameter(source
                         .Info.ParameterType, $"component{i}");
-                var componentNull = Expression.Constant(null, parameterSources[i]
-                    .Info.ParameterType);
+                var componentNull = Expression.Constant(null, source.Info.ParameterType);
 
                 locals.Add(entityArg);
                 locals.Add(componentArg);
 
                 // Constant index in args array
-                Expression index = Expression.Constant(parameterSources[i]
-                    .ParameterIndex);
+                Expression index = Expression.Constant(source.ParameterIndex);
 
                 // Assign entity from args array to entity variable.
                 var getEntityExpression = Expression.Assign(entityArg, Expression.Convert(Expression.ArrayIndex(argsArg, index), typeof(EntityId)));
                 expressions.Add(getEntityExpression);
 
                 // If entity is not null, convert entity to component. Assign component to component variable.
-                var getComponentInfo = _getComponentInfo.MakeGenericMethod(parameterSources[i]
-                    .Info.ParameterType);
+                var getComponentInfo = _getComponentInfo.MakeGenericMethod(source.Info.ParameterType);
                 var getComponentExpression = Expression.Assign(componentArg,
                     Expression.Condition(Expression.Equal(entityArg, entityEmpty), componentNull,
                         Expression.Call(entityManagerArg, getComponentInfo, entityArg)));
@@ -87,19 +84,16 @@ internal static class MethodInvokerFactory
                 // Add component variable as the method argument.
                 methodArguments[i] = componentArg;
             }
-            else if (parameterSources[i]
-                     .IsService)
+            else if (source.IsService)
             {
                 // Get service
                 var getServiceCall = Expression.Call(_getServiceInfo, serviceProviderArg, Expression.Constant(parameterType, typeof(Type)));
                 methodArguments[i] = Expression.Convert(getServiceCall, parameterType);
             }
-            else if (parameterSources[i]
-                         .ParameterIndex >= 0)
+            else if (source.ParameterIndex >= 0)
             {
                 // Pass through
-                Expression index = Expression.Constant(parameterSources[i]
-                    .ParameterIndex);
+                Expression index = Expression.Constant(source.ParameterIndex);
 
                 var getValue = Expression.ArrayIndex(argsArg, index);
                 methodArguments[i] = Expression.Convert(getValue, parameterType);

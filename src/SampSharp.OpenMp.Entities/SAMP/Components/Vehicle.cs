@@ -15,13 +15,18 @@ public class Vehicle : Component
         _vehicles = vehicles;
         _vehicle = vehicle;
     }
-
-    public IVehicle Native => _vehicle;
-
+    
     /// <summary>
-    /// Gets the ID of this vehicle. This is a unique identifier for this vehicle, which is used to identify it in the
-    /// server.
+    /// Gets the native open.mp entity counterpart.
     /// </summary>
+    public IVehicle Native => _vehicle;
+    
+    /// <summary>
+    /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
+    /// </summary>
+    protected bool IsOmpEntityDestroyed => _vehicle.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
+
+    /// <summary>Gets the identifier of this vehicle.</summary>
     public virtual int Id => _vehicle.GetID();
 
     /// <summary>Gets or sets the Z angle of this vehicle.</summary>
@@ -472,7 +477,7 @@ public class Vehicle : Component
 
     protected override void OnDestroyComponent()
     {
-        if (_vehicle.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed == false)
+        if (!IsOmpEntityDestroyed)
         {
             _vehicles.AsPool().Release(Id);
         }

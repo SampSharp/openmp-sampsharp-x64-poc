@@ -74,7 +74,7 @@ internal class EcsManager : Extension
             // TODO: .AddSystem<DialogSystem>()
             // TODO: .AddSystem<TimerSystem>()
             .AddSystem<TickingSystem>()
-            .AddSystem<VehicleSystem>()
+            .AddSystem<ActorSystem>()
             .AddSystem<ConsoleSystem>()
             .AddSystem<PlayerChangeSystem>()
             .AddSystem<PlayerCheckSystem>()
@@ -86,6 +86,7 @@ internal class EcsManager : Extension
             .AddSystem<PlayerStreamSystem>()
             .AddSystem<PlayerTextSystem>()
             .AddSystem<PlayerUpdateSystem>()
+            .AddSystem<VehicleSystem>()
             ;
 
     }

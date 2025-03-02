@@ -9,6 +9,7 @@ public class WorldService : IWorldService
     private readonly IPlayerPool _players;
     private readonly IVehiclesComponent _vehicles;
     private readonly IObjectsComponent _objects;
+    private readonly IActorsComponent _actors;
     private readonly IEntityManager _entityManager;
 
     public WorldService(OpenMp omp, IEntityManager entityManager)
@@ -18,12 +19,26 @@ public class WorldService : IWorldService
         _entityManager = entityManager;
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
         _objects = omp.Components.QueryComponent<IObjectsComponent>();
+        _actors = omp.Components.QueryComponent<IActorsComponent>();
     }
 
     public float Gravity
     {
         get => _core.GetGravity();
         set => _core.SetGravity(value);
+    }
+
+    public Actor CreateActor(int modelId, Vector3 position, float rotation, EntityId parent = default)
+    {
+        var native = _actors.Create(modelId, position, rotation);
+
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<Actor>(entityId, parent, _actors, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
     }
 
     public Vehicle CreateVehicle(VehicleModelType type, Vector3 position, float rotation, int color1, int color2, int respawnDelay = -1, bool addSiren = false, EntityId parent = default)

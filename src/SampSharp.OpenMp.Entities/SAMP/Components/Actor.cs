@@ -1,0 +1,118 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Numerics;
+using System.Text;
+using System.Threading.Tasks;
+using SampSharp.OpenMp.Core.Api;
+
+namespace SampSharp.Entities.SAMP;
+
+
+/// <summary>Represents a component which provides the data and functionality of an actor.</summary>
+public class Actor : Component
+{
+    private readonly IActorsComponent _actorsComponent;
+    private readonly IActor _actor;
+
+    /// <summary>Constructs an instance of Actor, should be used internally.</summary>
+    protected Actor(IActorsComponent actorsComponent, IActor actor)
+    {
+        _actorsComponent = actorsComponent;
+        _actor= actor;
+    }
+    
+    /// <summary>
+    /// Gets the native open.mp entity counterpart.
+    /// </summary>
+    public IActor Native => _actor;
+    
+    /// <summary>
+    /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
+    /// </summary>
+    protected bool IsOmpEntityDestroyed => _actor.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
+
+    /// <summary>Gets the identifier of this actor.</summary>
+    public virtual int Id => _actor.GetID();
+
+    /// <summary>Gets the facing angle of this actor.</summary>
+    public virtual float Angle
+    {
+        get
+        {
+            var rotation = _actor.GetRotation();
+
+            // TODO implement
+            throw new NotImplementedException();
+        }
+        set => throw new NotImplementedException();
+    }
+
+    /// <summary>Gets the health of this actor.</summary>
+    public virtual float Health
+    {
+        get => _actor.GetHealth();
+        set => _actor.SetHealth(value);
+    }
+
+    /// <summary>Gets or sets a value indicating whether this actor is invulnerable.</summary>
+    public virtual bool IsInvulnerable
+    {
+        get => _actor.IsInvulnerable();
+        set => _actor.SetInvulnerable(value);
+    }
+
+    /// <summary>Gets or sets the virtual world of this actor.</summary>
+    public virtual int VirtualWorld
+    {
+        get => _actor.GetVirtualWorld();
+        set => _actor.SetVirtualWorld(value);
+    }
+
+    /// <summary>Gets the position of this actor.</summary>
+    public virtual Vector3 Position
+    {
+        get => _actor.GetPosition();
+        set => _actor.SetPosition(value);
+    }
+
+    /// <summary>Determines whether this actor is streamed in for the specified <paramref name="player" />.</summary>
+    /// <param name="player">The player.</param>
+    /// <returns>True if streamed in; False otherwise.</returns>
+    public virtual bool IsStreamedIn(Player player)
+    {
+        return _actor.IsStreamedInForPlayer(player.Native);
+    }
+
+    /// <summary>Applies the specified animation to this actor.</summary>
+    /// <param name="library">The animation library from which to apply an animation.</param>
+    /// <param name="name">The name of the animation to apply, within the specified library.</param>
+    /// <param name="fDelta">The speed to play the animation.</param>
+    /// <param name="loop">if set to <c>true</c> the animation will loop.</param>
+    /// <param name="lockX">if set to <c>true</c> allow this Actor to move it's x-coordinate.</param>
+    /// <param name="lockY">if set to <c>true</c> allow this Actor to move it's y-coordinate.</param>
+    /// <param name="freeze">if set to <c>true</c> freeze this Actor at the end of the animation.</param>
+    /// <param name="time">The amount of time (in milliseconds) to play the animation.</param>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="library" /> or <paramref name="name" /> is null.</exception>
+    public virtual void ApplyAnimation(string library, string name, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+    {
+        ArgumentNullException.ThrowIfNull(library);
+        ArgumentNullException.ThrowIfNull(name);
+        _actor.ApplyAnimation(new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time, library, name));
+    }
+
+    /// <summary>Clear any animations applied to this actor.</summary>
+    public virtual void ClearAnimations()
+    {
+        _actor.ClearAnimations();
+    }
+
+    /// <inheritdoc />
+    protected override void OnDestroyComponent()
+    {
+        if (!IsOmpEntityDestroyed)
+        {
+            _actorsComponent.AsPool().Release(Id);
+        }
+    }
+}

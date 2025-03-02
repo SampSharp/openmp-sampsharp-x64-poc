@@ -17,10 +17,7 @@ public class ConsoleCommandCollection : IReadOnlyCollection<string>
 
     public IEnumerator<string> GetEnumerator()
     {
-        foreach (var item in _set)
-        {
-            yield return item ?? string.Empty;
-        }
+        return _set.Select(item => item ?? string.Empty).GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

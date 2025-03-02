@@ -34,6 +34,13 @@ public interface IOmpEntityProvider
     /// <param name="object">The object to get the entity for.</param>
     /// <returns>The object entity.</returns>
     EntityId GetEntity(IObject @object);
+    
+    /// <summary>
+    /// Gets the entity for the specified actor.
+    /// </summary>
+    /// <param name="actor">The actor to get the entity for.</param>
+    /// <returns>The actor entity.</returns>
+    EntityId GetEntity(IActor actor);
 
     /// <summary>
     /// Gets the component for the specified player.

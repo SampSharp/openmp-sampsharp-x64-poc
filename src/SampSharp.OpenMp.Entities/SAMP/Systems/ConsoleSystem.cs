@@ -3,23 +3,16 @@ using SampSharp.OpenMp.Core.RobinHood;
 
 namespace SampSharp.Entities.SAMP;
 
-internal class ConsoleSystem : ISystem, IConsoleEventHandler, IDisposable
+internal class ConsoleSystem : DisposableSystem, IConsoleEventHandler
 {
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventService _eventService;
 
-    private IDisposable? _handler;
-
-    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventService eventService)
+    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventService eventService, OpenMp omp)
     {
         _entityProvider = entityProvider;
         _eventService = eventService;
-    }
-
-    [Event]
-    public void OnGameModeInit(OpenMp omp)
-    {
-        _handler = omp.Components.QueryComponent<IConsoleComponent>().GetEventDispatcher().Add(this);
+        AddDisposable(omp.Components.QueryComponent<IConsoleComponent>().GetEventDispatcher().Add(this));
     }
 
     public bool OnConsoleText(string command, string parameters, ref ConsoleCommandSenderData sender)
@@ -45,11 +38,5 @@ internal class ConsoleSystem : ISystem, IConsoleEventHandler, IDisposable
         var collection = new ConsoleCommandCollection(commands);
 
         _eventService.Invoke("OnConsoleCommandListRequest", collection);
-    }
-
-    public void Dispose()
-    {
-        _handler?.Dispose();
-        _handler = null;
     }
 }

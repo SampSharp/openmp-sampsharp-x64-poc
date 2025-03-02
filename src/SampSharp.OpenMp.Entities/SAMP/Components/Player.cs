@@ -11,8 +11,6 @@ public class Player : Component
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IPlayer _player;
 
-    public IPlayer Native => _player;
-    
     /// <summary>Constructs an instance of Player, should be used internally.</summary>
     protected Player(IOmpEntityProvider entityProvider, IPlayer player)
     {
@@ -20,7 +18,17 @@ public class Player : Component
         _player = player;
     }
 
-    /// <summary>Gets the id of this player.</summary>
+    /// <summary>
+    /// Gets the native open.mp entity counterpart.
+    /// </summary>
+    public IPlayer Native => _player;
+
+    /// <summary>
+    /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
+    /// </summary>
+    protected bool IsOmpEntityDestroyed => _player.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
+
+    /// <summary>Gets the identifier of this player.</summary>
     public virtual int Id => _player.GetID();
 
     /// <summary>Gets the name of this player.</summary>
@@ -1304,7 +1312,7 @@ public class Player : Component
     
     protected override void OnDestroyComponent()
     {
-        if (_player.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed == false)
+        if (!IsOmpEntityDestroyed)
         {
             Kick();
         }
