@@ -15,21 +15,15 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all PlayerRecording types.</summary>
+public enum PlayerRecordingType
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>Nothing.</summary>
+    None = 0,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
+    /// <summary>As a driver.</summary>
+    Driver = 1,
 
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
-
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
-
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>As a pedestrian</summary>
+    OnFoot = 2
 }

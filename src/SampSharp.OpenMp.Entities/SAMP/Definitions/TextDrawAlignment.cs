@@ -15,21 +15,15 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all textdraw alignments.</summary>
+public enum TextDrawAlignment
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>Align left.</summary>
+    Left = 1,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
+    /// <summary>Align center.</summary>
+    Center = 2,
 
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
-
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
-
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>Align right.</summary>
+    Right = 3
 }

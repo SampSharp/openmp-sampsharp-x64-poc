@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Numerics;
-using System.Reflection;
 using JetBrains.Annotations;
 using SampSharp.OpenMp.Core.Api;
 
@@ -17,11 +16,6 @@ public class Player : Component
         _entityProvider = entityProvider;
         _player = player;
     }
-
-    /// <summary>
-    /// Gets the native open.mp entity counterpart.
-    /// </summary>
-    public IPlayer Native => _player;
 
     /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
@@ -532,7 +526,7 @@ public class Player : Component
     /// <returns>True if the other Player is streamed in for this player, False if not.</returns>
     public virtual bool IsPlayerStreamedIn(Player player)
     {
-        return _player.IsStreamedInForPlayer(player.Native);
+        return _player.IsStreamedInForPlayer(player);
     }
 
     /// <summary>Set the ammo of this player's weapon.</summary>
@@ -668,7 +662,7 @@ public class Player : Component
     /// <param name="crime">The crime ID, which will be reported as a 10-code (i.e. 10-16 if 16 was passed as the crime ID).</param>
     public virtual void PlayCrimeReport(Player suspect, int crime)
     {
-        _player.PlayerCrimeReport(suspect.Native, crime);
+        _player.PlayerCrimeReport(suspect, crime);
     }
 
     /// <summary>Play an 'audio stream' for this player. Normal audio files also work (e.g. MP3).</summary>
@@ -789,7 +783,7 @@ public class Player : Component
     /// <param name="seatId">The ID of the seat to put the player in.</param>
     public virtual void PutInVehicle(Vehicle vehicle, int seatId)
     {
-        vehicle.Native.PutPlayer(_player, seatId);
+        ((IVehicle)vehicle).PutPlayer(_player, seatId);
     }
 
     /// <summary>Puts this player in a vehicle as driver.</summary>
@@ -995,7 +989,7 @@ public class Player : Component
     /// <param name="color">New color.</param>
     public virtual void SetPlayerMarker(Player player, Colour color)
     {
-        _player.SetOtherColour(player.Native, color);
+        _player.SetOtherColour(player, color);
     }
 
     /// <summary>
@@ -1007,7 +1001,7 @@ public class Player : Component
     /// <param name="show">True to show name tag, False to hide name tag.</param>
     public virtual void ShowNameTagForPlayer(Player player, bool show)
     {
-        _player.ToggleOtherNameTag(player.Native, show);
+        _player.ToggleOtherNameTag(player, show);
     }
 
     /// <summary>Set the direction this player's camera looks at. To be used in combination with <see cref="CameraPosition" />.</summary>
@@ -1074,7 +1068,7 @@ public class Player : Component
     /// <param name="mode">The mode to spectate with.</param>
     public virtual void SpectatePlayer(Player targetPlayer, SpectateMode mode)
     {
-        _player.SpectatePlayer(targetPlayer.Native, (PlayerSpectateMode)mode);
+        _player.SpectatePlayer(targetPlayer, (PlayerSpectateMode)mode);
     }
 
     /// <summary>Makes this player spectate (watch) another player.</summary>
@@ -1091,7 +1085,7 @@ public class Player : Component
     /// <param name="mode">Spectate mode.</param>
     public virtual void SpectateVehicle(Vehicle targetVehicle, SpectateMode mode)
     {
-        _player.SpectateVehicle(targetVehicle.Native, (PlayerSpectateMode)mode);
+        _player.SpectateVehicle(targetVehicle, (PlayerSpectateMode)mode);
     }
 
     /// <summary>Sets this player to spectate another vehicle, i.e. see what its driver sees.</summary>
@@ -1254,7 +1248,7 @@ public class Player : Component
     /// <param name="weapon">The reason for this player's death.</param>
     public virtual void SendDeathMessage(Player killer, Player player, Weapon weapon)
     {
-        _player.SendDeathMessage(player.Native, killer.Native, (int)weapon);
+        _player.SendDeathMessage(player, killer, (int)weapon);
     }
 
     /// <summary>Attaches a player's camera to an object.</summary>
@@ -1321,5 +1315,10 @@ public class Player : Component
     public override string ToString()
     {
         return $"(Id: {Id}, Name: {Name})";
+    }
+    
+    public static implicit operator IPlayer(Player player)
+    {
+        return player._player;
     }
 }

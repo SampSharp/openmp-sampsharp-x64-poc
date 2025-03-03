@@ -15,21 +15,28 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all available body parts.</summary>
+/// <remarks>See <see href="https://www.open.mp/docs/scripting/resources/bodyparts">https://www.open.mp/docs/scripting/resources/bodyparts</see>.</remarks>
+public enum BodyPart
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>The chest.</summary>
+    Chest = 3,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
+    /// <summary>The crotch.</summary>
+    Crotch = 4,
 
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
+    /// <summary>The left arm.</summary>
+    LeftArm = 5,
 
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
+    /// <summary>The right arm.</summary>
+    RightArm = 6,
 
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>The left leg.</summary>
+    LeftLeg = 7,
+
+    /// <summary>The right leg.</summary>
+    RightLeg = 8,
+
+    /// <summary>The head.</summary>
+    Head = 9
 }

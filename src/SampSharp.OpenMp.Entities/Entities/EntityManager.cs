@@ -17,11 +17,6 @@ internal class EntityManager : IEntityManager
         _components = new ComponentStore(componentPool);
     }
 
-    public void Create(EntityId entity, EntityId parent = default)
-    {
-        // Obsolete.
-    }
-    
     public T AddComponent<T>(EntityId entity, params object[] args) where T : Component
     {
         return AddComponent<T>(entity, default, args);

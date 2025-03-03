@@ -15,21 +15,18 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all server variable types.</summary>
+public enum ServerVarType
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>Var does not exist.</summary>
+    None = 0,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
+    /// <summary>Var as an integer.</summary>
+    Int = 1,
 
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
+    /// <summary>Var is a string.</summary>
+    String = 2,
 
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
-
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>Var is a float.</summary>
+    Float = 3
 }

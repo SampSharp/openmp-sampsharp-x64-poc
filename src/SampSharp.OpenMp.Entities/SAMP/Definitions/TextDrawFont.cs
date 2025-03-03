@@ -13,17 +13,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Diagnostics.CodeAnalysis;
+
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all spectating modes.</summary>
-public enum SpectateMode
+/// <summary>Contains all fonts.</summary>
+[SuppressMessage("ReSharper", "IdentifierTypo")]
+[SuppressMessage("ReSharper", "CommentTypo")]
+public enum TextDrawFont
 {
-    /// <summary>Normal spectating mode.</summary>
+    /// <summary>Font 0, also known as Diploma.</summary>
+    Diploma = 0,
+
+    /// <summary>Font 1, also known as Normal.</summary>
     Normal = 1,
 
-    /// <summary>Player is looking from a fixed point.</summary>
-    Fixed = 2,
+    /// <summary>Font 2, also known as Slim.</summary>
+    Slim = 2,
 
-    /// <summary>Attached to the side.</summary>
-    Side = 3
+    /// <summary>Font 3, also known as Pricedown.</summary>
+    Pricedown = 3,
+
+    /// <summary>Font used to draw sprites.</summary>
+    DrawSprite = 4,
+
+    /// <summary>Font used to draw model previews.</summary>
+    PreviewModel = 5
 }

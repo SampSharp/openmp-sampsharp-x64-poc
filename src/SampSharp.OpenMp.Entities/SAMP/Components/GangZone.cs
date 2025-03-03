@@ -6,22 +6,16 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Represents a component which provides the data and functionality of a gang zone.</summary>
 public class GangZone : Component
 {
-    private readonly IGangZonesComponent _gangZonesComponent;
+    private readonly IGangZonesComponent _gangZones;
     private readonly IGangZone _gangZone;
 
     /// <summary>Constructs an instance of GangZone, should be used internally.</summary>
-    protected GangZone(IGangZonesComponent gangZonesComponent, IGangZone gangZone, Vector2 min, Vector2 max)
+    protected GangZone(IGangZonesComponent gangZones, IGangZone gangZone)
     {
         _gangZone = gangZone;
-        _gangZonesComponent = gangZonesComponent;
-        Min = min; 
-        Max = max;
+        _gangZones = gangZones;
+        
     }
-
-    /// <summary>
-    /// Gets the native open.mp entity counterpart.
-    /// </summary>
-    public IGangZone Native => _gangZone;
 
     /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
@@ -32,10 +26,10 @@ public class GangZone : Component
     public virtual int Id => _gangZone.GetID();
 
     /// <summary>Gets the minimum position of this <see cref="GangZone"/>.</summary>
-    public virtual Vector2 Min { get; }
+    public virtual Vector2 Min => _gangZone.GetPosition().Min;
 
     /// <summary>Gets the maximum position of this <see cref="GangZone"/>.</summary>
-    public virtual Vector2 Max { get; }
+    public virtual Vector2 Max => _gangZone.GetPosition().Max;
 
     /// <summary>Gets the minimum x value for this <see cref="GangZone" />.</summary>
     public virtual float MinX => Min.X;
@@ -66,7 +60,7 @@ public class GangZone : Component
     public virtual void Show(Player player)
     {
         var clr = Color;
-        _gangZone.ShowForPlayer(player.Native, ref clr);
+        _gangZone.ShowForPlayer(player, ref clr);
     }
 
     /// <summary>Hides this <see cref="GangZone" />.</summary>
@@ -82,7 +76,7 @@ public class GangZone : Component
     /// <param name="player">The player.</param>
     public virtual void Hide(Player player)
     {
-        _gangZone.HideForPlayer(player.Native);
+        _gangZone.HideForPlayer(player);
     }
 
     /// <summary>Flashes this <see cref="GangZone" />.</summary>
@@ -108,7 +102,7 @@ public class GangZone : Component
     public virtual void Flash(Player player, Colour color)
     {
         var clr = color;
-        _gangZone.FlashForPlayer(player.Native, ref clr);
+        _gangZone.FlashForPlayer(player, ref clr);
     }
 
     /// <summary>Stops this <see cref="GangZone" /> from flash.</summary>
@@ -124,7 +118,7 @@ public class GangZone : Component
     /// <param name="player">The player.</param>
     public virtual void StopFlash(Player player)
     {
-        _gangZone.StopFlashForPlayer(player.Native);
+        _gangZone.StopFlashForPlayer(player);
     }
 
     /// <inheritdoc />
@@ -132,7 +126,17 @@ public class GangZone : Component
     {
         if (!IsOmpEntityDestroyed)
         {
-            _gangZonesComponent.AsPool().Release(Id);
+            _gangZones.AsPool().Release(Id);
         }
+    }
+    
+    public override string ToString()
+    {
+        return $"(Id: {Id}, Color: {Color})";
+    }
+
+    public static implicit operator IGangZone(GangZone gangZone)
+    {
+        return gangZone._gangZone;
     }
 }

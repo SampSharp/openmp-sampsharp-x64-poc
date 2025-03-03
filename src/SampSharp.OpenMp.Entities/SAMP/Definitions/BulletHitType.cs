@@ -15,21 +15,22 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all types of things bullets can hit.</summary>
+/// <remarks>See <see href="https://www.open.mp/docs/scripting/resources/bullethittypes" />.</remarks>
+public enum BulletHitType
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>Hit nothing.</summary>
+    None = 0,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
+    /// <summary>Hit a player.</summary>
+    Player = 1,
 
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
+    /// <summary>Hit a vehicle.</summary>
+    Vehicle = 2,
 
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
+    /// <summary>Hit an GlobalObject.</summary>
+    Object = 3,
 
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>Hit a PlayerObject.</summary>
+    PlayerObject = 4
 }

@@ -7,21 +7,16 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Represents a component which provides the data and functionality of an actor.</summary>
 public class Actor : Component
 {
-    private readonly IActorsComponent _actorsComponent;
+    private readonly IActorsComponent _actors;
     private readonly IActor _actor;
 
     /// <summary>Constructs an instance of Actor, should be used internally.</summary>
-    protected Actor(IActorsComponent actorsComponent, IActor actor)
+    protected Actor(IActorsComponent actors, IActor actor)
     {
-        _actorsComponent = actorsComponent;
+        _actors = actors;
         _actor= actor;
     }
-    
-    /// <summary>
-    /// Gets the native open.mp entity counterpart.
-    /// </summary>
-    public IActor Native => _actor;
-    
+  
     /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
@@ -76,7 +71,7 @@ public class Actor : Component
     /// <returns>True if streamed in; False otherwise.</returns>
     public virtual bool IsStreamedIn(Player player)
     {
-        return _actor.IsStreamedInForPlayer(player.Native);
+        return _actor.IsStreamedInForPlayer(player);
     }
 
     /// <summary>Applies the specified animation to this actor.</summary>
@@ -107,7 +102,17 @@ public class Actor : Component
     {
         if (!IsOmpEntityDestroyed)
         {
-            _actorsComponent.AsPool().Release(Id);
+            _actors.AsPool().Release(Id);
         }
+    }
+    
+    public override string ToString()
+    {
+        return $"(Id: {Id})";
+    }
+
+    public static implicit operator IActor(Actor actor)
+    {
+        return actor._actor;
     }
 }

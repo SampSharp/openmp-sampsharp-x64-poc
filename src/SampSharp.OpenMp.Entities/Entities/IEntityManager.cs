@@ -5,12 +5,6 @@ namespace SampSharp.Entities;
 /// <summary>Provides functionality for the creation, modification and destruction of entities.</summary>
 public interface IEntityManager
 {
-    /// <summary>Creates an entity with the specified entity.</summary>
-    /// <param name="entity">The identifier of the entity to be created.</param>
-    /// <param name="parent">The parent of the entity to be created.</param>
-    [Obsolete("Obsolete. Use AddComponent overload with 'parent' parameter instead.")]
-    void Create(EntityId entity, EntityId parent = default);
-
     /// <summary>
     /// Adds a component of the specified type <typeparamref name="T" /> to the specified <paramref name="entity" />
     /// with the specified constructor <paramref name="args" />.

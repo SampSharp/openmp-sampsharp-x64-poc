@@ -21,7 +21,7 @@ internal class PlayerClickSystem : DisposableSystem, IPlayerClickEventHandler
         _eventService.Invoke("OnPlayerClickMap", _entityProvider.GetEntity(player), pos);
     }
 
-    public void OnPlayerClickPlayer(IPlayer player, IPlayer clicked, PlayerClickSource source)
+    public void OnPlayerClickPlayer(IPlayer player, IPlayer clicked, SampSharp.OpenMp.Core.Api.PlayerClickSource source)
     {
         _eventService.Invoke("OnPlayerClickPlayer", _entityProvider.GetEntity(player), clicked, source);
     }

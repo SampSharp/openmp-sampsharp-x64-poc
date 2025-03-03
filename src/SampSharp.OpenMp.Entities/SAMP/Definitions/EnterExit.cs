@@ -15,21 +15,12 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all weapon states.</summary>
-public enum WeaponState
+/// <summary>Contains all enter/exit garage states.</summary>
+public enum EnterExit
 {
-    /// <summary>Unknown state.</summary>
-    Unknown = -1,
+    /// <summary>Has exited garage.</summary>
+    Exited = 0,
 
-    /// <summary>Weapon is out of bullets.</summary>
-    NoBullets = 0,
-
-    /// <summary>Last bullet in gun.</summary>
-    LastBullet = 1,
-
-    /// <summary>More bullets in gun.</summary>
-    MoreBullets = 2,
-
-    /// <summary>Weapon is reloading.</summary>
-    Reloading = 3
+    /// <summary>Has entered garage.</summary>
+    Entered = 1
 }

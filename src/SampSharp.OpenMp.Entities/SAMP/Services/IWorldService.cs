@@ -63,34 +63,35 @@ public interface IWorldService
     /// <returns>The created gang zone.</returns>
     GangZone CreateGangZone(Vector2 min, Vector2 max, EntityId parent = default);
 
-    // /// <summary>Creates a pickup in the world.</summary>
-    // /// <param name="model">The model of the pickup.</param>
-    // /// <param name="type">The pickup spawn type.</param>
-    // /// <param name="position">The position where the pickup should be spawned.</param>
-    // /// <param name="virtualWorld">The virtual world ID of the pickup. Use -1 for all worlds.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created pickup.</returns>
-    // Pickup CreatePickup(int model, PickupType type, Vector3 position, int virtualWorld = -1, EntityId parent = default);
+    /// <summary>Creates a pickup in the world.</summary>
+    /// <param name="model">The model of the pickup.</param>
+    /// <param name="type">The pickup spawn type.</param>
+    /// <param name="position">The position where the pickup should be spawned.</param>
+    /// <param name="virtualWorld">The virtual world ID of the pickup. Use -1 for all worlds.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created pickup.</returns>
+    Pickup CreatePickup(int model, PickupType type, Vector3 position, int virtualWorld = -1, EntityId parent = default);
 
-    // /// <summary>
-    // /// Adds a 'static' pickup to the world. These pickups support weapons, health, armor etc., with the ability to function without scripting them
-    // /// (weapons/health/armor will be given automatically).
-    // /// </summary>
-    // /// <param name="model">The model of the pickup.</param>
-    // /// <param name="type">The pickup spawn type.</param>
-    // /// <param name="position">The position where the pickup should be spawned.</param>
-    // /// <param name="virtualWorld">The virtual world ID of the pickup. Use -1 for all worlds.</param>
-    // /// <returns>A value indicating whether the pickup has been created successfully.</returns>
-    // bool AddStaticPickup(int model, PickupType type, Vector3 position, int virtualWorld = -1);
+    /// <summary>
+    /// Adds a 'static' pickup to the world. These pickups support weapons, health, armor etc., with the ability to function without scripting them
+    /// (weapons/health/armor will be given automatically).
+    /// </summary>
+    /// <param name="model">The model of the pickup.</param>
+    /// <param name="type">The pickup spawn type.</param>
+    /// <param name="position">The position where the pickup should be spawned.</param>
+    /// <param name="virtualWorld">The virtual world ID of the pickup. Use -1 for all worlds.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created pickup.</returns>
+    Pickup CreateStaticPickup(int model, PickupType type, Vector3 position, int virtualWorld = -1, EntityId parent = default);
 
-    // /// <summary>Creates an object in the world.</summary>
-    // /// <param name="modelId">The model ID.</param>
-    // /// <param name="position">The position.</param>
-    // /// <param name="rotation">The rotation.</param>
-    // /// <param name="drawDistance">The draw distance.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created object.</returns>
-    // GlobalObject CreateObject(int modelId, Vector3 position, Vector3 rotation, float drawDistance, EntityId parent = default);
+    /// <summary>Creates an object in the world.</summary>
+    /// <param name="modelId">The model ID.</param>
+    /// <param name="position">The position.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="drawDistance">The draw distance.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created object.</returns>
+    GlobalObject CreateObject(int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default);
 
     // /// <summary>Creates a player object in the world.</summary>
     // /// <param name="player">The player.</param>
@@ -125,28 +126,28 @@ public interface IWorldService
     // PlayerTextLabel CreatePlayerTextLabel(EntityId player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true,
     //     EntityId attachedTo = default);
 
-    // /// <summary>Creates a textdraw in the world.</summary>
-    // /// <param name="position">The position of the textdraw.</param>
-    // /// <param name="text">The text of the textdraw.</param>
+    // /// <summary>Creates a text draw in the world.</summary>
+    // /// <param name="position">The position of the text draw.</param>
+    // /// <param name="text">The text of the text draw.</param>
     // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created textdraw.</returns>
+    // /// <returns>The created text draw.</returns>
     // TextDraw CreateTextDraw(Vector2 position, string text, EntityId parent = default);
 
-    // /// <summary>Creates the player textdraw in the world.</summary>
+    // /// <summary>Creates the player text draw in the world.</summary>
     // /// <param name="player">The player.</param>
-    // /// <param name="position">The position of the textdraw.</param>
-    // /// <param name="text">The text of the textdraw.</param>
-    // /// <returns>The created player textdraw.</returns>
+    // /// <param name="position">The position of the text draw.</param>
+    // /// <param name="text">The text of the text draw.</param>
+    // /// <returns>The created player text draw.</returns>
     // PlayerTextDraw CreatePlayerTextDraw(EntityId player, Vector2 position, string text);
 
-    // /// <summary>Creates the menu in this world.</summary>
-    // /// <param name="title">The title of the menu.</param>
-    // /// <param name="position">The position of the menu.</param>
-    // /// <param name="col0Width">Width of the left column.</param>
-    // /// <param name="col1Width">Width of the right column or null if the menu should only have one column.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created menu.</returns>
-    // Menu CreateMenu(string title, Vector2 position, float col0Width, float? col1Width = null, EntityId parent = default);
+    /// <summary>Creates the menu in this world.</summary>
+    /// <param name="title">The title of the menu.</param>
+    /// <param name="position">The position of the menu.</param>
+    /// <param name="col0Width">Width of the left column.</param>
+    /// <param name="col1Width">Width of the right column or null if the menu should only have one column.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created menu.</returns>
+    Menu CreateMenu(string title, Vector2 position, float col0Width, float? col1Width = null, EntityId parent = default);
 
     /// <summary>Allows camera collisions with newly created objects to be disabled by default.</summary>
     /// <param name="disable">A value indicating whether camera collision with new objects should be disabled.</param>

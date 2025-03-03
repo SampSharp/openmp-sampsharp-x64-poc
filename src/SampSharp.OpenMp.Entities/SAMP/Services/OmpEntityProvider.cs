@@ -6,16 +6,46 @@ internal class OmpEntityProvider : IOmpEntityProvider
 {
     private readonly IEntityManager _entityManager;
     private readonly IVehiclesComponent _vehicles;
+    private readonly IObjectsComponent _objects;
+    private readonly IGangZonesComponent _gangZones;
+    private readonly IActorsComponent _actors;
+    private readonly IMenusComponent _menus;
+    private readonly IPickupsComponent _pickups;
 
     public OmpEntityProvider(OpenMp omp, IEntityManager entityManager)
     {
         _entityManager = entityManager;
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
+        _objects = omp.Components.QueryComponent<IObjectsComponent>();
+        _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
+        _actors = omp.Components.QueryComponent<IActorsComponent>();
+        _menus = omp.Components.QueryComponent<IMenusComponent>();
+        _pickups = omp.Components.QueryComponent<IPickupsComponent>();
     }
 
-    public EntityId GetEntity(IVehicle vehicle)
+    public EntityId GetEntity(IActor actor)
     {
-        return GetComponent(vehicle)?.Entity ?? default;
+        return GetComponent(actor)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IGangZone gangZone)
+    {
+        return GetComponent(gangZone)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IMenu menu)
+    {
+        return GetComponent(menu)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IObject @object)
+    {
+        return GetComponent(@object)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IPickup pickup)
+    {
+        return GetComponent(pickup)?.Entity ?? default;
     }
 
     public EntityId GetEntity(IPlayer player)
@@ -25,14 +55,102 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public EntityId GetEntity(IPlayerObject playerObject)
     {
-        // TODO implement
-        return default;
+        return GetComponent(playerObject)?.Entity ?? default;
     }
 
-    public EntityId GetEntity(IObject @object)
+    public EntityId GetEntity(IVehicle vehicle)
     {
-        // TODO implement
-        return default;
+        return GetComponent(vehicle)?.Entity ?? default;
+    }
+
+    public Actor? GetComponent(IActor actor)
+    {
+        if (actor.Handle == 0)
+        {
+            return null;
+        }
+        var ext = actor.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+
+            var component = _entityManager.AddComponent<Actor>(EntityId.NewEntityId(), _actors, actor);
+            ext = new ComponentExtension(component);
+            actor.AddExtension(ext);
+
+            return component;
+        }
+        return (Actor)ext.Component;
+    }
+
+    public GangZone? GetComponent(IGangZone gangZone)
+    {
+        if (gangZone.Handle == 0)
+        {
+            return null;
+        }
+        var ext = gangZone.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+
+            var component = _entityManager.AddComponent<GangZone>(EntityId.NewEntityId(), _gangZones, gangZone);
+            ext = new ComponentExtension(component);
+            gangZone.AddExtension(ext);
+
+            return component;
+        }
+        return (GangZone)ext.Component;
+    }
+
+    public Menu? GetComponent(IMenu menu)
+    {
+        if (menu.Handle == 0)
+        {
+            return null;
+        }
+        var ext = menu.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            // don't know the title of the menu (which cannot be retrieved through open.mp api) - cannot create a component for the foreign object.
+            return null;
+        }
+        return (Menu)ext.Component;
+    }
+
+    public GlobalObject? GetComponent(IObject @object)
+    {
+        if (@object.Handle == 0)
+        {
+            return null;
+        }
+        var ext = @object.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+
+            var component = _entityManager.AddComponent<GlobalObject>(EntityId.NewEntityId(), _objects, @object);
+            ext = new ComponentExtension(component);
+            @object.AddExtension(ext);
+
+            return component;
+        }
+        return (GlobalObject)ext.Component;
+    }
+
+    public Pickup? GetComponent(IPickup pickup)
+    {
+        if (pickup.Handle == 0)
+        {
+            return null;
+        }
+        var ext = pickup.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            var component = _entityManager.AddComponent<Pickup>(EntityId.NewEntityId(), _pickups, pickup);
+            ext = new ComponentExtension(component);
+            pickup.AddExtension(ext);
+
+            return component;
+        }
+        return (Pickup)ext.Component;
     }
 
     public Player? GetComponent(IPlayer player)
@@ -50,6 +168,21 @@ internal class OmpEntityProvider : IOmpEntityProvider
             return component;
         }
         return (Player)ext.Component;
+    }
+
+    public PlayerObject? GetComponent(IPlayerObject playerObject)
+    {
+        if (playerObject.Handle == 0)
+        {
+            return null;
+        }
+        var ext = playerObject.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            // don't know for which player this object is created - cannot create a component for the foreign object.
+            return null;
+        }
+        return (PlayerObject)ext.Component;
     }
 
     public Vehicle? GetComponent(IVehicle vehicle)
@@ -72,7 +205,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
         return (Vehicle)ext.Component;
     }
-
+    
     public Vehicle? GetVehicle(int id)
     {
         return GetComponent(_vehicles.AsPool().Get(id));

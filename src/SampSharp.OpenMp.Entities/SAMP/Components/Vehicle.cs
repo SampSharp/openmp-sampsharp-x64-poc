@@ -17,11 +17,6 @@ public class Vehicle : Component
     }
     
     /// <summary>
-    /// Gets the native open.mp entity counterpart.
-    /// </summary>
-    public IVehicle Native => _vehicle;
-    
-    /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _vehicle.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
@@ -53,7 +48,7 @@ public class Vehicle : Component
         {
             if (value)
             {
-                _vehicle.AttachTrailer(value!.Native);
+                _vehicle.AttachTrailer(value!);
             }
             else
             {
@@ -372,7 +367,7 @@ public class Vehicle : Component
     /// <returns><c>true</c> if this vehicle is streamed in for the specified vehicle; <c>false</c> otherwise.</returns>
     public virtual bool IsStreamedIn(Player player)
     {
-        return _vehicle.IsStreamedInForPlayer(player.Native);
+        return _vehicle.IsStreamedInForPlayer(player);
     }
 
     /// <summary>Set the parameters of this vehicle for a player.</summary>
@@ -381,7 +376,7 @@ public class Vehicle : Component
     public virtual void SetParametersForPlayer(Player player, in VehicleParameters parameters)
     {
         var p = parameters.ToParams();
-        _vehicle.SetParamsForPlayer(player.Native, ref p);
+        _vehicle.SetParamsForPlayer(player, ref p);
     }
 
     /// <summary>Sets this vehicle back to the position at where it was created.</summary>
@@ -472,7 +467,7 @@ public class Vehicle : Component
     /// <param name="updater">TODO: document parameter</param>
     public virtual void UpdateDamageStatus(int panels, int doors, int lights, int tires, Player? updater = null)
     {
-        _vehicle.SetDamageStatus(panels, doors, (byte)lights, (byte)tires, updater?.Native ?? default);
+        _vehicle.SetDamageStatus(panels, doors, (byte)lights, (byte)tires, updater ?? default(IPlayer));
     }
 
     protected override void OnDestroyComponent()
@@ -486,5 +481,10 @@ public class Vehicle : Component
     public override string ToString()
     {
         return $"(Id: {Id}, Model: {Model})";
+    }
+    
+    public static implicit operator IVehicle(Vehicle vehicle)
+    {
+        return vehicle._vehicle;
     }
 }
