@@ -151,5 +151,6 @@ public interface IOmpEntityProvider
     Vehicle? GetComponent(IVehicle vehicle);
 
     //  TODO: all get by IDs
+    Player? GetPlayer(int id);
     Vehicle? GetVehicle(int id);
 }

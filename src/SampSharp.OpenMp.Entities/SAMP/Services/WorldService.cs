@@ -14,13 +14,16 @@ public class WorldService : IWorldService
     private readonly IMenusComponent _menus;
     private readonly IPickupsComponent _pickups;
     private readonly ITextDrawsComponent _textDraws;
+    private readonly ITextLabelsComponent _textLabels;
     private readonly IEntityManager _entityManager;
+    private readonly IOmpEntityProvider _entityProvider;
 
-    public WorldService(OpenMp omp, IEntityManager entityManager)
+    public WorldService(OpenMp omp, IEntityManager entityManager, IOmpEntityProvider entityProvider)
     {
         _core = omp.Core;
         _players = omp.Core.GetPlayers();
         _entityManager = entityManager;
+        _entityProvider = entityProvider;
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
         _objects = omp.Components.QueryComponent<IObjectsComponent>();
         _actors = omp.Components.QueryComponent<IActorsComponent>();
@@ -28,6 +31,7 @@ public class WorldService : IWorldService
         _menus = omp.Components.QueryComponent<IMenusComponent>();
         _pickups = omp.Components.QueryComponent<IPickupsComponent>();
         _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+        _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
     }
 
     public float Gravity
@@ -121,6 +125,34 @@ public class WorldService : IWorldService
         var native = playerObjectData.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
         var component = _entityManager.AddComponent<PlayerObject>(entityId, parent, playerObjectData, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
+    }
+
+    public TextLabel CreateTextLabel(string text, Colour color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true, EntityId parent = default)
+    {
+        var native = _textLabels.Create(text, color, position, drawDistance, virtualWorld, testLos);
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<TextLabel>(entityId, parent, _entityProvider, _textLabels, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
+    }
+
+    public PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true,
+        EntityId parent = default)
+    {
+        IPlayer nativePlayer = player;
+        var playerTextLabels = nativePlayer.QueryExtension<IPlayerTextLabelData>();
+
+        var native = playerTextLabels.Create(text, color, position, drawDistance, testLos);
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<PlayerTextLabel>(entityId, parent, entityId, playerTextLabels, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);

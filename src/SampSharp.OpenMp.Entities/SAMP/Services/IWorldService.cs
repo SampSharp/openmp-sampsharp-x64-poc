@@ -26,7 +26,8 @@ public interface IWorldService
     /// <param name="rotation">The facing angle for the vehicle.</param>
     /// <param name="color1">The primary color ID.</param>
     /// <param name="color2">The secondary color ID.</param>
-    /// <param name="respawnDelay">The delay until the car is respawned without a driver in seconds. Using -1 will prevent the vehicle from respawning.</param>
+    /// <param name="respawnDelay">The delay until the car is respawned without a driver in seconds. Using -1 will
+    /// prevent the vehicle from respawning.</param>
     /// <param name="addSiren">If true, enables the vehicle to have a siren, providing the vehicle has a horn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns> The created vehicle.</returns>
@@ -39,7 +40,8 @@ public interface IWorldService
     /// <param name="rotation">The facing angle for the vehicle.</param>
     /// <param name="color1">The primary color ID.</param>
     /// <param name="color2">The secondary color ID.</param>
-    /// <param name="respawnDelay">The delay until the car is respawned without a driver in seconds. Using -1 will prevent the vehicle from respawning.</param>
+    /// <param name="respawnDelay">The delay until the car is respawned without a driver in seconds. Using -1 will
+    /// prevent the vehicle from respawning.</param>
     /// <param name="addSiren">If true, enables the vehicle to have a siren, providing the vehicle has a horn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns> The created vehicle.</returns>
@@ -73,8 +75,8 @@ public interface IWorldService
     Pickup CreatePickup(int model, PickupType type, Vector3 position, int virtualWorld = -1, EntityId parent = default);
 
     /// <summary>
-    /// Adds a 'static' pickup to the world. These pickups support weapons, health, armor etc., with the ability to function without scripting them
-    /// (weapons/health/armor will be given automatically).
+    /// Adds a 'static' pickup to the world. These pickups support weapons, health, armor etc., with the ability to
+    /// function without scripting them (weapons/health/armor will be given automatically).
     /// </summary>
     /// <param name="model">The model of the pickup.</param>
     /// <param name="type">The pickup spawn type.</param>
@@ -103,29 +105,28 @@ public interface IWorldService
     /// <returns>The created player object.</returns>
     PlayerObject CreatePlayerObject(Player player, int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default);
 
-    // /// <summary>Creates a text label in the world.</summary>
-    // /// <param name="text">The text.</param>
-    // /// <param name="color">The color.</param>
-    // /// <param name="position">The position.</param>
-    // /// <param name="drawDistance">The draw distance.</param>
-    // /// <param name="virtualWorld">The virtual world.</param>
-    // /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created text label.</returns>
-    // TextLabel CreateTextLabel(string text, Colour color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true,
-    //     EntityId parent = default);
+    /// <summary>Creates a text label in the world.</summary>
+    /// <param name="text">The text.</param>
+    /// <param name="color">The color.</param>
+    /// <param name="position">The position.</param>
+    /// <param name="drawDistance">The draw distance.</param>
+    /// <param name="virtualWorld">The virtual world.</param>
+    /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created text label.</returns>
+    TextLabel CreateTextLabel(string text, Colour color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true,
+        EntityId parent = default);
 
-    // /// <summary>Creates a player text label in the world.</summary>
-    // /// <param name="player">The player.</param>
-    // /// <param name="text">The text.</param>
-    // /// <param name="color">The color.</param>
-    // /// <param name="position">The position.</param>
-    // /// <param name="drawDistance">The draw distance.</param>
-    // /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
-    // /// <param name="attachedTo">A player or vehicle to attach the text label to.</param>
-    // /// <returns>The created text label.</returns>
-    // PlayerTextLabel CreatePlayerTextLabel(EntityId player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true,
-    //     EntityId attachedTo = default);
+    /// <summary>Creates a player text label in the world.</summary>
+    /// <param name="player">The player.</param>
+    /// <param name="text">The text.</param>
+    /// <param name="color">The color.</param>
+    /// <param name="position">The position.</param>
+    /// <param name="drawDistance">The draw distance.</param>
+    /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created text label.</returns>
+    PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true, EntityId parent = default);
 
     /// <summary>Creates a text draw in the world.</summary>
     /// <param name="position">The position of the text draw.</param>
