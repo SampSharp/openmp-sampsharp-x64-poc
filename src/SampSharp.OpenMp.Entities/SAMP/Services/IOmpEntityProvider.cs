@@ -4,8 +4,8 @@ namespace SampSharp.Entities.SAMP;
 
 /// <summary>
 /// Provides methods for getting ECS entities/components for open.mp entities. For entities created through
-/// SampSharp.Entities, the existing entities and components are returned. For foreign entities (entities created
-/// through other scripts or open.mp components) new SampSharp.Entities entities and components are created and returned
+/// <c>SampSharp.Entities</c>, the existing entities and components are returned. For foreign entities (entities created
+/// through other scripts or open.mp components) new <c>SampSharp.Entities</c> entities and components are created and returned
 /// where possible.
 /// </summary>
 public interface IOmpEntityProvider
@@ -58,6 +58,20 @@ public interface IOmpEntityProvider
     /// <param name="playerObject">The player object to get the entity for.</param>
     /// <returns>The player object entity.</returns>
     EntityId GetEntity(IPlayerObject playerObject);
+    
+    /// <summary>
+    /// Gets the entity for the specified player text draw.
+    /// </summary>
+    /// <param name="playerTextDraw">The player text draw to get the entity for.</param>
+    /// <returns>The player text draw entity.</returns>
+    EntityId GetEntity(IPlayerTextDraw playerTextDraw);
+    
+    /// <summary>
+    /// Gets the entity for the specified text draw.
+    /// </summary>
+    /// <param name="textDraw">The text draw to get the entity for.</param>
+    /// <returns>The text draw entity.</returns>
+    EntityId GetEntity(ITextDraw textDraw);
 
     /// <summary>
     /// Gets the entity for the specified vehicle.
@@ -114,6 +128,20 @@ public interface IOmpEntityProvider
     /// <param name="playerObject">The player object to get the component for.</param>
     /// <returns>The player object component.</returns>
     PlayerObject? GetComponent(IPlayerObject playerObject);
+    
+    /// <summary>
+    /// Gets the component for the specified player text draw.
+    /// </summary>
+    /// <param name="playerTextDraw">The player text draw to get the component for.</param>
+    /// <returns>The player text draw component.</returns>
+    PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw);
+
+    /// <summary>
+    /// Gets the component for the specified text draw.
+    /// </summary>
+    /// <param name="textDraw">The text draw to get the component for.</param>
+    /// <returns>The text draw component.</returns>
+    TextDraw? GetComponent(ITextDraw textDraw);
 
     /// <summary>
     /// Gets the component for the specified vehicle.

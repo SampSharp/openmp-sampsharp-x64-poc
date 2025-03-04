@@ -93,14 +93,15 @@ public interface IWorldService
     /// <returns>The created object.</returns>
     GlobalObject CreateObject(int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default);
 
-    // /// <summary>Creates a player object in the world.</summary>
-    // /// <param name="player">The player.</param>
-    // /// <param name="modelId">The model ID.</param>
-    // /// <param name="position">The position.</param>
-    // /// <param name="rotation">The rotation.</param>
-    // /// <param name="drawDistance">The draw distance.</param>
-    // /// <returns>The created player object.</returns>
-    // PlayerObject CreatePlayerObject(EntityId player, int modelId, Vector3 position, Vector3 rotation, float drawDistance);
+    /// <summary>Creates a player object in the world.</summary>
+    /// <param name="player">The player.</param>
+    /// <param name="modelId">The model ID.</param>
+    /// <param name="position">The position.</param>
+    /// <param name="rotation">The rotation.</param>
+    /// <param name="drawDistance">The draw distance.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created player object.</returns>
+    PlayerObject CreatePlayerObject(Player player, int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default);
 
     // /// <summary>Creates a text label in the world.</summary>
     // /// <param name="text">The text.</param>
@@ -126,19 +127,20 @@ public interface IWorldService
     // PlayerTextLabel CreatePlayerTextLabel(EntityId player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true,
     //     EntityId attachedTo = default);
 
-    // /// <summary>Creates a text draw in the world.</summary>
-    // /// <param name="position">The position of the text draw.</param>
-    // /// <param name="text">The text of the text draw.</param>
-    // /// <param name="parent">The parent of the entity to be created.</param>
-    // /// <returns>The created text draw.</returns>
-    // TextDraw CreateTextDraw(Vector2 position, string text, EntityId parent = default);
+    /// <summary>Creates a text draw in the world.</summary>
+    /// <param name="position">The position of the text draw.</param>
+    /// <param name="text">The text of the text draw.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created text draw.</returns>
+    TextDraw CreateTextDraw(Vector2 position, string text, EntityId parent = default);
 
-    // /// <summary>Creates the player text draw in the world.</summary>
-    // /// <param name="player">The player.</param>
-    // /// <param name="position">The position of the text draw.</param>
-    // /// <param name="text">The text of the text draw.</param>
-    // /// <returns>The created player text draw.</returns>
-    // PlayerTextDraw CreatePlayerTextDraw(EntityId player, Vector2 position, string text);
+    /// <summary>Creates the player text draw in the world.</summary>
+    /// <param name="player">The player.</param>
+    /// <param name="position">The position of the text draw.</param>
+    /// <param name="text">The text of the text draw.</param>
+    /// <param name="parent">The parent of the entity to be created.</param>
+    /// <returns>The created player text draw.</returns>
+    PlayerTextDraw CreatePlayerTextDraw(Player player, Vector2 position, string text, EntityId parent = default);
 
     /// <summary>Creates the menu in this world.</summary>
     /// <param name="title">The title of the menu.</param>

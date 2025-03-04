@@ -9,8 +9,8 @@ internal class OmpEntityProvider : IOmpEntityProvider
     private readonly IObjectsComponent _objects;
     private readonly IGangZonesComponent _gangZones;
     private readonly IActorsComponent _actors;
-    private readonly IMenusComponent _menus;
     private readonly IPickupsComponent _pickups;
+    private readonly ITextDrawsComponent _textDraws;
 
     public OmpEntityProvider(OpenMp omp, IEntityManager entityManager)
     {
@@ -19,8 +19,8 @@ internal class OmpEntityProvider : IOmpEntityProvider
         _objects = omp.Components.QueryComponent<IObjectsComponent>();
         _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
         _actors = omp.Components.QueryComponent<IActorsComponent>();
-        _menus = omp.Components.QueryComponent<IMenusComponent>();
         _pickups = omp.Components.QueryComponent<IPickupsComponent>();
+        _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
     }
 
     public EntityId GetEntity(IActor actor)
@@ -56,6 +56,16 @@ internal class OmpEntityProvider : IOmpEntityProvider
     public EntityId GetEntity(IPlayerObject playerObject)
     {
         return GetComponent(playerObject)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(IPlayerTextDraw playerTextDraw)
+    {
+        return GetComponent(playerTextDraw)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(ITextDraw textDraw)
+    {
+        return GetComponent(textDraw)?.Entity ?? default;
     }
 
     public EntityId GetEntity(IVehicle vehicle)
@@ -110,7 +120,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         var ext = menu.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            // don't know the title of the menu (which cannot be retrieved through open.mp api) - cannot create a component for the foreign object.
+            // don't know the title of the menu (which cannot be retrieved through open.mp api) - cannot create a component for the foreign entity.
             return null;
         }
         return (Menu)ext.Component;
@@ -179,10 +189,45 @@ internal class OmpEntityProvider : IOmpEntityProvider
         var ext = playerObject.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            // don't know for which player this object is created - cannot create a component for the foreign object.
+            // don't know for which player this object is created - cannot create a component for the foreign entity.
             return null;
         }
         return (PlayerObject)ext.Component;
+    }
+
+    public PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw)
+    {
+        if (playerTextDraw.Handle == 0)
+        {
+            return null;
+        }
+        var ext = playerTextDraw.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            // don't know for which player this text draw is created - cannot create a component for the foreign entity.
+            return null;
+        }
+
+        return (PlayerTextDraw)ext.Component;
+    }
+
+    public TextDraw? GetComponent(ITextDraw textDraw)
+    {
+        if (textDraw.Handle == 0)
+        {
+            return null;
+        }
+        var ext = textDraw.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            var component = _entityManager.AddComponent<TextDraw>(EntityId.NewEntityId(), _textDraws, textDraw);
+            ext = new ComponentExtension(component);
+            textDraw.AddExtension(ext);
+
+            return component;
+        }
+
+        return (TextDraw)ext.Component;
     }
 
     public Vehicle? GetComponent(IVehicle vehicle)

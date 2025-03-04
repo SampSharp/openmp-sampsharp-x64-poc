@@ -90,6 +90,7 @@ internal class EcsManager : Extension
             .AddSystem<PlayerStreamSystem>()
             .AddSystem<PlayerTextSystem>()
             .AddSystem<PlayerUpdateSystem>()
+            .AddSystem<TextDrawSystem>()
             .AddSystem<VehicleSystem>()
             ;
 

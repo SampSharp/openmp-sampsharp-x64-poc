@@ -13,6 +13,7 @@ public class WorldService : IWorldService
     private readonly IGangZonesComponent _gangZones;
     private readonly IMenusComponent _menus;
     private readonly IPickupsComponent _pickups;
+    private readonly ITextDrawsComponent _textDraws;
     private readonly IEntityManager _entityManager;
 
     public WorldService(OpenMp omp, IEntityManager entityManager)
@@ -26,6 +27,7 @@ public class WorldService : IWorldService
         _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
         _menus = omp.Components.QueryComponent<IMenusComponent>();
         _pickups = omp.Components.QueryComponent<IPickupsComponent>();
+        _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
     }
 
     public float Gravity
@@ -104,6 +106,48 @@ public class WorldService : IWorldService
         var native = _objects.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
         var component = _entityManager.AddComponent<GlobalObject>(entityId, parent, _objects, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
+    }
+
+    public PlayerObject CreatePlayerObject(Player player, int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default)
+    {
+        IPlayer nativePlayer = player;
+        var playerObjectData = nativePlayer.QueryExtension<IPlayerObjectData>();
+
+        var native = playerObjectData.Create(modelId, position, rotation, drawDistance);
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<PlayerObject>(entityId, parent, playerObjectData, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
+    }
+
+    public TextDraw CreateTextDraw(Vector2 position, string text, EntityId parent = default)
+    {
+        var native = _textDraws.Create(position, text);
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<TextDraw>(entityId, parent, _textDraws, native);
+
+        var extension = new ComponentExtension(component);
+        native.AddExtension(extension);
+
+        return component;
+    }
+
+    public PlayerTextDraw CreatePlayerTextDraw(Player player, Vector2 position, string text, EntityId parent = default)
+    {
+        IPlayer nativePlayer = player;
+        var playerTextDrawData = nativePlayer.QueryExtension<IPlayerTextDrawData>();
+
+        var native = playerTextDrawData.Create(position, text);
+        var entityId = EntityId.NewEntityId();
+        var component = _entityManager.AddComponent<PlayerTextDraw>(entityId, parent, playerTextDrawData, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);

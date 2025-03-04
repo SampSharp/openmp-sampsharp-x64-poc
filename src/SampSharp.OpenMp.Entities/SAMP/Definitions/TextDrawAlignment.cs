@@ -15,9 +15,14 @@
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>Contains all textdraw alignments.</summary>
+/// <summary>Contains all text draw alignments.</summary>
 public enum TextDrawAlignment
 {
+    /// <summary>
+    /// Default alignment.
+    /// </summary>
+    Default = 0,
+
     /// <summary>Align left.</summary>
     Left = 1,
 
