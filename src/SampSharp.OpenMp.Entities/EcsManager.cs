@@ -64,7 +64,7 @@ internal class EcsManager : Extension
             .AddSingleton<ISystemRegistry, SystemRegistry>()
             .AddSingleton<IEntityManager, EntityManager>()
             .AddSingleton<IOmpEntityProvider, OmpEntityProvider>()
-            // TODO: .AddSingleton<IServerService, ServerService>()
+            .AddSingleton<IServerService, ServerService>()
             .AddSingleton<IWorldService, WorldService>()
             // TODO: .AddSingleton<IVehicleInfoService, VehicleInfoService>()
             // TODO: .AddSingleton<IPlayerCommandService, PlayerCommandService>()
