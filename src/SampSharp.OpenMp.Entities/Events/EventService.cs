@@ -26,7 +26,6 @@ internal class EventService : IEventService
         CreateEventsFromAssemblies();
     }
 
-    /// <inheritdoc />
     public void UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)
     {
         if (!_events.TryGetValue(name, out var @event))
@@ -43,7 +42,6 @@ internal class EventService : IEventService
         @event.Invoke = invoke;
     }
 
-    /// <inheritdoc />
     public object? Invoke(string name, params object[] arguments)
     {
         // TODO Could cache built invokers into a dictionary

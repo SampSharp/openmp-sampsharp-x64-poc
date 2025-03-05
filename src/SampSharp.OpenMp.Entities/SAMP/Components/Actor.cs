@@ -1,17 +1,15 @@
-﻿using System.Numerics;
-using SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-
 /// <summary>Represents a component which provides the data and functionality of an actor.</summary>
-public class Actor : Component
+public class Actor : WorldEntity
 {
     private readonly IActorsComponent _actors;
     private readonly IActor _actor;
 
     /// <summary>Constructs an instance of Actor, should be used internally.</summary>
-    protected Actor(IActorsComponent actors, IActor actor)
+    protected Actor(IActorsComponent actors, IActor actor) : base((IEntity)actor)
     {
         _actors = actors;
         _actor= actor;
@@ -21,9 +19,6 @@ public class Actor : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _actor.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this actor.</summary>
-    public virtual int Id => _actor.GetID();
 
     /// <summary>Gets the facing angle of this actor.</summary>
     public virtual float Angle
@@ -50,20 +45,6 @@ public class Actor : Component
     {
         get => _actor.IsInvulnerable();
         set => _actor.SetInvulnerable(value);
-    }
-
-    /// <summary>Gets or sets the virtual world of this actor.</summary>
-    public virtual int VirtualWorld
-    {
-        get => _actor.GetVirtualWorld();
-        set => _actor.SetVirtualWorld(value);
-    }
-
-    /// <summary>Gets the position of this actor.</summary>
-    public virtual Vector3 Position
-    {
-        get => _actor.GetPosition();
-        set => _actor.SetPosition(value);
     }
 
     /// <summary>Determines whether this actor is streamed in for the specified <paramref name="player" />.</summary>
@@ -97,7 +78,6 @@ public class Actor : Component
         _actor.ClearAnimations();
     }
 
-    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)

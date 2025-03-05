@@ -23,7 +23,6 @@ public readonly record struct EntityId
     /// <summary>Gets a value indicating whether this handle is empty.</summary>
     public bool IsEmpty => _id == Guid.Empty;
     
-    /// <inheritdoc />
     public override string ToString()
     {
         return IsEmpty

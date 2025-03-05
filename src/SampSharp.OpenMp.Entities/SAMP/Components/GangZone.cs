@@ -4,13 +4,13 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a gang zone.</summary>
-public class GangZone : Component
+public class GangZone : IdProvider
 {
     private readonly IGangZonesComponent _gangZones;
     private readonly IGangZone _gangZone;
 
     /// <summary>Constructs an instance of GangZone, should be used internally.</summary>
-    protected GangZone(IGangZonesComponent gangZones, IGangZone gangZone)
+    protected GangZone(IGangZonesComponent gangZones, IGangZone gangZone) : base((IIDProvider)gangZone)
     {
         _gangZone = gangZone;
         _gangZones = gangZones;
@@ -21,9 +21,6 @@ public class GangZone : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _gangZone.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this <see cref="GangZone"/>.</summary>
-    public virtual int Id => _gangZone.GetID();
 
     /// <summary>Gets the minimum position of this <see cref="GangZone"/>.</summary>
     public virtual Vector2 Min => _gangZone.GetPosition().Min;
@@ -121,7 +118,6 @@ public class GangZone : Component
         _gangZone.StopFlashForPlayer(player);
     }
 
-    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)

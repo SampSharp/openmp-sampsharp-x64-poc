@@ -1,17 +1,16 @@
 ﻿using System.Numerics;
-using System.Reflection;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a menu.</summary>
-public class Menu : Component
+public class Menu : IdProvider
 {
     private readonly IMenusComponent _menus;
     private readonly IMenu _menu;
     
     /// <summary>Constructs an instance of Menu, should be used internally.</summary>
-    protected Menu(IMenusComponent menus, IMenu menu, string title)
+    protected Menu(IMenusComponent menus, IMenu menu, string title) : base((IIDProvider)menu)
     {
         _menus = menus;
         _menu = menu;
@@ -22,9 +21,6 @@ public class Menu : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _menu.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this player.</summary>
-    public virtual int Id => _menu.GetID();
 
     /// <summary>Gets the title of this menu.</summary>
     public virtual string Title { get; }

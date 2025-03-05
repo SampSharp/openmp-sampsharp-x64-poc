@@ -269,3 +269,7 @@ dotnet_naming_style.begins_with_underscore.required_prefix = _
 dotnet_naming_style.begins_with_underscore.required_suffix = 
 dotnet_naming_style.begins_with_underscore.word_separator = 
 dotnet_naming_style.begins_with_underscore.capitalization = camel_case
+
+# CA1822: Mark members as static
+# Justification: Event handlers in ECS must be instance methods.
+dotnet_diagnostic.CA1822.severity = none

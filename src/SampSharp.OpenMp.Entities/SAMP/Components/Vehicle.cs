@@ -4,13 +4,13 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a vehicle.</summary>
-public class Vehicle : Component
+public class Vehicle : WorldEntity
 {
     private readonly IVehiclesComponent _vehicles;
     private readonly IVehicle _vehicle;
 
     /// <summary>Constructs an instance of Vehicle, should be used internally.</summary>
-    protected Vehicle(IVehiclesComponent vehicles, IVehicle vehicle)
+    protected Vehicle(IVehiclesComponent vehicles, IVehicle vehicle) : base((IEntity)vehicle)
     {
         _vehicles = vehicles;
         _vehicle = vehicle;
@@ -20,9 +20,6 @@ public class Vehicle : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _vehicle.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this vehicle.</summary>
-    public virtual int Id => _vehicle.GetID();
 
     /// <summary>Gets or sets the Z angle of this vehicle.</summary>
     public virtual float Angle
@@ -64,13 +61,6 @@ public class Vehicle : Component
         set => _vehicle.SetVelocity(value);
     }
 
-    /// <summary>Gets or sets the virtual world of this vehicle.</summary>
-    public virtual int VirtualWorld
-    {
-        get => _vehicle.GetVirtualWorld();
-        set => _vehicle.SetVirtualWorld(value);
-    }
-    
     /// <summary>
     /// Gets or sets the parameters of this vehicle. This includes the engine, lights, alarm, doors, bonnet, boot and objective status.
     /// </summary>
@@ -329,13 +319,6 @@ public class Vehicle : Component
     {
         get => _vehicle.GetHealth();
         set => _vehicle.SetHealth(value);
-    }
-
-    /// <summary>Gets or sets the position of this vehicle.</summary>
-    public virtual Vector3 Position
-    {
-        get => _vehicle.GetPosition();
-        set => _vehicle.SetPosition(value);
     }
 
     /// <summary>Gets this vehicle's rotation on all axis as a quaternion.</summary>

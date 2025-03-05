@@ -4,13 +4,13 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a text draw.</summary>
-public class TextDraw : Component
+public class TextDraw : IdProvider
 {
     private readonly ITextDrawsComponent _textDraws;
     private readonly ITextDraw _textDraw;
 
     /// <summary>Constructs an instance of <see cref="TextDraw"/>, should be used internally.</summary>
-    protected TextDraw(ITextDrawsComponent textDraws, ITextDraw textDraw)
+    protected TextDraw(ITextDrawsComponent textDraws, ITextDraw textDraw) : base((IIDProvider)textDraw)
     {
         _textDraws = textDraws;
         _textDraw = textDraw;
@@ -20,9 +20,6 @@ public class TextDraw : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _textDraw.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this <see cref="TextDraw"/>.</summary>
-    public virtual int Id => _textDraw.GetID();
 
     /// <summary>Gets or sets the size of the letters of this text draw.</summary>
     public virtual Vector2 LetterSize

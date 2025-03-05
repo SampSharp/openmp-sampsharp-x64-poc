@@ -4,26 +4,22 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a player object.</summary>
-public class PlayerObject : Component
+public class PlayerObject : WorldEntity
 {
     private readonly IPlayerObjectData _playerObjects;
     private readonly IPlayerObject _playerObject;
 
     /// <summary>Constructs an instance of PlayerObject, should be used internally.</summary>
-    protected PlayerObject(IPlayerObjectData playerObjects, IPlayerObject playerObject)
+    protected PlayerObject(IPlayerObjectData playerObjects, IPlayerObject playerObject) : base((IEntity)playerObject)
     {
         _playerObjects = playerObjects;
         _playerObject = playerObject;
     }
 
-    
     /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _playerObject.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this <see cref="PlayerObject"/>.</summary>
-    public virtual int Id => _playerObject.GetID();
 
     /// <summary>Gets the rotation of this player object.</summary>
     public virtual Vector3 Rotation
@@ -34,13 +30,6 @@ public class PlayerObject : Component
             throw new NotImplementedException();
         }
         set => throw new NotImplementedException();
-    }
-
-    /// <summary>Gets the position of this player object.</summary>
-    public virtual Vector3 Position
-    {
-        get => _playerObject.GetPosition();
-        set => _playerObject.SetPosition(value);
     }
 
     /// <summary>Gets whether this player object is moving.</summary>

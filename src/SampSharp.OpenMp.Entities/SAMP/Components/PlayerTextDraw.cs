@@ -4,13 +4,13 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a per-player text draw.</summary>
-public class PlayerTextDraw : Component
+public class PlayerTextDraw : IdProvider
 {
     private readonly IPlayerTextDrawData _playerTextDraws;
     private readonly IPlayerTextDraw _playerTextDraw;
 
     /// <summary>Constructs an instance of <see cref="PlayerTextDraw"/>, should be used internally.</summary>
-    protected PlayerTextDraw(IPlayerTextDrawData playerTextDraws, IPlayerTextDraw playerTextDraw)
+    protected PlayerTextDraw(IPlayerTextDrawData playerTextDraws, IPlayerTextDraw playerTextDraw) : base((IIDProvider)playerTextDraw)
     {
         _playerTextDraws = playerTextDraws;
         _playerTextDraw = playerTextDraw;
@@ -20,9 +20,6 @@ public class PlayerTextDraw : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _playerTextDraw.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this <see cref="PlayerTextDraw"/>.</summary>
-    public virtual int Id => _playerTextDraw.GetID();
 
     /// <summary>Gets or sets the size of the letters of this text draw.</summary>
     public virtual Vector2 LetterSize

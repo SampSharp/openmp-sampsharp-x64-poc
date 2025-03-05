@@ -20,6 +20,7 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Contains vehicle colors</summary>
 [SuppressMessage("ReSharper", "IdentifierTypo")]
 public enum VehicleColor
+// TODO:  remove this enum. it isn't totally accurate.
 {
     /// <summary>Looks like black</summary>
     Black,

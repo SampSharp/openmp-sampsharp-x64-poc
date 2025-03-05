@@ -5,13 +5,13 @@ namespace SampSharp.Entities.SAMP;
 
 
 /// <summary>Represents a component which provides the data and functionality of an object.</summary>
-public class GlobalObject : Component
+public class GlobalObject : WorldEntity
 {
     private readonly IObjectsComponent _objects;
     private readonly IObject _object;
 
     /// <summary>Constructs an instance of GlobalObject, should be used internally.</summary>
-    protected GlobalObject(IObjectsComponent objects, IObject @object)
+    protected GlobalObject(IObjectsComponent objects, IObject @object) : base((IEntity)@object)
     {
         _objects = objects;
         _object = @object;
@@ -22,9 +22,6 @@ public class GlobalObject : Component
     /// </summary>
     protected bool IsOmpEntityDestroyed => _object.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
-    /// <summary>Gets the identifier of this <see cref="GlobalObject"/>.</summary>
-    public virtual int Id => _object.GetID();
-
     /// <summary>Gets the rotation of this object.</summary>
     public virtual Vector3 Rotation
     {
@@ -34,13 +31,6 @@ public class GlobalObject : Component
             throw new NotImplementedException();
         }
         set => throw new NotImplementedException();
-    }
-
-    /// <summary>Gets the position of this object.</summary>
-    public virtual Vector3 Position
-    {
-        get => _object.GetPosition();
-        set => _object.SetPosition(value);
     }
 
     /// <summary>Gets whether this object is moving.</summary>

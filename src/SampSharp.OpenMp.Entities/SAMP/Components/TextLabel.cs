@@ -4,14 +4,14 @@ using SampSharp.OpenMp.Core.Api;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a component which provides the data and functionality of a 3D text label.</summary>
-public class TextLabel : Component
+public class TextLabel : WorldEntity
 {
     private readonly IOmpEntityProvider _entityProvider;
     private readonly ITextLabelsComponent _textLabels;
     private readonly ITextLabel _textLabel;
 
     /// <summary>Constructs an instance of TextLabel, should be used internally.</summary>
-    protected TextLabel(IOmpEntityProvider entityProvider, ITextLabelsComponent textLabels, ITextLabel textLabel)
+    protected TextLabel(IOmpEntityProvider entityProvider, ITextLabelsComponent textLabels, ITextLabel textLabel) : base((IEntity)textLabel)
     {
         _entityProvider = entityProvider;
         _textLabels = textLabels;
@@ -22,9 +22,6 @@ public class TextLabel : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _textLabel.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this <see cref="PlayerTextLabel"/>.</summary>
-    public virtual int Id => _textLabel.GetID();
 
     /// <summary>Gets or sets the color of this text label.</summary>
     public virtual Colour Color
@@ -40,15 +37,9 @@ public class TextLabel : Component
         set => _textLabel.SetText(value);
     }
 
-    /// <summary>Gets the position of this text label.</summary>
-    public virtual Vector3 Position => _textLabel.GetPosition();
-
     /// <summary>Gets the draw distance of this text label.</summary>
     public virtual float DrawDistance => _textLabel.GetDrawDistance();
-
-    /// <summary>Gets the virtual world of this text label.</summary>
-    public virtual int VirtualWorld => _textLabel.GetVirtualWorld();
-
+    
     /// <summary>Gets a value indicating whether to test the line of sight.</summary>
     public virtual bool TestLos => _textLabel.GetTestLOS();
 

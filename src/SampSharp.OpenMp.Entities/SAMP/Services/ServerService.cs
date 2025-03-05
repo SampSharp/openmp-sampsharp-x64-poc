@@ -43,7 +43,7 @@ internal class ServerService : IServerService
 
     public int MaxPlayers => _config.GetInt("max_players");
 
-    public string NetworkStats => throw new notimplementedexception();
+    public string NetworkStats => throw new NotImplementedException();
 
     public int PlayerPoolSize
     {

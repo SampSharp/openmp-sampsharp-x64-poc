@@ -5,13 +5,13 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-public class Player : Component
+public class Player : WorldEntity
 {
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IPlayer _player;
 
     /// <summary>Constructs an instance of Player, should be used internally.</summary>
-    protected Player(IOmpEntityProvider entityProvider, IPlayer player)
+    protected Player(IOmpEntityProvider entityProvider, IPlayer player) : base((IEntity)player)
     {
         _entityProvider = entityProvider;
         _player = player;
@@ -21,9 +21,6 @@ public class Player : Component
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _player.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
-
-    /// <summary>Gets the identifier of this player.</summary>
-    public virtual int Id => _player.GetID();
 
     /// <summary>Gets the name of this player.</summary>
     public virtual string Name
@@ -68,14 +65,7 @@ public class Player : Component
         get => (int)_player.GetInterior();
         set => _player.SetInterior((uint)value);
     }
-
-    /// <summary>Gets or sets the virtual world of this player.</summary>
-    public virtual int VirtualWorld
-    {
-        get => _player.GetVirtualWorld();
-        set => _player.SetVirtualWorld(value);
-    }
-
+    
     /// <summary>Gets or sets the health of this player.</summary>
     public virtual float Health
     {
@@ -351,13 +341,14 @@ public class Player : Component
         }
     }
 
-    /// <summary>Gets the Vehicle this player is currently in.</summary>
-    public virtual EntityId Menu
+    /// <summary>Gets the Menu this player is currently in.</summary>
+    public virtual Menu? Menu
     {
         get
         {
             var data = _player.QueryExtension<IPlayerMenuData>();
-            throw new NotImplementedException();
+            var menuId = data.GetMenuID();
+            return menuId == OpenMpConstants.INVALID_MENU_ID ? null :  _entityProvider.GetMenu(menuId);
         }
     }
 
@@ -368,13 +359,6 @@ public class Player : Component
         // TODO: quat to euler
         get => new(0, 0, Angle);
         set => Angle = value.Z;
-    }
-
-    /// <summary>Gets or sets the position of this player.</summary>
-    public virtual Vector3 Position
-    {
-        get => _player.GetPosition();
-        set => _player.SetPosition(value);
     }
 
     /// <summary>Gets whether this player is an actual player or an NPC.</summary>

@@ -6,6 +6,16 @@ namespace TestMode.OpenMp.Entities;
 
 public class MyFirstSystem : ISystem
 {
+    private int _ticks;
+    [Timer(1000)]
+    public void OnTimer()
+    {
+        if (_ticks++ == 3)
+        {
+            throw new Exception("Test exception");
+        }
+    }
+
     [Event]
     public void OnGameModeInit(IWorldService world, IEntityManager entityManager)
     {
