@@ -1,6 +1,8 @@
 ﻿using System.Numerics;
+using Microsoft.Extensions.Logging;
 using SampSharp.Entities;
 using SampSharp.Entities.SAMP;
+using SampSharp.OpenMp.Core.Api;
 
 namespace TestMode.OpenMp.Entities;
 
@@ -17,9 +19,9 @@ public class MyFirstSystem : ISystem
     }
 
     [Event]
-    public void OnGameModeInit(IWorldService world, IEntityManager entityManager)
+    public void OnGameModeInit(IWorldService world, IEntityManager entityManager, ILogger<MyFirstSystem> logger)
     {
-        Console.WriteLine("whoop!");
+        logger.LogInformation("whoop!");
 
         var vehicle = world.CreateVehicle(VehicleModelType.Landstalker, new Vector3(0, 6, 15), 0, 4, 4);
         vehicle.ChangeColor(5, 12);
@@ -29,6 +31,11 @@ public class MyFirstSystem : ISystem
         vehicle.AddComponent<MyCustomComponent>();
 
         entityManager.AddComponent<MyCustomComponent>(EntityId.NewEntityId(), vehicle);
+
+        var actor = world.CreateActor(1, new Vector3(15, 0, 5), 0);
+
+        var spawn = ((IActor)actor).GetSpawnData();
+        Console.WriteLine(spawn);
     }
 
     [Event]

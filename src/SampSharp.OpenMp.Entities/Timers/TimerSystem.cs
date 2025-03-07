@@ -15,6 +15,7 @@
 
 using System.Diagnostics;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Utilities;
 using SampSharp.OpenMp.Core;
 
@@ -26,15 +27,17 @@ public class TimerSystem : ITickingSystem, ITimerService
     private static readonly TimeSpan _lowIntervalThreshold = TimeSpan.FromSeconds(1.0 / 50); // 50Hz
 
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<TimerSystem> _logger;
 
     private readonly List<TimerInfo> _timers = [];
     private long _lastTick;
     private bool _didInitialize;
 
     /// <summary>Initializes a new instance of the <see cref="TimerSystem" /> class.</summary>
-    public TimerSystem(IServiceProvider serviceProvider)
+    public TimerSystem(IServiceProvider serviceProvider, ILogger<TimerSystem> logger)
     {
         _serviceProvider = serviceProvider;
+        _logger = logger;
     }
 
     public void Stop(TimerReference timer)
@@ -108,7 +111,7 @@ public class TimerSystem : ITickingSystem, ITimerService
 
                     if (timer.Reference?.Method != null)
                     {
-                        context = $"timer@{timer.Reference.Method.DeclaringType}.{timer.Reference.Method.Name}";
+                        context = $"timer {timer.Reference.Method.DeclaringType}.{timer.Reference.Method.Name}";
                     }
 
                     SampSharpExceptionHandler.HandleException(context, ex);
@@ -139,11 +142,14 @@ public class TimerSystem : ITickingSystem, ITimerService
         // Create timer invokers and store timer info in registry.
         foreach (var (method, attribute) in events)
         {
-            // TODO: CoreLog.LogDebug("Adding timer on {0}.{1}.", method.DeclaringType, method.Name);
-
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Adding timer on {type}.{method}.", method.DeclaringType, method.Name);
+            }
+         
             if (!IsValidInterval(attribute.IntervalTimeSpan))
             {
-                // TODO: CoreLog.Log(CoreLogLevel.Error, $"Timer {method} could not be registered the interval {attribute.IntervalTimeSpan} is invalid.");
+                _logger.LogError("Timer {method} could not be registered the interval {interval} is invalid.", method, attribute.IntervalTimeSpan);
                 continue;
             }
 
@@ -151,7 +157,7 @@ public class TimerSystem : ITickingSystem, ITimerService
 
             if (service == null)
             {
-                // TODO: CoreLog.Log(CoreLogLevel.Debug, "Skipping timer registration because service could not be loaded.");
+                _logger.LogDebug("Skipping timer registration because the service could not be loaded.");
                 continue;
             }
 
@@ -163,7 +169,7 @@ public class TimerSystem : ITickingSystem, ITimerService
 
             if (attribute.IntervalTimeSpan < _lowIntervalThreshold)
             {
-                // TODO: CoreLog.Log(CoreLogLevel.Warning, $"Timer {method.DeclaringType}.{method.Name} has a low interval of {attribute.IntervalTimeSpan}.");
+                _logger.LogWarning("Timer {type}.{method} has a low interval of {interval}.", method.DeclaringType, method.Name, attribute.IntervalTimeSpan);
             }
 
             var timer = new TimerInfo(

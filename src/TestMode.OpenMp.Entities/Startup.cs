@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SampSharp.Entities;
 using SampSharp.OpenMp.Core;
 
@@ -9,11 +9,13 @@ public class Startup : IEcsStartup
 {
     public void Initialize(StartupContext context)
     {
-        context.ForwardConsoleOutputToOpenMpLogger();
-        context.UseEntities();
+        context.UseEntities(cfg =>
+        {
+            cfg.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Information));
+        });
     }
 
-    public void Configure(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
         services
             .AddSystem<TestTicker>()

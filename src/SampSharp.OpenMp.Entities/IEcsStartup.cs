@@ -5,6 +5,6 @@ namespace SampSharp.Entities;
 
 public interface IEcsStartup : IStartup
 {
-    void Configure(IServiceCollection services);
+    void ConfigureServices(IServiceCollection services);
     void Configure(IEcsBuilder builder);
 }

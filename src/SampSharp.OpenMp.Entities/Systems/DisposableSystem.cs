@@ -14,7 +14,7 @@ public abstract class DisposableSystem : ISystem, IDisposable
 
     protected virtual void OnDispose()
     {
-        var errors = new List<Exception>();
+        List<Exception>? errors = null;
         foreach (var disposable in _disposables)
         {
             try
@@ -23,13 +23,14 @@ public abstract class DisposableSystem : ISystem, IDisposable
             }
             catch (Exception ex)
             {
+                errors ??= [];
                 errors.Add(ex);
             }
         }
 
         _disposables.Clear();
         
-        if (errors.Count > 0)
+        if (errors?.Count > 0)
         {
             throw new AggregateException(errors);
         }

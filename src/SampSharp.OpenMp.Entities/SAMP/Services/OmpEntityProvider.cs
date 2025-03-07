@@ -11,8 +11,8 @@ internal class OmpEntityProvider : IOmpEntityProvider
     private readonly IActorsComponent _actors;
     private readonly IPickupsComponent _pickups;
     private readonly ITextDrawsComponent _textDraws;
+    private readonly IMenusComponent _menus;
     private readonly IPlayerPool _players;
-
     public OmpEntityProvider(OpenMp omp, IEntityManager entityManager)
     {
         _entityManager = entityManager;
@@ -22,6 +22,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         _actors = omp.Components.QueryComponent<IActorsComponent>();
         _pickups = omp.Components.QueryComponent<IPickupsComponent>();
         _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+        _menus = omp.Components.QueryComponent<IMenusComponent>();
         _players = omp.Core.GetPlayers();
     }
 
@@ -261,5 +262,10 @@ internal class OmpEntityProvider : IOmpEntityProvider
     public Vehicle? GetVehicle(int id)
     {
         return GetComponent(_vehicles.AsPool().Get(id));
+    }
+
+    public Menu? GetMenu(int id)
+    {
+        return GetComponent(_menus.AsPool().Get(id));
     }
 }

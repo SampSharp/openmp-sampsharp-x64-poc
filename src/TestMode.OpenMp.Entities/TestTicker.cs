@@ -1,17 +1,18 @@
-﻿using SampSharp.Entities;
+﻿using Microsoft.Extensions.Logging;
+using SampSharp.Entities;
 
 namespace TestMode.OpenMp.Entities;
 
 public class TestTicker : ITickingSystem
 {
     [Event]
-    public void OnInitialized()
+    public void OnInitialized(ILogger<TestTicker> logger)
     {
-        Console.WriteLine("On initialized");
+        logger.LogInformation("On initialized");
     }
 
     public void Tick()
     {
-        // Console.WriteLine("tick");
+        
     }
 }

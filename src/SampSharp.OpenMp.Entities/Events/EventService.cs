@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Utilities;
 using SampSharp.OpenMp.Core;
 
@@ -15,13 +16,15 @@ internal class EventService : IEventService
     private readonly IServiceProvider _serviceProvider;
     private readonly IEntityManager _entityManager;
     private readonly RuntimeInformation _runtimeInformation;
+    private readonly ILogger<EventService> _logger;
 
     /// <summary>Initializes a new instance of the <see cref="EventService" /> class.</summary>
-    public EventService(IServiceProvider serviceProvider, IEntityManager entityManager, RuntimeInformation runtimeInformation)
+    public EventService(IServiceProvider serviceProvider, IEntityManager entityManager, RuntimeInformation runtimeInformation, ILogger<EventService> logger)
     {
         _serviceProvider = serviceProvider;
         _entityManager = entityManager;
         _runtimeInformation = runtimeInformation;
+        _logger = logger;
 
         CreateEventsFromAssemblies();
     }
@@ -86,7 +89,10 @@ internal class EventService : IEventService
         // Gather event data, compile invoker and add the data to the events collection.
         foreach (var (method, attribute) in events)
         {
-            // TODO: CoreLog.LogDebug("Adding event listener on {0}.{1}.", method.DeclaringType, method.Name);
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogDebug("Adding event listener on {type}.{method}.", method.DeclaringType, method.Name);
+            }
 
             var name = attribute.Name ?? method.Name;
 
@@ -143,7 +149,7 @@ internal class EventService : IEventService
                     return compiled?.Invoke(instance, args, eventContext.EventServices, _entityManager);
                 }
 
-                // TODO: CoreLog.Log(CoreLogLevel.Error, $"Callback parameter count mismatch {callbackParamCount} != {args.Length}");
+                _logger.LogError("Callback parameter count mismatch {callbackParamCount} != {argsLength}", callbackParamCount, args.Length);
                 return null;
             }
         };
