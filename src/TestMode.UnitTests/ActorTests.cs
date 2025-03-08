@@ -30,11 +30,17 @@ public class ActorTests : TestSystem
     public void CreateActor_should_set_properties()
     {
         var actor = _worldService.CreateActor(46, new Vector3(4, 5, 6), 45);
-        actor.Skin.ShouldBe(46);
-        actor.Position.ShouldBe(new Vector3(4, 5, 6));
-        // TODO: actor.Angle.ShouldBe(45);
 
-        actor.Destroy();
+        try
+        {
+            actor.Skin.ShouldBe(46);
+            actor.Position.ShouldBe(new Vector3(4, 5, 6));
+            // TODO: actor.Angle.ShouldBe(45);
+        }
+        finally
+        {
+            actor.Destroy();
+        }
     }
     
     [Test]

@@ -85,14 +85,7 @@ public class GangZone : IdProvider
             Flash(player, color);
         }
     }
-
-    /// <summary>Flashes this <see cref="GangZone" /> for the specified <paramref name="player" />.</summary>
-    /// <param name="player">The player.</param>
-    public virtual void Flash(Player player)
-    {
-        Flash(player, new Colour());
-    }
-
+    
     /// <summary>Flashes this <see cref="GangZone" /> for the specified <paramref name="player" />.</summary>
     /// <param name="player">The player.</param>
     /// <param name="color">The color.</param>

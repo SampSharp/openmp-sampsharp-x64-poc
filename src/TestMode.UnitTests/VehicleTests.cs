@@ -28,6 +28,25 @@ public class VehicleTests : TestSystem
     }
 
     [Test]
+    public void CreateVehicle_should_set_properties()
+    {
+        var vehicle = _worldService.CreateVehicle(VehicleModelType.Landstalker, new Vector3(10, 0, 5), 30, 5, 8);
+
+        try
+        {
+            vehicle.Model.ShouldBe(VehicleModelType.Landstalker);
+            vehicle.Position.ShouldBe(new Vector3(10, 0, 5));
+            vehicle.Angle.ShouldBe(30);
+            //TODO: vehicle.Color1.ShouldBe(5);
+            //TODO: vehicle.Color2.ShouldBe(8);
+        }
+        finally
+        {
+            vehicle.Destroy();
+        }
+    }
+
+    [Test]
     public void Position_should_roundtrip()
     {
         _vehicle.Position = new Vector3(1, 2, 3);
