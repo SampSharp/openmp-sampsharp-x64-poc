@@ -17,40 +17,53 @@ public class TestManager(ILogger<TestManager> logger)
 
         foreach (var testSuite in TestSuites)
         {
-            try
-            {
-                testSuite.Setup?.Invoke();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to setup test suite {name}", testSuite.Name);
-
-                foreach(var testCase in testSuite.TestCases)
-                {
-                    testCase.Skip();
-                }
-
-                continue;
-            }
+            var setup = false;
 
             foreach (var testCase in testSuite.TestCases)
             {
-                if (testCase.Status == TestStatus.NotRun && testCase.Environment == environment)
+                var testEnv = testCase.Environment == TestEnvironment.Default ? testSuite.DefaultEnvironment : testCase.Environment;
+
+                if (testCase.Status == TestStatus.NotRun && testEnv == environment)
                 {
+                    if (!setup)
+                    {
+                        try
+                        {
+                            testSuite.Setup?.Invoke();
+                            setup = true;
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Failed to setup test suite {name}", testSuite.Name);
+
+                            foreach(var s in testSuite.TestCases)
+                            {
+                                s.Skip();
+                            }
+
+                            goto skipsuite;
+                        }
+                    }
                     logger.LogInformation($"Running test {testCase.Name}...");
                     testCase.Run();
                     logger.LogInformation(testCase.Status.ToString());
                 }
             }
 
-            try
+            if (setup)
             {
-                testSuite.Cleanup?.Invoke();
+                try
+                {
+                    testSuite.Cleanup?.Invoke();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Failed to cleanup test suite {name}", testSuite.Name);
+                }
             }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Failed to cleanup test suite {name}", testSuite.Name);
-            }
+
+            skipsuite:
+            while (false) ;
         }
 
         logger.LogInformation("Tests complete");

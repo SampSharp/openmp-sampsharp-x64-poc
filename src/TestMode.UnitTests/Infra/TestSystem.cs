@@ -10,6 +10,8 @@ public abstract class TestSystem : ISystem
 
     public Player Player => _entityManager!.GetComponent<Player>() ?? throw new InvalidOperationException("No player connected");
 
+    public virtual TestEnvironment DefaultEnvironment => TestEnvironment.OnGameModeInit;
+
     [Event(Name = "OnGameModeInit")]
     public void OnGameModeInit(IEntityManager entityManager, TestManager testManager)
     {
@@ -36,6 +38,7 @@ public abstract class TestSystem : ISystem
             suiteName, 
             tests.ToArray(), 
             setup == null ? null : () => setup.Invoke(this, BindingFlags.DoNotWrapExceptions, null, null, null),
-            cleanup == null ? null : () => cleanup.Invoke(this, BindingFlags.DoNotWrapExceptions, null, null, null)));
+            cleanup == null ? null : () => cleanup.Invoke(this, BindingFlags.DoNotWrapExceptions, null, null, null), 
+            DefaultEnvironment));
     }
 }

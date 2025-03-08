@@ -2,6 +2,7 @@
 
 public enum TestEnvironment
 {
+    Default,
     OnGameModeInit,
     OnPlayerTrigger
 }
