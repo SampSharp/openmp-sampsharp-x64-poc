@@ -95,7 +95,7 @@ public class Player : WorldEntity
         get
         {
             var player = _player.GetTargetPlayer();
-            if (player.Handle == 0)
+            if (!player.HasValue)
             {
                 return null;
             }
@@ -189,7 +189,7 @@ public class Player : WorldEntity
         {
             var data = _player.QueryExtension<IPlayerVehicleData>();
 
-            if (data.Handle == 0)
+            if (data == null)
             {
                 return -1;
             }
@@ -256,7 +256,7 @@ public class Player : WorldEntity
         get
         {
             var v = _player.GetCameraTargetVehicle();
-            return v.Handle == 0 ? null : _entityProvider.GetComponent(v);
+            return v == null ? null : _entityProvider.GetComponent(v);
         }
     }
 
@@ -266,7 +266,7 @@ public class Player : WorldEntity
         get
         {
             var p = _player.GetCameraTargetPlayer();
-            return p.Handle == 0 ? null : _entityProvider.GetComponent(p);
+            return p == null ? null : _entityProvider.GetComponent(p);
         }
     }
 
@@ -337,7 +337,7 @@ public class Player : WorldEntity
         get
         {
             var data =_player.QueryExtension<IPlayerVehicleData>();
-            return data.Handle == 0 ? null : _entityProvider.GetComponent(data.GetVehicle());
+            return data == null ? null : _entityProvider.GetComponent(data.GetVehicle());
         }
     }
 
@@ -370,7 +370,7 @@ public class Player : WorldEntity
         get
         {
             var data = _player.QueryExtension<IPlayerConsoleData>();
-            if (data.Handle == 0)
+            if (data == null)
             {
                 return false;
             }
@@ -458,7 +458,7 @@ public class Player : WorldEntity
     {
         var data = _player.QueryExtension<IPlayerClassData>();
 
-        if (data.Handle == 0)
+        if (data == null)
         {
             throw new InvalidOperationException("No spawn data available.");
         }
@@ -897,7 +897,7 @@ public class Player : WorldEntity
     {
         var data = _player.QueryExtension<IPlayerCheckpointData>();
 
-        if (data.Handle == 0)
+        if (data == null)
         {
             throw new InvalidOperationException("Missing checkpoint data");
         }
@@ -913,7 +913,7 @@ public class Player : WorldEntity
     {
         var data = _player.QueryExtension<IPlayerCheckpointData>();
 
-        if (data.Handle == 0)
+        if (data == null)
         {
             throw new InvalidOperationException("Missing checkpoint data");
         }
@@ -930,7 +930,7 @@ public class Player : WorldEntity
     {
         var data = _player.QueryExtension<IPlayerCheckpointData>();
 
-        if (data.Handle == 0)
+        if (data == null)
         {
             throw new InvalidOperationException("Missing checkpoint data");
         }
@@ -948,7 +948,7 @@ public class Player : WorldEntity
     {
         var data = _player.QueryExtension<IPlayerCheckpointData>();
 
-        if (data.Handle == 0)
+        if (data == null)
         {
             throw new InvalidOperationException("Missing checkpoint data");
         }

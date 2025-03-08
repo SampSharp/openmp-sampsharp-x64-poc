@@ -72,7 +72,7 @@ public readonly partial struct IExtensible
         
         var ext = GetExtension(ExtensionIdProvider<T>.Id);
 
-        if (ext.Handle == nint.Zero)
+        if (ext == null)
         {
             return null;
         }

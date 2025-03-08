@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -57,21 +58,15 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         {
             modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
         }
-        
-        var baseListElements = GenerateBaseTypes(info).ToList();
 
-        BaseListSyntax? baseList = null;
-        if(baseListElements.Count > 0)
-        {
-            baseList = BaseList(
-                    SeparatedList<BaseTypeSyntax>(
-                        baseListElements));
-        }
 
         var structDeclaration = StructDeclaration(info.Syntax.Identifier)
             .WithModifiers(modifiers)
             .WithMembers(GenerateStructMembers(info))
-            .WithBaseList(baseList)
+            .WithBaseList(
+                BaseList(
+                    SeparatedList<BaseTypeSyntax>(
+                        GenerateBaseTypes(info))))
             .WithAttributeLists(
                 List([
                     AttributeFactory.GeneratedCode(),
@@ -100,7 +95,24 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
     /// </summary>
     private static IEnumerable<SimpleBaseTypeSyntax> GenerateBaseTypes(StructStubGenerationContext ctx)
     {
-        IEnumerable<SimpleBaseTypeSyntax> result = [];
+        var self = ParseTypeName(ctx.Symbol.Name);
+
+        if (ctx.Syntax.TypeParameterList != null)
+        {
+            self = GenericName(
+                    Identifier(ctx.Symbol.Name))
+                .WithTypeArgumentList(
+                    TypeArgumentList(
+                        SeparatedList<TypeSyntax>(
+                            ctx.Syntax.TypeParameterList.Parameters.Select(x => IdentifierName(x.Identifier)))));
+        }
+
+        IEnumerable<SimpleBaseTypeSyntax> result = [
+            SimpleBaseType(
+                GenericType(
+                    Constants.IEquatableFQN, 
+                    self))
+        ];
 
         if (ctx.IsComponent)
         {

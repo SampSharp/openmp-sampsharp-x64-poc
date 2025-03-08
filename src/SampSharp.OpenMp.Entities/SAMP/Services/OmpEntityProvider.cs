@@ -78,7 +78,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public Actor? GetComponent(IActor actor)
     {
-        if (actor.Handle == 0)
+        if (actor == null)
         {
             return null;
         }
@@ -97,7 +97,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public GangZone? GetComponent(IGangZone gangZone)
     {
-        if (gangZone.Handle == 0)
+        if (gangZone == null)
         {
             return null;
         }
@@ -116,7 +116,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public Menu? GetComponent(IMenu menu)
     {
-        if (menu.Handle == 0)
+        if (menu == null)
         {
             return null;
         }
@@ -131,7 +131,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public GlobalObject? GetComponent(IObject @object)
     {
-        if (@object.Handle == 0)
+        if (@object == null)
         {
             return null;
         }
@@ -150,7 +150,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public Pickup? GetComponent(IPickup pickup)
     {
-        if (pickup.Handle == 0)
+        if (pickup == null)
         {
             return null;
         }
@@ -168,7 +168,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public Player? GetComponent(IPlayer player)
     {
-        if (player.Handle == 0)
+        if (player == null)
         {
             return null;
         }
@@ -185,7 +185,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public PlayerObject? GetComponent(IPlayerObject playerObject)
     {
-        if (playerObject.Handle == 0)
+        if (playerObject == null)
         {
             return null;
         }
@@ -200,7 +200,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw)
     {
-        if (playerTextDraw.Handle == 0)
+        if (playerTextDraw == null)
         {
             return null;
         }
@@ -216,7 +216,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public TextDraw? GetComponent(ITextDraw textDraw)
     {
-        if (textDraw.Handle == 0)
+        if (textDraw == null)
         {
             return null;
         }
@@ -235,7 +235,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
     public Vehicle? GetComponent(IVehicle vehicle)
     {
-        if (vehicle.Handle == 0)
+        if (vehicle == null)
         {
             return null;
         }

@@ -23,6 +23,11 @@ public static class Constants
     public static readonly string MarshalFQN = typeof(Marshal).FullName!;
 
     /// <summary>
+    /// System.IEquatable{T}
+    /// </summary>
+    public static readonly string IEquatableFQN = typeof(IEquatable<>).FullName!.Split('`')[0];
+
+    /// <summary>
     /// System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute
     /// </summary>
     public const string MarshalUsingAttributeFQN = "System.Runtime.InteropServices.Marshalling.MarshalUsingAttribute";
