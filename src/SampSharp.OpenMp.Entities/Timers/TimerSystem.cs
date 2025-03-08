@@ -99,7 +99,7 @@ public class TimerSystem : ITickingSystem, ITimerService
         {
             var timer = _timers[i];
 
-            while ((timer.NextTick > _lastTick || timestamp < _lastTick) && timer.NextTick <= timestamp)
+            while (timer.NextTick <= timestamp)
             {
                 try
                 {
@@ -140,11 +140,11 @@ public class TimerSystem : ITickingSystem, ITimerService
             .ScanMethods<TimerAttribute>();
 
         // Create timer invokers and store timer info in registry.
-        foreach (var (method, attribute) in events)
+        foreach (var (target, method, attribute) in events)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                _logger.LogDebug("Adding timer on {type}.{method}.", method.DeclaringType, method.Name);
+                _logger.LogDebug("Adding timer on {type}.{method}.", target, method.Name);
             }
          
             if (!IsValidInterval(attribute.IntervalTimeSpan))
@@ -153,7 +153,7 @@ public class TimerSystem : ITickingSystem, ITimerService
                 continue;
             }
 
-            var service = _serviceProvider.GetService(method.DeclaringType!);
+            var service = _serviceProvider.GetService(target);
 
             if (service == null)
             {
@@ -169,7 +169,7 @@ public class TimerSystem : ITickingSystem, ITimerService
 
             if (attribute.IntervalTimeSpan < _lowIntervalThreshold)
             {
-                _logger.LogWarning("Timer {type}.{method} has a low interval of {interval}.", method.DeclaringType, method.Name, attribute.IntervalTimeSpan);
+                _logger.LogWarning("Timer {type}.{method} has a low interval of {interval}.", target, method.Name, attribute.IntervalTimeSpan);
             }
 
             var timer = new TimerInfo(

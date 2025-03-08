@@ -87,7 +87,7 @@ internal class EventService : IEventService
             .ScanMethods<EventAttribute>();
 
         // Gather event data, compile invoker and add the data to the events collection.
-        foreach (var (method, attribute) in events)
+        foreach (var (target, method, attribute) in events)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {
@@ -129,18 +129,18 @@ internal class EventService : IEventService
                 }
             }
 
-            var targetSite = CreateTargetSite(method, parameterSources, argsPtr);
+            var targetSite = CreateTargetSite(target, method, parameterSources, argsPtr);
             @event.TargetSites.Add(targetSite);
         }
     }
 
-    private TargetSiteData CreateTargetSite(MethodInfo method, MethodParameterSource[] parameterInfos, int callbackParamCount)
+    private TargetSiteData CreateTargetSite(Type target, MethodInfo method, MethodParameterSource[] parameterInfos, int callbackParamCount)
     {
         var compiled = MethodInvokerFactory.Compile(method, parameterInfos);
 
         return new TargetSiteData
         {
-            TargetType = method.DeclaringType!,
+            TargetType = target,
             Invoke = (instance, eventContext) =>
             {
                 var args = eventContext.Arguments;

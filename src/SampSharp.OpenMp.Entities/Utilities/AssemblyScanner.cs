@@ -178,21 +178,21 @@ internal sealed class AssemblyScanner
     /// results.</summary>
     /// <typeparam name="TAttribute">The type of the attribute.</typeparam>
     /// <returns>The found methods with their attribute of type <typeparamref name="TAttribute" />.</returns>
-    public IEnumerable<(MethodInfo method, TAttribute attribute)> ScanMethods<TAttribute>() where TAttribute : Attribute
+    public IEnumerable<(Type target, MethodInfo method, TAttribute attribute)> ScanMethods<TAttribute>() where TAttribute : Attribute
     {
         return HasAttribute<TAttribute>()
             .ScanMethods()
-            .Select(method => (method, attribute: method.GetCustomAttribute<TAttribute>()!));
+            .Select(x => (x.target, x.method, attribute: x.method.GetCustomAttribute<TAttribute>()!));
     }
 
     /// <summary>Runs the scan for methods.</summary>
     /// <returns>The found methods.</returns>
-    public IEnumerable<MethodInfo> ScanMethods()
+    public IEnumerable<(Type target, MethodInfo method)> ScanMethods()
     {
         return _assemblies.SelectMany(a => a.GetTypes())
             .Where(ApplyTypeFilter)
-            .SelectMany(t => t.GetMethods(MemberBindingFlags))
-            .Where(ApplyMemberFilter)
+            .SelectMany(t => t.GetMethods(MemberBindingFlags).Select(m => (t, m)))
+            .Where(x => ApplyMemberFilter(x.m))
             .ToArray();
     }
 

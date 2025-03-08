@@ -8,6 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Shouldly" Version="4.3.0" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\SampSharp.OpenMp.Entities\SampSharp.OpenMp.Entities.csproj" />
         <ProjectReference Include="..\SampSharp.SourceGenerator\SampSharp.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
         <ProjectReference Include="..\SampSharp.Analyzer\SampSharp.Analyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

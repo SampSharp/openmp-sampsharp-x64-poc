@@ -33,6 +33,15 @@ public class Actor : WorldEntity
         set => throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Gets or sets the skin of the actor.
+    /// </summary>
+    public virtual int Skin
+    {
+        get => _actor.GetSkin();
+        set => _actor.SetSkin(value);
+    }
+
     /// <summary>Gets the health of this actor.</summary>
     public virtual float Health
     {

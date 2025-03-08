@@ -35,11 +35,11 @@ functions exposed in its API. The component is currently fully functional on Win
    should provide warnings/errors when the written code cannot be marshalled or no P/Invoke can be generated.  
 4) The SampSharp.OpenMp.Core provides the open.mp API and data structures in .NET. These APIs are usable but not as
    user-friendly as we'd like to see in SampSharp.  
-5) (TODO) Lastly we need a user-friendly library which allows the user to easily write game modes in .NET. It will be
-based on the ECS library SampSharp.Entities. Since the ECS framework seems more flexible and performant due to the way
-events propagate I'll not be rewriting SampSharp.GameMode for open.mp. Maintaining two versions of SampSharp greatly
-increases the amount of effort required from maintainers. When the open.mp version of SampSharp is ready, the old
-SampSharp will go into maintenance mode and only receive critical bug fixes.  
+5) Lastly we need a user-friendly library which allows the user to easily write game modes in .NET. It will be based on
+   the ECS library SampSharp.Entities. Since the ECS framework seems more flexible and performant due to the way events
+   propagate I'll not be rewriting SampSharp.GameMode for open.mp. Maintaining two versions of SampSharp greatly
+   increases the amount of effort required from maintainers. When the open.mp version of SampSharp is ready, the old
+   SampSharp will go into maintenance mode and only receive critical bug fixes.  
 
 Benefits  
 --------  

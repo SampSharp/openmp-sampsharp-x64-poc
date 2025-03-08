@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Logging;
 using SampSharp.Entities.SAMP;
@@ -38,6 +39,7 @@ internal class EcsManager : Extension
         OnGameModeInit();
     }
 
+    [MemberNotNull(nameof(_serviceProvider))]
     private void BuildServiceProvider(StartupContext context, RuntimeInformation info, IEcsStartup configurator)
     {
         var services = new ServiceCollection();
