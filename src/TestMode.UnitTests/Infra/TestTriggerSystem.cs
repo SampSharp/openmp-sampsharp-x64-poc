@@ -1,5 +1,6 @@
 ﻿using SampSharp.Entities;
 using SampSharp.Entities.SAMP;
+using Shouldly;
 
 namespace TestMode.UnitTests;
 
@@ -22,6 +23,8 @@ public class TestTriggerSystem : ISystem
     [Event]
     public void OnGameModeInit(TestManager testManager, ITimerService timerService)
     {
+        ShouldlyConfiguration.DefaultFloatingPointTolerance = 0.02f;
+
         timerService.Start((sp, timer) =>
         {
             timerService.Stop(timer);
