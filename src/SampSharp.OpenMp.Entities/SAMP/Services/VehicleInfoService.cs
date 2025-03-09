@@ -27,7 +27,7 @@ internal class VehicleInfoService : IVehicleInfoService
         return (a, b, c, d);
     }
 
-    public Colour GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff)
+    public Color GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff)
     {
         return VehicleData.CarColourIndexToColour((int)vehicleColor, alpha);
     }

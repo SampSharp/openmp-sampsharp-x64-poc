@@ -41,7 +41,7 @@ public class GangZone : IdProvider
     public virtual float MaxY => Max.Y;
 
     /// <summary>Gets or sets the color of this <see cref="GangZone" />.</summary>
-    public virtual Colour Color { get; set; }
+    public virtual Color Color { get; set; }
 
     /// <summary>Shows this <see cref="GangZone" />.</summary>
     public virtual void Show()
@@ -56,7 +56,7 @@ public class GangZone : IdProvider
     /// <param name="player">The player.</param>
     public virtual void Show(Player player)
     {
-        var clr = Color;
+        Colour clr = Color;
         _gangZone.ShowForPlayer(player, ref clr);
     }
 
@@ -78,7 +78,7 @@ public class GangZone : IdProvider
 
     /// <summary>Flashes this <see cref="GangZone" />.</summary>
     /// <param name="color">The color.</param>
-    public virtual void Flash(Colour color)
+    public virtual void Flash(Color color)
     {
         foreach (var player in Manager.GetComponents<Player>())
         {
@@ -89,9 +89,9 @@ public class GangZone : IdProvider
     /// <summary>Flashes this <see cref="GangZone" /> for the specified <paramref name="player" />.</summary>
     /// <param name="player">The player.</param>
     /// <param name="color">The color.</param>
-    public virtual void Flash(Player player, Colour color)
+    public virtual void Flash(Player player, Color color)
     {
-        var clr = color;
+        Colour clr = color;
         _gangZone.FlashForPlayer(player, ref clr);
     }
 

@@ -43,7 +43,7 @@ public class TextDraw : IdProvider
     }
 
     /// <summary>Gets or sets the color of the text of this text draw.</summary>
-    public virtual Colour ForeColor
+    public virtual Color ForeColor
     {
         get => _textDraw.GetLetterColour();
         set => _textDraw.SetColour(value);
@@ -57,7 +57,7 @@ public class TextDraw : IdProvider
     }
 
     /// <summary>Gets or sets the color of the box of this text draw.</summary>
-    public virtual Colour BoxColor
+    public virtual Color BoxColor
     {
         get => _textDraw.GetBoxColour();
         set => _textDraw.SetBoxColour(value);
@@ -78,7 +78,7 @@ public class TextDraw : IdProvider
     }
 
     /// <summary>Gets or sets the background color of this text draw.</summary>
-    public virtual Colour BackColor
+    public virtual Color BackColor
     {
         get => _textDraw.GetBackgroundColour();
         set => _textDraw.SetBackgroundColour(value);

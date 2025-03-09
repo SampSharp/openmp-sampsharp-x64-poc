@@ -24,7 +24,7 @@ public class TextLabel : WorldEntity
     protected bool IsOmpEntityDestroyed => _textLabel.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
     /// <summary>Gets or sets the color of this text label.</summary>
-    public virtual Colour Color
+    public virtual Color Color
     {
         get => _textLabel.GetColour();
         set => _textLabel.SetColour(value);

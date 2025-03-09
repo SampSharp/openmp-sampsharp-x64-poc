@@ -114,7 +114,7 @@ public interface IWorldService
     /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns>The created text label.</returns>
-    TextLabel CreateTextLabel(string text, Colour color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true,
+    TextLabel CreateTextLabel(string text, Color color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true,
         EntityId parent = default);
 
     /// <summary>Creates a player text label in the world.</summary>
@@ -126,7 +126,7 @@ public interface IWorldService
     /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns>The created text label.</returns>
-    PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true, EntityId parent = default);
+    PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Color color, Vector3 position, float drawDistance, bool testLos = true, EntityId parent = default);
 
     /// <summary>Creates a text draw in the world.</summary>
     /// <param name="position">The position of the text draw.</param>
@@ -162,7 +162,7 @@ public interface IWorldService
     /// </summary>
     /// <param name="color">The color of the message.</param>
     /// <param name="message">The text that will be displayed.</param>
-    void SendClientMessage(Colour color, string message);
+    void SendClientMessage(Color color, string message);
 
     /// <summary>
     /// This function sends a message to all players with a chosen color in the chat. The whole line in the chat box will be in the set color unless color
@@ -172,7 +172,7 @@ public interface IWorldService
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     [StringFormatMethod("messageFormat")]
-    void SendClientMessage(Colour color, string messageFormat, params object[] args);
+    void SendClientMessage(Color color, string messageFormat, params object[] args);
 
     /// <summary>
     /// This function sends a message to all players in white in the chat. The whole line in the chat box will be in the set color unless color embedding is

@@ -132,7 +132,7 @@ public class WorldService : IWorldService
         return component;
     }
 
-    public TextLabel CreateTextLabel(string text, Colour color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true, EntityId parent = default)
+    public TextLabel CreateTextLabel(string text, Color color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true, EntityId parent = default)
     {
         var native = _textLabels.Create(text, color, position, drawDistance, virtualWorld, testLos);
         var entityId = EntityId.NewEntityId();
@@ -144,7 +144,7 @@ public class WorldService : IWorldService
         return component;
     }
 
-    public PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Colour color, Vector3 position, float drawDistance, bool testLos = true,
+    public PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Color color, Vector3 position, float drawDistance, bool testLos = true,
         EntityId parent = default)
     {
         IPlayer nativePlayer = player;
@@ -218,12 +218,13 @@ public class WorldService : IWorldService
         _objects.SetDefaultCameraCollision(disable);
     }
 
-    public void SendClientMessage(Colour color, string message)
+    public void SendClientMessage(Color color, string message)
     {
-        _players.SendClientMessageToAll(ref color, message);
+        Colour clr = color;
+        _players.SendClientMessageToAll(ref clr, message);
     }
 
-    public void SendClientMessage(Colour color, string messageFormat, params object[] args)
+    public void SendClientMessage(Color color, string messageFormat, params object[] args)
     {
         var message = string.Format(messageFormat, args);
         SendClientMessage(color, message);
@@ -231,7 +232,7 @@ public class WorldService : IWorldService
 
     public void SendClientMessage(string message)
     {
-        SendClientMessage(new Colour(0xff, 0xff, 0xff, 0xff), message);
+        SendClientMessage(new Color(0xff, 0xff, 0xff, 0xff), message);
     }
 
     public void SendClientMessage(string messageFormat, params object[] args)

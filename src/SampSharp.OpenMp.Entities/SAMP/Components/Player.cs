@@ -125,7 +125,7 @@ public class Player : WorldEntity
     }
 
     /// <summary>Gets or sets the Color of this player.</summary>
-    public virtual Colour Color
+    public virtual Color Color
     {
         get => _player.GetColour();
         set => _player.SetColour(value);
@@ -628,7 +628,7 @@ public class Player : WorldEntity
 
     /// <summary>Display the cursor and allow this player to select a text draw.</summary>
     /// <param name="hoverColor">The color of the text draw when hovering over with mouse.</param>
-    public virtual void SelectTextDraw(Colour hoverColor)
+    public virtual void SelectTextDraw(Color hoverColor)
     {
         IsSelectingTextDraw = true;
         throw new NotImplementedException();
@@ -711,8 +711,8 @@ public class Player : WorldEntity
     /// <param name="materialColor1">The first object color to set.</param>
     /// <param name="materialColor2">The second object color to set.</param>
     /// <returns>True on success, False otherwise.</returns>
-    public virtual bool SetAttachedObject(int index, int modelId, Bone bone, Vector3 offset, Vector3 rotation, Vector3 scale, Colour materialColor1,
-        Colour materialColor2)
+    public virtual bool SetAttachedObject(int index, int modelId, Bone bone, Vector3 offset, Vector3 rotation, Vector3 scale, Color materialColor1,
+        Color materialColor2)
     {
         throw new NotImplementedException();
     }
@@ -746,8 +746,8 @@ public class Player : WorldEntity
     /// <param name="color">The text color.</param>
     /// <param name="drawDistance">The distance from where players are able to see the chat bubble.</param>
     /// <param name="expireTime">The time in milliseconds the bubble should be displayed for.</param>
-    [Obsolete("Use SetChatBubble(string,Colour,float,TimeSpan) instead")]
-    public virtual void SetChatBubble(string text, Colour color, float drawDistance, int expireTime)
+    [Obsolete("Use SetChatBubble(string,Color,float,TimeSpan) instead")]
+    public virtual void SetChatBubble(string text, Color color, float drawDistance, int expireTime)
     {
         SetChatBubble(text, color, drawDistance, TimeSpan.FromMilliseconds(expireTime));
     }
@@ -757,9 +757,10 @@ public class Player : WorldEntity
     /// <param name="color">The text color.</param>
     /// <param name="drawDistance">The distance from where players are able to see the chat bubble.</param>
     /// <param name="expireTime">The time the bubble should be displayed for.</param>
-    public virtual void SetChatBubble(string text, Colour color, float drawDistance, TimeSpan expireTime)
+    public virtual void SetChatBubble(string text, Color color, float drawDistance, TimeSpan expireTime)
     {
-        _player.SetChatBubble(text, ref color, drawDistance, expireTime);
+        Colour clr = color;
+        _player.SetChatBubble(text, ref clr, drawDistance, expireTime);
     }
 
     /// <summary>Puts this player in a vehicle.</summary>
@@ -971,7 +972,7 @@ public class Player : WorldEntity
     /// <summary>Change the color of this player's name tag and radar blip for another Player.</summary>
     /// <param name="player">The player whose color will be changed.</param>
     /// <param name="color">New color.</param>
-    public virtual void SetPlayerMarker(Player player, Colour color)
+    public virtual void SetPlayerMarker(Player player, Color color)
     {
         _player.SetOtherColour(player, color);
     }
@@ -1114,7 +1115,7 @@ public class Player : WorldEntity
     /// </summary>
     /// <param name="color">The color of the message.</param>
     /// <param name="message">The text that will be displayed.</param>
-    public virtual void SendClientMessage(Colour color, string message)
+    public virtual void SendClientMessage(Color color, string message)
     {
         if (message.Length > 144)
         {
@@ -1135,7 +1136,7 @@ public class Player : WorldEntity
     /// <param name="messageFormat">The composite format string of the text that will be displayed (max 144 characters).</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     [StringFormatMethod("messageFormat")]
-    public virtual void SendClientMessage(Colour color, string messageFormat, params object[] args)
+    public virtual void SendClientMessage(Color color, string messageFormat, params object[] args)
     {
         SendClientMessage(color, string.Format(messageFormat, args));
     }
@@ -1276,7 +1277,7 @@ public class Player : WorldEntity
     /// <param name="type">The type of the marker.</param>
     /// <param name="color">The color of the marker.</param>
     /// <param name="style">The style of the marker.</param>
-    public virtual void SetMapIcon(int iconId, Vector3 position, MapIcon type, Colour color, SAMP.MapIconType style)
+    public virtual void SetMapIcon(int iconId, Vector3 position, MapIcon type, Color color, MapIconType style)
     {
         _player.SetMapIcon(iconId, position, (int)type, color, (MapIconStyle)style);
     }

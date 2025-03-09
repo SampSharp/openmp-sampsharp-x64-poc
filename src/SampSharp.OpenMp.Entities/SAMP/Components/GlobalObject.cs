@@ -81,7 +81,7 @@ public class GlobalObject : WorldEntity
     /// <param name="txdName">The name of the txd file which contains the replacement texture (use "none" if not required).</param>
     /// <param name="textureName">The name of the texture to use as the replacement (use "none" if not required).</param>
     /// <param name="materialColor">The object color to set (use default(Color) to keep the existing material color).</param>
-    public virtual void SetMaterial(int materialIndex, int modelId, string txdName, string textureName, Colour materialColor)
+    public virtual void SetMaterial(int materialIndex, int modelId, string txdName, string textureName, Color materialColor)
     {
         _object.SetMaterial((uint)materialIndex, modelId, txdName, textureName, materialColor);
     }
@@ -96,8 +96,8 @@ public class GlobalObject : WorldEntity
     /// <param name="foreColor">The color of the text.</param>
     /// <param name="backColor">The background color of the text.</param>
     /// <param name="textAlignment">The alignment of the text.</param>
-    public virtual void SetMaterialText(int materialIndex, string text, ObjectMaterialSize materialSize, string fontface, int fontSize, bool bold, Colour foreColor,
-        Colour backColor, ObjectMaterialTextAlign textAlignment)
+    public virtual void SetMaterialText(int materialIndex, string text, ObjectMaterialSize materialSize, string fontface, int fontSize, bool bold, Color foreColor,
+        Color backColor, ObjectMaterialTextAlign textAlignment)
     {
         _object.SetMaterialText((uint)materialIndex, text, (SampSharp.OpenMp.Core.Api.ObjectMaterialSize)materialSize, fontface, fontSize, bold, foreColor, backColor, (SampSharp.OpenMp.Core.Api.ObjectMaterialTextAlign)textAlignment);
     }

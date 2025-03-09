@@ -23,7 +23,7 @@ public interface IVehicleInfoService
 
     public (int, int, int, int) GetRandomVehicleColor(VehicleModelType vehicleModel);
 
-    public Colour GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff);
+    public Color GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff);
 
     public int GetPassengerSeatCount(VehicleModelType vehicleModel);
 }
