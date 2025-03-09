@@ -21,13 +21,13 @@ internal class VehicleInfoService : IVehicleInfoService
         return outInfo;
     }
 
-    public (VehicleColor, VehicleColor, VehicleColor, VehicleColor) GetRandomVehicleColor(VehicleModelType vehicleModel)
+    public (int, int, int, int) GetRandomVehicleColor(VehicleModelType vehicleModel)
     {
         VehicleData.GetRandomVehicleColour((int)vehicleModel, out var a, out var b, out var c, out var d);
-        return ((VehicleColor)a, (VehicleColor)b, (VehicleColor)c, (VehicleColor)d);
+        return (a, b, c, d);
     }
 
-    public Colour GetColorFromVehicleColor(VehicleColor vehicleColor, uint alpha = 0xff)
+    public Colour GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff)
     {
         return VehicleData.CarColourIndexToColour((int)vehicleColor, alpha);
     }

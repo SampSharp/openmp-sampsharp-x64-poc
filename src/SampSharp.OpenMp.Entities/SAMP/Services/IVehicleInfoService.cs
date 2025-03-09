@@ -21,9 +21,9 @@ public interface IVehicleInfoService
 
     public bool IsValidComponentForVehicle(VehicleModelType vehicleModel, int componentId);
 
-    public (VehicleColor, VehicleColor, VehicleColor, VehicleColor) GetRandomVehicleColor(VehicleModelType vehicleModel);
+    public (int, int, int, int) GetRandomVehicleColor(VehicleModelType vehicleModel);
 
-    public Colour GetColorFromVehicleColor(VehicleColor vehicleColor, uint alpha = 0xff);
+    public Colour GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff);
 
     public int GetPassengerSeatCount(VehicleModelType vehicleModel);
 }
