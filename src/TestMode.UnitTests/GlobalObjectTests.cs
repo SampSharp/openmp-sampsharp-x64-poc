@@ -26,7 +26,7 @@ public class GlobalObjectTests : TestSystem
         _object?.Destroy();
     }
 
-    [Test]
+    [Test(Focus = true)]
     public void CreateObject_should_set_properties()
     {
         var obj = _worldService.CreateObject(100, new Vector3(10, 20, 30), new Vector3(20, 10, 0), 30);
@@ -34,7 +34,7 @@ public class GlobalObjectTests : TestSystem
         {
             obj.ModelId.ShouldBe(100);
             obj.Position.ShouldBe(new Vector3(10, 20, 30));
-            obj.Rotation.ShouldBe(new Vector3(20, 10, 0));
+            obj.RotationEuler.ShouldBe(new Vector3(20, 10, 0));
             obj.DrawDistance.ShouldBe(30);
         }
         finally
@@ -49,12 +49,12 @@ public class GlobalObjectTests : TestSystem
         _object.Position = new Vector3(20, 30, 40);
         _object.Position.ShouldBe(new Vector3(20, 30, 40));
     }
-
-    [Test]
-    public void Rotation_should_roundtrip()
+    
+    [Test(Focus = true)]
+    public void RotationEuler_should_roundtrip()
     {
-        _object.Rotation = new Vector3(20, 30, 40);
-        _object.Rotation.ShouldBe(new Vector3(20, 30, 40));
+        _object.RotationEuler = new Vector3(20, 30, 40);
+        _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40));
     }
     
     [Test]

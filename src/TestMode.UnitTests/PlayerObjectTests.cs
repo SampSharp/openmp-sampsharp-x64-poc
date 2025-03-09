@@ -36,7 +36,7 @@ public class PlayerObjectTests : TestSystem
         {
             obj.ModelId.ShouldBe(100);
             obj.Position.ShouldBe(new Vector3(10, 20, 30));
-            obj.Rotation.ShouldBe(new Vector3(20, 10, 0));
+            obj.RotationEuler.ShouldBe(new Vector3(20, 10, 0));
             obj.DrawDistance.ShouldBe(30);
         }
         finally

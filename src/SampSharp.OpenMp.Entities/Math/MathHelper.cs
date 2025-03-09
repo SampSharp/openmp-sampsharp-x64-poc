@@ -1,20 +1,12 @@
-﻿namespace SampSharp.Entities.SAMP;
+﻿using System.Diagnostics.Contracts;
+using System.Numerics;
+
+namespace SampSharp.Entities;
 
 /// <summary>Contains commonly used pre-calculated values and mathematical operations.</summary>
+[Pure]
 public static class MathHelper
 {
-    /// <summary>Represents the mathematical constant e(2.71828175).</summary>
-    public const float E = (float)Math.E;
-
-    /// <summary>Represents the log base ten of e(0.4342945).</summary>
-    public const float Log10E = 0.4342945f;
-
-    /// <summary>Represents the log base two of e(1.442695).</summary>
-    public const float Log2E = 1.442695f;
-
-    /// <summary>Represents the value of pi(3.14159274).</summary>
-    public const float Pi = (float)Math.PI;
-
     /// <summary>Represents the value of pi divided by two(1.57079637).</summary>
     public const float PiOver2 = (float)(Math.PI / 2.0);
 
@@ -59,43 +51,6 @@ public static class MathHelper
                               (3.0 * value2 - value1 - 3.0 * value3 + value4) * amountCubed));
     }
 
-    /// <summary>Restricts a value to be within a specified range.</summary>
-    /// <param name="value">The value to clamp.</param>
-    /// <param name="min">The minimum value. If <c>value</c> is less than <c>min</c>, <c>min</c> will be returned.</param>
-    /// <param name="max">The maximum value. If <c>value</c> is greater than <c>max</c>, <c>max</c> will be returned.</param>
-    /// <returns>The clamped value.</returns>
-    public static float Clamp(float value, float min, float max)
-    {
-        // First we check to see if we're greater than the max
-        value = value > max
-            ? max
-            : value;
-
-        // Then we check to see if we're less than the min.
-        value = value < min
-            ? min
-            : value;
-
-        // There's no check to see if min > max.
-        return value;
-    }
-
-    /// <summary>Restricts a value to be within a specified range.</summary>
-    /// <param name="value">The value to clamp.</param>
-    /// <param name="min">The minimum value. If <c>value</c> is less than <c>min</c>, <c>min</c> will be returned.</param>
-    /// <param name="max">The maximum value. If <c>value</c> is greater than <c>max</c>, <c>max</c> will be returned.</param>
-    /// <returns>The clamped value.</returns>
-    public static int Clamp(int value, int min, int max)
-    {
-        value = value > max
-            ? max
-            : value;
-        value = value < min
-            ? min
-            : value;
-        return value;
-    }
-
     /// <summary>Calculates the absolute value of the difference of two values.</summary>
     /// <param name="value1">Source value.</param>
     /// <param name="value2">Source value.</param>
@@ -136,64 +91,6 @@ public static class MathHelper
         return (float)result;
     }
 
-    /// <summary>Linearly interpolates between two values.</summary>
-    /// <param name="value1">Source value.</param>
-    /// <param name="value2">Source value.</param>
-    /// <param name="amount">Value between 0 and 1 indicating the weight of value2.</param>
-    /// <returns>Interpolated value.</returns>
-    /// <remarks>
-    /// This method performs the linear interpolation based on the following formula. <c>value1 + (value2 - value1) * amount</c> Passing amount a value of 0
-    /// will cause value1 to be returned, a value of 1 will cause value2 to be returned.
-    /// </remarks>
-    public static float Lerp(float value1, float value2, float amount)
-    {
-        return value1 + (value2 - value1) * amount;
-    }
-
-    /// <summary>Returns the greater of two values.</summary>
-    /// <param name="value1">Source value.</param>
-    /// <param name="value2">Source value.</param>
-    /// <returns>The greater value.</returns>
-    public static float Max(float value1, float value2)
-    {
-        return value1 > value2
-            ? value1
-            : value2;
-    }
-
-    /// <summary>Returns the greater of two values.</summary>
-    /// <param name="value1">Source value.</param>
-    /// <param name="value2">Source value.</param>
-    /// <returns>The greater value.</returns>
-    public static int Max(int value1, int value2)
-    {
-        return value1 > value2
-            ? value1
-            : value2;
-    }
-
-    /// <summary>Returns the lesser of two values.</summary>
-    /// <param name="value1">Source value.</param>
-    /// <param name="value2">Source value.</param>
-    /// <returns>The lesser value.</returns>
-    public static float Min(float value1, float value2)
-    {
-        return value1 < value2
-            ? value1
-            : value2;
-    }
-
-    /// <summary>Returns the lesser of two values.</summary>
-    /// <param name="value1">Source value.</param>
-    /// <param name="value2">Source value.</param>
-    /// <returns>The lesser value.</returns>
-    public static int Min(int value1, int value2)
-    {
-        return value1 < value2
-            ? value1
-            : value2;
-    }
-
     /// <summary>Interpolates between two values using a cubic equation.</summary>
     /// <param name="value1">Source value.</param>
     /// <param name="value2">Source value.</param>
@@ -204,28 +101,67 @@ public static class MathHelper
         // It is expected that 0 < amount < 1
         // If amount < 0, return value1
         // If amount > 1, return value2
-        var result = Clamp(amount, 0f, 1f);
+        var result = float.Clamp(amount, 0f, 1f);
         result = Hermite(value1, 0f, value2, 0f, result);
 
         return result;
     }
 
-    /// <summary>Converts radians to degrees.</summary>
-    /// <param name="radians">The angle in radians.</param>
-    /// <returns>The angle in degrees.</returns>
-    /// <remarks>This method uses double precision internally, though it returns single float Factor = 180 / pi</remarks>
-    public static float ToDegrees(float radians)
+    /// <summary>
+    /// Gets the Z angle of the specified <paramref name="rotationMatrix"/>.
+    /// </summary>
+    /// <param name="rotationMatrix">The rotation matrix to the the Z angle of.</param>
+    /// <returns>The Z angle.</returns>
+    public static float GetZAngleFromRotationMatrix(Matrix4x4 rotationMatrix)
     {
-        return (float)(radians * 57.295779513082320876798154814105);
+        return WrapAngle(-MathF.Atan2(rotationMatrix.M21, rotationMatrix.M11));
     }
 
-    /// <summary>Converts degrees to radians.</summary>
-    /// <param name="degrees">The angle in degrees.</param>
-    /// <returns>The angle in radians.</returns>
-    /// <remarks>This method uses double precision internally, though it returns single float Factor = pi / 180</remarks>
-    public static float ToRadians(float degrees)
+    /// <summary>
+    /// Gets the yaw, pitch and roll in radians from the specified <paramref name="rotationMatrix"/>.
+    /// </summary>
+    /// <param name="rotationMatrix">The rotation matrix.</param>
+    /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
+    public static Vector3 GetYawPitchRollFromRotationMatrix(Matrix4x4 rotationMatrix)
     {
-        return (float)(degrees * 0.017453292519943295769236907684886);
+        var yaw = -MathF.Atan2(rotationMatrix.M21, rotationMatrix.M11);
+        var pitch = -MathF.Asin(-rotationMatrix.M31);
+        var roll = -MathF.Atan2(rotationMatrix.M32, rotationMatrix.M33);
+
+        return new Vector3(roll, pitch, yaw);
+    }
+
+    /// <summary>
+    /// Gets the yaw, pitch and roll in radians from the specified <paramref name="quat"/>.
+    /// </summary>
+    /// <param name="quat">The quaternion</param>
+    /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
+    public static Vector3 GetYawPitchRollFromQuaternion(Quaternion quat)
+    {
+        return GetYawPitchRollFromRotationMatrix(Matrix4x4.CreateFromQuaternion(quat));
+    }
+
+    /// <summary>
+    /// Converts the specified vector containing roll, pitch and yaw in radians to a quaternion.
+    /// </summary>
+    /// <param name="vec">The vector containing roll, pitch and yaw in radians.</param>
+    /// <returns>The quaternion.</returns>
+    public static Quaternion GetQuaternionFromYawPitchRoll(Vector3 vec)
+    {
+        // TODO: this is wrong. incorrect result.
+        float cy = MathF.Cos(vec.Z * 0.5f);
+        float sy = MathF.Sin(vec.Z * 0.5f);
+        float cp = MathF.Cos(vec.Y * 0.5f);
+        float sp = MathF.Sin(vec.Y * 0.5f);
+        float cr = MathF.Cos(vec.X * 0.5f);
+        float sr = MathF.Sin(vec.X * 0.5f);
+
+        float w = cr * cp * cy + sr * sp * sy;
+        float x = sr * cp * cy - cr * sp * sy;
+        float y = cr * sp * cy + sr * cp * sy;
+        float z = cr * cp * sy - sr * sp * cy;
+
+        return new Quaternion(x, y, z, w);
     }
 
     /// <summary>Reduces a given angle to a value between π and -π.</summary>
@@ -233,14 +169,15 @@ public static class MathHelper
     /// <returns>The new angle, in radians.</returns>
     public static float WrapAngle(float angle)
     {
-        angle = (float)Math.IEEERemainder(angle, 6.2831854820251465);
-        if (angle <= -3.14159274f)
+        angle = (float)Math.IEEERemainder(angle, TwoPi);
+        switch (angle)
         {
-            angle += 6.28318548f;
-        }
-        else
-        {
-            if (angle > 3.14159274f) angle -= 6.28318548f;
+            case <= -float.Pi:
+                angle += TwoPi;
+                break;
+            case > float.Pi:
+                angle -= TwoPi;
+                break;
         }
 
         return angle;
@@ -251,6 +188,6 @@ public static class MathHelper
     /// <returns><c>true</c> if <c>value</c> is powered by two; otherwise <c>false</c>.</returns>
     public static bool IsPowerOfTwo(int value)
     {
-        return value > 0 && (value & (value - 1)) == 0;
+        return value > 0 && (value & value - 1) == 0;
     }
 }

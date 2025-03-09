@@ -2,7 +2,7 @@
 using SampSharp.Entities;
 using SampSharp.Entities.SAMP;
 
-namespace TestMode.UnitTests;
+namespace TestMode.OpenMp.Entities;
 
 public class BasicsSystem : ISystem
 {

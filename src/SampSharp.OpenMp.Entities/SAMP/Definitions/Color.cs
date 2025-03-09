@@ -43,7 +43,7 @@ public partial struct Color
     /// <param name="g">The green value of this Color.</param>
     /// <param name="b">The blue value of this Color.</param>
     /// <param name="a">The alpha value of this Color.</param>
-    public Color(byte r, byte g, byte b, float a) : this(r, g, b, (byte)MathHelper.Clamp(a * byte.MaxValue, byte.MinValue, byte.MaxValue))
+    public Color(byte r, byte g, byte b, float a) : this(r, g, b, (byte)float.Clamp(a * byte.MaxValue, byte.MinValue, byte.MaxValue))
     {
     }
 
@@ -52,9 +52,9 @@ public partial struct Color
     /// <param name="g">The green value of this Color.</param>
     /// <param name="b">The blue value of this Color.</param>
     /// <param name="a">The alpha value of this Color.</param>
-    public Color(int r, int g, int b, int a) : this((byte)MathHelper.Clamp(r, byte.MinValue, byte.MaxValue),
-        (byte)MathHelper.Clamp(g, byte.MinValue, byte.MaxValue), (byte)MathHelper.Clamp(b, byte.MinValue, byte.MaxValue),
-        (byte)MathHelper.Clamp(a, byte.MinValue, byte.MaxValue))
+    public Color(int r, int g, int b, int a) : this((byte)int.Clamp(r, byte.MinValue, byte.MaxValue),
+        (byte)int.Clamp(g, byte.MinValue, byte.MaxValue), (byte)int.Clamp(b, byte.MinValue, byte.MaxValue),
+        (byte)int.Clamp(a, byte.MinValue, byte.MaxValue))
     {
     }
 
@@ -71,9 +71,9 @@ public partial struct Color
     /// <param name="g">The green value of this Color.</param>
     /// <param name="b">The blue value of this Color.</param>
     /// <param name="a">The alpha value of this Color.</param>
-    public Color(float r, float g, float b, float a) : this((byte)MathHelper.Clamp(r * byte.MaxValue, byte.MinValue, byte.MaxValue),
-        (byte)MathHelper.Clamp(g * byte.MaxValue, byte.MinValue, byte.MaxValue), (byte)MathHelper.Clamp(b * byte.MaxValue, byte.MinValue, byte.MaxValue),
-        (byte)MathHelper.Clamp(a * byte.MaxValue, byte.MinValue, byte.MaxValue))
+    public Color(float r, float g, float b, float a) : this((byte)float.Clamp(r * byte.MaxValue, byte.MinValue, byte.MaxValue),
+        (byte)float.Clamp(g * byte.MaxValue, byte.MinValue, byte.MaxValue), (byte)float.Clamp(b * byte.MaxValue, byte.MinValue, byte.MaxValue),
+        (byte)float.Clamp(a * byte.MaxValue, byte.MinValue, byte.MaxValue))
     {
     }
 
@@ -768,10 +768,10 @@ public partial struct Color
     /// <returns>Interpolated <see cref="Color" />.</returns>
     public static Color Lerp(Color value1, Color value2, float amount, bool blendAlpha = false)
     {
-        amount = MathHelper.Clamp(amount, 0, 1);
-        return new Color((int)MathHelper.Lerp(value1.R, value2.R, amount), (int)MathHelper.Lerp(value1.G, value2.G, amount),
-            (int)MathHelper.Lerp(value1.B, value2.B, amount), blendAlpha
-                ? (int)MathHelper.Lerp(value1.A, value2.A, amount)
+        amount = float.Clamp(amount, 0, 1);
+        return new Color((int)float.Lerp(value1.R, value2.R, amount), (int)float.Lerp(value1.G, value2.G, amount),
+            (int)float.Lerp(value1.B, value2.B, amount), blendAlpha
+                ? (int)float.Lerp(value1.A, value2.A, amount)
                 : value1.A);
     }
 
@@ -952,7 +952,7 @@ public partial struct Color
     /// <summary>Indicates whether this instance and a specified object are equal.</summary>
     /// <returns>true if <paramref name="obj" /> and this instance are the same type and represent the same value; otherwise, false.</returns>
     /// <param name="obj">Another object to compare to. </param>
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(null, obj)) return false;
         return obj is Color color && Equals(color);

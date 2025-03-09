@@ -23,7 +23,15 @@ public abstract class WorldEntity : IdProvider
         get => _entity.GetPosition();
         set => _entity.SetPosition(value);
     }
-    // TODO: public abstract Quaternion Rotation { get; set; }
+
+    /// <summary>
+    /// Gets or sets the rotation of this component.
+    /// </summary>
+    public virtual Quaternion Rotation
+    {
+        get => _entity.GetRotation();
+        set => _entity.SetRotation(value);
+    }
 
     /// <summary>
     /// Gets or sets the virtual world of this component.

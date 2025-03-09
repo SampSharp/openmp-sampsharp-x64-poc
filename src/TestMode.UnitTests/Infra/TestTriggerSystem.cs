@@ -25,13 +25,13 @@ public class TestTriggerSystem : ISystem
     {
         ShouldlyConfiguration.DefaultFloatingPointTolerance = 0.02f;
 
-        timerService.Start((sp, timer) =>
+        timerService.Delay(_ =>
         {
-            timerService.Stop(timer);
+            var focus = testManager.TestSuites.Any(x => x.TestCases.Any(y => y.Environment.HasFlag(TestEnvironment.Focus)));
 
             // after test cases are added to the test suite, this will run them
-            testManager.Run(TestEnvironment.OnGameModeInit);
+            testManager.Run(focus ? TestEnvironment.Focus | TestEnvironment.OnGameModeInit : TestEnvironment.OnGameModeInit);
 
-        }, TimeSpan.FromSeconds(1));
+        }, TimeSpan.FromSeconds(0.1));
     }
 }

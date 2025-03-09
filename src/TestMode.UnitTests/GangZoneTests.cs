@@ -59,8 +59,8 @@ public class GangZoneTests : TestSystem
     [Test]
     public void Color_should_rountrip()
     {
-        _gangZone.Color = new Colour(1, 2, 3, 4);
-        _gangZone.Color.ShouldBe(new Colour(1, 2, 3, 4));
+        _gangZone.Color = new Color(1, 2, 3, 4);
+        _gangZone.Color.ShouldBe(new Color(1, 2, 3, 4));
     }
     
     [Test(Environment = TestEnvironment.OnPlayerTrigger)]

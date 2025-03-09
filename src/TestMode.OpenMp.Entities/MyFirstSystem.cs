@@ -23,7 +23,7 @@ public class MyFirstSystem : ISystem
     {
         logger.LogInformation("whoop!");
 
-        var vehicle = world.CreateVehicle(VehicleModelType.Landstalker, new Vector3(0, 6, 15), 0, 4, 4);
+        var vehicle = world.CreateVehicle(VehicleModelType.Landstalker, new Vector3(0, 6, 15), 45, 4, 4);
         vehicle.ChangeColor(5, 12);
         vehicle.Bonnet = true;
         vehicle.SetNumberPlate("SampSharp");

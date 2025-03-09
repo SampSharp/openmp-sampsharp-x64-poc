@@ -40,6 +40,15 @@ public class TimerSystem : ITickingSystem, ITimerService
         _logger = logger;
     }
 
+    public TimerReference Delay(Action<IServiceProvider> action, TimeSpan delay)
+    {
+        return Start((sp, reference) =>
+        {
+            Stop(reference);
+            action(sp);
+        }, delay);
+    }
+
     public void Stop(TimerReference timer)
     {
         ArgumentNullException.ThrowIfNull(timer);

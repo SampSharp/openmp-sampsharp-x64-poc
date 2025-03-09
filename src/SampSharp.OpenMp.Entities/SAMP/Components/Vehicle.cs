@@ -309,6 +309,7 @@ public class Vehicle : WorldEntity
     /// <remarks>Only the Z angle can be set!</remarks>
     public virtual Vector3 Rotation
     {
+        // TODO: convert to quat and set quat
         get => new(0, 0, Angle);
         set => _vehicle.SetZAngle(value.Z);
     }
@@ -325,10 +326,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            var quat = _vehicle.GetRotation();
-
-            // TODO: GTAQuat is funky, is this correct? do we need some transformation? or just use a custom quaternion?
-            return new Quaternion(quat.X, quat.Y, quat.Z, quat.W);
+            return _vehicle.GetRotation();
         }
     }
 

@@ -17,14 +17,10 @@ public class Startup : IEcsStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services
-            .AddSystem<TestTicker>()
-            .AddSystem<MyFirstSystem>();
+        services.AddSystemsInAssembly();
     }
 
     public void Configure(IEcsBuilder builder)
     {
-        Nullable<bool> b;
-
     }
 }

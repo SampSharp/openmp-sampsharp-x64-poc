@@ -13,6 +13,9 @@ public class TestManager(ILogger<TestManager> logger)
 
     public void Run(TestEnvironment environment)
     {
+        var focus = environment.HasFlag(TestEnvironment.Focus);
+        environment = environment & ~TestEnvironment.Focus;
+
         logger.LogInformation("Running tests...");
 
         foreach (var testSuite in TestSuites)
@@ -21,7 +24,15 @@ public class TestManager(ILogger<TestManager> logger)
 
             foreach (var testCase in testSuite.TestCases)
             {
-                var testEnv = testCase.Environment == TestEnvironment.Default ? testSuite.DefaultEnvironment : testCase.Environment;
+                var testFocus = (testCase.Environment | testSuite.DefaultEnvironment).HasFlag(TestEnvironment.Focus);
+                if (focus && !testFocus)
+                {
+                    testCase.Skip();
+                    continue;
+                }
+
+                var testEnv = testCase.Environment.HasFlag(TestEnvironment.Default) ? testSuite.DefaultEnvironment : testCase.Environment;
+                testEnv &= ~TestEnvironment.Focus;
 
                 if (testCase.Status == TestStatus.NotRun && testEnv == environment)
                 {

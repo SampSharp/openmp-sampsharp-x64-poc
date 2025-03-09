@@ -1,4 +1,5 @@
-﻿using SampSharp.OpenMp.Core.Api;
+﻿using System.Numerics;
+using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
@@ -23,14 +24,8 @@ public class Actor : WorldEntity
     /// <summary>Gets the facing angle of this actor.</summary>
     public virtual float Angle
     {
-        get
-        {
-            var rotation = _actor.GetRotation();
-
-            // TODO implement
-            throw new NotImplementedException();
-        }
-        set => throw new NotImplementedException();
+        get => float.RadiansToDegrees(MathHelper.GetZAngleFromRotationMatrix(Matrix4x4.CreateFromQuaternion(_actor.GetRotation())));
+        set => Rotation = Quaternion.CreateFromAxisAngle(GtaVector.Up, float.DegreesToRadians(value));
     }
 
     /// <summary>
