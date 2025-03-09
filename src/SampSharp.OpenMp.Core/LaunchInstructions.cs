@@ -127,6 +127,7 @@ internal static partial class LaunchInstructions
             if (!File.Exists(exe))
             {
                 Console.WriteLine("Invalid directory.");
+                continue;
             }
 
             if (!dir.EndsWith('/') && !dir.EndsWith('\\'))
