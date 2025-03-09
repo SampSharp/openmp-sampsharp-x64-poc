@@ -6,7 +6,7 @@ namespace SampSharp.OpenMp.Core;
 
 internal static partial class LaunchInstructions
 {
-    private static Regex _slnProjectRegex = ProjectInSolutionRegex();
+    private static readonly Regex _slnProjectRegex = ProjectInSolutionRegex();
 
     public static void Write()
     {

@@ -1116,14 +1116,15 @@ public class Player : WorldEntity
     /// <param name="message">The text that will be displayed.</param>
     public virtual void SendClientMessage(Color color, string message)
     {
+        Colour clr = color;
         if (message.Length > 144)
         {
-            _player.SendClientMessage(ref color, message[..144]);
+            _player.SendClientMessage(ref clr, message[..144]);
             SendClientMessage(color, message[144..]);
         }
         else
         {
-            _player.SendClientMessage(ref color, message);
+            _player.SendClientMessage(ref clr, message);
         }
     }
 
