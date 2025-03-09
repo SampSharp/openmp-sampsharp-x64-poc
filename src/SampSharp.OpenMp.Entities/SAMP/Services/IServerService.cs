@@ -11,9 +11,6 @@ public interface IServerService
     /// <summary>Gets the maximum number of players that can join the server, as set by the server variable 'maxplayers' in server.cfg.</summary>
     int MaxPlayers { get; }
 
-    /// <summary>Gets the server's network statistics.</summary>
-    string NetworkStats { get; }
-
     /// <summary>Gets the player actor identifier created on the server.</summary>
     int PlayerPoolSize { get; }
 
@@ -27,9 +24,6 @@ public interface IServerService
 
     /// <summary>Gets the vehicle actor identifier created on the server.</summary>
     int VehiclePoolSize { get; }
-
-    // /// <summary>Gets the SVar variable collection.</summary>
-    // TODO : VariableCollection Variables { get; }
 
     /// <summary>Adds a class to class selection. Classes are used so players may spawn with a skin of their choice.</summary>
     /// <param name="teamId">The team for the player to spawn with.</param>
@@ -116,11 +110,7 @@ public interface IServerService
     /// <summary>Gets the string value of a console variable.</summary>
     /// <param name="variableName">The name of the variable.</param>
     /// <returns>The value of the specified console variable.</returns>
-    /// <remarks>
-    /// Using this function with anything other than a string (integer, boolean or float) will cause your server to crash. Using it with a nonexistent console
-    /// variable will also cause your server to crash.
-    /// </remarks>
-    string GetConsoleVarAsString(string variableName);
+    string? GetConsoleVarAsString(string variableName);
 
     /// <summary>
     /// Set a radius limitation for the chat. Only players at a certain distance from the player will see their message in the chat. Also changes the distance
@@ -150,13 +140,6 @@ public interface IServerService
     /// <summary>Set the maximum distance to display the names of players. The default draw distance is 70.0.</summary>
     /// <param name="distance">The distance to set.</param>
     void SetNameTagDrawDistance(float distance = 70);
-
-    /// <summary>
-    /// This function is used to change the amount of teams used in the game mode. It has no obvious way of being used, but can help to indicate the number of
-    /// teams used for better (more effective) internal handling. This function should only be used in the OnGameModeInit callback.
-    /// </summary>
-    /// <param name="count">The number of teams the game mode uses.</param>
-    void SetTeamCount(int count);
 
     /// <summary>Sets the world time (for all players) to a specific hour.</summary>
     /// <param name="hour">The hour to set.</param>

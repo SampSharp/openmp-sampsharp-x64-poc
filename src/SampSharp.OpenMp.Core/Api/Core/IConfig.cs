@@ -7,9 +7,9 @@ public readonly partial struct IConfig
 {
     public partial string? GetString(string key);
     
-    public partial ref int GetInt(string key);
+    public partial BlittableRef<int> GetInt(string key);
     
-    public partial ref float GetFloat(string key);
+    public partial BlittableRef<float> GetFloat(string key);
 
     [OpenMpApiFunction("getStrings")]
     private partial Size GetStringsImpl(string key, SpanLite<StringView> output);
@@ -75,5 +75,5 @@ public readonly partial struct IConfig
 
     // TODO: public partial void enumOptions(OptionEnumeratorCallback& callback); // enumerator callback not available
 
-    public partial ref bool GetBool(string key);
+    public partial BlittableRef<bool> GetBool(string key);
 }

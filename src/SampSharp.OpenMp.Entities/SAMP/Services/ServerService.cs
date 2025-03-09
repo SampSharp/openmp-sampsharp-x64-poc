@@ -1,24 +1,31 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Numerics;
+using Microsoft.Extensions.Logging;
+using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
 internal class ServerService : IServerService
 {
+    private readonly ILogger<ServerService> _logger;
     private readonly IActorsComponent _actors;
     private readonly IPlayerPool _players;
     private readonly IConfig _config;
     private readonly ICore _core;
     private readonly IVehiclesComponent _vehicles;
     private readonly IClassesComponent _classes;
+    private readonly IConsoleComponent _console;
 
-    public ServerService(OpenMp openMp)
+    public ServerService(OpenMp openMp, ILogger<ServerService> logger)
     {
+        _logger = logger;
         _actors = openMp.Components.QueryComponent<IActorsComponent>();
         _config = openMp.Core.GetConfig();
         _players = openMp.Core.GetPlayers();
         _vehicles = openMp.Components.QueryComponent<IVehiclesComponent>();
         _classes = openMp.Components.QueryComponent<IClassesComponent>();
+        _console = openMp.Components.QueryComponent<IConsoleComponent>();
         _core = openMp.Core;
     }
 
@@ -41,9 +48,7 @@ internal class ServerService : IServerService
         }
     }
 
-    public int MaxPlayers => _config.GetInt("max_players");
-
-    public string NetworkStats => throw new NotImplementedException();
+    public int MaxPlayers => _config.GetInt("max_players").Value;
 
     public int PlayerPoolSize
     {
@@ -122,7 +127,7 @@ internal class ServerService : IServerService
 
     public void DisableInteriorEnterExits()
     {
-        ref var fld = ref _core.GetConfig().GetBool("game.use_entry_exit_markers");
+        ref var fld = ref _core.GetConfig().GetBool("game.use_entry_exit_markers").Value;
         fld = false;
     }
 
@@ -133,78 +138,190 @@ internal class ServerService : IServerService
 
     public void EnableVehicleFriendlyFire()
     {
-        ref var fld = ref _core.GetConfig().GetBool("game.use_vehicle_friendly_fire");
+        ref var fld = ref _core.GetConfig().GetBool("game.use_vehicle_friendly_fire").Value;
         fld = false;
     }
 
     public void GameModeExit()
     {
-        throw new NotImplementedException();
+        SendRconCommand("gmx");
     }
 
     public bool GetConsoleVarAsBool(string variableName)
     {
-        throw new NotImplementedException();
+        var res = _config.GetNameFromAlias(variableName);
+
+        BlittableRef<bool> v0;
+        BlittableRef<int> v1 = default;
+        if (!string.IsNullOrEmpty(res.Item2))
+        {
+            if (res.Item1)
+            {
+                _logger.LogWarning("Deprecated console variable \"{old}\", use \"{new}\" instead.", variableName, res.Item2);
+            }
+
+            v0 = _config.GetBool(res.Item2);
+
+            if (!v0.HasValue)
+            {
+                v1 = _config.GetInt(res.Item2);
+            }
+        }
+        else
+        {
+            v0 = _config.GetBool(variableName);
+
+            if (!v0.HasValue)
+            {
+                v1 = _config.GetInt(variableName);
+            }
+        }
+
+        if (v0.HasValue)
+        {
+            return v0.Value;
+        }
+
+        if (v1.HasValue)
+        {
+            _logger.LogWarning( "Integer console variable \"{name}\" retrieved as boolean.", variableName);
+            return v1.Value != 0;
+        }
+
+        return false;
     }
 
     public int GetConsoleVarAsInt(string variableName)
     {
-        throw new NotImplementedException();
+        var res = _config.GetNameFromAlias(variableName);
+
+        BlittableRef<bool> v0 = default;
+        BlittableRef<int> v1;
+        if (!string.IsNullOrEmpty(res.Item2))
+        {
+            if (res.Item1)
+            {
+                _logger.LogWarning("Deprecated console variable \"{old}\", use \"{new}\" instead.", variableName, res.Item2);
+            }
+
+            v1 = _config.GetInt(res.Item2);
+            
+
+            if (!v1.HasValue)
+            {
+                v0 = _config.GetBool(res.Item2);
+            }
+        }
+        else
+        {
+            v1 = _config.GetInt(variableName);
+            
+            if (!v1.HasValue)
+            {
+                v0 = _config.GetBool(variableName);
+            }
+        }
+
+        if (v1.HasValue)
+        {
+            return v1.Value;
+        }
+
+        if (v0.HasValue)
+        {
+            _logger.LogWarning( "Boolean console variable \"{name}\" retrieved as integer.", variableName);
+            return v0.Value ? 1 : 0;
+        }
+
+        return 0;
     }
 
-    public string GetConsoleVarAsString(string variableName)
+    public string? GetConsoleVarAsString(string variableName)
     {
-        throw new NotImplementedException();
+        var gm = variableName.StartsWith("gamemode");
+        var res = _config.GetNameFromAlias(gm ? "gamemode" : variableName);
+
+        if (!string.IsNullOrEmpty(res.Item2))
+        {
+            if (res.Item1)
+            {
+                _logger.LogWarning("Deprecated console variable \"{old}\", use \"{new}\" instead.", variableName, res.Item2);
+            }
+
+            if (gm)
+            {
+                if (int.TryParse(variableName[8..], out var num))
+                {
+                    var mainScripts = _config.GetStrings(res.Item2);
+                    if (num < mainScripts.Length)
+                    {
+                        return mainScripts[num];
+                    }
+                }
+            }
+            else
+            {
+                return _config.GetString(res.Item2);
+            }
+        }
+
+        return _config.GetString(variableName);
     }
 
     public void LimitGlobalChatRadius(float chatRadius)
     {
-        throw new NotImplementedException();
+        ref var use =  ref _config.GetBool("game.use_chat_radius").Value;
+        use = true;
+        ref var radius = ref _config.GetFloat("game.chat_radius").Value;
+        radius = chatRadius;
     }
 
     public void LimitPlayerMarkerRadius(float markerRadius)
     {
-        throw new NotImplementedException();
+        ref var use = ref _config.GetBool("game.use_player_marker_draw_radius").Value;
+        use = true;
+        ref var radius = ref _config.GetFloat("game.player_marker_draw_radius").Value;
+        radius = markerRadius;
     }
 
     public void ManualVehicleEngineAndLights()
     {
-        throw new NotImplementedException();
+        ref var use = ref _config.GetBool("game.use_manual_engine_and_lights").Value;
+        use = true;
     }
 
     public void SendRconCommand(string command)
     {
-        throw new NotImplementedException();
+        var snd = new ConsoleCommandSenderData(SampSharp.OpenMp.Core.Api.ConsoleCommandSender.Console, 0);
+        _console.Send(command, ref snd);
     }
 
     public void SetGameModeText(string text)
     {
-        throw new NotImplementedException();
+        _core.SetData(SettableCoreDataType.ModeText, text);
     }
 
     public void SetNameTagDrawDistance(float distance = 70)
     {
-        throw new NotImplementedException();
-    }
-
-    public void SetTeamCount(int count)
-    {
-        throw new NotImplementedException();
+        ref var fld = ref _config.GetFloat("game.nametag_draw_radius").Value;
+        fld = distance;
     }
 
     public void SetWorldTime(int hour)
     {
-        throw new NotImplementedException();
+        _core.SetWorldTime(hour);
     }
 
     public void ShowNameTags(bool show)
     {
-        throw new NotImplementedException();
+        ref var fld = ref _config.GetBool("game.use_nametags").Value;
+        fld = show;
     }
 
     public void ShowPlayerMarkers(PlayerMarkersMode mode)
     {
-        throw new NotImplementedException();
+        ref var fld = ref _config.GetInt("game.player_marker_mode").Value;
+        fld = (int)mode;
     }
 
     public void UnBlockIpAddress(string ipAddress)
@@ -214,6 +331,7 @@ internal class ServerService : IServerService
 
     public void UsePlayerPedAnims()
     {
-        throw new NotImplementedException();
+        ref var fld = ref _config.GetBool("game.use_player_ped_anims").Value;
+        fld = true;
     }
 }

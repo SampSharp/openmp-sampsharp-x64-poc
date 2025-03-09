@@ -8,6 +8,6 @@ public readonly struct SampSharpInitParams
 {
     public readonly ICore Core;
     public readonly IComponentList ComponentList;
-    private readonly BlittableStructRef<SampSharpInfo> _info;
-    public SampSharpInfo Info => _info.GetValue();
+    private readonly BlittableRef<SampSharpInfo> _info;
+    public SampSharpInfo Info => _info.GetValueOrDefault();
 }

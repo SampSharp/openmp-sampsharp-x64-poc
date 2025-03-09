@@ -13,7 +13,7 @@ public static unsafe class BanEntryMarshaller
     {
         public static int BufferSize { get; } = Marshal.SizeOf<Native>();
 
-        public static BlittableStructRef<Native> ConvertToUnmanaged(BanEntry managed, Span<byte> callerAllocatedBuffer)
+        public static BlittableRef<Native> ConvertToUnmanaged(BanEntry managed, Span<byte> callerAllocatedBuffer)
         {
             var native = ToNative(managed);
 
@@ -21,7 +21,7 @@ public static unsafe class BanEntryMarshaller
             var ptr = (nint)Unsafe.AsPointer(ref callerAllocatedBuffer.GetPinnableReference());
             Marshal.StructureToPtr(native, ptr, false);
 
-            return new BlittableStructRef<Native>(ptr);
+            return new BlittableRef<Native>(ptr);
         }
         
         private static Native ToNative(BanEntry entry)
@@ -35,14 +35,14 @@ public static unsafe class BanEntryMarshaller
 
     public static class NativeToManaged
     {
-        public static BanEntry? ConvertToManaged(BlittableStructRef<Native> unmanaged)
+        public static BanEntry? ConvertToManaged(BlittableRef<Native> unmanaged)
         {
-            if (unmanaged.IsNull)
+            if (!unmanaged.HasValue)
             {
                 return null;
             }
 
-            var native = unmanaged.GetValue();
+            var native = unmanaged.GetValueOrDefault();
 
             return FromNative(native);
         }

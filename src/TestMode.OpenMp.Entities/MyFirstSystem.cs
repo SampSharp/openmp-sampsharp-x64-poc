@@ -14,7 +14,7 @@ public class MyFirstSystem : ISystem
     {
         if (_ticks++ == 3)
         {
-            throw new Exception("Test exception");
+            //throw new Exception("Test exception");
         }
     }
 

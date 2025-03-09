@@ -5,6 +5,12 @@ namespace SampSharp.OpenMp.Core.Api;
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ConsoleCommandSenderData
 {
+    public ConsoleCommandSenderData(ConsoleCommandSender sender, IntPtr handle)
+    {
+        Sender = sender;
+        _handle = handle;
+    }
+
     public readonly ConsoleCommandSender Sender;
     private readonly nint _handle;
 

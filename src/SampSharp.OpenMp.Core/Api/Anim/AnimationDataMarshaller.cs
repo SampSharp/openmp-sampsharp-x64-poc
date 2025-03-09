@@ -12,7 +12,7 @@ public static unsafe class AnimationDataMarshaller
     {
         public static int BufferSize { get; } = Marshal.SizeOf<Native>();
 
-        public static BlittableStructRef<Native> ConvertToUnmanaged(AnimationData managed, Span<byte> callerAllocatedBuffer)
+        public static BlittableRef<Native> ConvertToUnmanaged(AnimationData managed, Span<byte> callerAllocatedBuffer)
         {
             var native = ToNative(managed);
 
@@ -20,7 +20,7 @@ public static unsafe class AnimationDataMarshaller
             var ptr = (nint)Unsafe.AsPointer(ref callerAllocatedBuffer.GetPinnableReference());
             Marshal.StructureToPtr(native, ptr, false);
 
-            return new BlittableStructRef<Native>(ptr);
+            return new BlittableRef<Native>(ptr);
         }
         
         private static Native ToNative(AnimationData managed)
@@ -32,14 +32,14 @@ public static unsafe class AnimationDataMarshaller
 
     public static class NativeToManaged
     {
-        public static AnimationData? ConvertToManaged(BlittableStructRef<Native> unmanaged)
+        public static AnimationData? ConvertToManaged(BlittableRef<Native> unmanaged)
         {
-            if (unmanaged.IsNull)
+            if (!unmanaged.HasValue)
             {
                 return null;
             }
 
-            var native = unmanaged.GetValue();
+            var native = unmanaged.GetValueOrDefault();
 
             return FromNative(native);
         }

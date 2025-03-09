@@ -8,14 +8,14 @@ public static class ObjectMaterialDataMarshaller
 {
     public static class NativeToManaged
     {
-        public static ObjectMaterialData? ConvertToManaged(BlittableStructRef<NativeObjMat> unmanaged)
+        public static ObjectMaterialData? ConvertToManaged(BlittableRef<NativeObjMat> unmanaged)
         {
-            if (unmanaged.IsNull)
+            if (!unmanaged.HasValue)
             {
                 return null;
             }
 
-            var native = unmanaged.GetValue();
+            var native = unmanaged.GetValueOrDefault();
 
             return FromNative(native);
         }
