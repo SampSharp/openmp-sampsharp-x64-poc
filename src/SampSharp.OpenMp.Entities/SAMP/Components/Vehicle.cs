@@ -33,8 +33,7 @@ public class Vehicle : WorldEntity
         .GetModel();
 
     /// <summary>Gets whether this vehicle has a trailer attached to it.</summary>
-    public virtual bool HasTrailer => _vehicle
-        .GetTrailer().Handle != 0; // TODO: equality comparer on IVehicle? or maybe a true operator?
+    public virtual bool HasTrailer => _vehicle.GetTrailer() != null;
 
     /// <summary>Gets or sets the the trailer attached to this vehicle.</summary>
     /// <returns>The trailer attached.</returns>

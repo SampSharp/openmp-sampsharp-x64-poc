@@ -965,7 +965,6 @@ public class Player : WorldEntity
     /// <param name="yMin">The minimum Y coordinate the player can go to.</param>
     public virtual void SetWorldBounds(float xMax, float xMin, float yMax, float yMin)
     {
-        // TODO? what is this a Vector4? that sucks. well, what are the 4 components?
         _player.SetWorldBounds(new Vector4(xMax, xMin, yMax, yMin));
     }
 

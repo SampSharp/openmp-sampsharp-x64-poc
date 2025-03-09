@@ -232,7 +232,7 @@ public class WorldService : IWorldService
 
     public void SendClientMessage(string message)
     {
-        SendClientMessage(new Color(0xff, 0xff, 0xff, 0xff), message);
+        SendClientMessage(Color.White, message);
     }
 
     public void SendClientMessage(string messageFormat, params object[] args)
