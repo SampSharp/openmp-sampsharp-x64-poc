@@ -118,50 +118,52 @@ public static class MathHelper
     }
 
     /// <summary>
-    /// Gets the yaw, pitch and roll in radians from the specified <paramref name="rotationMatrix"/>.
-    /// </summary>
-    /// <param name="rotationMatrix">The rotation matrix.</param>
-    /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
-    public static Vector3 GetYawPitchRollFromRotationMatrix(Matrix4x4 rotationMatrix)
-    {
-        var yaw = -MathF.Atan2(rotationMatrix.M21, rotationMatrix.M11);
-        var pitch = -MathF.Asin(-rotationMatrix.M31);
-        var roll = -MathF.Atan2(rotationMatrix.M32, rotationMatrix.M33);
-
-        return new Vector3(roll, pitch, yaw);
-    }
-
-    /// <summary>
     /// Gets the yaw, pitch and roll in radians from the specified <paramref name="quat"/>.
     /// </summary>
     /// <param name="quat">The quaternion</param>
     /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
-    public static Vector3 GetYawPitchRollFromQuaternion(Quaternion quat)
+    public static Vector3 CreateYawPitchRollFromQuaternion(Quaternion q)
     {
-        return GetYawPitchRollFromRotationMatrix(Matrix4x4.CreateFromQuaternion(quat));
+        q = new Quaternion(-q.X, -q.Y, -q.Z, q.Z);
+
+        float temp = 2 * q.Y * q.Z - 2 * q.X * q.W;
+        float rx, ry, rz;
+
+        if (temp >= 1.0f - float.Epsilon)
+        {
+            rx = 90.0f;
+            ry = -float.Atan2(float.Clamp(q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+            rz = -float.Atan2(float.Clamp(q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+        }
+        else if (-temp >= 1.0f - float.Epsilon)
+        {
+            rx = -90.0f;
+            ry = -(float.Atan2(float.Clamp(q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f)));
+            rz = -(float.Atan2(float.Clamp(q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f)));
+        }
+        else
+        {
+            rx = (float.Asin(float.Clamp(temp, -1.0f, 1.0f)));
+            ry = -(float.Atan2(float.Clamp(q.X * q.Z + q.Y * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X * q.X - q.Y * q.Y, -1.0f, 1.0f)));
+            rz = -(float.Atan2(float.Clamp(q.X * q.Y + q.Z * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X * q.X - q.Z * q.Z, -1.0f, 1.0f)));
+        }
+
+        // Keep each component in the [0, 360) interval
+        return new Vector3(rx, ry, rz);
     }
 
     /// <summary>
     /// Converts the specified vector containing roll, pitch and yaw in radians to a quaternion.
     /// </summary>
-    /// <param name="vec">The vector containing roll, pitch and yaw in radians.</param>
+    /// <param name="rollPitchYaw">The vector containing roll, pitch and yaw in radians.</param>
     /// <returns>The quaternion.</returns>
-    public static Quaternion GetQuaternionFromYawPitchRoll(Vector3 vec)
+    public static Quaternion CreateQuaternionFromYawPitchRoll(Vector3 rollPitchYaw)
     {
-        // TODO: this is wrong. incorrect result.
-        float cy = MathF.Cos(vec.Z * 0.5f);
-        float sy = MathF.Sin(vec.Z * 0.5f);
-        float cp = MathF.Cos(vec.Y * 0.5f);
-        float sp = MathF.Sin(vec.Y * 0.5f);
-        float cr = MathF.Cos(vec.X * 0.5f);
-        float sr = MathF.Sin(vec.X * 0.5f);
+        // see https://math.stackexchange.com/questions/1477926/quaternion-to-euler-with-some-properties
+        // It looks like the rotation order is yxz, but angles negated for some reason.
 
-        float w = cr * cp * cy + sr * sp * sy;
-        float x = sr * cp * cy - cr * sp * sy;
-        float y = cr * sp * cy + sr * cp * sy;
-        float z = cr * cp * sy - sr * sp * cy;
-
-        return new Quaternion(x, y, z, w);
+        var quat = Quaternion.CreateFromYawPitchRoll(-rollPitchYaw.Z, -rollPitchYaw.X, -rollPitchYaw.Y);
+        return new Quaternion(-quat.X, -quat.Z, -quat.Y, quat.W);
     }
 
     /// <summary>Reduces a given angle to a value between π and -π.</summary>

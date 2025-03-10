@@ -22,11 +22,11 @@ public class GlobalObject : WorldEntity
     /// </summary>
     protected bool IsOmpEntityDestroyed => _object.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
-    /// <summary>Gets the rotation of this object.</summary>
+    /// <summary>Gets the rotation of this object in euler degrees (roll, pitch, yaw).</summary>
     public virtual Vector3 RotationEuler
     {
-        get => Vector3.RadiansToDegrees(MathHelper.GetYawPitchRollFromQuaternion(Rotation));
-        set => Rotation = MathHelper.GetQuaternionFromYawPitchRoll(Vector3.DegreesToRadians(value));
+        get => Vector3.RadiansToDegrees(MathHelper.CreateYawPitchRollFromQuaternion(Rotation));
+        set => Rotation = MathHelper.CreateQuaternionFromYawPitchRoll(Vector3.DegreesToRadians(value));
     }
 
     /// <summary>Gets whether this object is moving.</summary>

@@ -7,6 +7,23 @@ namespace TestMode.OpenMp.Entities;
 public class RotationTestingSystem(IWorldService worldService, IEntityManager entityManager, IVehicleInfoService vehicleInfoService, ITimerService timerService) : ISystem
 {
     [Event]
+    public bool OnConsoleText(string command, string args, ConsoleCommandSender sender)
+    {
+        if (command == "test")
+        {
+            var eulerIn = new Vector3(100, 200, 300);
+            var radIn = Vector3.DegreesToRadians(eulerIn);
+            var quat = MathHelper.CreateQuaternionFromYawPitchRoll(radIn);
+            var radOut = MathHelper.CreateYawPitchRollFromQuaternion(quat);
+            var eulerOut = Vector3.RadiansToDegrees(radOut);
+            Console.WriteLine($"{eulerIn} -> {eulerOut}");
+            return true;
+        }
+
+        return false;
+    }
+
+    [Event]
     public bool OnPlayerCommandText(Player player, string cmdText)
     {
         if (cmdText.StartsWith("/spawn") && cmdText.Length > 7)
@@ -29,6 +46,66 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
             return true;
         }
 
+        if (cmdText == "/test")
+        {
+            var eulerIn = new Vector3(100, 200, 300);
+            var radIn = Vector3.DegreesToRadians(eulerIn);
+            var quat = MathHelper.CreateQuaternionFromYawPitchRoll(radIn);
+            var radOut = MathHelper.CreateYawPitchRollFromQuaternion(quat);
+            var eulerOut = Vector3.RadiansToDegrees(radOut);
+            Console.WriteLine($"{eulerIn} -> {eulerOut}");
+            player.SendClientMessage($"{eulerIn} -> {eulerOut}");
+            return true;
+        }
+
+        if (cmdText.StartsWith("/arrow"))
+        {
+            var pts = cmdText.Length == 6
+                ?
+                [
+                    100, 200, 300
+                ]
+                : cmdText[6..].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(float.Parse).ToArray();
+
+            var vec = new Vector3(pts[0], pts[1], pts[2]);
+            
+            var index = 0;
+            
+            ArrowTest("create(vec)", _ => { });
+            ArrowTest("Rotation = MathHelper.CreateQuaternionFromYawPitchRoll(vec)", obj =>
+            {
+                var rads = Vector3.DegreesToRadians(vec);
+                var quat = MathHelper.CreateQuaternionFromYawPitchRoll(rads);
+                obj.Rotation = quat;
+            }); 
+            ArrowTest("RotationEuler = vec", obj =>
+            {
+                obj.RotationEuler = vec;
+            });
+            ArrowTest("RotationEuler = RotationEuler", obj =>
+            {
+                player.SendClientMessage($"euser@create={vec}");
+                player.SendClientMessage($"RotationEuler = {obj.RotationEuler}");
+
+                obj.RotationEuler = obj.RotationEuler;
+            }); 
+
+            return true;
+
+            void ArrowTest(string txt, Action<GlobalObject> mod)
+            {
+                var offset = index++ * 1.0f;
+
+                var pos = player.Position + GtaVector.Up + GtaVector.Forward * offset;
+                var obj = worldService.CreateObject(19132, pos, vec);
+
+                mod(obj);
+
+                timerService.Delay(_ => entityManager.Destroy(obj), TimeSpan.FromSeconds(60));
+
+                Mark(pos + GtaVector.Up, txt, Color.White, 60);
+            }
+        }
         if (cmdText == "/circle")
         {
             var center = player.Position + GtaVector.Up;
@@ -94,9 +171,9 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
         return true;
     }
     
-    private void Mark(Vector3 point, string txt, Color color)
+    private void Mark(Vector3 point, string txt, Color color, int sec = 10)
     {
         var label = worldService.CreateTextLabel(txt, color, point, 100, 0, false);
-        timerService.Delay(_ => entityManager.Destroy(label), TimeSpan.FromSeconds(10));
+        timerService.Delay(_ => entityManager.Destroy(label), TimeSpan.FromSeconds(sec));
     }
 }

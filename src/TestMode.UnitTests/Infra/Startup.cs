@@ -8,6 +8,8 @@ public class Startup : IEcsStartup
 {
     public void Initialize(StartupContext context)
     {
+        MathHelper.TestCode();
+
         context.UseEntities();
     }
 
