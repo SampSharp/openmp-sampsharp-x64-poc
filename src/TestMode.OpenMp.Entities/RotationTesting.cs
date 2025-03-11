@@ -11,7 +11,7 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
     {
         if (command == "test")
         {
-            var eulerIn = new Vector3(100, 200, 300);
+            var eulerIn = new Vector3(10, 20, 30);
             var radIn = Vector3.DegreesToRadians(eulerIn);
             var quat = MathHelper.CreateQuaternionFromYawPitchRoll(radIn);
             var radOut = MathHelper.CreateYawPitchRollFromQuaternion(quat);
@@ -48,7 +48,7 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
 
         if (cmdText == "/test")
         {
-            var eulerIn = new Vector3(100, 200, 300);
+            var eulerIn = new Vector3(10, 20, 30);
             var radIn = Vector3.DegreesToRadians(eulerIn);
             var quat = MathHelper.CreateQuaternionFromYawPitchRoll(radIn);
             var radOut = MathHelper.CreateYawPitchRollFromQuaternion(quat);
@@ -65,23 +65,24 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
                 [
                     100, 200, 300
                 ]
-                : cmdText[6..].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(float.Parse).ToArray();
+                : cmdText[6..].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Select(x => float.TryParse(x, out var y) ? y : 0).ToArray();
 
+            if (pts.Length < 3) { return false;}
             var vec = new Vector3(pts[0], pts[1], pts[2]);
             
             var index = 0;
             
             ArrowTest("create(vec)", _ => { });
-            ArrowTest("Rotation = MathHelper.CreateQuaternionFromYawPitchRoll(vec)", obj =>
-            {
-                var rads = Vector3.DegreesToRadians(vec);
-                var quat = MathHelper.CreateQuaternionFromYawPitchRoll(rads);
-                obj.Rotation = quat;
-            }); 
-            ArrowTest("RotationEuler = vec", obj =>
-            {
-                obj.RotationEuler = vec;
-            });
+            // ArrowTest("Rotation = MathHelper.CreateQuaternionFromYawPitchRoll(vec)", obj =>
+            // {
+            //     var rads = Vector3.DegreesToRadians(vec);
+            //     var quat = MathHelper.CreateQuaternionFromYawPitchRoll(rads);
+            //     obj.Rotation = quat;
+            // }); 
+            // ArrowTest("RotationEuler = vec", obj =>
+            // {
+            //     obj.RotationEuler = vec;
+            // });
             ArrowTest("RotationEuler = RotationEuler", obj =>
             {
                 player.SendClientMessage($"euser@create={vec}");

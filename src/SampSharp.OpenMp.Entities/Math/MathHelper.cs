@@ -1,5 +1,8 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Numerics;
+using System.Runtime.InteropServices;
+using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities;
 
@@ -110,7 +113,7 @@ public static class MathHelper
     /// <summary>
     /// Gets the Z angle of the specified <paramref name="rotationMatrix"/>.
     /// </summary>
-    /// <param name="rotationMatrix">The rotation matrix to the the Z angle of.</param>
+    /// <param name="rotationMatrix">The rotation matrix to the Z angle of.</param>
     /// <returns>The Z angle.</returns>
     public static float GetZAngleFromRotationMatrix(Matrix4x4 rotationMatrix)
     {
@@ -122,34 +125,39 @@ public static class MathHelper
     /// </summary>
     /// <param name="quat">The quaternion</param>
     /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
-    public static Vector3 CreateYawPitchRollFromQuaternion(Quaternion q)
+    public static Vector3 CreateYawPitchRollFromQuaternion(Quaternion quat)
     {
-        q = new Quaternion(-q.X, -q.Y, -q.Z, q.Z);
+        // using a smaller epsilon than float.Epsilon
+        const float epsilon = 0.000002f;
+        var q = quat;
 
-        float temp = 2 * q.Y * q.Z - 2 * q.X * q.W;
-        float rx, ry, rz;
+        var r = 2 * -q.Y * -q.Z - 2 * -q.X * q.W;
+        float roll, pitch, yaw;
 
-        if (temp >= 1.0f - float.Epsilon)
+        switch (r)
         {
-            rx = 90.0f;
-            ry = -float.Atan2(float.Clamp(q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
-            rz = -float.Atan2(float.Clamp(q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
-        }
-        else if (-temp >= 1.0f - float.Epsilon)
-        {
-            rx = -90.0f;
-            ry = -(float.Atan2(float.Clamp(q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f)));
-            rz = -(float.Atan2(float.Clamp(q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f)));
-        }
-        else
-        {
-            rx = (float.Asin(float.Clamp(temp, -1.0f, 1.0f)));
-            ry = -(float.Atan2(float.Clamp(q.X * q.Z + q.Y * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X * q.X - q.Y * q.Y, -1.0f, 1.0f)));
-            rz = -(float.Atan2(float.Clamp(q.X * q.Y + q.Z * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X * q.X - q.Z * q.Z, -1.0f, 1.0f)));
+            case >= 1.0f - epsilon:
+                roll = PiOver2;
+                pitch = -float.Atan2(float.Clamp(-q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+                yaw = -float.Atan2(float.Clamp(-q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+                break;
+            case <= -(1.0f - epsilon):
+                roll = -PiOver2;
+                pitch = -float.Atan2(float.Clamp(-q.Y, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+                yaw = -float.Atan2(float.Clamp(-q.Z, -1.0f, 1.0f), float.Clamp(q.W, -1.0f, 1.0f));
+                break;
+            default:
+                roll = float.Asin(float.Clamp(r, -1.0f, 1.0f));
+                pitch = -float.Atan2(float.Clamp(q.X * q.Z + -q.Y * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X * q.X - q.Y * q.Y, -1.0f, 1.0f));
+                yaw = -float.Atan2(float.Clamp(q.X * q.Y + -q.Z * q.W, -1.0f, 1.0f), float.Clamp(0.5f - q.X *-q.X - q.Z * q.Z, -1.0f, 1.0f));
+                break;
         }
 
-        // Keep each component in the [0, 360) interval
-        return new Vector3(rx, ry, rz);
+        roll %= TwoPi;
+        pitch %= TwoPi;
+        yaw %= TwoPi;
+
+        return new Vector3(roll, pitch, yaw);
     }
 
     /// <summary>
@@ -162,8 +170,9 @@ public static class MathHelper
         // see https://math.stackexchange.com/questions/1477926/quaternion-to-euler-with-some-properties
         // It looks like the rotation order is yxz, but angles negated for some reason.
 
-        var quat = Quaternion.CreateFromYawPitchRoll(-rollPitchYaw.Z, -rollPitchYaw.X, -rollPitchYaw.Y);
-        return new Quaternion(-quat.X, -quat.Z, -quat.Y, quat.W);
+        rollPitchYaw = -rollPitchYaw;
+        var quat = Quaternion.CreateFromYawPitchRoll(rollPitchYaw.Z, rollPitchYaw.X, rollPitchYaw.Y);
+        return new GTAQuat(quat.X, quat.Z, quat.Y, quat.W);
     }
 
     /// <summary>Reduces a given angle to a value between π and -π.</summary>
