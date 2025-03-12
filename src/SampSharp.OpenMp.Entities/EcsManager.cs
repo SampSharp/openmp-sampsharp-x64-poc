@@ -11,13 +11,12 @@ namespace SampSharp.Entities;
 internal class EcsManager : Extension
 {
     private readonly EcsConfiguration _configuration;
+    private IServiceProvider? _serviceProvider;
 
     public EcsManager(EcsConfiguration configuration)
     {
         _configuration = configuration;
     }
-
-    private IServiceProvider? _serviceProvider;
 
     internal void Run(StartupContext context)
     {
@@ -97,17 +96,14 @@ internal class EcsManager : Extension
 
     private void AddWrappedSystemTypes()
     {
-        var types = _serviceProvider!.GetServices<SystemTypeWrapper>()
-            .Select(w => w.Type)
-            .ToArray();
-
-        _serviceProvider!.GetRequiredService<ISystemRegistry>().Configure(types);
+        _serviceProvider!.GetRequiredService<SystemRegistry>().InitialSystemScan();
     }
 
     private static void ConfigureDefaultServices(IServiceCollection services)
     {
         services.AddSingleton<IEventService, EventService>()
-            .AddSingleton<ISystemRegistry, SystemRegistry>()
+            .AddSingleton<SystemRegistry>()
+            .AddSingleton<ISystemRegistry>(x => x.GetRequiredService<SystemRegistry>())
             .AddSingleton<IEntityManager, EntityManager>()
             .AddSingleton<IOmpEntityProvider, OmpEntityProvider>()
             .AddSingleton<IServerService, ServerService>()

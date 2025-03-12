@@ -49,14 +49,8 @@ public class Player : WorldEntity
     /// <summary>Gets or sets the facing angle of this player.</summary>
     public virtual float Angle
     {
-        get
-        {
-            var rotation = _player.GetRotation();
-
-            // TODO implement
-            throw new NotImplementedException();
-        }
-        set => throw new NotImplementedException();
+        get => float.RadiansToDegrees(MathHelper.GetZAngleFromRotationMatrix(Matrix4x4.CreateFromQuaternion(Rotation)));
+        set => Rotation = Quaternion.CreateFromAxisAngle(GtaVector.Up, float.DegreesToRadians(value));
     }
 
     /// <summary>Gets or sets the interior of this player.</summary>
@@ -222,43 +216,22 @@ public class Player : WorldEntity
     public virtual CameraMode CameraMode => (CameraMode)_player.GetAimData().camMode; //  TODO: ref return?
 
     /// <summary>Gets the Actor this player is aiming at.</summary>
-    public virtual EntityId TargetActor
-    {
-        get
-        {
-            // TODO: actor
-            _player.GetTargetActor();
-            throw new NotImplementedException();
-        }
-    }
+    public virtual Actor? TargetActor => _entityProvider.GetComponent(_player.GetTargetActor());
 
     /// <summary>Gets the GlobalObject the camera of this player is pointing at.</summary>
-    public virtual EntityId CameraTargetGlobalObject
+    public virtual GlobalObject? CameraTargetGlobalObject
     {
         get
         {
-            throw new NotImplementedException();
+            return _entityProvider.GetComponent(_player.GetCameraTargetObject());
         }
     }
 
     /// <summary>Gets the PlayerObject the camera of this player is pointing at.</summary>
-    public virtual EntityId CameraTargetPlayerObject
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public virtual PlayerObject? CameraTargetPlayerObject => throw new NotImplementedException();
 
     /// <summary>Gets the GtaVehicle the camera of this player is pointing at.</summary>
-    public virtual Vehicle? CameraTargetVehicle
-    {
-        get
-        {
-            var v = _player.GetCameraTargetVehicle();
-            return v == null ? null : _entityProvider.GetComponent(v);
-        }
-    }
+    public virtual Vehicle? CameraTargetVehicle => _entityProvider.GetComponent(_player.GetCameraTargetVehicle());
 
     /// <summary>Gets the GtaPlayer the camera of this player is pointing at.</summary>
     public virtual Player? CameraTargetPlayer
@@ -350,15 +323,6 @@ public class Player : WorldEntity
             var menuId = data.GetMenuID();
             return menuId == OpenMpConstants.INVALID_MENU_ID ? null :  _entityProvider.GetMenu(menuId);
         }
-    }
-
-    /// <summary>Gets or sets the rotation of this player.</summary>
-    /// <remarks>Only the Z angle can be set!</remarks>
-    public virtual Vector3 Rotation
-    {
-        // TODO: quat to euler
-        get => new(0, 0, Angle);
-        set => Angle = value.Z;
     }
 
     /// <summary>Gets whether this player is an actual player or an NPC.</summary>

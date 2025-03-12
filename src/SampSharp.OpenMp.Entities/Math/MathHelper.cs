@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using System.Numerics;
-using System.Runtime.InteropServices;
 using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities;

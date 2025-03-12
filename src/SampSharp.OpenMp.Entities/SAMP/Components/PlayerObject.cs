@@ -21,17 +21,6 @@ public class PlayerObject : WorldEntity
     /// </summary>
     protected bool IsOmpEntityDestroyed => _playerObject.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
-    /// <summary>Gets the rotation of this player object.</summary>
-    public virtual Vector3 Rotation
-    {
-        get
-        {
-            _playerObject.GetRotation();
-            throw new NotImplementedException();
-        }
-        set => throw new NotImplementedException();
-    }
-
     /// <summary>Gets whether this player object is moving.</summary>
     public virtual bool IsMoving => _playerObject.IsMoving();
 

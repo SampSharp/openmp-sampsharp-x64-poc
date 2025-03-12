@@ -34,6 +34,16 @@ public abstract class WorldEntity : IdProvider
     }
 
     /// <summary>
+    /// Gets or sets the rotation of this component in euler angles. Note: this is less accurate than the quaternion
+    /// representation available through the <see cref="Rotation"/> property.
+    /// </summary>
+    public virtual Vector3 RotationEuler
+    {
+        get => Vector3.RadiansToDegrees(MathHelper.CreateYawPitchRollFromQuaternion(Rotation));
+        set => Rotation = MathHelper.CreateQuaternionFromYawPitchRoll(Vector3.DegreesToRadians(value));
+    }
+
+    /// <summary>
     /// Gets or sets the virtual world of this component.
     /// </summary>
     public virtual int VirtualWorld

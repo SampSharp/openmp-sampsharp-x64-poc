@@ -35,7 +35,7 @@ public class ActorTests : TestSystem
         {
             actor.Skin.ShouldBe(46);
             actor.Position.ShouldBe(new Vector3(4, 5, 6));
-            // TODO: actor.Angle.ShouldBe(45);
+            actor.Angle.ShouldBe(45);
         }
         finally
         {

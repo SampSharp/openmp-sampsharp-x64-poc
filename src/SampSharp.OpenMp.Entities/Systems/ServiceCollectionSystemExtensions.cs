@@ -35,7 +35,8 @@ public static class ServiceCollectionSystemExtensions
     /// <returns>A reference to this instance after the operation has completed.</returns>
     public static IServiceCollection AddSystemsInAssembly(this IServiceCollection services, Assembly assembly)
     {
-        var types = new AssemblyScanner().IncludeAssembly(assembly)
+        var types = ClassScanner.Create()
+            .IncludeAssembly(assembly)
             .Implements<ISystem>()
             .ScanTypes();
 

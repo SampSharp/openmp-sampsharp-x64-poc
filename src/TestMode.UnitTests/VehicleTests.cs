@@ -37,8 +37,8 @@ public class VehicleTests : TestSystem
             vehicle.Model.ShouldBe(VehicleModelType.Landstalker);
             vehicle.Position.ShouldBe(new Vector3(10, 0, 5));
             vehicle.Angle.ShouldBe(30);
-            //TODO: vehicle.Color1.ShouldBe(5);
-            //TODO: vehicle.Color2.ShouldBe(8);
+            vehicle.Color1.ShouldBe(5);
+            vehicle.Color2.ShouldBe(8);
         }
         finally
         {
@@ -393,12 +393,13 @@ public class VehicleTests : TestSystem
     [Test]
     public void Rotation_should_roundtrip()
     {
-        _vehicle.Rotation = new Vector3(0, 0, 90);
-        _vehicle.Rotation.ShouldBe(new Vector3(0, 0, 90));
+        _vehicle.RotationEuler = new Vector3(0, 0, 90);
+        _vehicle.RotationEuler.ShouldBe(new Vector3(0, 0, 90));
     }
     [Test]
     public void RemoveComponent_should_succeed()
     {
+
         _vehicle.AddComponent(1025);
         _vehicle.RemoveComponent(1025);
         _vehicle.GetComponentInSlot(CarModType.Wheels).ShouldBe(0);

@@ -14,7 +14,6 @@
 // limitations under the License.
 
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Utilities;
 using SampSharp.OpenMp.Core;
@@ -28,16 +27,21 @@ public class TimerSystem : ITickingSystem, ITimerService
 
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<TimerSystem> _logger;
+    private readonly ISystemRegistry _systemRegistry;
 
     private readonly List<TimerInfo> _timers = [];
     private long _lastTick;
-    private bool _didInitialize;
 
     /// <summary>Initializes a new instance of the <see cref="TimerSystem" /> class.</summary>
-    public TimerSystem(IServiceProvider serviceProvider, ILogger<TimerSystem> logger)
+    public TimerSystem(IServiceProvider serviceProvider, ILogger<TimerSystem> logger, ISystemRegistry systemRegistry)
     {
         _serviceProvider = serviceProvider;
         _logger = logger;
+        _systemRegistry = systemRegistry;
+        
+        _lastTick = Stopwatch.GetTimestamp();
+        
+        systemRegistry.RegisterSystemsLoadedHandler(CreateTimersFromAssemblies);
     }
 
     public TimerReference Delay(Action<IServiceProvider> action, TimeSpan delay)
@@ -82,20 +86,9 @@ public class TimerSystem : ITickingSystem, ITimerService
         return reference;
     }
 
-    [Event]
-    internal void OnGameModeInit(RuntimeInformation info)
-    {
-        _lastTick = Stopwatch.GetTimestamp();
-
-        
-        CreateTimersFromAssemblies(info.EntryAssembly, _lastTick);
-
-        _didInitialize = true;
-    }
-
     public void Tick()
     {
-        if (!_didInitialize || _timers.Count == 0)
+        if (_timers.Count == 0)
         {
             return;
         }
@@ -138,12 +131,12 @@ public class TimerSystem : ITickingSystem, ITimerService
         return interval >= TimeSpan.FromTicks(1);
     }
 
-    private void CreateTimersFromAssemblies(Assembly entryAssem, long tick)
+    private void CreateTimersFromAssemblies()
     {
-        // Find methods with TimerAttribute in any ISystem in any assembly.
-        var events = new AssemblyScanner()
-            .IncludeAssembly(entryAssem)
-            .IncludeReferencedAssemblies()
+        var tick = _lastTick;
+        // Find methods with TimerAttribute in any loaded system.
+        var events = ClassScanner.Create()
+            .IncludeTypes(_systemRegistry.GetSystemTypes().Span)
             .IncludeNonPublicMembers()
             .Implements<ISystem>()
             .ScanMethods<TimerAttribute>();

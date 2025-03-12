@@ -1,5 +1,4 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 using Microsoft.Extensions.Logging;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;

@@ -1,11 +1,19 @@
-﻿namespace SampSharp.Entities;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace SampSharp.Entities;
 
 internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystemRegistry
 {
+    private Type[] _systemTypes = [];
     private Dictionary<Type, ISystem[]>? _data;
 
-    public void Configure(Type[] systemImplementationTypes)
+    private List<Action>? _systemsLoadedHandlers = [];
+    public void InitialSystemScan()
     {
+        var systemImplementationTypes = serviceProvider.GetServices<SystemTypeWrapper>()
+            .Select(w => w.Type)
+            .ToArray();
+
         if (_data != null)
         {
             throw new SystemRegistryException("The system registry has been locked an cannot be modified.");
@@ -13,6 +21,8 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
 
         var data = new Dictionary<Type, HashSet<ISystem>>();
 
+        _systemTypes = systemImplementationTypes;
+        
         foreach (var type in systemImplementationTypes)
         {
             if (serviceProvider.GetService(type) is not ISystem instance)
@@ -52,6 +62,16 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
         {
             _data[kv.Key] = kv.Value.ToArray();
         }
+
+        if (_systemsLoadedHandlers != null)
+        {
+            foreach (var handler in _systemsLoadedHandlers)
+            {
+                handler();
+            }
+
+            _systemsLoadedHandlers = null;
+        }
     }
 
     public ReadOnlyMemory<ISystem> Get(Type type)
@@ -62,5 +82,22 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
     public ReadOnlyMemory<ISystem> Get<TSystem>() where TSystem : ISystem
     {
         return Get(typeof(TSystem));
+    }
+
+    public ReadOnlyMemory<Type> GetSystemTypes()
+    {
+        return _systemTypes.AsMemory();
+    }
+
+    public void RegisterSystemsLoadedHandler(Action handler)
+    {
+        if (_systemsLoadedHandlers != null)
+        {
+            _systemsLoadedHandlers.Add(handler);
+        }
+        else
+        {
+            handler();
+        }
     }
 }

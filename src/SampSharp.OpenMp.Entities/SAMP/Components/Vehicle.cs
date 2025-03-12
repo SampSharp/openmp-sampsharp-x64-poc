@@ -305,15 +305,6 @@ public class Vehicle : WorldEntity
     /// <summary>Gets a value indicating whether this Vehicle's siren is on.</summary>
     public virtual bool IsSirenOn => _vehicle.GetSirenState() == 1;
 
-    /// <summary>Gets or sets the rotation of this vehicle.</summary>
-    /// <remarks>Only the Z angle can be set!</remarks>
-    public virtual Vector3 Rotation
-    {
-        // TODO: convert to quat and set quat
-        get => new(0, 0, Angle);
-        set => _vehicle.SetZAngle(value.Z);
-    }
-
     /// <summary>Gets or sets the health of this vehicle.</summary>
     public virtual float Health
     {
@@ -322,11 +313,24 @@ public class Vehicle : WorldEntity
     }
 
     /// <summary>Gets this vehicle's rotation on all axis as a quaternion.</summary>
-    public virtual Quaternion RotationQuaternion
+    [Obsolete("Deprecated. Use Rotation instead.")]
+    public virtual Quaternion RotationQuaternion => Rotation;
+    
+    public virtual int Color1
     {
         get
         {
-            return _vehicle.GetRotation();
+            _vehicle.GetColour(out var pair);
+            return pair.First;
+        }
+    }
+
+    public virtual int Color2
+    {
+        get
+        {
+            _vehicle.GetColour(out var pair);
+            return pair.Second;
         }
     }
 

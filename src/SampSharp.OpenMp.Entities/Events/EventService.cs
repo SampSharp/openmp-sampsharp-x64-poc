@@ -15,18 +15,16 @@ internal class EventService : IEventService
     private readonly Dictionary<string, Event> _events = new();
     private readonly IServiceProvider _serviceProvider;
     private readonly IEntityManager _entityManager;
-    private readonly RuntimeInformation _runtimeInformation;
     private readonly ILogger<EventService> _logger;
 
     /// <summary>Initializes a new instance of the <see cref="EventService" /> class.</summary>
-    public EventService(IServiceProvider serviceProvider, IEntityManager entityManager, RuntimeInformation runtimeInformation, ILogger<EventService> logger)
+    public EventService(IServiceProvider serviceProvider, IEntityManager entityManager, ILogger<EventService> logger, ISystemRegistry systemRegistry)
     {
         _serviceProvider = serviceProvider;
         _entityManager = entityManager;
-        _runtimeInformation = runtimeInformation;
         _logger = logger;
 
-        CreateEventsFromAssemblies();
+        systemRegistry.RegisterSystemsLoadedHandler(() => CreateEventsFromAssemblies(systemRegistry));
     }
 
     public void UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)
@@ -76,14 +74,12 @@ internal class EventService : IEventService
         return result;
     }
 
-    private void CreateEventsFromAssemblies()
+    private void CreateEventsFromAssemblies(ISystemRegistry systemRegistry)
     {
-        // Find methods with EventAttribute in any ISystem in any assembly.
-        var events = new AssemblyScanner()
-            .IncludeAssembly(_runtimeInformation.EntryAssembly)
-            .IncludeReferencedAssemblies()
+        // Find methods with EventAttribute in any loaded system.
+        var events = ClassScanner.Create()
+            .IncludeTypes(systemRegistry.GetSystemTypes().Span)
             .IncludeNonPublicMembers()
-            .Implements<ISystem>()
             .ScanMethods<EventAttribute>();
 
         // Gather event data, compile invoker and add the data to the events collection.

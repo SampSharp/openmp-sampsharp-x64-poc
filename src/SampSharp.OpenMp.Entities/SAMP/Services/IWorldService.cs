@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using JetBrains.Annotations;
-using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
