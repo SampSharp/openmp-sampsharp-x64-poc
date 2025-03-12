@@ -18,8 +18,17 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Represents a dialog with an input field.</summary>
 public class InputDialog : IDialog<InputDialogResponse>
 {
-    /// <summary>Gets or sets a value indicating whether the input is a password.</summary>
-    public bool IsPassword { get; set; }
+    public InputDialog(string? caption, string? content, string? button1, string? button2 = null)
+    {
+        Caption = caption;
+        Content = content;
+        Button1 = button1;
+        Button2 = button2;
+    }
+
+    public InputDialog()
+    {
+    }
 
     public InputDialogResponse Translate(DialogResult dialogResult)
     {
@@ -29,6 +38,9 @@ public class InputDialog : IDialog<InputDialogResponse>
     DialogStyle IDialog.Style => IsPassword
         ? DialogStyle.Password
         : DialogStyle.Input;
+
+    /// <summary>Gets or sets a value indicating whether the input is a password.</summary>
+    public bool IsPassword { get; set; }
 
     /// <summary>Gets or sets the text above the input field in this dialog.</summary>
     public string? Content { get; set; }

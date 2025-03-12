@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace SampSharp.OpenMp.Core.Api;
@@ -8,6 +9,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [NumberedTypeGenerator(nameof(Size), 32)]
 [NumberedTypeGenerator(nameof(Size), 46)]
 [StructLayout(LayoutKind.Explicit)]
+[DebuggerDisplay("{DebuggerDisplay(),nq}")]
 public readonly struct HybridString16
 {
     private const int Size = 16;
@@ -34,6 +36,12 @@ public readonly struct HybridString16
         }
     }
 
+    public void CopyTo(Span<byte> dest)
+    {
+        MemoryMarshal.Cast<byte, Size>(dest)[0] = Length;
+        AsSpan().CopyTo(dest[Api.Size.Length..]);
+    }
+    
     public bool IsDynamic => (_lenDynamic.Value.ToInt64() & 1) != 0;
 
     public int Length => (int)(_lenDynamic.Value.ToInt64() >> 1);
@@ -44,7 +52,7 @@ public readonly struct HybridString16
             ? new Span<byte>(GetDynamicStorage().Data, Length) 
             : new Span<byte>(_static, 0, Length);
     }
-
+    
     private unsafe HybridStringDynamicStorage GetDynamicStorage()
     {
         fixed (byte* ptr = _static)
@@ -52,10 +60,25 @@ public readonly struct HybridString16
             return *(HybridStringDynamicStorage*)ptr;
         }
     }
-
+    
     public override string ToString()
     {
         return Encoding.GetString(AsSpan());
+    }
+
+    internal string DebuggerDisplay()
+    {
+        string value;
+
+        try
+        {
+            value = ToString();
+        }
+        catch
+        {
+            value = "<error>";
+        }
+        return $"HybridString<{Size}> {{Length = {Length}, IsDynamic = {IsDynamic}, Value = {value}}}";
     }
 
     private static Encoding Encoding => Encoding.UTF8;

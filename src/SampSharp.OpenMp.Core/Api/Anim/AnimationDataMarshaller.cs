@@ -12,7 +12,7 @@ public static unsafe class AnimationDataMarshaller
     {
         public static int BufferSize { get; } = Marshal.SizeOf<Native>();
 
-        public static BlittableRef<Native> ConvertToUnmanaged(AnimationData managed, Span<byte> callerAllocatedBuffer)
+        public static BlittableStructRef<Native> ConvertToUnmanaged(AnimationData managed, Span<byte> callerAllocatedBuffer)
         {
             var native = ToNative(managed);
 
@@ -20,7 +20,7 @@ public static unsafe class AnimationDataMarshaller
             var ptr = (nint)Unsafe.AsPointer(ref callerAllocatedBuffer.GetPinnableReference());
             Marshal.StructureToPtr(native, ptr, false);
 
-            return new BlittableRef<Native>(ptr);
+            return new BlittableStructRef<Native>(ptr);
         }
         
         private static Native ToNative(AnimationData managed)
@@ -32,7 +32,7 @@ public static unsafe class AnimationDataMarshaller
 
     public static class NativeToManaged
     {
-        public static AnimationData? ConvertToManaged(BlittableRef<Native> unmanaged)
+        public static AnimationData? ConvertToManaged(BlittableStructRef<Native> unmanaged)
         {
             if (!unmanaged.HasValue)
             {
@@ -50,16 +50,36 @@ public static unsafe class AnimationDataMarshaller
         }
     }
 
-    [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Native(float delta, bool loop, bool lockX, bool lockY, bool freeze, uint time, HybridString16 lib, HybridString24 name)
+    [StructLayout(LayoutKind.Explicit)]
+    public struct Native
     {
-        public readonly float delta = delta;
-        public readonly bool loop = loop;
-        public readonly bool lockX = lockX;
-        public readonly bool lockY = lockY;
-        public readonly bool freeze = freeze;
-        public readonly uint time = time;
-        public readonly HybridString16 lib = lib;
-        public readonly HybridString24 name = name;
+        [FieldOffset(0)]
+        public float delta;
+        [FieldOffset(4)]
+        public bool loop;
+        [FieldOffset(5)]
+        public bool lockX;
+        [FieldOffset(6)]
+        public bool lockY;
+        [FieldOffset(7)]
+        public bool freeze;
+        [FieldOffset(8)]
+        public uint time;
+        [FieldOffset(16)]
+        public HybridString16 lib;
+        [FieldOffset(40)]
+        public HybridString24 name;
+
+        public Native(float delta, bool loop, bool lockX, bool lockY, bool freeze, uint time, HybridString16 lib, HybridString24 name)
+        {
+            this.delta = delta;
+            this.loop = loop;
+            this.lockX = lockX;
+            this.lockY = lockY;
+            this.freeze = freeze;
+            this.time = time;
+            this.lib = lib;
+            this.name = name;
+        }
     }
 }

@@ -8,7 +8,7 @@ public static class ObjectMaterialDataMarshaller
 {
     public static class NativeToManaged
     {
-        public static ObjectMaterialData? ConvertToManaged(BlittableRef<NativeObjMat> unmanaged)
+        public static ObjectMaterialData? ConvertToManaged(BlittableStructRef<NativeObjMat> unmanaged)
         {
             if (!unmanaged.HasValue)
             {
@@ -36,19 +36,10 @@ public static class ObjectMaterialDataMarshaller
         [FieldOffset(2)] public readonly byte Alignment;
         [FieldOffset(3)] public readonly BlittableBoolean Bold; // len = 1
         [FieldOffset(4)] public readonly Colour MaterialColour; // len = 4
-
-        // TODO: alignment issues. check if this is correct
         [FieldOffset(8)] public readonly Colour BackgroundColour; // len = 4
         [FieldOffset(16)] public readonly HybridString32 TextOrTXD; // len = 40
         [FieldOffset(56)] public readonly HybridString32 FontOrTexture; // len = 40
-
         [FieldOffset(96)] public readonly MaterialType Type; // len = 1
         [FieldOffset(97)] public readonly BlittableBoolean Used; // len = 1
-
-        // used to be:
-        // [FieldOffset(12)] public readonly HybridString32 TextOrTXD; // len = 40
-        // [FieldOffset(52)] public readonly HybridString32 FontOrTexture; // len = 40
-        // [FieldOffset(92)] public readonly MaterialType Type; // len = 1
-        // [FieldOffset(93)] public readonly BlittableBoolean Used; // len = 1
     }
 }

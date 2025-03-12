@@ -63,50 +63,50 @@ public class GangZoneTests : TestSystem
         _gangZone.Color.ShouldBe(new Color(1, 2, 3, 4));
     }
     
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Show_should_work()
     {
         _gangZone.Show();
     }
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Hide_should_work()
     {
         _gangZone.Hide();
     }
     
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Show_should_work_for_player()
     {
         _gangZone.Show(Player);
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Hide_should_work_for_player()
     {
         _gangZone.Show(Player);
         _gangZone.Hide(Player);
     }
     
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Flash_should_work()
     {
         _gangZone.Flash(Color.White);
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void Flash_should_work_for_player()
     {
         _gangZone.Flash(Player, Color.White);
     }
     
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void StopFlash_should_work()
     {
         _gangZone.Flash(Color.White);
         _gangZone.StopFlash();
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void StopFlash_should_work_for_player()
     {
         _gangZone.Flash(Player, Color.White);

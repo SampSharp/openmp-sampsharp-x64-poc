@@ -91,7 +91,7 @@ public class ActorTests : TestSystem
         _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, 830);
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void IsStreamedIn_should_succeed()
     {
         _actor.IsStreamedIn(Player);

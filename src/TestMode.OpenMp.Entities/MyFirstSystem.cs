@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SampSharp.Entities;
 using SampSharp.Entities.SAMP;
 using SampSharp.OpenMp.Core.Api;
+using PlayerRecordingType = SampSharp.Entities.SAMP.PlayerRecordingType;
 
 namespace TestMode.OpenMp.Entities;
 
@@ -39,13 +40,40 @@ public class MyFirstSystem : ISystem
     }
 
     [Event]
-    public bool OnPlayerCommandText(Player player, string cmdtext)
+    public bool OnPlayerCommandText(Player player, string cmdtext, IDialogService dialogService)
     {
         player.SendClientMessage(cmdtext);
 
 
         if (cmdtext.StartsWith("/help"))
         {
+            return true;
+        }
+
+        if (cmdtext == "/dialog-input")
+        {
+            var diag = new InputDialog("Input", "Enter your name", "OK", "Cancel");
+
+            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}, {r.InputText ?? "<<NULL>>"}"));
+            return true;
+        }
+
+        if (cmdtext == "/dialog-message")
+        {
+            var diag = new MessageDialog("Message", "This is a message dialog", "OK");
+
+            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}"));
+            return true;
+        }
+
+        if (cmdtext == "/dialog-list")
+        {
+            var diag = new ListDialog("List", "OK")
+            {
+                "A", "B", "C"
+            };
+
+            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response} {r.ItemIndex} {r.Item?.Text ?? "<<NULL>>"}"));
             return true;
         }
 

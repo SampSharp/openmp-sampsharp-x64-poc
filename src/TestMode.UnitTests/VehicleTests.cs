@@ -267,7 +267,7 @@ public class VehicleTests : TestSystem
         (_vehicle.GetDistanceFromPoint(new Vector3(20, 20, 0))).ShouldBe(MathF.Sqrt(10 * 10 * 2));
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void IsStreamedIn_should_succeed()
     {
         _vehicle.Position = Vector3.Zero;
@@ -330,15 +330,17 @@ public class VehicleTests : TestSystem
     {
         _vehicle.Respawn();
     }
-
-    [Test]
+    
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void SetAngularVelocity_should_succeed()
     {
+        // doesn't roundtrip; the setter send a packet to the driver.
         _vehicle.SetAngularVelocity(new Vector3(5, 6, 7));
+        
     }
 
     [Test]
-    public void Angle_should_roundtrip()
+    public void Angle_setter_should_roundtrip()
     {
         _vehicle.Angle = 45.0f;
         _vehicle.Angle.ShouldBe(45);
@@ -355,25 +357,36 @@ public class VehicleTests : TestSystem
     {
         _vehicle.HasTrailer.ShouldBeFalse();
     }
-
-    [Test]
-    public void Velocity_should_roundtrip()
+    
+    [Test(TestEnvironment.OnPlayerTrigger)]
+    public void Velocity_setter_should_succeed()
     {
+        // doesn't roundtrip; the setter send a packet to the driver.
+        Player.PutInVehicle(_vehicle);
+
         _vehicle.Velocity = new Vector3(1, 1, 1);
-        _vehicle.Velocity.ShouldBe(new Vector3(1, 1, 1));
+
+        Player.RemoveFromVehicle(true);
+    }
+
+    [Test(TestEnvironment.OnPlayerTrigger)]
+    public void Velocity_getter_should_succeed()
+    {
+        // doesn't roundtrip; the setter send a packet to the driver.
+        Player.PutInVehicle(_vehicle);
+
+        var result = _vehicle.Velocity;
+
+        result.ShouldBe(Vector3.Zero);
+
+        Player.RemoveFromVehicle(true);
     }
 
     [Test]
-    public void IsSirenOn_should_roundtrip_true()
+    public void IsSirenOn_should_be_false()
     {
-        ((IVehicle)_vehicle).SetSiren(true);
-        _vehicle.IsSirenOn.ShouldBeTrue();
-    }
-
-    [Test]
-    public void IsSirenOn_should_roundtrip_false()
-    {
-        ((IVehicle)_vehicle).SetSiren(false);
+        // state is only set by driver's packets - setter only sets steaming data and does not affect getter
+        // setter not available in sampsharp
         _vehicle.IsSirenOn.ShouldBeFalse();
     }
 

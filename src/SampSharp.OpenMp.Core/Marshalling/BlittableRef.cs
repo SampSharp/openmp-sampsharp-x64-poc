@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace SampSharp.OpenMp.Core
 {
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct BlittableRef<T> where T : struct
+    public readonly struct BlittableRef<T> where T : unmanaged
     {
         private readonly nint _ptr;
 

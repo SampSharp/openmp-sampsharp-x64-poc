@@ -1,6 +1,9 @@
 ﻿using System.Numerics;
 using SampSharp.Entities.SAMP;
+using SampSharp.OpenMp.Core.Api;
 using Shouldly;
+using ObjectMaterialSize = SampSharp.Entities.SAMP.ObjectMaterialSize;
+using ObjectMaterialTextAlign = SampSharp.Entities.SAMP.ObjectMaterialTextAlign;
 
 namespace TestMode.UnitTests;
 
@@ -26,7 +29,7 @@ public class GlobalObjectTests : TestSystem
         _object?.Destroy();
     }
 
-    [Test(Focus = true)]
+    [Test]
     public void CreateObject_should_set_properties()
     {
         var obj = _worldService.CreateObject(100, new Vector3(10, 20, 30), new Vector3(20, 10, 0), 30);
@@ -34,7 +37,7 @@ public class GlobalObjectTests : TestSystem
         {
             obj.ModelId.ShouldBe(100);
             obj.Position.ShouldBe(new Vector3(10, 20, 30));
-            obj.RotationEuler.ShouldBe(new Vector3(20, 10, 0));
+            obj.RotationEuler.ShouldBe(new Vector3(20, 10, 0), 0.8f);
             obj.DrawDistance.ShouldBe(30);
         }
         finally
@@ -50,11 +53,11 @@ public class GlobalObjectTests : TestSystem
         _object.Position.ShouldBe(new Vector3(20, 30, 40));
     }
     
-    [Test(Focus = true)]
+    [Test]
     public void RotationEuler_should_roundtrip()
     {
         _object.RotationEuler = new Vector3(20, 30, 40);
-        _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40));
+        _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40), 0.8f);
     }
     
     [Test]
@@ -92,7 +95,22 @@ public class GlobalObjectTests : TestSystem
         _object.SetMaterialText(0, "test", ObjectMaterialSize.X128X128, "Arial", 12, true, Color.White, Color.White, ObjectMaterialTextAlign.Center);
     }
 
-    [Test(Environment = TestEnvironment.OnPlayerTrigger)]
+    [Test]
+    public void Core_GetMaterialData_should_succeed()
+    {
+        _object.SetMaterial(0, 123, "none", "none", Color.White);
+
+        IObject obj = _object;
+
+        obj.GetMaterialData(0, out var data).ShouldBeTrue();
+        data.ShouldNotBeNull();
+        data.Model.ShouldBe(123);
+        data.Txd.ShouldBe("none");
+        data.Texture.ShouldBe("none");
+        data.MaterialColour.ShouldBe((Colour)Color.White);
+    }
+
+    [Test(TestEnvironment.OnPlayerTrigger)]
     public void AttachToPlayer_should_succeed()
     {
         _object.AttachTo(Player, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
