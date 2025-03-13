@@ -4,7 +4,7 @@ using System.Reflection;
 namespace SampSharp.Entities;
 
 /// <summary>Provides a compiler for an invoke method for an instance method with injected dependencies and entity-to-component conversion.</summary>
-internal static class MethodInvokerFactory
+public static class MethodInvokerFactory
 {
     private static readonly MethodInfo _getComponentInfo = typeof(IEntityManager).GetMethod(nameof(IEntityManager.GetComponent),
         BindingFlags.Public | BindingFlags.Instance, null, [typeof(EntityId)], null)!;
@@ -103,10 +103,14 @@ internal static class MethodInvokerFactory
         var service = Expression.Convert(instanceArg, methodInfo.DeclaringType);
         Expression body = Expression.Call(service, methodInfo, methodArguments);
 
-
         if (body.Type == typeof(void))
         {
             body = Expression.Block(body, Expression.Constant(null));
+        }
+        else if (body.Type == typeof(bool))
+        {
+            var boxMethod = typeof(EventHelper).GetMethod(nameof(EventHelper.AsEventResponse))!;
+            body = Expression.Call(boxMethod, body);
         }
         else if (body.Type != typeof(object))
         {

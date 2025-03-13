@@ -11,9 +11,18 @@ public static class EventHelper
     /// <returns><c>true</c> if the specified response indicates success; otherwise, <c>false</c>.</returns>
     public static bool IsSuccessResponse(object? eventResponse)
     {
-        return eventResponse is not (null or false or 0 or Task<bool> {IsCompleted: true, Result: false} or Task<int>
-        {
-            IsCompleted: true, Result: 0
-        });
+        return eventResponse is not (null
+            or false 
+            or 0
+            or EventResponse { Value: false }
+            or Task<EventResponse> { IsCompleted: true, Result.Value: false }
+            or Task<bool> { IsCompleted: true, Result: false }
+            or Task<int> { IsCompleted: true, Result: 0 }
+            );
+    }
+
+    public static object AsEventResponse(bool eventResponse)
+    {
+        return eventResponse ? EventResponse.True : EventResponse.False;
     }
 }

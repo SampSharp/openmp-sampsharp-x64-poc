@@ -31,13 +31,13 @@ internal class EventService : IEventService
     {
         if (!_events.TryGetValue(name, out var @event))
         {
-            _events[name] = @event = new Event(Invoke);
+            _events[name] = @event = new Event(InnerInvoke);
         }
 
         @event.Middleware.Add(middleware);
 
         // In order to chain the middleware from first to last, the middleware must be nested from last to first
-        EventDelegate invoke = Invoke;
+        EventDelegate invoke = InnerInvoke;
         for (var i = @event.Middleware.Count - 1; i >= 0; i--) invoke = @event.Middleware[i](invoke);
 
         @event.Invoke = invoke;
@@ -49,7 +49,7 @@ internal class EventService : IEventService
         return BuildInvoke(name)(arguments);
     }
 
-    private object? Invoke(EventContext context)
+    private object? InnerInvoke(EventContext context)
     {
         object? result = null;
 
@@ -58,17 +58,17 @@ internal class EventService : IEventService
             return null;
         }
 
-        foreach (var sysEvt in evt.TargetSites)
+        foreach (var targetSite in evt.TargetSites)
         {
-            var system = _serviceProvider.GetService(sysEvt.TargetType);
+            targetSite.Target ??= _serviceProvider.GetService(targetSite.TargetType);
 
             // System is not loaded. Skip invoking target.
-            if (system == null)
+            if (targetSite.Target == null)
             {
                 continue;
             }
 
-            result = sysEvt.Invoke(system, context) ?? result;
+            result = targetSite.Invoke(targetSite.Target, context) ?? result;
         }
 
         return result;
@@ -94,7 +94,7 @@ internal class EventService : IEventService
 
             if (!_events.TryGetValue(name, out var @event))
             {
-                _events[name] = @event = new Event(Invoke);
+                _events[name] = @event = new Event(InnerInvoke);
             }
 
             var argsPtr = 0; // The current pointer in the event arguments array.
@@ -202,5 +202,6 @@ internal class EventService : IEventService
     {
         public required Func<object, EventContext, object?> Invoke { get; init; }
         public required Type TargetType { get; init; }
+        public object? Target { get; set; }
     }
 }
