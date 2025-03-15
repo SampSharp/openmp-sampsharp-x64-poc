@@ -13,4 +13,15 @@ public readonly struct ObjectAttachmentSlotData
     public readonly Vector3 Scale;
     public readonly Colour Colour1;
     public readonly Colour Colour2;
+
+    public ObjectAttachmentSlotData(int model, int bone, Vector3 offset, Vector3 rotation, Vector3 scale, Colour colour1, Colour colour2)
+    {
+        Model = model;
+        Bone = bone;
+        Offset = offset;
+        Rotation = rotation;
+        Scale = scale;
+        Colour1 = colour1;
+        Colour2 = colour2;
+    }
 }

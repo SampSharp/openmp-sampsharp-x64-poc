@@ -16,6 +16,100 @@ public class Player : WorldEntity
         _entityProvider = entityProvider;
         _player = player;
     }
+    
+    private IPlayerCheckpointData CheckpointData
+    {
+        get
+        {
+            var data = _player.QueryExtension<IPlayerCheckpointData>();
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing checkpoint data");
+            }
+            return data;
+        }
+    }
+
+    
+    private IPlayerVehicleData VehicleData
+    {
+        get
+        {
+            var data = _player. QueryExtension<IPlayerVehicleData>();
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing vehicle data");
+            }
+            return data;
+        }
+    }
+    
+    private IPlayerObjectData ObjectData
+    {
+        get
+        {
+            var data = _player.QueryExtension<IPlayerObjectData>();
+
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing object data");
+            }
+            return data;
+        }
+    }
+    private IPlayerMenuData MenuData
+    {
+        get
+        {
+            var data = _player.QueryExtension <IPlayerMenuData>();
+
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing menu data");
+            }
+            return data;
+        }
+    }
+
+    private IPlayerConsoleData ConsoleData
+    {
+        get
+        {
+            var data = _player.QueryExtension<IPlayerConsoleData>();
+
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing console data");
+            }
+            return data;
+        }
+    }
+
+    private IPlayerTextDrawData TextDrawData
+    {
+        get
+        {
+            var data = _player.QueryExtension <IPlayerTextDrawData>();
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing text draw data");
+            }
+            return data;
+        }
+    }
+
+    private IPlayerClassData ClassData
+    {
+        get
+        {
+            var data = _player.QueryExtension <IPlayerClassData>();
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing class data");
+            }
+            return data;
+        }
+    }
 
     /// <summary>
     /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
@@ -181,7 +275,7 @@ public class Player : WorldEntity
     {
         get
         {
-            var data = _player.QueryExtension<IPlayerVehicleData>();
+            var data = VehicleData;
 
             if (data == null)
             {
@@ -219,70 +313,35 @@ public class Player : WorldEntity
     public virtual Actor? TargetActor => _entityProvider.GetComponent(_player.GetTargetActor());
 
     /// <summary>Gets the GlobalObject the camera of this player is pointing at.</summary>
-    public virtual GlobalObject? CameraTargetGlobalObject
-    {
-        get
-        {
-            return _entityProvider.GetComponent(_player.GetCameraTargetObject());
-        }
-    }
+    public virtual GlobalObject? CameraTargetGlobalObject => _entityProvider.GetComponent(_player.GetCameraTargetObject());
 
     /// <summary>Gets the PlayerObject the camera of this player is pointing at.</summary>
-    public virtual PlayerObject? CameraTargetPlayerObject => throw new NotImplementedException();
+    public virtual PlayerObject? CameraTargetPlayerObject => null; // TODO: not implemented
 
     /// <summary>Gets the GtaVehicle the camera of this player is pointing at.</summary>
     public virtual Vehicle? CameraTargetVehicle => _entityProvider.GetComponent(_player.GetCameraTargetVehicle());
 
     /// <summary>Gets the GtaPlayer the camera of this player is pointing at.</summary>
-    public virtual Player? CameraTargetPlayer
-    {
-        get
-        {
-            var p = _player.GetCameraTargetPlayer();
-            return p == null ? null : _entityProvider.GetComponent(p);
-        }
-    }
+    public virtual Player? CameraTargetPlayer => _entityProvider.GetComponent(_player.GetCameraTargetPlayer());
 
     /// <summary>Gets the GtaPlayer the camera of this player is pointing at.</summary>
-    public virtual EntityId CameraTargetActor
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public virtual Actor? CameraTargetActor => _entityProvider.GetComponent(_player.GetCameraTargetActor());
 
     /// <summary>Gets the entity (player, player object, object, vehicle or actor) the camera of this player is pointing at.</summary>
-    public virtual EntityId CameraTargetEntity
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public virtual Component? CameraTargetEntity => 
+        CameraTargetPlayer ?? 
+        CameraTargetActor ??
+        (Component?)CameraTargetVehicle ??
+        CameraTargetGlobalObject;
 
     /// <summary>Gets whether this player is currently in any vehicle.</summary>
     public virtual bool InAnyVehicle => Vehicle != null;
 
     /// <summary>Gets whether this player is in his checkpoint.</summary>
-    public virtual bool InCheckpoint
-    {
-        get
-        {
-            var data = _player.QueryExtension<IPlayerCheckpointData>();
-            return data.Handle != 0 && data.GetCheckpoint().IsPlayerInside();
-        }
-    }
+    public virtual bool InCheckpoint => CheckpointData.GetCheckpoint().IsPlayerInside();
 
     /// <summary>Gets whether this player is in his race-checkpoint.</summary>
-    public virtual bool InRaceCheckpoint   
-    {
-        get
-        {
-            var data = _player.QueryExtension<IPlayerCheckpointData>();
-            return data.Handle != 0 && data.GetRaceCheckpoint().IsPlayerInside();
-        }
-    }
+    public virtual bool InRaceCheckpoint => CheckpointData.GetRaceCheckpoint().IsPlayerInside();
 
     /// <summary>Gets the component (object or vehicle) that this player is surfing.</summary>
     public virtual Component? SurfingEntity
@@ -295,32 +354,25 @@ public class Player : WorldEntity
                 case PlayerSurfingData.Type.Vehicle:
                     return _entityProvider.GetVehicle(surf.ID);
                 case PlayerSurfingData.Type.Object:
-                    throw new NotImplementedException();
+                    return _entityProvider.GetObject(surf.ID);
                 case PlayerSurfingData.Type.PlayerObject:
-                    throw new NotImplementedException();
+                    return _entityProvider.GetComponent(ObjectData.AsPool().Get(surf.ID));
                 default:
                     return null;
             }
         }
     }
 
+
     /// <summary>Gets the Vehicle this player is currently in.</summary>
-    public virtual Vehicle? Vehicle
-    {
-        get
-        {
-            var data =_player.QueryExtension<IPlayerVehicleData>();
-            return data == null ? null : _entityProvider.GetComponent(data.GetVehicle());
-        }
-    }
+    public virtual Vehicle? Vehicle => _entityProvider.GetComponent(VehicleData.GetVehicle());
 
     /// <summary>Gets the Menu this player is currently in.</summary>
     public virtual Menu? Menu
     {
         get
         {
-            var data = _player.QueryExtension<IPlayerMenuData>();
-            var menuId = data.GetMenuID();
+            var menuId = MenuData.GetMenuID();
             return menuId == OpenMpConstants.INVALID_MENU_ID ? null :  _entityProvider.GetMenu(menuId);
         }
     }
@@ -333,13 +385,7 @@ public class Player : WorldEntity
     {
         get
         {
-            var data = _player.QueryExtension<IPlayerConsoleData>();
-            if (data == null)
-            {
-                return false;
-            }
-
-            return data.HasConsoleAccess();
+            return ConsoleData.HasConsoleAccess();
         }
     }
 
@@ -366,7 +412,7 @@ public class Player : WorldEntity
     public virtual string Gpci => _player.GetSerial();
 
     /// <summary>Gets a value indicating whether this player is selecting a textdraw.</summary>
-    public virtual bool IsSelectingTextDraw { get; private set; }
+    public virtual bool IsSelectingTextDraw => TextDrawData.IsSelecting();
 
     /// <summary>Gets the amount of time (in milliseconds) that a player has been connected to the server for.</summary>
     public virtual int ConnectedTime => throw new NotImplementedException();
@@ -420,13 +466,6 @@ public class Player : WorldEntity
     public virtual void SetSpawnInfo(int team, int skin, Vector3 position, float rotation, Weapon weapon1 = Weapon.None, int weapon1Ammo = 0,
         Weapon weapon2 = Weapon.None, int weapon2Ammo = 0, Weapon weapon3 = Weapon.None, int weapon3Ammo = 0)
     {
-        var data = _player.QueryExtension<IPlayerClassData>();
-
-        if (data == null)
-        {
-            throw new InvalidOperationException("No spawn data available.");
-        }
-
         throw new NotImplementedException();
     }
 
@@ -594,15 +633,13 @@ public class Player : WorldEntity
     /// <param name="hoverColor">The color of the text draw when hovering over with mouse.</param>
     public virtual void SelectTextDraw(Color hoverColor)
     {
-        IsSelectingTextDraw = true;
-        throw new NotImplementedException();
+        TextDrawData.BeginSelection(hoverColor);
     }
 
     /// <summary>Cancel text draw selection with the mouse for this player.</summary>
     public virtual void CancelSelectTextDraw()
     {
-        IsSelectingTextDraw = false;
-        throw new NotImplementedException();
+        TextDrawData.EndSelection();
     }
 
     /// <summary>This function plays a crime report for this player - just like in single-player when CJ commits a crime.</summary>
@@ -678,7 +715,16 @@ public class Player : WorldEntity
     public virtual bool SetAttachedObject(int index, int modelId, Bone bone, Vector3 offset, Vector3 rotation, Vector3 scale, Color materialColor1,
         Color materialColor2)
     {
-        throw new NotImplementedException();
+        if (index is < 0 or >= OpenMpConstants.MAX_ATTACHED_OBJECT_SLOTS)
+        {
+            return false;
+        }
+
+        var obj = new ObjectAttachmentSlotData(modelId, (int)bone, offset, rotation, scale, materialColor1, materialColor2);
+
+        ObjectData.SetAttachedObject(index, ref obj);
+
+        return true;
     }
 
     /// <summary>Remove an attached object from this player.</summary>
@@ -686,7 +732,13 @@ public class Player : WorldEntity
     /// <returns>True on success, False otherwise.</returns>
     public virtual bool RemoveAttachedObject(int index)
     {
-        throw new NotImplementedException();
+        if (index is < 0 or >= OpenMpConstants.MAX_ATTACHED_OBJECT_SLOTS)
+        {
+            return false;
+        }
+
+        ObjectData.RemoveAttachedObject(index);
+        return true;
     }
 
     /// <summary>Check if this player has an object attached in the specified index (slot).</summary>
@@ -694,7 +746,12 @@ public class Player : WorldEntity
     /// <returns>True if the slot is used, False otherwise.</returns>
     public virtual bool IsAttachedObjectSlotUsed(int index)
     {
-        throw new NotImplementedException();
+        if (index is < 0 or >= OpenMpConstants.MAX_ATTACHED_OBJECT_SLOTS)
+        {
+            return false;
+        }
+
+        return ObjectData.HasAttachedObject(index);
     }
 
     /// <summary>Enter edition mode for an attached object.</summary>
@@ -702,7 +759,14 @@ public class Player : WorldEntity
     /// <returns>True on success, False otherwise.</returns>
     public virtual bool DoEditAttachedObject(int index)
     {
-        throw new NotImplementedException();
+        if (index is < 0 or >= OpenMpConstants.MAX_ATTACHED_OBJECT_SLOTS)
+        {
+            return false;
+        }
+
+        ObjectData.EditAttachedObject(index);
+
+        return true;
     }
 
     /// <summary>Creates a chat bubble above this player's name tag.</summary>
@@ -860,14 +924,7 @@ public class Player : WorldEntity
     /// <param name="size">The size of the checkpoint.</param>
     public virtual void SetCheckpoint(Vector3 point, float size)
     {
-        var data = _player.QueryExtension<IPlayerCheckpointData>();
-
-        if (data == null)
-        {
-            throw new InvalidOperationException("Missing checkpoint data");
-        }
-
-        var cp = data.GetCheckpoint();
+        var cp = CheckpointData.GetCheckpoint();
         cp.SetPosition(ref point);
         cp.SetRadius(size);
         cp.Enable();
@@ -876,14 +933,7 @@ public class Player : WorldEntity
     /// <summary>Disable any initialized checkpoints for this player.</summary>
     public virtual void DisableCheckpoint()
     {
-        var data = _player.QueryExtension<IPlayerCheckpointData>();
-
-        if (data == null)
-        {
-            throw new InvalidOperationException("Missing checkpoint data");
-        }
-
-        data.GetCheckpoint().Disable();
+        CheckpointData.GetCheckpoint().Disable();
     }
 
     /// <summary>Creates a race checkpoint. When this player enters it, EnterRaceCheckpoint event is called.</summary>
@@ -893,14 +943,7 @@ public class Player : WorldEntity
     /// <param name="size">Length (diameter) of the checkpoint</param>
     public virtual void SetRaceCheckpoint(CheckpointType type, Vector3 point, Vector3 nextPosition, float size)
     {
-        var data = _player.QueryExtension<IPlayerCheckpointData>();
-
-        if (data == null)
-        {
-            throw new InvalidOperationException("Missing checkpoint data");
-        }
-
-        var cp = data.GetRaceCheckpoint();
+        var cp = CheckpointData.GetRaceCheckpoint();
         cp.SetPosition(ref point);
         cp.SetType((RaceCheckpointType)type);
         cp.SetRadius(size);
@@ -911,14 +954,7 @@ public class Player : WorldEntity
     /// <summary>Disable any initialized race checkpoints for this player.</summary>
     public virtual void DisableRaceCheckpoint()
     {
-        var data = _player.QueryExtension<IPlayerCheckpointData>();
-
-        if (data == null)
-        {
-            throw new InvalidOperationException("Missing checkpoint data");
-        }
-
-        data.GetRaceCheckpoint().Disable();
+        CheckpointData.GetRaceCheckpoint().Disable();
     }
 
     /// <summary>Set the world boundaries for this player - players can not go out of the boundaries.</summary>
@@ -1199,40 +1235,64 @@ public class Player : WorldEntity
     {
         _player.SendDeathMessage(player, killer, (int)weapon);
     }
+    
+    /// <summary>Attaches a player's camera to an object.</summary>
+    /// <param name="object">The object to attach the camera to.</param>
+    public virtual void AttachCameraToObject(GlobalObject @object)
+    {
+        _player.AttachCameraToObject(@object);
+    }
 
     /// <summary>Attaches a player's camera to an object.</summary>
     /// <param name="object">The object to attach the camera to.</param>
-    public virtual void AttachCameraToObject(EntityId @object)
+    public virtual void AttachCameraToObject(PlayerObject @object)
     {
-        throw new NotImplementedException();
+        _player.AttachCameraToObject(@object);
+    }
+    
+    /// <summary>Lets this player edit the specified <paramref name="object" />.</summary>
+    /// <param name="object">The object to edit.</param>
+    public virtual void Edit(GlobalObject @object)
+    {
+        ObjectData.BeginEditing(@object);
     }
 
     /// <summary>Lets this player edit the specified <paramref name="object" />.</summary>
     /// <param name="object">The object to edit.</param>
-    public virtual void Edit(EntityId @object)
+    public virtual void Edit(PlayerObject @object)
     {
-        throw new NotImplementedException();
+        ObjectData.BeginEditing(@object);
     }
 
     /// <summary>Cancels object editing mode for this player.</summary>
     public virtual void CancelEdit()
     {
-        throw new NotImplementedException();
+        ObjectData.EndEditing();
     }
 
     /// <summary>Lets this player select an object.</summary>
     public virtual void Select()
     {
-        throw new NotImplementedException();
+        ObjectData.BeginSelecting();
+    }
+    
+    /// <summary>Removes a standard San Andreas model for this player within a specified range.</summary>
+    /// <param name="modelId">The model identifier.</param>
+    /// <param name="position">The position at which to remove the model.</param>
+    /// <param name="radius">The radius in which to remove the model.</param>
+    [Obsolete("Deprecated. Use 'RemoveDefaultObjects' instead.")]
+    public virtual void RemoveBuilding(int modelId, Vector3 position, float radius)
+    {
+        _player.RemoveDefaultObjects((uint)modelId, position, radius);
     }
 
     /// <summary>Removes a standard San Andreas model for this player within a specified range.</summary>
     /// <param name="modelId">The model identifier.</param>
     /// <param name="position">The position at which to remove the model.</param>
     /// <param name="radius">The radius in which to remove the model.</param>
-    public virtual void RemoveBuilding(int modelId, Vector3 position, float radius)
+    public virtual void RemoveDefaultObjects(int modelId, Vector3 position, float radius)
     {
-        throw new NotImplementedException();
+        _player.RemoveDefaultObjects((uint)modelId, position, radius);
     }
 
     /// <summary>Place an icon/marker on this player's map. Can be used to mark locations such as banks and hospitals to players.</summary>

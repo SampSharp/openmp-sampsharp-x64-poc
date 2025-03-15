@@ -264,6 +264,11 @@ internal class OmpEntityProvider : IOmpEntityProvider
         return GetComponent(_vehicles.AsPool().Get(id));
     }
 
+    public GlobalObject? GetObject(int id)
+    {
+        return GetComponent(_objects.AsPool().Get(id));
+    }
+
     public Menu? GetMenu(int id)
     {
         return GetComponent(_menus.AsPool().Get(id));

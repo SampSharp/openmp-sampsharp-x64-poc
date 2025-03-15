@@ -153,5 +153,6 @@ public interface IOmpEntityProvider
     //  TODO: all get by IDs
     Player? GetPlayer(int id);
     Vehicle? GetVehicle(int id);
+    GlobalObject? GetObject(int id);
     Menu? GetMenu(int id);
 }
