@@ -4,41 +4,39 @@ namespace SampSharp.Entities.SAMP;
 
 internal class TextDrawSystem : DisposableSystem, ITextDrawEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public TextDrawSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp omp)
+    public TextDrawSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp omp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
         AddDisposable(omp.Components.QueryComponent<ITextDrawsComponent>().GetEventDispatcher().Add(this));
     }
 
     public void OnPlayerClickTextDraw(IPlayer player, ITextDraw td)
     {
-        _eventService.Invoke("OnPlayerClickTextDraw",
+        _eventDispatcher.Invoke("OnPlayerClickTextDraw",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(td));
     }
 
     public void OnPlayerClickPlayerTextDraw(IPlayer player, IPlayerTextDraw td)
     {
-        _eventService.Invoke("OnPlayerClickPlayerTextDraw",
+        _eventDispatcher.Invoke("OnPlayerClickPlayerTextDraw",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(td));
     }
 
     public bool OnPlayerCancelTextDrawSelection(IPlayer player)
     {
-        var result = _eventService.Invoke("OnPlayerCancelTextDrawSelection",
+        return _eventDispatcher.InvokeAs("OnPlayerCancelTextDrawSelection", true,
             _entityProvider.GetEntity(player));
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public bool OnPlayerCancelPlayerTextDrawSelection(IPlayer player)
     {
-        var result = _eventService.Invoke("OnPlayerCancelPlayerTextDrawSelection",
+        return _eventDispatcher.InvokeAs("OnPlayerCancelPlayerTextDrawSelection", true,
             _entityProvider.GetEntity(player));
-        return EventHelper.IsSuccessResponse(result);
     }
 }

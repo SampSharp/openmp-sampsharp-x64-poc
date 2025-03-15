@@ -4,12 +4,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerCheckSystem : DisposableSystem, IPlayerCheckEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerCheckSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerCheckSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerCheckDispatcher().Add(this));
@@ -17,6 +17,6 @@ internal class PlayerCheckSystem : DisposableSystem, IPlayerCheckEventHandler
 
     public void OnClientCheckResponse(IPlayer player, int actionType, int address, int results)
     {
-        _eventService.Invoke("OnClientCheckResponse", _entityProvider.GetEntity(player), actionType, address, results);
+        _eventDispatcher.Invoke("OnClientCheckResponse", _entityProvider.GetEntity(player), actionType, address, results);
     }
 }

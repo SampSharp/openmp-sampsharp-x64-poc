@@ -5,12 +5,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerUpdateSystem : DisposableSystem, IPlayerUpdateEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerUpdateSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerUpdateSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerUpdateDispatcher().Add(this));
@@ -18,8 +18,6 @@ internal class PlayerUpdateSystem : DisposableSystem, IPlayerUpdateEventHandler
 
     public bool OnPlayerUpdate(IPlayer player, TimePoint now)
     {
-        var result = _eventService.Invoke("OnPlayerUpdate", _entityProvider.GetEntity(player), now);
-        
-        return EventHelper.IsSuccessResponse(result);
+        return _eventDispatcher.InvokeAs("OnPlayerUpdate", true, _entityProvider.GetEntity(player), now);
     }
 }

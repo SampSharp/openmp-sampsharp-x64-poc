@@ -4,12 +4,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerSpawnSystem : DisposableSystem, IPlayerSpawnEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerSpawnSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerSpawnSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerSpawnDispatcher().Add(this));
@@ -17,13 +17,11 @@ internal class PlayerSpawnSystem : DisposableSystem, IPlayerSpawnEventHandler
 
     public bool OnPlayerRequestSpawn(IPlayer player)
     {
-        var result = _eventService.Invoke("OnPlayerRequestSpawn", _entityProvider.GetEntity(player));
-        
-        return EventHelper.IsSuccessResponse(result);
+        return _eventDispatcher.InvokeAs("OnPlayerRequestSpawn", true, _entityProvider.GetEntity(player));
     }
 
     public void OnPlayerSpawn(IPlayer player)
     {
-        _eventService.Invoke("OnPlayerSpawn", _entityProvider.GetEntity(player));
+        _eventDispatcher.Invoke("OnPlayerSpawn", _entityProvider.GetEntity(player));
     }
 }

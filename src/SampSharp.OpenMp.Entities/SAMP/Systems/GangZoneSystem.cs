@@ -4,33 +4,33 @@ namespace SampSharp.Entities.SAMP;
 
 internal class GangZoneSystem : DisposableSystem, IGangZoneEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public GangZoneSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp omp)
+    public GangZoneSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp omp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
         AddDisposable(omp.Components.QueryComponent<IGangZonesComponent>().GetEventDispatcher().Add(this));
     }
 
     public void OnPlayerEnterGangZone(IPlayer player, IGangZone zone)
     {
-        _eventService.Invoke("OnPlayerEnterGangZone",
+        _eventDispatcher.Invoke("OnPlayerEnterGangZone",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(zone));
     }
 
     public void OnPlayerLeaveGangZone(IPlayer player, IGangZone zone)
     {
-        _eventService.Invoke("OnPlayerLeaveGangZone",
+        _eventDispatcher.Invoke("OnPlayerLeaveGangZone",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(zone));
     }
 
     public void OnPlayerClickGangZone(IPlayer player, IGangZone zone)
     {
-        _eventService.Invoke("OnPlayerClickGangZone",
+        _eventDispatcher.Invoke("OnPlayerClickGangZone",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(zone));
     }

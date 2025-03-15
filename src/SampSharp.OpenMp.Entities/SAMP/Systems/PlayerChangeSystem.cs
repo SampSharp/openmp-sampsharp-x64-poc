@@ -4,12 +4,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerChangeSystem : DisposableSystem, IPlayerChangeEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerChangeSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerChangeSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerChangeDispatcher().Add(this));
@@ -17,26 +17,26 @@ internal class PlayerChangeSystem : DisposableSystem, IPlayerChangeEventHandler
 
     public void OnPlayerScoreChange(IPlayer player, int score)
     {
-        _eventService.Invoke("OnPlayerScoreChange", _entityProvider.GetEntity(player), score);
+        _eventDispatcher.Invoke("OnPlayerScoreChange", _entityProvider.GetEntity(player), score);
     }
 
     public void OnPlayerNameChange(IPlayer player, string oldName)
     {
-        _eventService.Invoke("OnPlayerNameChange", _entityProvider.GetEntity(player), oldName);
+        _eventDispatcher.Invoke("OnPlayerNameChange", _entityProvider.GetEntity(player), oldName);
     }
 
     public void OnPlayerInteriorChange(IPlayer player, uint newInterior, uint oldInterior)
     {
-        _eventService.Invoke("OnPlayerInteriorChange", _entityProvider.GetEntity(player), newInterior, oldInterior);
+        _eventDispatcher.Invoke("OnPlayerInteriorChange", _entityProvider.GetEntity(player), newInterior, oldInterior);
     }
 
     public void OnPlayerStateChange(IPlayer player, SampSharp.OpenMp.Core.Api.PlayerState newState, SampSharp.OpenMp.Core.Api.PlayerState oldState)
     {
-        _eventService.Invoke("OnPlayerStateChange", _entityProvider.GetEntity(player), newState, oldState);
+        _eventDispatcher.Invoke("OnPlayerStateChange", _entityProvider.GetEntity(player), newState, oldState);
     }
 
     public void OnPlayerKeyStateChange(IPlayer player, uint newKeys, uint oldKeys)
     {
-        _eventService.Invoke("OnPlayerKeyStateChange", _entityProvider.GetEntity(player), newKeys, oldKeys);
+        _eventDispatcher.Invoke("OnPlayerKeyStateChange", _entityProvider.GetEntity(player), newKeys, oldKeys);
     }
 }

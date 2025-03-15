@@ -76,12 +76,12 @@ internal class EcsManager : Extension
 
     private void OnGameModeInit()
     {
-        _serviceProvider?.GetRequiredService<IEventService>().Invoke("OnGameModeInit");
+        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeInit");
     }
 
     private void OnGameModeExit()
     {
-        _serviceProvider?.GetRequiredService<IEventService>().Invoke("OnGameModeExit");
+        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeExit");
     }
 
     protected override void Cleanup()
@@ -96,12 +96,17 @@ internal class EcsManager : Extension
 
     private void AddWrappedSystemTypes()
     {
-        _serviceProvider!.GetRequiredService<SystemRegistry>().InitialSystemScan();
+        _serviceProvider!.GetRequiredService<SystemRegistry>().LoadSystems();
     }
 
     private static void ConfigureDefaultServices(IServiceCollection services)
     {
-        services.AddSingleton<IEventService, EventService>()
+        services
+            .AddSingleton<EventDispatcher>()
+            .AddSingleton<IEventDispatcher>(sp => sp.GetRequiredService<EventDispatcher>())
+#pragma warning disable CS0618 // Type or member is obsolete
+            .AddSingleton<IEventService>(sp => sp.GetRequiredService<EventDispatcher>())
+#pragma warning restore CS0618 // Type or member is obsolete
             .AddSingleton<SystemRegistry>()
             .AddSingleton<ISystemRegistry>(x => x.GetRequiredService<SystemRegistry>())
             .AddSingleton<IEntityManager, EntityManager>()

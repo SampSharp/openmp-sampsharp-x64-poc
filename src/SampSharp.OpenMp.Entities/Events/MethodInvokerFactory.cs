@@ -1,10 +1,11 @@
 ﻿using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace SampSharp.Entities;
 
 /// <summary>Provides a compiler for an invoke method for an instance method with injected dependencies and entity-to-component conversion.</summary>
-public static class MethodInvokerFactory
+internal static class MethodInvokerFactory
 {
     private static readonly MethodInfo _getComponentInfo = typeof(IEntityManager).GetMethod(nameof(IEntityManager.GetComponent),
         BindingFlags.Public | BindingFlags.Instance, null, [typeof(EntityId)], null)!;
@@ -16,8 +17,9 @@ public static class MethodInvokerFactory
     /// <param name="methodInfo">The method information.</param>
     /// <param name="parameterSources">The sources of the parameters.</param>
     /// <param name="uninvokedReturnValue">The value returned if the method is not invoked when a parameter could not be converted to the correct component.</param>
+    /// <param name="retBoolToResult">Indicates whether the <see langword="bool" /> return value should be converted to a <see cref="MethodResult"/> value.</param>
     /// <returns>The method invoker.</returns>
-    public static MethodInvoker Compile(MethodInfo methodInfo, MethodParameterSource[] parameterSources, object? uninvokedReturnValue = null)
+    public static MethodInvoker Compile(MethodInfo methodInfo, MethodParameterSource[] parameterSources, object? uninvokedReturnValue = null, bool retBoolToResult = true)
     {
         if (methodInfo.DeclaringType == null)
         {
@@ -107,9 +109,9 @@ public static class MethodInvokerFactory
         {
             body = Expression.Block(body, Expression.Constant(null));
         }
-        else if (body.Type == typeof(bool))
+        else if (retBoolToResult && body.Type == typeof(bool))
         {
-            var boxMethod = typeof(EventHelper).GetMethod(nameof(EventHelper.AsEventResponse))!;
+            var boxMethod = typeof(MethodResult).GetMethod(nameof(MethodResult.From))!;
             body = Expression.Call(boxMethod, body);
         }
         else if (body.Type != typeof(object))
@@ -135,7 +137,6 @@ public static class MethodInvokerFactory
 
     private static object GetService(IServiceProvider serviceProvider, Type type)
     {
-        var service = serviceProvider.GetService(type);
-        return service ?? throw new InvalidOperationException($"Service of type {type} is not available.");
+        return serviceProvider.GetRequiredService(type);
     }
 }

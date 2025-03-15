@@ -2,34 +2,25 @@
 
 internal class EventContextImpl : EventContext
 {
+    private object[]? _arguments;
+
     public EventContextImpl(string name, IServiceProvider eventServices)
     {
-        _name = name;
-        _eventServices = eventServices;
+        Name = name;
+        EventServices = eventServices;
     }
 
-    private object[]? _arguments;
-    private IServiceProvider _eventServices;
-    private string _name;
-
-    public override string Name => _name;
-
+    public override string Name { get; }
+    public override IServiceProvider EventServices { get; }
     public override object[] Arguments => _arguments!;
 
-    public override IServiceProvider EventServices => _eventServices;
-
-    public void SetArguments(object[] arguments)
+    public void SetArguments(ReadOnlySpan<object> arguments)
     {
-        _arguments = arguments;
-    }
+        if (_arguments == null || _arguments.Length != arguments.Length)
+        {
+            _arguments = new object[arguments.Length];
+        }
 
-    public void SetName(string name)
-    {
-        _name = name;
-    }
-
-    public void SetEventServices(IServiceProvider eventServices)
-    {
-        _eventServices = eventServices;
+        arguments.CopyTo(_arguments);
     }
 }

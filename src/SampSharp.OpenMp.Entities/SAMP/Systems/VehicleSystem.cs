@@ -4,40 +4,40 @@ namespace SampSharp.Entities.SAMP;
 
 internal class VehicleSystem : DisposableSystem, IVehicleEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public VehicleSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp omp)
+    public VehicleSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp omp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
         AddDisposable(omp.Components.QueryComponent<IVehiclesComponent>().GetEventDispatcher().Add(this));
     }
     
     public void OnVehicleStreamIn(IVehicle vehicle, IPlayer player)
     {
-        _eventService.Invoke("OnVehicleStreamIn", 
+        _eventDispatcher.Invoke("OnVehicleStreamIn", 
             _entityProvider.GetEntity(vehicle), 
             _entityProvider.GetEntity(player));
     }
 
     public void OnVehicleStreamOut(IVehicle vehicle, IPlayer player)
     {
-        _eventService.Invoke("OnVehicleStreamOut", 
+        _eventDispatcher.Invoke("OnVehicleStreamOut", 
             _entityProvider.GetEntity(vehicle), 
             _entityProvider.GetEntity(player));
     }
 
     public void OnVehicleDeath(IVehicle vehicle, IPlayer player)
     {
-        _eventService.Invoke("OnVehicleDeath", 
+        _eventDispatcher.Invoke("OnVehicleDeath", 
             _entityProvider.GetEntity(vehicle), 
             _entityProvider.GetEntity(player));
     }
 
     public void OnPlayerEnterVehicle(IPlayer player, IVehicle vehicle, bool passenger)
     {
-        _eventService.Invoke("OnPlayerEnterVehicle",
+        _eventDispatcher.Invoke("OnPlayerEnterVehicle",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle),
             passenger);
@@ -45,50 +45,46 @@ internal class VehicleSystem : DisposableSystem, IVehicleEventHandler
 
     public void OnPlayerExitVehicle(IPlayer player, IVehicle vehicle)
     {
-        _eventService.Invoke("OnPlayerExitVehicle",
+        _eventDispatcher.Invoke("OnPlayerExitVehicle",
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle));
     }
 
     public void OnVehicleDamageStatusUpdate(IVehicle vehicle, IPlayer player)
     {
-        _eventService.Invoke("OnVehicleDamageStatusUpdate",
+        _eventDispatcher.Invoke("OnVehicleDamageStatusUpdate",
             _entityProvider.GetEntity(vehicle),
             _entityProvider.GetEntity(player));
     }
 
     public bool OnVehiclePaintJob(IPlayer player, IVehicle vehicle, int paintJob)
     {
-        var result = _eventService.Invoke("OnVehiclePaintJob",
+        return _eventDispatcher.InvokeAs("OnVehiclePaintJob", true,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle),
             paintJob);
-
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public bool OnVehicleMod(IPlayer player, IVehicle vehicle, int component)
     {
-        var result = _eventService.Invoke("OnVehicleMod",
+        return _eventDispatcher.InvokeAs("OnVehicleMod", true,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle),
             component);
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public bool OnVehicleRespray(IPlayer player, IVehicle vehicle, int colour1, int colour2)
     {
-        var result = _eventService.Invoke("OnVehicleRespray",
+        return _eventDispatcher.InvokeAs("OnVehicleRespray", true,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle),
             colour1,
             colour2);
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public void OnEnterExitModShop(IPlayer player, bool enterexit, int interiorId)
     {
-        _eventService.Invoke("OnEnterExitModShop",
+        _eventDispatcher.Invoke("OnEnterExitModShop",
             _entityProvider.GetEntity(player),
             enterexit,
             interiorId);
@@ -96,35 +92,31 @@ internal class VehicleSystem : DisposableSystem, IVehicleEventHandler
 
     public void OnVehicleSpawn(IVehicle vehicle)
     {
-        _eventService.Invoke("OnVehicleSpawn", _entityProvider.GetEntity(vehicle));
+        _eventDispatcher.Invoke("OnVehicleSpawn", _entityProvider.GetEntity(vehicle));
     }
 
     public bool OnUnoccupiedVehicleUpdate(IVehicle vehicle, IPlayer player, UnoccupiedVehicleUpdate updateData)
     {
-        var result = _eventService.Invoke("OnUnoccupiedVehicleUpdate",
+        return _eventDispatcher.InvokeAs("OnUnoccupiedVehicleUpdate", true,
             _entityProvider.GetEntity(vehicle),
             _entityProvider.GetEntity(player),
             updateData.position,
             updateData.velocity,
             (int)updateData.seat);
-
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public bool OnTrailerUpdate(IPlayer player, IVehicle trailer)
     {
-        var result = _eventService.Invoke("OnTrailerUpdate",
+        return _eventDispatcher.InvokeAs("OnTrailerUpdate", true,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(trailer));
-        return EventHelper.IsSuccessResponse(result);
     }
 
     public bool OnVehicleSirenStateChange(IPlayer player, IVehicle vehicle, byte sirenState)
     {
-        var result = _eventService.Invoke("OnVehicleSirenStateChange",
+        return _eventDispatcher.InvokeAs("OnVehicleSirenStateChange", true,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(vehicle),
             sirenState);
-        return EventHelper.IsSuccessResponse(result);
     }
 }

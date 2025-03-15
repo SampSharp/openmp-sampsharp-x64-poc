@@ -4,12 +4,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerDamageSystem : DisposableSystem, IPlayerDamageEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerDamageSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerDamageSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerDamageDispatcher().Add(this));
@@ -17,16 +17,16 @@ internal class PlayerDamageSystem : DisposableSystem, IPlayerDamageEventHandler
 
     public void OnPlayerDeath(IPlayer player, IPlayer killer, int reason)
     {
-        _eventService.Invoke("OnPlayerDeath", _entityProvider.GetEntity(player), _entityProvider.GetEntity(killer), reason);
+        _eventDispatcher.Invoke("OnPlayerDeath", _entityProvider.GetEntity(player), _entityProvider.GetEntity(killer), reason);
     }
 
     public void OnPlayerTakeDamage(IPlayer player, IPlayer from, float amount, uint weapon, SampSharp.OpenMp.Core.Api.BodyPart part)
     {
-        _eventService.Invoke("OnPlayerTakeDamage", _entityProvider.GetEntity(player), _entityProvider.GetEntity(from), amount, weapon, part);
+        _eventDispatcher.Invoke("OnPlayerTakeDamage", _entityProvider.GetEntity(player), _entityProvider.GetEntity(from), amount, weapon, part);
     }
 
     public void OnPlayerGiveDamage(IPlayer player, IPlayer to, float amount, uint weapon, SampSharp.OpenMp.Core.Api.BodyPart part)
     {
-        _eventService.Invoke("OnPlayerGiveDamage", _entityProvider.GetEntity(player), _entityProvider.GetEntity(to), amount, weapon, part);
+        _eventDispatcher.Invoke("OnPlayerGiveDamage", _entityProvider.GetEntity(player), _entityProvider.GetEntity(to), amount, weapon, part);
     }
 }

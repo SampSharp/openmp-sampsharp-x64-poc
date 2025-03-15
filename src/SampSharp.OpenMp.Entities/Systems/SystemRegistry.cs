@@ -8,7 +8,8 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
     private Dictionary<Type, ISystem[]>? _data;
 
     private List<Action>? _systemsLoadedHandlers = [];
-    public void InitialSystemScan()
+
+    public void LoadSystems()
     {
         var systemImplementationTypes = serviceProvider.GetServices<SystemTypeWrapper>()
             .Select(w => w.Type)

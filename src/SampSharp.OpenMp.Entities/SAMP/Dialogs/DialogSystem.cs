@@ -20,12 +20,12 @@ namespace SampSharp.Entities.SAMP;
 internal class DialogSystem : DisposableSystem, IPlayerDialogEventHandler
 {
     private readonly IOmpEntityProvider _entityProvider;
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
 
-    public DialogSystem(IOmpEntityProvider entityProvider, IEventService eventService, OpenMp omp)
+    public DialogSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, OpenMp omp)
     {
         _entityProvider = entityProvider;
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         var dialogs = omp.Components.QueryComponent<IDialogsComponent>();
 
         AddDisposable(dialogs.GetEventDispatcher().Add(this));
@@ -60,6 +60,6 @@ internal class DialogSystem : DisposableSystem, IPlayerDialogEventHandler
 
     public void OnDialogResponse(IPlayer player, int dialogId, SampSharp.OpenMp.Core.Api.DialogResponse response, int listItem, string inputText)
     {
-        _eventService.Invoke("OnDialogResponse", _entityProvider.GetEntity(player), dialogId, response, listItem, inputText);
+        _eventDispatcher.Invoke("OnDialogResponse", _entityProvider.GetEntity(player), dialogId, response, listItem, inputText);
     }
 }

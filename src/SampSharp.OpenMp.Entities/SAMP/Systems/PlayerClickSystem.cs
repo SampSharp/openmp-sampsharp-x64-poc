@@ -5,12 +5,12 @@ namespace SampSharp.Entities.SAMP;
 
 internal class PlayerClickSystem : DisposableSystem, IPlayerClickEventHandler
 {
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerClickSystem(IEventService eventService, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerClickSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
     {
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
         AddDisposable(openMp.Core.GetPlayers().GetPlayerClickDispatcher().Add(this));
@@ -18,11 +18,11 @@ internal class PlayerClickSystem : DisposableSystem, IPlayerClickEventHandler
 
     public void OnPlayerClickMap(IPlayer player, Vector3 pos)
     {
-        _eventService.Invoke("OnPlayerClickMap", _entityProvider.GetEntity(player), pos);
+        _eventDispatcher.Invoke("OnPlayerClickMap", _entityProvider.GetEntity(player), pos);
     }
 
     public void OnPlayerClickPlayer(IPlayer player, IPlayer clicked, SampSharp.OpenMp.Core.Api.PlayerClickSource source)
     {
-        _eventService.Invoke("OnPlayerClickPlayer", _entityProvider.GetEntity(player), clicked, source);
+        _eventDispatcher.Invoke("OnPlayerClickPlayer", _entityProvider.GetEntity(player), clicked, source);
     }
 }

@@ -6,12 +6,12 @@ namespace SampSharp.Entities.SAMP;
 internal class ConsoleSystem : DisposableSystem, IConsoleEventHandler
 {
     private readonly IOmpEntityProvider _entityProvider;
-    private readonly IEventService _eventService;
+    private readonly IEventDispatcher _eventDispatcher;
 
-    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventService eventService, OpenMp omp)
+    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, OpenMp omp)
     {
         _entityProvider = entityProvider;
-        _eventService = eventService;
+        _eventDispatcher = eventDispatcher;
         AddDisposable(omp.Components.QueryComponent<IConsoleComponent>().GetEventDispatcher().Add(this));
     }
 
@@ -23,20 +23,18 @@ internal class ConsoleSystem : DisposableSystem, IConsoleEventHandler
         var isCustom = sender.Sender == SampSharp.OpenMp.Core.Api.ConsoleCommandSender.Custom;
         var isConsole = sender.Sender == SampSharp.OpenMp.Core.Api.ConsoleCommandSender.Console;
 
-        var result = _eventService.Invoke("OnConsoleText", command, parameters, new ConsoleCommandSender(player, isConsole, isCustom));
-
-        return EventHelper.IsSuccessResponse(result);
+        return _eventDispatcher.InvokeAs("OnConsoleText", false, command, parameters, new ConsoleCommandSender(player, isConsole, isCustom));
     }
 
     public void OnRconLoginAttempt(IPlayer player, string password, bool success)
     {
-        _eventService.Invoke("OnRconLoginAttempt", _entityProvider.GetEntity(player), password, success);
+        _eventDispatcher.Invoke("OnRconLoginAttempt", _entityProvider.GetEntity(player), password, success);
     }
 
     public void OnConsoleCommandListRequest(FlatHashSetStringView commands)
     {
         var collection = new ConsoleCommandCollection(commands);
 
-        _eventService.Invoke("OnConsoleCommandListRequest", collection);
+        _eventDispatcher.Invoke("OnConsoleCommandListRequest", collection);
     }
 }

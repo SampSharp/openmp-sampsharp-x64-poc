@@ -38,6 +38,7 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
         {
             var pos = player.Position;
             Console.WriteLine($"Position: {pos}");
+            player.SendClientMessage($"Position: {pos}");
 
             Mark(pos, "*", Color.White);
             Mark(pos + Vector3.UnitX, "+X", Color.Red);
