@@ -134,7 +134,7 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
 
             var zAngle = v.Angle;
 
-            var mat = Matrix4x4.CreateFromQuaternion(v.RotationQuaternion);
+            var mat = Matrix4x4.CreateFromQuaternion(v.Rotation);
             var zAngle2 = float.RadiansToDegrees(MathHelper.GetZAngleFromRotationMatrix(mat));
 
             player.SendClientMessage($"Vehicle Z-angle(open.mp): {zAngle}, ZAngle through RotQuat(s#): {zAngle2}");
@@ -157,7 +157,7 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
             var model = vehicle.Model;
             var offset = vehicleInfoService.GetModelInfo(model, VehicleModelInfoType.PetrolCap);
  
-            var rotMatrix = Matrix4x4.CreateFromQuaternion(vehicle.RotationQuaternion);
+            var rotMatrix = Matrix4x4.CreateFromQuaternion(vehicle.Rotation);
             var trMatrix = Matrix4x4.CreateTranslation(offset) * rotMatrix * Matrix4x4.CreateTranslation(vehicle.Position);
 
             var point = trMatrix.Translation;
@@ -166,13 +166,6 @@ public class RotationTestingSystem(IWorldService worldService, IEntityManager en
         }
     }
 
-    [Event]
-    public bool OnUnoccupiedVehicleUpdate(Vehicle veh, Player player, Vector3 position, Vector3 velo, int seat)
-    {
-        // TODO: broken rn. don't return false by default when no event implementation is available.
-        return true;
-    }
-    
     private void Mark(Vector3 point, string txt, Color color, int sec = 10)
     {
         var label = worldService.CreateTextLabel(txt, color, point, 100, 0, false);
