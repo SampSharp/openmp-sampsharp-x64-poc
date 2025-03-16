@@ -4,22 +4,26 @@ namespace SampSharp.Entities;
 
 public static class StartupContextEcsExtensions
 {
-    public static StartupContext UseEntities(this StartupContext context, Action<EcsConfiguration>? configure = null)
+    public static IStartupContext UseEntities(this IStartupContext context, Action<EcsConfiguration>? configure = null)
     {
         if (context.Configurator is not IEcsStartup)
         {
             throw new InvalidOperationException("The startup type does not implement the 'IEcsStartup' interface.");
         }
 
-        var config = new EcsConfiguration();
+        if (context.Core.TryGetExtension<EcsManager>() != null)
+        {
+            throw new InvalidOperationException("ECS has already been configured.");
+        }
 
-        configure?.Invoke(config);
-
-        var manager = new EcsManager(config);
-        context.Core.AddExtension(manager);
-
+        context.UseSynchronizationContext();
+        
         context.Initialized += OnContextInitialized; 
         context.Cleanup += OnContextCleanup;
+
+        context.Core.AddExtension(
+            new EcsManager(
+                EcsConfiguration.Create(configure)));
 
         return context;
     }
@@ -35,8 +39,6 @@ public static class StartupContextEcsExtensions
     private static void OnContextCleanup(object? sender, EventArgs e)
     {
         var context = (StartupContext)sender!;
-        var manager = context.Core.GetExtension<EcsManager>();
-
-        context.Core.RemoveExtension(manager);
+        context.Core.GetExtension<EcsManager>()?.Dispose();
     }
 }

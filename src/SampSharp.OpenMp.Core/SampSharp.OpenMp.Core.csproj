@@ -15,4 +15,8 @@
         <ProjectReference Include="..\SampSharp.CodeFixes\SampSharp.CodeFixes.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.ObjectPool" Version="9.0.2" />
+    </ItemGroup>
+
 </Project>

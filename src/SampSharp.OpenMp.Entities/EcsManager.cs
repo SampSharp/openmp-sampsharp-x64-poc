@@ -18,7 +18,7 @@ internal class EcsManager : Extension
         _configuration = configuration;
     }
 
-    internal void Run(StartupContext context)
+    internal void Run(IStartupContext context)
     {
         var configurator = (IEcsStartup)context.Configurator;
 
@@ -39,7 +39,7 @@ internal class EcsManager : Extension
     }
 
     [MemberNotNull(nameof(_serviceProvider))]
-    private void BuildServiceProvider(StartupContext context, RuntimeInformation info, IEcsStartup configurator)
+    private void BuildServiceProvider(IStartupContext context, RuntimeInformation info, IEcsStartup configurator)
     {
         var services = new ServiceCollection();
         services.AddSingleton(info);

@@ -11,9 +11,9 @@ public class Startup : IStartup,
     IConsoleEventHandler, 
     IPoolEventHandler<IPlayer>
 {
-    public void Initialize(StartupContext context)
+    public void Initialize(IStartupContext context)
     {
-        context.ForwardConsoleOutputToOpenMpLogger();
+        context.UseOpenMpLogger();
 
         Console.WriteLine("OnInit from managed c# code!");
 

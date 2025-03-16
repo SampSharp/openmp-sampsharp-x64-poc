@@ -2,7 +2,7 @@
 
 namespace SampSharp.OpenMp.Core;
 
-public sealed class StartupContext
+public sealed class StartupContext : IStartupContext
 {
     private IStartup? _configurator;
     private ExceptionHandler _unhandledExceptionHandler;
@@ -33,7 +33,7 @@ public sealed class StartupContext
             SampSharpExceptionHandler.SetExceptionHandler(value);
         }
     }
-    
+
     public event EventHandler? Cleanup;
     public event EventHandler? Initialized;
 
@@ -55,7 +55,7 @@ public sealed class StartupContext
     {
         Cleanup?.Invoke(this, EventArgs.Empty);
     }
-    
+
     /// <summary>
     /// Internal method. Do not invoke manually.
     /// </summary>

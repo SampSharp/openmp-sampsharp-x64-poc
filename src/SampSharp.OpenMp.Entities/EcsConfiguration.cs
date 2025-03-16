@@ -9,6 +9,19 @@ public sealed class EcsConfiguration
     internal UnhandledExceptionHandler? UnhandledExceptionHandler { get; private set; }
     internal Func<IServiceCollection, IServiceProvider>? ServiceProviderFactory { get; private set; }
 
+    private EcsConfiguration()
+    {
+    }
+
+    internal static EcsConfiguration Create(Action<EcsConfiguration>? configure)
+    {
+        var result = new EcsConfiguration();
+
+        configure?.Invoke(result);
+
+        return result;
+    }
+
     public EcsConfiguration ConfigureLogging(Action<ILoggingBuilder> builder)
     {
         LoggingBuilder = builder;

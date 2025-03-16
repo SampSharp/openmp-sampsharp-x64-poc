@@ -2,5 +2,5 @@
 
 public interface IStartup
 {
-    void Initialize(StartupContext context);
+    void Initialize(IStartupContext context);
 }

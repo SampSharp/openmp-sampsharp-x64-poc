@@ -6,7 +6,7 @@ namespace TestMode.UnitTests;
 
 public class Startup : IEcsStartup
 {
-    public void Initialize(StartupContext context)
+    public void Initialize(IStartupContext context)
     {
         context.UseEntities();
     }
