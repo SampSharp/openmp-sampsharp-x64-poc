@@ -61,7 +61,7 @@ public class Player : WorldEntity
     {
         get
         {
-            var data = _player.QueryExtension <IPlayerMenuData>();
+            var data = _player.QueryExtension<IPlayerMenuData>();
 
             if (data == null)
             {
@@ -89,7 +89,7 @@ public class Player : WorldEntity
     {
         get
         {
-            var data = _player.QueryExtension <IPlayerTextDrawData>();
+            var data = _player.QueryExtension<IPlayerTextDrawData>();
             if (data == null)
             {
                 throw new InvalidOperationException("Missing text draw data");
@@ -97,15 +97,28 @@ public class Player : WorldEntity
             return data;
         }
     }
-
+    
     private IPlayerClassData ClassData
     {
         get
         {
-            var data = _player.QueryExtension <IPlayerClassData>();
+            var data = _player.QueryExtension<IPlayerClassData>();
             if (data == null)
             {
                 throw new InvalidOperationException("Missing class data");
+            }
+            return data;
+        }
+    }
+
+    private IPlayerRecordingData RecordingData
+    {
+        get
+        {
+            var data = _player.QueryExtension<IPlayerRecordingData>();
+            if (data == null)
+            {
+                throw new InvalidOperationException("Missing recording data");
             }
             return data;
         }
@@ -237,14 +250,7 @@ public class Player : WorldEntity
     public virtual PlayerState State => (PlayerState)_player.GetState();
 
     /// <summary>Gets the IP of this player.</summary>
-    public virtual string Ip
-    {
-        get
-        {
-            _player.GetNetworkData();//TODO: ref return?
-            throw new NotImplementedException();
-        }
-    }
+    public virtual string Ip => throw new NotImplementedException();
 
     /// <summary>Gets the ping of this player.</summary>
     public virtual int Ping => throw new NotImplementedException();
@@ -381,13 +387,7 @@ public class Player : WorldEntity
     public virtual bool IsNpc => _player.IsBot();
 
     /// <summary>Gets whether this player is logged into RCON.</summary>
-    public virtual bool IsAdmin
-    {
-        get
-        {
-            return ConsoleData.HasConsoleAccess();
-        }
-    }
+    public virtual bool IsAdmin => ConsoleData.HasConsoleAccess();
 
     private static readonly PlayerState[] _deadStates = [PlayerState.None, PlayerState.Spectating, PlayerState.Wasted];
 
@@ -395,13 +395,7 @@ public class Player : WorldEntity
     public virtual bool IsAlive => !_deadStates.Contains(State);
 
     /// <summary>Gets the end point (IP and port) of this player.</summary>
-    public virtual IPEndPoint EndPoint
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public virtual IPEndPoint EndPoint => throw new NotImplementedException();
 
     /// <summary>Gets this player's game version.</summary>
     public virtual string Version =>
@@ -466,7 +460,14 @@ public class Player : WorldEntity
     public virtual void SetSpawnInfo(int team, int skin, Vector3 position, float rotation, Weapon weapon1 = Weapon.None, int weapon1Ammo = 0,
         Weapon weapon2 = Weapon.None, int weapon2Ammo = 0, Weapon weapon3 = Weapon.None, int weapon3Ammo = 0)
     {
-        throw new NotImplementedException();
+        var weapons = new WeaponSlotData[OpenMpConstants.MAX_WEAPON_SLOTS];
+        weapons[0] = new WeaponSlotData((byte)weapon1, weapon1Ammo);
+        weapons[1] = new WeaponSlotData((byte)weapon2, weapon2Ammo);
+        weapons[2] = new WeaponSlotData((byte)weapon3, weapon3Ammo);
+
+        var info = new PlayerClass(team, skin, position, rotation, new WeaponSlots(weapons));
+
+        ClassData.SetSpawnInfo(ref info);
     }
 
     /// <summary>(Re)Spawns a player.</summary>
@@ -1088,13 +1089,13 @@ public class Player : WorldEntity
     /// </param>
     public virtual void StartRecordingPlayerData(PlayerRecordingType recordingType, string recordingName)
     {
-        throw new NotImplementedException();
+        RecordingData.Start((SampSharp.OpenMp.Core.Api.PlayerRecordingType)recordingType, recordingName);
     }
 
     /// <summary>Stops all the recordings that had been started with <see cref="StartRecordingPlayerData" /> for this player.</summary>
     public virtual void StopRecordingPlayerData()
     {
-        throw new NotImplementedException();
+        RecordingData.Stop();
     }
 
     /// <summary>Retrieves the start and end (hit) position of the last bullet a player fired.</summary>
@@ -1148,7 +1149,7 @@ public class Player : WorldEntity
     /// <param name="message">The text that will be displayed.</param>
     public virtual void SendClientMessage(string message)
     {
-        SendClientMessage(SAMP.Color.White, message);
+        SendClientMessage(Color.White, message);
     }
 
     /// <summary>
@@ -1160,7 +1161,7 @@ public class Player : WorldEntity
     [StringFormatMethod("messageFormat")]
     public virtual void SendClientMessage(string messageFormat, params object[] args)
     {
-        SendClientMessage(SAMP.Color.White, string.Format(messageFormat, args));
+        SendClientMessage(Color.White, string.Format(messageFormat, args));
     }
 
     /// <summary>Kicks this player from the server. They will have to quit the game and re-connect if they wish to continue playing.</summary>
@@ -1191,9 +1192,9 @@ public class Player : WorldEntity
     /// </summary>
     /// <param name="sender">The player which has sent the message.</param>
     /// <param name="message">The message that will be sent.</param>
-    public virtual void SendPlayerMessageToPlayer(EntityId sender, string message)
+    public virtual void SendPlayerMessageToPlayer(Player sender, string message)
     {
-        throw new NotImplementedException();
+        _player.SendChatMessage(sender, message);
     }
 
     /// <summary>Shows 'game text' (on-screen text) for a certain length of time for this player.</summary>
