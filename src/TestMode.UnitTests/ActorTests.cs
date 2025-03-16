@@ -1,97 +1,83 @@
 ﻿using System.Numerics;
+using Microsoft.Extensions.DependencyInjection;
 using SampSharp.Entities.SAMP;
 using Shouldly;
+using Xunit;
 
 namespace TestMode.UnitTests;
 
-public class ActorTests : TestSystem
+public class ActorTests : TestBase
 {
-    private readonly IWorldService _worldService;
-    private Actor _actor = null!;
+    private readonly Actor _actor;
 
-    public ActorTests(IWorldService worldService)
+    public ActorTests()
     {
-        _worldService = worldService;
+        _actor = Services.GetRequiredService<IWorldService>()
+            .CreateActor(46, new Vector3(4, 5, 6), 45);
     }
 
-    [TestSetup]
-    public void Setup()
+    public override void Dispose()
     {
-        _actor = _worldService.CreateActor(45, new Vector3(4, 5, 6), 45);
+        _actor.DestroyEntity();
     }
 
-    [TestCleanup]
-    public void Cleanup()
-    {
-        _actor?.Destroy();
-    }
-
-    [Test]
+    [Fact]
     public void CreateActor_should_set_properties()
     {
-        var actor = _worldService.CreateActor(46, new Vector3(4, 5, 6), 45);
-
-        try
-        {
-            actor.Skin.ShouldBe(46);
-            actor.Position.ShouldBe(new Vector3(4, 5, 6));
-            actor.Angle.ShouldBe(45);
-        }
-        finally
-        {
-            actor.Destroy();
-        }
+        _actor.Skin.ShouldBe(46);
+        _actor.Position.ShouldBe(new Vector3(4, 5, 6));
+        _actor.Angle.ShouldBe(45);
     }
     
-    [Test]
+    [Fact]
     public void Angle_should_roundtrip()
     {
         _actor.Angle = 88;
         _actor.Angle.ShouldBe(88);
     }
 
-    [Test]
+    [Fact]
     public void Position_should_roundtrip()
     {
         _actor.Position = new Vector3(1, 2, 3);
         _actor.Position.ShouldBe(new Vector3(1, 2, 3));
     }
     
-    [Test]
+    [Fact]
     public void Health_should_roundtrip()
     {
         _actor.Health = 94;
         _actor.Health.ShouldBe(94);
     }
 
-    [Test]
+    [Fact]
     public void IsInvulnerable_should_roundtrip_true()
     {
         _actor.IsInvulnerable = true;
         _actor.IsInvulnerable.ShouldBeTrue();
     }
 
-    [Test]
+    [Fact]
     public void IsInvulnerable_should_roundtrip_false()
     {
         _actor.IsInvulnerable = false;
         _actor.IsInvulnerable.ShouldBeFalse();
     }
 
-    [Test]
+    [Fact]
     public void Skin_should_roundtrip()
     {
         _actor.Skin = 99;
         _actor.Skin.ShouldBe(99);
     }
 
-    [Test]
+    [Fact]
     public void ApplyAnim_should_succeed()
     {
         _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, 830);
     }
 
-    [Test(TestEnvironment.OnPlayerTrigger)]
+    [Fact]
     public void IsStreamedIn_should_succeed()
     {
         _actor.IsStreamedIn(Player);

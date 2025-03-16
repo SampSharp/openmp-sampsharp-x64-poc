@@ -101,6 +101,13 @@ public class MyFirstSystem : ISystem
             return true;
         }
 
+        if (cmdtext == "/net")
+        {
+            var n = player.GetNetworkStats();
+            player.SendClientMessage(n.MessagesSent.ToString());
+            return true;
+        }
+
         if (cmdtext == "/ak")
         {
             player.GiveWeapon(Weapon.AK47, 200);

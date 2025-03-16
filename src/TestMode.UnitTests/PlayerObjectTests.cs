@@ -1,72 +1,59 @@
 ﻿using System.Numerics;
+using Microsoft.Extensions.DependencyInjection;
 using SampSharp.Entities.SAMP;
 using Shouldly;
+using Xunit;
 
 namespace TestMode.UnitTests;
 
-public class PlayerObjectTests : TestSystem
+public class PlayerObjectTests : TestBase
 {
     private readonly IWorldService _worldService;
-    private PlayerObject _object = null!;
+    private readonly PlayerObject _object;
 
-    public PlayerObjectTests(IWorldService worldService)
+    public PlayerObjectTests()
     {
-        _worldService = worldService;
+        _worldService = Services.GetRequiredService<IWorldService>();
+        _object = _worldService.CreatePlayerObject(Player, 100, new Vector3(10, 20, 30), new Vector3(20, 10, 0), 30);
     }
 
-    public override TestEnvironment DefaultEnvironment => TestEnvironment.OnPlayerTrigger;
-
-    [TestSetup]
-    public void Setup()
-    {
-        _object = _worldService.CreatePlayerObject(Player, 100, new Vector3(10, 20, 30), Vector3.Zero);
-    }
-
-    [TestCleanup]
-    public void Cleanup()
+    public override void Dispose()
     {
         _object?.Destroy();
     }
 
-    [Test]
+
+    [Fact]
     public void CreateObject_should_set_properties()
     {
-        var obj = _worldService.CreateObject(100, new Vector3(10, 20, 30), new Vector3(20, 10, 0), 30);
-        try
-        {
-            obj.ModelId.ShouldBe(100);
-            obj.Position.ShouldBe(new Vector3(10, 20, 30));
-            obj.RotationEuler.ShouldBe(new Vector3(20, 10, 0));
-            obj.DrawDistance.ShouldBe(30);
-        }
-        finally
-        {
-            obj.Destroy();
-        }
+        _object.ModelId.ShouldBe(100);
+        _object.Position.ShouldBe(new Vector3(10, 20, 30));
+        _object.RotationEuler.ShouldBe(new Vector3(20, 10, 0));
+        _object.DrawDistance.ShouldBe(30);
     }
 
-    [Test]
+    [Fact]
     public void Position_should_roundtrip()
     {
         _object.Position = new Vector3(20, 30, 40);
         _object.Position.ShouldBe(new Vector3(20, 30, 40));
     }
 
-    [Test]
+    [Fact]
     public void Rotation_should_roundtrip()
     {
         _object.RotationEuler = new Vector3(20, 30, 40);
         _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40));
     }
     
-    [Test]
+    [Fact]
     public void Move_and_Stop_should_succeed()
     {
         _object.Move(new Vector3(100, 200, 300), 10, Vector3.Zero);
         _object.Stop();
     }
 
-    [Test]
+    [Fact]
     public void Move_time_should_be_correct()
     {
         _object.Position = new Vector3(100, 0, 0);
@@ -76,31 +63,31 @@ public class PlayerObjectTests : TestSystem
         result.ShouldBe(10000);
     }
 
-    [Test]
+    [Fact]
     public void DisableCameraCollisions_should_succeed()
     {
         _object.DisableCameraCollisions();
     }
     
-    [Test]
+    [Fact]
     public void SetMaterial_should_succeed()
     {
         _object.SetMaterial(0, 0, "none", "none", Color.White);
     }
 
-    [Test]
+    [Fact]
     public void SetMaterialText_should_succeed()
     {
         _object.SetMaterialText(0, "test", ObjectMaterialSize.X128X128, "Arial", 12, true, Color.White, Color.White, ObjectMaterialTextAlign.Center);
     }
 
-    [Test]
+    [Fact]
     public void AttachToPlayer_should_succeed()
     {
         _object.AttachTo(Player, new Vector3(0, 0, 0), new Vector3(0, 0, 0));
     }
 
-    [Test]
+    [Fact]
     public void AttachToVehicle_should_succeed()
     {
         var vehicle = _worldService.CreateVehicle(VehicleModelType.Landstalker, new Vector3(0, 0, 0), 0, 0, 0);
@@ -115,7 +102,7 @@ public class PlayerObjectTests : TestSystem
         }
     }
 
-    [Test]
+    [Fact]
     public void AttachToObject_should_succeed()
     {
         var obj = _worldService.CreatePlayerObject(Player, 100, new Vector3(0, 0, 0), new Vector3(0, 0, 0));

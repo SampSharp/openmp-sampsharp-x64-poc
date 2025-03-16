@@ -1,0 +1,47 @@
+﻿using System.Numerics;
+using System.Reflection;
+using SampSharp.Entities;
+using SampSharp.Entities.SAMP;
+using Shouldly;
+using Xunit.Runner.InProc.SystemConsole;
+
+namespace TestMode.UnitTests;
+
+public class XunitSystem : ISystem
+{
+    public static Player Player { get; private set; } = null!;
+    public static IServiceProvider ServiceProvider { get; private set; } = null!;
+
+    public XunitSystem(IServiceProvider serviceProvider)
+    {
+        ServiceProvider = serviceProvider;
+    }
+
+    [Event]
+    public void OnGameModeInit(IServerService serverService)
+    {
+        serverService.AddPlayerClass(1, new Vector3(0, 0, 10), 0);
+
+        serverService.ConnectNpc("tester", "npcidle");
+    }
+
+    [Event]
+    public void OnPlayerConnect(Player player, ITimerService timerService)
+    {
+        if (player.IsNpc)
+        {
+            Player = player;
+
+            timerService.Delay(sp =>
+            {
+                _ = RunXUnit();
+            }, TimeSpan.FromSeconds(0.5f));
+        }
+    }
+
+    public async Task RunXUnit()
+    {
+        var runner = new ConsoleRunner(["-parallel", "none"], Assembly.GetExecutingAssembly());
+        await runner.EntryPoint();
+    }
+}
