@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net;
+using System.Runtime.InteropServices;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -10,6 +11,11 @@ public readonly struct PeerNetworkData
     {
         public readonly PeerAddress address;
         public readonly ushort port;
+
+        public IPEndPoint ToEndpoint()
+        {
+            return new IPEndPoint(address.ToAddress(), port);
+        }
     }
 
     public readonly INetwork network;

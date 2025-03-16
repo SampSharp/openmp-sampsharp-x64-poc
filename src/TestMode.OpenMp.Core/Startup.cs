@@ -165,7 +165,7 @@ public class Startup : IStartup,
 
     public void OnPlayerConnect(IPlayer player)
     {
-        Console.WriteLine($"Player connected: {player.GetNetworkData().Value.networkID.address.ToIpAddress()}");
+        Console.WriteLine($"Player connected: {player.GetNetworkData().Value.networkID.address.ToAddress()}");
     }
 
     public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)

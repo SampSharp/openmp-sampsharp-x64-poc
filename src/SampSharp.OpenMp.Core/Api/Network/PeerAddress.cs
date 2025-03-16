@@ -12,7 +12,7 @@ public readonly struct PeerAddress
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
     public readonly byte[] Bytes;
 
-    public IPAddress ToIpAddress()
+    public IPAddress ToAddress()
     {
         if (Ipv6)
         {

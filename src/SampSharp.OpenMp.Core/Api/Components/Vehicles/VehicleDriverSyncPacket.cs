@@ -20,15 +20,11 @@ public readonly struct VehicleDriverSyncPacket
     public readonly byte LandingGear;
     public readonly ushort TrailerID;
     public readonly bool HasTrailer;
-
-    public readonly byte AdditionalKeyWeapon; // TODO: bit mask;
-    /*bitmask AdditionalKeyWeapon -> struct
-    {
-        byte WeaponID : 6;
-        byte AdditionalKey : 2;
-    }*/
-
+    public readonly byte AdditionalKeyWeapon;
     public readonly uint HydraThrustAngle;
+
+    public byte WeaponID => (byte)(AdditionalKeyWeapon & 0b111111);
+    public byte AdditionalKey => (byte)(AdditionalKeyWeapon >> 6);
 
     private unsafe float GetTrainSpeed()
     {

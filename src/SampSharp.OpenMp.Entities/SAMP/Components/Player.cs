@@ -253,7 +253,10 @@ public class Player : WorldEntity
     public virtual string Ip => IpAddress.ToString();
     
     /// <summary>Gets the IP of this player.</summary>
-    public virtual IPAddress IpAddress => _player.GetNetworkData().Value.networkID.address.ToIpAddress();
+    public virtual IPAddress IpAddress => _player.GetNetworkData().Value.networkID.address.ToAddress();
+
+    /// <summary>Gets the end point (IP and port) of this player.</summary>
+    public virtual IPEndPoint EndPoint => _player.GetNetworkData().Value.networkID.ToEndpoint();
 
     /// <summary>Gets the ping of this player.</summary>
     public virtual int Ping => (int)_player.GetPing();
@@ -397,9 +400,6 @@ public class Player : WorldEntity
     /// <summary>Gets a value indicating whether this player is alive.</summary>
     public virtual bool IsAlive => !_deadStates.Contains(State);
 
-    /// <summary>Gets the end point (IP and port) of this player.</summary>
-    public virtual IPEndPoint EndPoint => throw new NotImplementedException();
-
     /// <summary>Gets this player's game version.</summary>
     public virtual string Version =>
         // TODO: more client ver info
@@ -412,33 +412,74 @@ public class Player : WorldEntity
     public virtual bool IsSelectingTextDraw => TextDrawData.IsSelecting();
 
     /// <summary>Gets the amount of time (in milliseconds) that a player has been connected to the server for.</summary>
-    public virtual int ConnectedTime => throw new NotImplementedException();
+    public virtual TimeSpan ConnectedTime
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return TimeSpan.FromMilliseconds(stats.ConnectionElapsedTime);
+        }
+    }
 
     /// <summary>Gets the number of messages the server has received from the player.</summary>
-    public virtual int MessagesReceived =>  throw new NotImplementedException();
+    public virtual int MessagesReceived
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (int)stats.MessagesReceived;
+        }
+    }
 
     /// <summary>Gets the number of messages the player has received in the last second.</summary>
-    public virtual int MessagesReceivedPerSecond => throw new NotImplementedException();
+    public virtual int MessagesReceivedPerSecond
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (int)stats.MessagesReceivedPerSecond;
+        }
+    }
 
     /// <summary>Gets the number of messages the server has sent to the player.</summary>
-    public virtual int MessagesSent => throw new NotImplementedException();
+    public virtual int MessagesSent
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (int)stats.MessagesSent;
+        }
+    }
 
     /// <summary>Get the amount of information (in bytes) that the server has sent to the player.</summary>
-    public virtual int BytesReceived => throw new NotImplementedException();
+    public virtual int BytesReceived
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (int)stats.BytesReceived;
+        }
+    }
 
     /// <summary>Get the amount of information (in bytes) that the server has received from the player.</summary>
-    public virtual int BytesSent => throw new NotImplementedException();
-
-    /// <summary>Gets the packet loss percentage of a player. Packet loss means data the player is sending to the server is being lost (or vice-versa).</summary>
-    /// <remarks>
-    /// This value has been found to be currently unreliable. The value is not as expected when compared to the client, therefore this function should not be
-    /// used as a packet loss kicker.
-    /// </remarks>
-    [Obsolete("This value is unreliable. See remarks for details.")]
-    public virtual float PacketLossPercent => throw new NotImplementedException();
+    public virtual int BytesSent
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (int)stats.TotalBytesSent;
+        }
+    }
 
     /// <summary>Get a player's connection status.</summary>
-    public virtual ConnectionStatus ConnectionStatus => throw new NotImplementedException();
+    public virtual ConnectionStatus ConnectionStatus
+    {
+        get
+        {
+            var stats = _player.GetNetworkData().Value.network.GetStatistics();
+            return (ConnectionStatus)stats.ConnectMode;
+        }
+    }
 
     /// <summary>Gets the aspect ratio of this player's camera.</summary>
     public virtual float AspectCameraRatio => _player.GetAimData().aspectRatio;
@@ -471,6 +512,15 @@ public class Player : WorldEntity
         var info = new PlayerClass(team, skin, position, rotation, new WeaponSlots(weapons));
 
         ClassData.SetSpawnInfo(ref info);
+    }
+
+    /// <summary>
+    /// Get the network statistics of this player.
+    /// </summary>
+    /// <returns></returns>
+    public NetworkStats GetNetworkStats()
+    {
+        return new NetworkStats(_player.GetNetworkData().Value.network.GetStatistics());
     }
 
     /// <summary>(Re)Spawns a player.</summary>
