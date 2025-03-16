@@ -185,7 +185,7 @@ public class Player : WorldEntity
     public virtual int WeaponAmmo => _player.GetArmedWeaponAmmo();
 
     /// <summary>Gets the WeaponState of the Weapon this player is currently holding.</summary>
-    public virtual WeaponState WeaponState => (WeaponState)_player.GetAimData().weaponState;// TODO: ref return?
+    public virtual WeaponState WeaponState => (WeaponState)_player.GetAimData().weaponState;
 
     /// <summary>Gets the Weapon this player is currently holding.</summary>
     public virtual Weapon Weapon => (Weapon)_player.GetArmedWeapon();
@@ -249,11 +249,14 @@ public class Player : WorldEntity
     /// <summary>Gets the state of this player.</summary>
     public virtual PlayerState State => (PlayerState)_player.GetState();
 
+    /// <summary>Gets the IP of this player as a string.</summary>
+    public virtual string Ip => IpAddress.ToString();
+    
     /// <summary>Gets the IP of this player.</summary>
-    public virtual string Ip => throw new NotImplementedException();
+    public virtual IPAddress IpAddress => _player.GetNetworkData().Value.networkID.address.ToIpAddress();
 
     /// <summary>Gets the ping of this player.</summary>
-    public virtual int Ping => throw new NotImplementedException();
+    public virtual int Ping => (int)_player.GetPing();
 
     /// <summary>Gets or sets the wanted level of this player.</summary>
     public virtual int WantedLevel
@@ -293,7 +296,7 @@ public class Player : WorldEntity
     }
 
     /// <summary>Gets the index of the animation this player is playing.</summary>
-    public virtual int AnimationIndex => _player.GetAnimationData().ID; // TODO: ref return?
+    public virtual int AnimationIndex => _player.GetAnimationData().ID;
 
     /// <summary>Gets or sets the SpecialAction of this player.</summary>
     public virtual SpecialAction SpecialAction
@@ -310,10 +313,10 @@ public class Player : WorldEntity
     }
 
     /// <summary>Gets the front Vector3 of this player's camera.</summary>
-    public virtual Vector3 CameraFrontVector => _player.GetAimData().camFrontVector; //  TODO: ref return?
+    public virtual Vector3 CameraFrontVector => _player.GetAimData().camFrontVector;
 
     /// <summary>Gets the mode of this player's camera.</summary>
-    public virtual CameraMode CameraMode => (CameraMode)_player.GetAimData().camMode; //  TODO: ref return?
+    public virtual CameraMode CameraMode => (CameraMode)_player.GetAimData().camMode;
 
     /// <summary>Gets the Actor this player is aiming at.</summary>
     public virtual Actor? TargetActor => _entityProvider.GetComponent(_player.GetTargetActor());
@@ -581,7 +584,7 @@ public class Player : WorldEntity
     /// <param name="leftRight">Left or Right value, passed by reference.</param>
     public virtual void GetKeys(out Keys keys, out int upDown, out int leftRight)
     {
-        var data = _player.GetKeyData(); //TODO; ref return?
+        var data = _player.GetKeyData();
         keys = (Keys)data.keys;
         upDown = data.upDown;
         leftRight = data.leftRight;
@@ -837,7 +840,7 @@ public class Player : WorldEntity
     /// <param name="soundId">The sound to play.</param>
     public virtual void PlaySound(int soundId)
     {
-        _player.PlaySound(soundId, new Vector3()); // TODO: this correct?
+        _player.PlaySound(soundId, new Vector3());
     }
 
     /// <summary>Apply an animation to this player.</summary>
@@ -910,7 +913,7 @@ public class Player : WorldEntity
     /// <returns>True on success, False otherwise.</returns>
     public virtual bool GetAnimationName(out string? animationLibrary, out string? animationName)
     {
-        var anim = _player.GetAnimationData(); // TODO: ref return?
+        var anim = _player.GetAnimationData();
         var id = anim.ID;
         (animationLibrary, animationName) = Animation.GetAnmiation(id);
         return true;

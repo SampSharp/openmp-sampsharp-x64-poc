@@ -101,6 +101,26 @@ public class MyFirstSystem : ISystem
             return true;
         }
 
+        if (cmdtext == "/ak")
+        {
+            player.GiveWeapon(Weapon.AK47, 200);
+            return true;
+        }
+
+        if (cmdtext == "/reftest")
+        {
+            var weaponState = player.WeaponState;
+            var anim = player.AnimationIndex;
+            var cfv = player.CameraFrontVector;
+            var cm = player.CameraMode;
+            player.GetKeys(out var keys, out var ud, out var lr);
+            player.PlaySound(5408); // 5408 - "No more bets please!"
+            player.GetAnimationName(out var lib, out var name);
+
+            player.SendClientMessage($"Weapon state: {weaponState}, anim: {anim}, cfv: {cfv}, cm: {cm}, keys: {keys}, ud: {ud}, lr: {lr}, lib: {lib}, name: {name}");
+            return true;
+        }
+
         return false;
     }
 

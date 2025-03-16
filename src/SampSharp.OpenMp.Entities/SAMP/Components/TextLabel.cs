@@ -48,7 +48,6 @@ public class TextLabel : WorldEntity
     {
         get
         {
-            // TODO : ref return?
             var attachmentData = _textLabel.GetAttachmentData();
             
             if (attachmentData.PlayerId != OpenMpConstants.INVALID_PLAYER_ID)

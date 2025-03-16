@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Net;
+using System.Numerics;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 using SampSharp.OpenMp.Core.Chrono;
@@ -9,6 +10,7 @@ namespace TestMode.OpenMp.Core;
 public class Startup : IStartup,
     ICoreEventHandler,
     IConsoleEventHandler, 
+    IPlayerConnectEventHandler,
     IPoolEventHandler<IPlayer>
 {
     public void Initialize(IStartupContext context)
@@ -24,6 +26,8 @@ public class Startup : IStartup,
         Console.WriteLine($"core version: {context.Core.GetVersion()}");
 
         var cfg = context.Core.GetConfig();
+
+        context.Core.GetPlayers().GetPlayerConnectDispatcher().AddEventHandler(this);
 
         // test config
         var name = cfg.GetString("name");
@@ -138,7 +142,7 @@ public class Startup : IStartup,
             Console.WriteLine($"BANANA!!! {parameters}");
             return true;
         }
-
+        
         Console.WriteLine($"cmd: {command}; params: {parameters}");
 
         
@@ -155,27 +159,28 @@ public class Startup : IStartup,
         commands.Emplace("banana");
     }
 
+    public void OnIncomingConnection(IPlayer player, string ipAddress, ushort port)
+    {
+    }
+
+    public void OnPlayerConnect(IPlayer player)
+    {
+        Console.WriteLine($"Player connected: {player.GetNetworkData().Value.networkID.address.ToIpAddress()}");
+    }
+
+    public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)
+    {
+    }
+
+    public void OnPlayerClientInit(IPlayer player)
+    {
+    }
+
     public void OnPoolEntryCreated(IPlayer entry)
     {
     }
 
     public void OnPoolEntryDestroyed(IPlayer entry)
     {
-    }
-}
-
-[Extension(0x57a6f80937089f8b)]
-public class Nickname : Extension
-{
-    public Nickname(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
-
-    public override string ToString()
-    {
-        return $"{{name: {Name}}}";
     }
 }

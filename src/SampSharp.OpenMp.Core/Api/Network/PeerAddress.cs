@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Net;
+using System.Runtime.InteropServices;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -10,4 +11,18 @@ public readonly struct PeerAddress
 
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
     public readonly byte[] Bytes;
+
+    public IPAddress ToIpAddress()
+    {
+        if (Ipv6)
+        {
+            Span<byte> buf = stackalloc byte[46]; // INET6_ADDRSTRLEN
+            Bytes.CopyTo(buf);
+            return new IPAddress(buf);
+        }
+        else
+        {
+            return new IPAddress(V4);
+        }
+    }
 }
