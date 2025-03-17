@@ -29,7 +29,7 @@ internal class EventDispatcher : IEventDispatcher, IEventService
         _entityManager = entityManager;
         _logger = logger;
 
-        systemRegistry.RegisterSystemsLoadedHandler(() => LoadTargetSites(systemRegistry));
+        systemRegistry.Register(() => LoadTargetSites(systemRegistry));
     }
 
     public void UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)

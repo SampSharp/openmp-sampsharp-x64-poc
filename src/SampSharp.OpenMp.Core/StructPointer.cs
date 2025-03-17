@@ -3,7 +3,10 @@ using System.Runtime.CompilerServices;
 
 namespace SampSharp.OpenMp.Core;
 
-internal static unsafe class Pointer
+/// <summary>
+/// Provides methods to work with structs which represent pointers to open.mp interfaces.
+/// </summary>
+internal static unsafe class StructPointer
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T AsStruct<T>(nint pointer) where T : unmanaged
@@ -13,8 +16,8 @@ internal static unsafe class Pointer
     }
     
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T Dereference<T>(nint pointer) where T : unmanaged
+    public static T Dereference<T>(nint pointerToPointer) where T : unmanaged
     {
-        return *(T*)pointer;
+        return *(T*)pointerToPointer;
     }
 }

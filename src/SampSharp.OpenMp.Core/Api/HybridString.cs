@@ -20,19 +20,26 @@ public readonly struct HybridString16
     [FieldOffset(Api.Size.Length), MarshalAs(UnmanagedType.ByValArray, SizeConst = Size)]
     private readonly byte[]? _static;
         
-    public HybridString16(string inp)
+    public HybridString16(string? inp)
     {
-        var requiredSize = Encoding.GetByteCount(inp);
-        if (requiredSize < Size) // last byte is for null terminator
+        if (inp == null)
         {
             _static = new byte[Size];
-            Encoding.GetBytes(inp, 0, inp.Length, _static, 0);
-
-            _lenDynamic = new Size(new nint((long)inp.Length << 1));
         }
         else
         {
-            throw new NotImplementedException("dynamic string size not implemented");
+            var requiredSize = Encoding.GetByteCount(inp);
+            if (requiredSize < Size) // last byte is for null terminator
+            {
+                _static = new byte[Size];
+                Encoding.GetBytes(inp, 0, inp.Length, _static, 0);
+
+                _lenDynamic = new Size(new nint((long)inp.Length << 1));
+            }
+            else
+            {
+                throw new NotImplementedException("dynamic string size not implemented");
+            }
         }
     }
 

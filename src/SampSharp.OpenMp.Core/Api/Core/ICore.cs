@@ -1,4 +1,5 @@
 ﻿using SampSharp.OpenMp.Core.Chrono;
+using SampSharp.OpenMp.Core.RobinHood;
 
 namespace SampSharp.OpenMp.Core.Api;
 
@@ -14,6 +15,8 @@ public readonly partial struct ICore
     public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
 
     public partial IConfig GetConfig();
+
+    public partial FlatPtrHashSet<INetwork> GetNetworks();
 
     public partial uint GetTickCount();
 

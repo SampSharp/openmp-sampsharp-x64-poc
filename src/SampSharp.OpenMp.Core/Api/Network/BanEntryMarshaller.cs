@@ -61,7 +61,7 @@ public static unsafe class BanEntryMarshaller
     {
         public readonly HybridString46 AddressString = addressString;
         public readonly TimePoint Time = time;
-        public readonly HybridString25 Name = name;
+        public readonly HybridString25 Name = name; // MAX_PLAYER_NAME + 1
         public readonly HybridString32 Reason = reason;
     }
 }

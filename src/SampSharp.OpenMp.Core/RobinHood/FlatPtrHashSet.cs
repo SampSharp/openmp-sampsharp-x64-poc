@@ -52,13 +52,14 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
 
         public bool MoveNext()
         {
+            var end = _set.End();
             if (!_iterator.HasValue)
             {
                 _iterator = _set.Begin();
-                return _iterator != _set.End();
+                return _iterator != end;
             }
 
-            if (_iterator == _set.End())
+            if (_iterator == end)
             {
                 return false;
             }
@@ -66,7 +67,7 @@ public readonly struct FlatPtrHashSet<T> : IReadOnlyCollection<T> where T : unma
             var iter = _iterator.Value;
             iter.Advance();
             _iterator = iter;
-            return true;
+            return _iterator != end;
         }
 
         public void Reset()

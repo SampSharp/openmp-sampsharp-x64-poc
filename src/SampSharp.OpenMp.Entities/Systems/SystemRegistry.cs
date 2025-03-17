@@ -4,35 +4,40 @@ namespace SampSharp.Entities;
 
 internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystemRegistry
 {
-    private Type[] _systemTypes = [];
+    private Type[]? _systemTypes;
     private Dictionary<Type, ISystem[]>? _data;
 
-    private List<Action>? _systemsLoadedHandlers = [];
+    private List<Action>? _handlers = [];
 
     public void LoadSystems()
     {
-        var systemImplementationTypes = serviceProvider.GetServices<SystemEntry>()
+        if (_data != null)
+        {
+            return;
+        }
+
+        _systemTypes = serviceProvider.GetServices<SystemEntry>()
             .Select(w => w.Type)
             .ToArray();
 
-        if (_data != null)
-        {
-            throw new SystemRegistryException("The system registry has been locked an cannot be modified.");
-        }
+        _data = ExtractSystemTypeLookupTable(_systemTypes)
+            .ToDictionary(x => x.Key, x => x.Value.ToArray());
 
+        InvokeHandlers();
+    }
+
+    private Dictionary<Type, HashSet<ISystem>> ExtractSystemTypeLookupTable(Type[] systemTypes)
+    {
         var data = new Dictionary<Type, HashSet<ISystem>>();
-
-        _systemTypes = systemImplementationTypes;
-        
-        foreach (var type in systemImplementationTypes)
+        foreach (var type in systemTypes)
         {
             if (serviceProvider.GetService(type) is not ISystem instance)
             {
-                throw new SystemRegistryException($"System of type {type} could not be found in the service provider.");
+                continue;
             }
 
+            // Add the system to all types and interfaces it implements.
             var currentType = type;
-
             while (currentType != null && currentType != typeof(object))
             {
                 if (!data.TryGetValue(currentType, out var set))
@@ -57,27 +62,25 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
             }
         }
 
-        // Convert hash sets to arrays.
-        _data = new Dictionary<Type, ISystem[]>();
-        foreach (var kv in data)
-        {
-            _data[kv.Key] = kv.Value.ToArray();
-        }
+        return data;
+    }
 
-        if (_systemsLoadedHandlers != null)
+    private void InvokeHandlers()
+    {
+        if (_handlers != null)
         {
-            foreach (var handler in _systemsLoadedHandlers)
+            foreach (var handler in _handlers)
             {
                 handler();
             }
 
-            _systemsLoadedHandlers = null;
+            _handlers = null;
         }
     }
 
     public ReadOnlyMemory<ISystem> Get(Type type)
     {
-        return _data?.TryGetValue(type, out var value) ?? false ? value : default(Memory<ISystem>);
+        return _data?.TryGetValue(type, out var value) ?? false ? value : default(ReadOnlyMemory<ISystem>);
     }
 
     public ReadOnlyMemory<ISystem> Get<TSystem>() where TSystem : ISystem
@@ -87,14 +90,14 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
 
     public ReadOnlyMemory<Type> GetSystemTypes()
     {
-        return _systemTypes.AsMemory();
+        return _systemTypes?.AsMemory() ?? default;
     }
 
-    public void RegisterSystemsLoadedHandler(Action handler)
+    public void Register(Action handler)
     {
-        if (_systemsLoadedHandlers != null)
+        if (_handlers != null)
         {
-            _systemsLoadedHandlers.Add(handler);
+            _handlers.Add(handler);
         }
         else
         {

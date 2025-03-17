@@ -15,5 +15,5 @@ public interface ISystemRegistry
 
     ReadOnlyMemory<Type> GetSystemTypes();
 
-    void RegisterSystemsLoadedHandler(Action handler);
+    void Register(Action handler);
 }

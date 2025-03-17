@@ -10,7 +10,7 @@ internal struct FlatPtrHashSetIterator : IEquatable<FlatPtrHashSetIterator>
     
     public T Get<T>() where T : unmanaged
     {
-        return Pointer.Dereference<T>(_value);
+        return StructPointer.Dereference<T>(_value);
     }
 
     public bool Equals(FlatPtrHashSetIterator other)

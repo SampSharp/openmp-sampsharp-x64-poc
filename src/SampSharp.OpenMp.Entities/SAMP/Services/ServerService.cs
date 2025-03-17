@@ -116,7 +116,11 @@ internal class ServerService : IServerService
 
     public void BlockIpAddress(string ipAddress, TimeSpan time = default)
     {
-        throw new NotImplementedException();
+        var entry = new BanEntry(ipAddress);
+        foreach (var network in _core.GetNetworks())
+        {
+            network.Ban(entry, time);
+        }
     }
 
     public void ConnectNpc(string name, string script)
@@ -325,7 +329,11 @@ internal class ServerService : IServerService
 
     public void UnBlockIpAddress(string ipAddress)
     {
-        throw new NotImplementedException();
+        var entry = new BanEntry(ipAddress);
+        foreach (var network in _core.GetNetworks())
+        {
+            network.Unban(entry);
+        }
     }
 
     public void UsePlayerPedAnims()

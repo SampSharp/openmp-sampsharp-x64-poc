@@ -85,6 +85,6 @@ public readonly partial struct IExtensible
     {
         var extension = GetExtension(T.ExtensionId).Handle;
 
-        return Pointer.AsStruct<T>(extension);
+        return StructPointer.AsStruct<T>(extension);
     }
 }

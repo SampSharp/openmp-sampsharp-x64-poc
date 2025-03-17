@@ -41,7 +41,7 @@ public class TimerSystem : ITickingSystem, ITimerService
         
         _lastTick = Stopwatch.GetTimestamp();
         
-        systemRegistry.RegisterSystemsLoadedHandler(CreateTimersFromAssemblies);
+        systemRegistry.Register(CreateTimersFromAssemblies);
     }
 
     public TimerReference Delay(Action<IServiceProvider> action, TimeSpan delay)
