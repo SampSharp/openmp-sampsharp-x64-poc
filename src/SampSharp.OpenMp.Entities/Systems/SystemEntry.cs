@@ -1,8 +1,8 @@
 ﻿namespace SampSharp.Entities;
 
-internal class SystemTypeWrapper
+internal class SystemEntry
 {
-    public SystemTypeWrapper(Type type)
+    public SystemEntry(Type type)
     {
         Type = type;
     }

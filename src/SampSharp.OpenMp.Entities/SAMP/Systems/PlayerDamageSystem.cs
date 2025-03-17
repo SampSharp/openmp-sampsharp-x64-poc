@@ -7,12 +7,12 @@ internal class PlayerDamageSystem : DisposableSystem, IPlayerDamageEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerDamageSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerDamageSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerDamageDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerDamageDispatcher().Add(this));
     }
 
     public void OnPlayerDeath(IPlayer player, IPlayer killer, int reason)

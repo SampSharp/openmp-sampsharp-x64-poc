@@ -7,7 +7,7 @@ internal class ActorSystem : DisposableSystem, IActorEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public ActorSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, OpenMp omp)
+    public ActorSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;

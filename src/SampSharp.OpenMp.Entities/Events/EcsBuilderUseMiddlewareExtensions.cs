@@ -9,7 +9,17 @@ public static class EcsBuilderUseMiddlewareExtensions
 {
     private static readonly MethodInfo _getServiceInfo =
         typeof(EcsBuilderUseMiddlewareExtensions).GetMethod(nameof(GetService), BindingFlags.NonPublic | BindingFlags.Static)!;
-
+    
+    /// <summary>Adds a middleware to the handler of the event with the specified <paramref name="name" />.</summary>
+    /// <param name="builder">The ECS builder to add the middleware to.</param>
+    /// <param name="name">The name of the event.</param>
+    /// <param name="middleware">The middleware to add to the event.</param>
+    /// <returns>A reference to this instance after the operation has completed.</returns>
+    public static IEcsBuilder UseMiddleware(this IEcsBuilder builder, string name, Func<EventDelegate, EventDelegate> middleware)
+    {
+        builder.Services.GetRequiredService<IEventDispatcher>().UseMiddleware(name, middleware);
+        return builder;
+    }
 
     /// <summary>Adds a middleware to the handler of the event with the specified <paramref name="name" />.</summary>
     /// <param name="builder">The ECS builder to add the middleware to.</param>

@@ -7,12 +7,12 @@ internal class PlayerShotSystem : DisposableSystem, IPlayerShotEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerShotSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerShotSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerShotDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerShotDispatcher().Add(this));
     }
 
     public bool OnPlayerShotMissed(IPlayer player, ref PlayerBulletData bulletData)

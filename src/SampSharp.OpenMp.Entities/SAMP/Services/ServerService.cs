@@ -16,16 +16,16 @@ internal class ServerService : IServerService
     private readonly IClassesComponent _classes;
     private readonly IConsoleComponent _console;
 
-    public ServerService(OpenMp openMp, ILogger<ServerService> logger)
+    public ServerService(SampSharpEnvironment environment, ILogger<ServerService> logger)
     {
         _logger = logger;
-        _actors = openMp.Components.QueryComponent<IActorsComponent>();
-        _config = openMp.Core.GetConfig();
-        _players = openMp.Core.GetPlayers();
-        _vehicles = openMp.Components.QueryComponent<IVehiclesComponent>();
-        _classes = openMp.Components.QueryComponent<IClassesComponent>();
-        _console = openMp.Components.QueryComponent<IConsoleComponent>();
-        _core = openMp.Core;
+        _actors = environment.Components.QueryComponent<IActorsComponent>();
+        _config = environment.Core.GetConfig();
+        _players = environment.Core.GetPlayers();
+        _vehicles = environment.Components.QueryComponent<IVehiclesComponent>();
+        _classes = environment.Components.QueryComponent<IClassesComponent>();
+        _console = environment.Components.QueryComponent<IConsoleComponent>();
+        _core = environment.Core;
     }
 
     public int ActorPoolSize

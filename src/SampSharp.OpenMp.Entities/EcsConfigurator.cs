@@ -8,42 +8,51 @@ using SampSharp.OpenMp.Core;
 namespace SampSharp.Entities;
 
 [Extension(0x57e43771d28c5e7e)]
-internal class EcsManager : Extension
+internal class EcsConfigurator : Extension
 {
     private readonly EcsConfiguration _configuration;
     private IServiceProvider? _serviceProvider;
 
-    public EcsManager(EcsConfiguration configuration)
+    public EcsConfigurator(EcsConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    internal void Run(IStartupContext context)
+    public void Bind(IStartupContext context)
+    {
+        context.UseSynchronizationContext();
+        
+        context.Initialized += OnContextInitialized; 
+        context.Cleanup += OnContextCleanup;
+
+        context.Core.AddExtension(this);
+    }
+
+    private void Run(IStartupContext context)
     {
         var configurator = (IEcsStartup)context.Configurator;
 
-        var info = new RuntimeInformation(configurator.GetType().Assembly);
+        var environment = new SampSharpEnvironment(configurator.GetType().Assembly, context.Core, context.ComponentList);
 
         // Build the service provider
-        BuildServiceProvider(context, info, configurator);
+        BuildServiceProvider(environment, configurator);
 
         // Run launch configurations
         context.UnhandledExceptionHandler = UnhandledExceptionHandler;
 
         configurator.Configure(new EcsBuilder(_serviceProvider));
 
-        AddWrappedSystemTypes();
+        LoadSystems();
 
         // Fire initialize event
         OnGameModeInit();
     }
 
     [MemberNotNull(nameof(_serviceProvider))]
-    private void BuildServiceProvider(IStartupContext context, RuntimeInformation info, IEcsStartup configurator)
+    private void BuildServiceProvider(SampSharpEnvironment environment, IEcsStartup configurator)
     {
         var services = new ServiceCollection();
-        services.AddSingleton(info);
-        services.AddSingleton(new OpenMp(context.Core, context.ComponentList));
+        services.AddSingleton(environment);
         services.AddLogging(builder =>
         {
             builder.AddOpenMp();
@@ -53,13 +62,8 @@ internal class EcsManager : Extension
         ConfigureDefaultServices(services);
         configurator.ConfigureServices(services);
 
-        var factory = _configuration.ServiceProviderFactory ?? DefaultServiceFactory;
+        var factory = _configuration.ServiceProviderFactory ?? (s => s.BuildServiceProvider());
         _serviceProvider = factory(services);
-    }
-
-    private static IServiceProvider DefaultServiceFactory(IServiceCollection services)
-    {
-        return services.BuildServiceProvider();
     }
 
     private void UnhandledExceptionHandler(string context, Exception exception)
@@ -74,16 +78,6 @@ internal class EcsManager : Extension
         }
     }
 
-    private void OnGameModeInit()
-    {
-        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeInit");
-    }
-
-    private void OnGameModeExit()
-    {
-        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeExit");
-    }
-
     protected override void Cleanup()
     {
         OnGameModeExit();
@@ -94,7 +88,17 @@ internal class EcsManager : Extension
         }
     }
 
-    private void AddWrappedSystemTypes()
+    private void OnGameModeInit()
+    {
+        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeInit");
+    }
+
+    private void OnGameModeExit()
+    {
+        _serviceProvider?.GetRequiredService<IEventDispatcher>().Invoke("OnGameModeExit");
+    }
+
+    private void LoadSystems()
     {
         _serviceProvider!.GetRequiredService<SystemRegistry>().LoadSystems();
     }
@@ -110,36 +114,23 @@ internal class EcsManager : Extension
             .AddSingleton<SystemRegistry>()
             .AddSingleton<ISystemRegistry>(x => x.GetRequiredService<SystemRegistry>())
             .AddSingleton<IEntityManager, EntityManager>()
-            .AddSingleton<IOmpEntityProvider, OmpEntityProvider>()
-            .AddSingleton<IServerService, ServerService>()
-            .AddSingleton<IWorldService, WorldService>()
-            .AddSingleton<IVehicleInfoService, VehicleInfoService>()
             // TODO: .AddSingleton<IPlayerCommandService, PlayerCommandService>()
             // TODO: .AddSingleton<IRconCommandService, RconCommandService>()
             .AddSingleton<ITimerService>(s => s.GetRequiredService<TimerSystem>())
-            .AddSingleton<IDialogService, DialogService>()
-            .AddSystem<DialogSystem>()
             .AddSystem<TimerSystem>()
             .AddSystem<TickingSystem>()
-            .AddSystem<ActorSystem>()
-            .AddSystem<ConsoleSystem>()
-            .AddSystem<GangZoneSystem>()
-            .AddSystem<MenuSystem>()
-            .AddSystem<ObjectSystem>()
-            .AddSystem<PickupSystem>()
-            .AddSystem<PlayerChangeSystem>()
-            .AddSystem<PlayerCheckSystem>()
-            .AddSystem<PlayerClickSystem>()
-            .AddSystem<PlayerConnectSystem>()
-            .AddSystem<PlayerDamageSystem>()
-            .AddSystem<PlayerShotSystem>()
-            .AddSystem<PlayerSpawnSystem>()
-            .AddSystem<PlayerStreamSystem>()
-            .AddSystem<PlayerTextSystem>()
-            .AddSystem<PlayerUpdateSystem>()
-            .AddSystem<TextDrawSystem>()
-            .AddSystem<VehicleSystem>()
+            .AddSamp()
             ;
+    }
 
+    private void OnContextInitialized(object? sender, EventArgs e)
+    {
+        var context = (IStartupContext)sender!;
+        Run(context);
+    }
+
+    private void OnContextCleanup(object? sender, EventArgs e)
+    {
+        Dispose();
     }
 }

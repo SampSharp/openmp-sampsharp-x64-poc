@@ -12,7 +12,7 @@ public static class OmpLoggerProviderExtensions
     public static void AddOpenMp(this ILoggingBuilder builder, LogLevel minLogLevel = LogLevel.Trace)
     {
         builder.Services.TryAddSingleton<ILoggerProvider>(sp => 
-            new OmpLoggerProvider((SampSharp.OpenMp.Core.Api.ILogger)sp.GetRequiredService<OpenMp>().Core, minLogLevel));
+            new OmpLoggerProvider((SampSharp.OpenMp.Core.Api.ILogger)sp.GetRequiredService<SampSharpEnvironment>().Core, minLogLevel));
     }
 }
 

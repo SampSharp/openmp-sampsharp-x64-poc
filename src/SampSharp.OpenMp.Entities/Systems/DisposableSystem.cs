@@ -38,7 +38,10 @@ public abstract class DisposableSystem : ISystem, IDisposable
 
     public void Dispose()
     {
-        ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_disposed)
+        {
+            return;
+        }
 
         try
         {

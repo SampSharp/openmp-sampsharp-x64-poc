@@ -7,7 +7,7 @@ internal class TextDrawSystem : DisposableSystem, ITextDrawEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public TextDrawSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp omp)
+    public TextDrawSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;

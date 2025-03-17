@@ -8,12 +8,12 @@ internal class PlayerClickSystem : DisposableSystem, IPlayerClickEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerClickSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerClickSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerClickDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerClickDispatcher().Add(this));
     }
 
     public void OnPlayerClickMap(IPlayer player, Vector3 pos)

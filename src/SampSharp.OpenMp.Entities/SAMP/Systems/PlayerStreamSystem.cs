@@ -7,12 +7,12 @@ internal class PlayerStreamSystem : DisposableSystem, IPlayerStreamEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerStreamSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerStreamSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerStreamDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerStreamDispatcher().Add(this));
     }
 
     public void OnPlayerStreamIn(IPlayer player, IPlayer forPlayer)

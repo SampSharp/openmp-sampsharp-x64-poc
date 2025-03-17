@@ -7,12 +7,12 @@ internal class PlayerSpawnSystem : DisposableSystem, IPlayerSpawnEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerSpawnSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerSpawnSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerSpawnDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerSpawnDispatcher().Add(this));
     }
 
     public bool OnPlayerRequestSpawn(IPlayer player)

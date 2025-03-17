@@ -16,8 +16,15 @@ public static class EventDispatcherExtensions
     private class DisposableHandler<T>(IEventDispatcher<T> dispatcher, T handler) : IDisposable
         where T : class, IEventHandler<T>
     {
+        private bool _disposed;
         public void Dispose()
         {
+            if (_disposed)
+            {
+                return;
+            }
+
+            _disposed = true;
             dispatcher.RemoveEventHandler(handler);
         }
     }

@@ -11,34 +11,13 @@ public static class StartupContextEcsExtensions
             throw new InvalidOperationException("The startup type does not implement the 'IEcsStartup' interface.");
         }
 
-        if (context.Core.TryGetExtension<EcsManager>() != null)
+        if (context.Core.TryGetExtension<EcsConfigurator>() != null)
         {
             throw new InvalidOperationException("ECS has already been configured.");
         }
 
-        context.UseSynchronizationContext();
-        
-        context.Initialized += OnContextInitialized; 
-        context.Cleanup += OnContextCleanup;
-
-        context.Core.AddExtension(
-            new EcsManager(
-                EcsConfiguration.Create(configure)));
+        new EcsConfigurator(EcsConfiguration.Create(configure)).Bind(context);
 
         return context;
-    }
-    
-    private static void OnContextInitialized(object? sender, EventArgs e)
-    {
-        var context = (StartupContext)sender!;
-        var manager = context.Core.GetExtension<EcsManager>();
-
-        manager.Run(context);
-    }
-
-    private static void OnContextCleanup(object? sender, EventArgs e)
-    {
-        var context = (StartupContext)sender!;
-        context.Core.GetExtension<EcsManager>()?.Dispose();
     }
 }

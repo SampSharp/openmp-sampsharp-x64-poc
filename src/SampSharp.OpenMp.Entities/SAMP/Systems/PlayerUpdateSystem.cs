@@ -8,12 +8,12 @@ internal class PlayerUpdateSystem : DisposableSystem, IPlayerUpdateEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerUpdateSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerUpdateSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerUpdateDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerUpdateDispatcher().Add(this));
     }
 
     public bool OnPlayerUpdate(IPlayer player, TimePoint now)

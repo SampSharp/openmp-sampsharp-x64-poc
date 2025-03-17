@@ -13,7 +13,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
     private readonly ITextDrawsComponent _textDraws;
     private readonly IMenusComponent _menus;
     private readonly IPlayerPool _players;
-    public OmpEntityProvider(OpenMp omp, IEntityManager entityManager)
+    public OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entityManager)
     {
         _entityManager = entityManager;
         _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();

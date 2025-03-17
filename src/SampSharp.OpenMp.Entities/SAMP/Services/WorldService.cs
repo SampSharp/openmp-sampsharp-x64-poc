@@ -18,7 +18,7 @@ public class WorldService : IWorldService
     private readonly IEntityManager _entityManager;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public WorldService(OpenMp omp, IEntityManager entityManager, IOmpEntityProvider entityProvider)
+    public WorldService(SampSharpEnvironment omp, IEntityManager entityManager, IOmpEntityProvider entityProvider)
     {
         _core = omp.Core;
         _players = omp.Core.GetPlayers();

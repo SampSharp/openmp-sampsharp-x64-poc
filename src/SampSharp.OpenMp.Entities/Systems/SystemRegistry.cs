@@ -11,7 +11,7 @@ internal sealed class SystemRegistry(IServiceProvider serviceProvider) : ISystem
 
     public void LoadSystems()
     {
-        var systemImplementationTypes = serviceProvider.GetServices<SystemTypeWrapper>()
+        var systemImplementationTypes = serviceProvider.GetServices<SystemEntry>()
             .Select(w => w.Type)
             .ToArray();
 

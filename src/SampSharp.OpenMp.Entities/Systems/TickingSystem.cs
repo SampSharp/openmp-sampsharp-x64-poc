@@ -8,7 +8,7 @@ internal class TickingSystem : DisposableSystem, ICoreEventHandler
     private ITickingSystem[] _tickers = [];
 
     [Event]
-    public void OnGameModeInit(ISystemRegistry systemRegistry, OpenMp omp)
+    public void OnGameModeInit(ISystemRegistry systemRegistry, SampSharpEnvironment omp)
     {
         var tickers = systemRegistry.Get<ITickingSystem>().ToArray();
         _tickers = new ITickingSystem[tickers.Length];

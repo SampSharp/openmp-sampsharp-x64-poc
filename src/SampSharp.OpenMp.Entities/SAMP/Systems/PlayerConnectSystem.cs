@@ -7,12 +7,12 @@ internal class PlayerConnectSystem : DisposableSystem, IPlayerConnectEventHandle
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerConnectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerConnectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerConnectDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerConnectDispatcher().Add(this));
     }
 
     public void OnIncomingConnection(IPlayer player, string ipAddress, ushort port)

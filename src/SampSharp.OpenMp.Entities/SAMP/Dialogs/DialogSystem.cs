@@ -22,7 +22,7 @@ internal class DialogSystem : DisposableSystem, IPlayerDialogEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public DialogSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, OpenMp omp)
+    public DialogSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;

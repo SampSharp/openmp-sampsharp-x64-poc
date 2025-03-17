@@ -7,11 +7,11 @@ internal class PlayerTextSystem : DisposableSystem, IPlayerTextEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerTextSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerTextSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerTextDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerTextDispatcher().Add(this));
     }
 
     public bool OnPlayerText(IPlayer player, string message)

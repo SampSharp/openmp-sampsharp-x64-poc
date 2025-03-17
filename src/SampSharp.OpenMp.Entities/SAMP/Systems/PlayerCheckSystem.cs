@@ -7,12 +7,12 @@ internal class PlayerCheckSystem : DisposableSystem, IPlayerCheckEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PlayerCheckSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, OpenMp openMp)
+    public PlayerCheckSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        AddDisposable(openMp.Core.GetPlayers().GetPlayerCheckDispatcher().Add(this));
+        AddDisposable(environment.Core.GetPlayers().GetPlayerCheckDispatcher().Add(this));
     }
 
     public void OnClientCheckResponse(IPlayer player, int actionType, int address, int results)

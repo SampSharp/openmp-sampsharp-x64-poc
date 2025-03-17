@@ -14,7 +14,7 @@ public static class ServiceCollectionSystemExtensions
     public static IServiceCollection AddSystem(this IServiceCollection services, Type type)
     {
         return services.AddSingleton(type)
-            .AddSingleton(new SystemTypeWrapper(type));
+            .AddSingleton(new SystemEntry(type));
     }
 
     /// <summary>Adds the system of the specified type <typeparamref name="T" /> as a singleton and enables the system in the system registry.</summary>
