@@ -78,6 +78,26 @@ public static class Constants
     /// SampSharp.OpenMp.Core.NumberedTypeGeneratorAttribute
     /// </summary>
     public const string NumberedTypeGeneratorAttributeFQN = "SampSharp.OpenMp.Core.NumberedTypeGeneratorAttribute";
+    
+    /// <summary>
+    /// SampSharp.OpenMp.Core.StringViewMarshaller
+    /// </summary>
+    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.StringViewMarshaller";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.BooleanMarshaller
+    /// </summary>
+    public const string BooleanMarshallerFQN = "SampSharp.OpenMp.Core.BooleanMarshaller";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.StartupContext
+    /// </summary>
+    public const string StartupContextFQN = "SampSharp.OpenMp.Core.StartupContext";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.SampSharpInitParams
+    /// </summary>
+    public const string InitParamsFQN = "SampSharp.OpenMp.Core.SampSharpInitParams";
 
     // SampSharp.OpenMp.Core.Api
 
@@ -130,13 +150,4 @@ public static class Constants
     /// SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage
     /// </summary>
     public const string EventHandlerNativeHandleStorageFQN = "SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage";
-    
-    /// <summary>
-    /// SampSharp.OpenMp.Core.StringViewMarshaller
-    /// </summary>
-    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.StringViewMarshaller";
-
-
-    public const string StartupContextFQN = "SampSharp.OpenMp.Core.StartupContext";
-    public const string InitParamsFQN = "SampSharp.OpenMp.Core.SampSharpInitParams";
 }
