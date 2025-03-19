@@ -17,7 +17,7 @@ public readonly struct HybridString16
     // First bit is 1 if dynamic and 0 if static; the rest are the length
     [FieldOffset(0)] private readonly Size _lenDynamic;
         
-    [FieldOffset(Api.Size.Length), MarshalAs(UnmanagedType.ByValArray, SizeConst = Size)]
+    [FieldOffset(Core.Size.Length), MarshalAs(UnmanagedType.ByValArray, SizeConst = Size)]
     private readonly byte[]? _static;
         
     public HybridString16(string? inp)
@@ -46,7 +46,7 @@ public readonly struct HybridString16
     public void CopyTo(Span<byte> dest)
     {
         MemoryMarshal.Cast<byte, Size>(dest)[0] = Length;
-        AsSpan().CopyTo(dest[Api.Size.Length..]);
+        AsSpan().CopyTo(dest[Core.Size.Length..]);
     }
     
     public bool IsDynamic => (_lenDynamic.Value.ToInt64() & 1) != 0;

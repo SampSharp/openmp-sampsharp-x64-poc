@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core.Api;
+namespace SampSharp.OpenMp.Core;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct Size(nint value)

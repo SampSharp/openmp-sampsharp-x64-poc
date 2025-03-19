@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SampSharp.OpenMp.Core.Api;
+namespace SampSharp.OpenMp.Core;
 
 [StructLayout(LayoutKind.Sequential)]
 public readonly unsafe struct StringView : ISpanFormattable

@@ -132,9 +132,9 @@ public static class Constants
     public const string EventHandlerNativeHandleStorageFQN = "SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage";
     
     /// <summary>
-    /// SampSharp.OpenMp.Core.Api.StringViewMarshaller
+    /// SampSharp.OpenMp.Core.StringViewMarshaller
     /// </summary>
-    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.Api.StringViewMarshaller";
+    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.StringViewMarshaller";
 
 
     public const string StartupContextFQN = "SampSharp.OpenMp.Core.StartupContext";

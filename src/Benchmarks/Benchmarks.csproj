@@ -9,8 +9,8 @@
 
     <PropertyGroup>
         <!-- benchmarks must be build within source directory at this time -->
-        <BaseOutputPath>$(MSBuildThisFileDirectory)bin\</BaseOutputPath>
-        <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj\</BaseIntermediateOutputPath>
+        <OutputPath>$(MSBuildThisFileDirectory)bin\</OutputPath>
+        <IntermediateOutputPath>$(MSBuildThisFileDirectory)obj\</IntermediateOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
