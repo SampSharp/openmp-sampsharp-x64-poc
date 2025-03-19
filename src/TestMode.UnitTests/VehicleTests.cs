@@ -390,4 +390,35 @@ public class VehicleTests : TestBase
         _vehicle.GetComponentInSlot(CarModType.Wheels).ShouldBe(0);
     }
 
+    [Fact]
+    public void Trailer_should_roundtrip()
+    {
+        var trailer = Services.GetRequiredService<IWorldService>().CreateVehicle(VehicleModelType.ArticleTrailer, new Vector3(0, 0, 0), 0, 0, 0);
+
+        try
+        {
+            _vehicle.Trailer = trailer;
+            _vehicle.Trailer.ShouldBe(trailer);
+
+            _vehicle.Trailer = null;
+            _vehicle.Trailer.ShouldBeNull();
+        }
+        finally
+        {
+            trailer.Destroy();
+        }
+    }
+
+    [Fact]
+    public void SetParametersForPlayer_should_succeed()
+    {
+        var parameters = new VehicleParameters(
+            VehicleParameterValue.On, VehicleParameterValue.Off, VehicleParameterValue.On, VehicleParameterValue.Off,
+            VehicleParameterValue.On, VehicleParameterValue.Off, VehicleParameterValue.On, VehicleParameterValue.Off,
+            VehicleParameterValue.On, VehicleParameterValue.Off, VehicleParameterValue.On, VehicleParameterValue.Off,
+            VehicleParameterValue.On, VehicleParameterValue.Off, VehicleParameterValue.On, VehicleParameterValue.Off);
+
+        _vehicle.SetParametersForPlayer(Player, parameters);
+    }
+
 }

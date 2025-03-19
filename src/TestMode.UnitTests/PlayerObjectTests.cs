@@ -116,4 +116,13 @@ public class PlayerObjectTests : TestBase
             obj.Destroy();
         }
     }
+      
+    [Fact]
+    public void IsMoving_should_return_correct_value()
+    {
+        _object.Move(new Vector3(100, 200, 300), 10, Vector3.Zero);
+        _object.IsMoving.ShouldBeTrue();
+        _object.Stop();
+        _object.IsMoving.ShouldBeFalse();
+    }
 }

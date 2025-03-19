@@ -42,6 +42,15 @@ public class GlobalObjectTests : TestBase
     }
     
     [Fact]
+    public void IsMoving_should_return_correct_value()
+    {
+        _object.Move(new Vector3(100, 200, 300), 10, Vector3.Zero);
+        _object.IsMoving.ShouldBeTrue();
+        _object.Stop();
+        _object.IsMoving.ShouldBeFalse();
+    }
+
+    [Fact]
     public void RotationEuler_should_roundtrip()
     {
         _object.RotationEuler = new Vector3(20, 30, 40);
@@ -76,7 +85,7 @@ public class GlobalObjectTests : TestBase
     {
         _object.SetMaterial(0, 0, "none", "none", Color.White);
     }
-
+     
     [Fact]
     public void SetMaterialText_should_succeed()
     {

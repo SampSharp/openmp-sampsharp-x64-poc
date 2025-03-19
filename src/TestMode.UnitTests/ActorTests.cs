@@ -12,8 +12,7 @@ public class ActorTests : TestBase
 
     public ActorTests()
     {
-        _actor = Services.GetRequiredService<IWorldService>()
-            .CreateActor(46, new Vector3(4, 5, 6), 45);
+        _actor = Services.GetRequiredService<IWorldService>().CreateActor(46, new Vector3(4, 5, 6), 45);
     }
 
     public override void Dispose()
@@ -28,7 +27,7 @@ public class ActorTests : TestBase
         _actor.Position.ShouldBe(new Vector3(4, 5, 6));
         _actor.Angle.ShouldBe(45);
     }
-    
+
     [Fact]
     public void Angle_should_roundtrip()
     {
@@ -42,7 +41,7 @@ public class ActorTests : TestBase
         _actor.Position = new Vector3(1, 2, 3);
         _actor.Position.ShouldBe(new Vector3(1, 2, 3));
     }
-    
+
     [Fact]
     public void Health_should_roundtrip()
     {
@@ -81,5 +80,12 @@ public class ActorTests : TestBase
     public void IsStreamedIn_should_succeed()
     {
         _actor.IsStreamedIn(Player);
+    }
+
+    [Fact]
+    public void ClearAnimations_should_succeed()
+    {
+        _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, 830);
+        _actor.ClearAnimations();
     }
 }

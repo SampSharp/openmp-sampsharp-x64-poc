@@ -69,7 +69,11 @@ public readonly partial struct IExtensible
 
     public T? TryGetExtension<T>() where T : Extension
     {
-        
+        if (!HasValue)
+        {
+            return null;
+        }
+
         var ext = GetExtension(ExtensionIdProvider<T>.Id);
 
         if (ext == null)
@@ -83,6 +87,11 @@ public readonly partial struct IExtensible
 
     public T QueryExtension<T>() where T : unmanaged, IExtensionInterface
     {
+        if (!HasValue)
+        {
+            return default;
+        }
+
         var extension = GetExtension(T.ExtensionId).Handle;
 
         return StructPointer.AsStruct<T>(extension);

@@ -14,6 +14,7 @@ public class XunitSystem : ISystem
 {
     public static Player Player { get; private set; } = null!;
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
+    private bool _started;
 
     public XunitSystem(IServiceProvider serviceProvider)
     {
@@ -31,8 +32,9 @@ public class XunitSystem : ISystem
     [Event]
     public void OnPlayerConnect(Player player, ITimerService timerService)
     {
-        if (player.IsNpc)
+        if (!_started && player.IsNpc)
         {
+            _started = true;
             Player = player;
 
             timerService.Delay(sp =>
