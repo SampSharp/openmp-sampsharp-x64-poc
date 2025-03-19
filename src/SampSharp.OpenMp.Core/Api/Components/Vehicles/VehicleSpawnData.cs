@@ -13,6 +13,6 @@ public readonly struct VehicleSpawnData
     public readonly float zRotation;
     public readonly int colour1;
     public readonly int colour2;
-    public readonly bool siren;
+    public readonly BlittableBoolean siren;
     public readonly int interior;
 }

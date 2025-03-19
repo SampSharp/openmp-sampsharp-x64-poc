@@ -19,7 +19,7 @@ public readonly struct VehicleDriverSyncPacket
     public readonly byte Siren;
     public readonly byte LandingGear;
     public readonly ushort TrailerID;
-    public readonly bool HasTrailer;
+    public readonly BlittableBoolean HasTrailer;
     public readonly byte AdditionalKeyWeapon;
     public readonly uint HydraThrustAngle;
 

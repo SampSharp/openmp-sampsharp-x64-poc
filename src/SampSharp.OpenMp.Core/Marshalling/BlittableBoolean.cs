@@ -2,23 +2,24 @@
 
 public readonly struct BlittableBoolean(bool value) : IEquatable<BlittableBoolean>
 {
-    private readonly byte _data = value ? (byte)1 : (byte)0;
+    private const byte True = 1;
+    private const byte False = 0;
 
-    private bool AsBool => _data != 0;
+    private readonly byte _data = value ? True : False;
 
     public bool Equals(BlittableBoolean other)
     {
-        return AsBool == other.AsBool;
+        return (bool)this == (bool)other;
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is BlittableBoolean other && Equals(other);
+        return (obj is BlittableBoolean other && Equals(other)) || (obj is bool b && (bool)this == b);
     }
 
     public override int GetHashCode()
     {
-        return AsBool.GetHashCode();
+        return ((bool)this).GetHashCode();
     }
     
     public static bool operator ==(BlittableBoolean lhs, BlittableBoolean rhs)
@@ -33,7 +34,7 @@ public readonly struct BlittableBoolean(bool value) : IEquatable<BlittableBoolea
 
     public static implicit operator bool(BlittableBoolean b)
     {
-        return b.AsBool;
+        return  b._data != 0;
     }
 
     public static implicit operator BlittableBoolean(bool b)
@@ -43,6 +44,6 @@ public readonly struct BlittableBoolean(bool value) : IEquatable<BlittableBoolea
 
     public override string ToString()
     {
-        return AsBool.ToString();
+        return  ((bool)this).ToString();
     }
 }

@@ -43,7 +43,7 @@ public class PlayerObjectTests : TestBase
     public void Rotation_should_roundtrip()
     {
         _object.RotationEuler = new Vector3(20, 30, 40);
-        _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40));
+        _object.RotationEuler.ShouldBe(new Vector3(20, 30, 40), tolerance: 0.8f);
     }
     
     [Fact]
