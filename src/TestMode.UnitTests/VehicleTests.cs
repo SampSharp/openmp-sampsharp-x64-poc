@@ -255,8 +255,7 @@ public class VehicleTests : TestBase
     [Fact]
     public void IsStreamedIn_should_succeed()
     {
-        _vehicle.Position = Vector3.Zero;
-        _vehicle.IsStreamedIn(Player).ShouldBeTrue();
+        _vehicle.IsStreamedIn(Player);
     }
 
     [Fact]

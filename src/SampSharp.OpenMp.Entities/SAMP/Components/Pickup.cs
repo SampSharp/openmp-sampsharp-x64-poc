@@ -24,7 +24,7 @@ public class Pickup : WorldEntity
     public virtual int Model => _pickup.GetModel();
 
     /// <summary>Gets the type of this <see cref="Pickup" />.</summary>
-    public virtual int SpawnType => _pickup.GetPickupType();
+    public virtual PickupType SpawnType => (PickupType)_pickup.GetPickupType();
 
     protected override void OnDestroyComponent()
     {

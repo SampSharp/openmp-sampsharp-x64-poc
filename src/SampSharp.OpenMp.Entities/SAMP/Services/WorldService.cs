@@ -85,7 +85,7 @@ public class WorldService : IWorldService
     {
         var native = _pickups.Create(model, (byte)type, position, (uint)virtualWorld, false);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Pickup>(entityId, parent, _objects, native);
+        var component = _entityManager.AddComponent<Pickup>(entityId, parent, _pickups, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);

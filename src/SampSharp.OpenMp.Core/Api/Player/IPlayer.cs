@@ -41,7 +41,7 @@ public readonly partial struct IPlayer
     public partial void RemoveWeapon(byte weapon);
     public partial void SetWeaponAmmo(WeaponSlotData data);
     public partial BlittableStructRef<WeaponSlots> GetWeapons();
-    public partial WeaponSlotData GetWeaponSlot(int slot);
+    public partial void GetWeaponSlot(int slot, out WeaponSlotData data);
     public partial void ResetWeapons();
     public partial void SetArmedWeapon(int weapon);
     public partial int GetArmedWeapon();

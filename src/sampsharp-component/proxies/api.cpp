@@ -1,6 +1,5 @@
 #include <sdk.hpp>
 #include <stdbool.h>
-#include <stdbool.h>
 #include <Server/Components/Actors/actors.hpp>
 #include <Server/Components/Checkpoints/checkpoints.hpp>
 #include <Server/Components/Classes/classes.hpp>
@@ -218,10 +217,10 @@ PROXY(IMenu, void, disableRow, MenuRow);
 PROXY(IMenu, bool, isRowEnabled, MenuRow);
 PROXY(IMenu, void, disable);
 PROXY(IMenu, bool, isEnabled);
-PROXY(IMenu, Vector2,  getPosition);
+PROXY(IMenu, const Vector2&,  getPosition);
 PROXY(IMenu, int, getRowCount, MenuColumn);
 PROXY(IMenu, int, getColumnCount);
-PROXY(IMenu, Vector2, getColumnWidths);
+PROXY_PTR(IMenu, Vector2, getColumnWidths);
 PROXY(IMenu, StringView, getColumnHeader, MenuColumn);
 PROXY(IMenu, StringView, getCell, MenuColumn, MenuRow);
 PROXY(IMenu, void, initForPlayer, IPlayer&);
@@ -703,7 +702,7 @@ PROXY(IPlayer, void, giveWeapon, WeaponSlotData);
 PROXY(IPlayer, void, removeWeapon, uint8_t);
 PROXY(IPlayer, void, setWeaponAmmo, WeaponSlotData);
 PROXY(IPlayer, WeaponSlots, getWeapons);
-PROXY(IPlayer, WeaponSlotData, getWeaponSlot, int);
+PROXY_PTR(IPlayer, WeaponSlotData, getWeaponSlot, int);
 PROXY(IPlayer, void, resetWeapons);
 PROXY(IPlayer, void, setArmedWeapon, uint32_t);
 PROXY(IPlayer, uint32_t, getArmedWeapon);
@@ -713,7 +712,7 @@ PROXY(IPlayer, StringView, getShopName);
 PROXY(IPlayer, void, setDrunkLevel, int);
 PROXY(IPlayer, int, getDrunkLevel);
 PROXY(IPlayer, void, setColour, Colour);
-PROXY(IPlayer, Colour,  getColour);
+PROXY(IPlayer, const Colour&, getColour);
 PROXY(IPlayer, void, setOtherColour, IPlayer&, Colour);
 PROXY(IPlayer, bool, getOtherColour, IPlayer&, Colour&);
 PROXY(IPlayer, void, setControllable, bool);

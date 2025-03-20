@@ -606,7 +606,7 @@ public class Player : WorldEntity
     /// <param name="ammo">The variable in which to store the ammo, passed by reference.</param>
     public virtual void GetWeaponData(int slot, out Weapon weapon, out int ammo)
     {
-        var data = _player.GetWeaponSlot(slot);
+        _player.GetWeaponSlot(slot, out var data);
         weapon = (Weapon)data.Id;
         ammo = data.Ammo;
     }

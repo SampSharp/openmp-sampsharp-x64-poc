@@ -39,10 +39,24 @@ public class Menu : IdProvider
     }
 
     /// <summary>Gets the width of the left column in this menu.</summary>
-    public virtual float Col0Width => _menu.GetColumnWidths().X;
+    public virtual float Col0Width
+    {
+        get
+        {
+            _menu.GetColumnWidths(out var w);
+            return w.X;
+        }
+    }
 
     /// <summary>Gets the width of the right column in this menu.</summary>
-    public virtual float Col1Width => _menu.GetColumnWidths().Y;
+    public virtual float Col1Width
+    {
+        get
+        {
+            _menu.GetColumnWidths(out var w);
+            return w.Y;
+        }
+    }
 
     /// <summary>Gets or sets the caption of the left column in this menu.</summary>
     public virtual string Col0Header
