@@ -26,7 +26,11 @@ public class TextLabel : WorldEntity
     /// <summary>Gets or sets the color of this text label.</summary>
     public virtual Color Color
     {
-        get => _textLabel.GetColour();
+        get
+        {
+            _textLabel.GetColour(out var colour);
+            return colour;
+        }
         set => _textLabel.SetColour(value);
     }
 

@@ -24,14 +24,22 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the size of the letters of this text draw.</summary>
     public virtual Vector2 LetterSize
     {
-        get => _textDraw.GetLetterSize();
+        get
+        {
+            _textDraw.GetLetterSize(out var size);
+            return size;
+        }
         set => _textDraw.SetLetterSize(value);
     }
 
     /// <summary>Gets or sets the size of this text draw box and click-able area.</summary>
     public virtual Vector2 TextSize
     {
-        get => _textDraw.GetTextSize();
+        get
+        {
+            _textDraw.GetTextSize(out var size);
+            return size;
+        }
         set => _textDraw.SetTextSize(value);
     }
 
@@ -45,7 +53,11 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the color of the text of this text draw.</summary>
     public virtual Color ForeColor
     {
-        get => _textDraw.GetLetterColour();
+        get
+        {
+            _textDraw.GetLetterColour(out var colour);
+            return colour;
+        }
         set => _textDraw.SetColour(value);
     }
 
@@ -59,7 +71,11 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the color of the box of this text draw.</summary>
     public virtual Color BoxColor
     {
-        get => _textDraw.GetBoxColour();
+        get
+        {
+            _textDraw.GetBoxColour(out var colour);
+            return colour;
+        }
         set => _textDraw.SetBoxColour(value);
     }
 
@@ -80,7 +96,11 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the background color of this text draw.</summary>
     public virtual Color BackColor
     {
-        get => _textDraw.GetBackgroundColour();
+        get
+        {
+            _textDraw.GetBackgroundColour(out var colour);
+            return colour;
+        }
         set => _textDraw.SetBackgroundColour(value);
     }
 
@@ -120,7 +140,14 @@ public class TextDraw : IdProvider
     }
 
     /// <summary>Gets the position of this text draw.</summary>
-    public virtual Vector2 Position => _textDraw.GetPosition();
+    public virtual Vector2 Position
+    {
+        get
+        {
+            _textDraw.GetPosition(out var position);
+            return position;
+        }
+    }
 
 
     /// <summary>Sets the preview object rotation and zoom of this text draw.</summary>

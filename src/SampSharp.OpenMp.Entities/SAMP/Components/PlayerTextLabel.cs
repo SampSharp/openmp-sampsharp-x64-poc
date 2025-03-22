@@ -24,7 +24,14 @@ public class PlayerTextLabel : WorldEntity
     protected bool IsOmpEntityDestroyed => _playerTextLabel.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
     /// <summary>Gets the color of this player text label.</summary>
-    public virtual Color Color => _playerTextLabel.GetColour();
+    public virtual Color Color
+    {
+        get
+        {
+            _playerTextLabel.GetColour(out var colour);
+            return colour;
+        }
+    }
 
     /// <summary>Gets the text of this player text label.</summary>
     public virtual string Text => _playerTextLabel.GetText();

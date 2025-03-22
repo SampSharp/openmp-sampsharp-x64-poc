@@ -8,7 +8,7 @@ public readonly partial struct ITextLabelBase
     public partial void SetText(string text);
     public partial string GetText();
     public partial void SetColour(Colour colour);
-    public partial Colour GetColour();
+    public partial void GetColour(out Colour colour);
     public partial void SetDrawDistance(float dist);
     public partial float GetDrawDistance();
     public partial void AttachToPlayer(IPlayer player, Vector3 offset);
