@@ -2,7 +2,7 @@
     <PropertyGroup>
         <IsTestProject>$(MSBuildProjectName.Contains('.UnitTests'))</IsTestProject>
         <IsTestMode>$(MSBuildProjectName.Contains('TestMode.'))</IsTestMode>
-        <IsDeliverable Condition="'$(IsTestMode)' != 'True' and '$(IsTestProject)' != 'True' and $(MSBuildProjectName.Contains('Benchmark')) != 'True' and '$(MSBuildProjectExtension)' == '.csproj'">True</IsDeliverable>
+        <IsDeliverable Condition="'$(IsTestMode)' != 'True' and '$(IsTestProject)' != 'True' and '$(MSBuildProjectExtension)' == '.csproj'">True</IsDeliverable>
     </PropertyGroup>
 
     <!-- Building -->
