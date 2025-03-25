@@ -61,7 +61,8 @@ public class Vehicle : WorldEntity
     }
 
     /// <summary>
-    /// Gets or sets the parameters of this vehicle. This includes the engine, lights, alarm, doors, bonnet, boot and objective status.
+    /// Gets or sets the parameters of this vehicle. This includes the engine, lights, alarm, doors, bonnet, boot and
+    /// objective status.
     /// </summary>
     public virtual VehicleParameters Parameters
     {
@@ -315,7 +316,8 @@ public class Vehicle : WorldEntity
     /// <summary>Gets this vehicle's rotation on all axis as a quaternion.</summary>
     [Obsolete("Deprecated. Use Rotation instead.")]
     public virtual Quaternion RotationQuaternion => Rotation;
-    
+
+    /// <summary>Gets the first color of this vehicle.</summary>
     public virtual int Color1
     {
         get
@@ -325,6 +327,7 @@ public class Vehicle : WorldEntity
         }
     }
 
+    /// <summary>Gets the second color of this vehicle.</summary>
     public virtual int Color2
     {
         get
@@ -335,8 +338,8 @@ public class Vehicle : WorldEntity
     }
 
     /// <summary>
-    /// This function can be used to calculate the distance (as a float) between this vehicle and another map coordinate. This can be useful to detect how far
-    /// a vehicle away is from a location.
+    /// This function can be used to calculate the distance (as a float) between this vehicle and another map
+    /// coordinate. This can be useful to detect how far a vehicle away is from a location.
     /// </summary>
     /// <param name="point">The point.</param>
     /// <returns>A float containing the distance from the point specified in the coordinates.</returns>
@@ -406,7 +409,8 @@ public class Vehicle : WorldEntity
     }
 
     /// <summary>Set this vehicle's numberplate, which supports color embedding.</summary>
-    /// <param name="numberplate">The text that should be displayed on the numberplate. Color Embedding> is supported.</param>
+    /// <param name="numberplate">The text that should be displayed on the numberplate. Color Embedding> is
+    /// supported.</param>
     public virtual void SetNumberPlate(string numberplate)
     {
         _vehicle.SetPlate(numberplate);
@@ -420,7 +424,8 @@ public class Vehicle : WorldEntity
         return _vehicle.GetComponentInSlot((int)slot);
     }
 
-    /// <summary>Fully repairs this vehicle, including visual damage (bumps, dents, scratches, popped tires etc.).</summary>
+    /// <summary>Fully repairs this vehicle, including visual damage (bumps, dents, scratches, popped tires
+    /// etc.).</summary>
     public virtual void Repair()
     {
         _vehicle.Repair();
@@ -443,7 +448,8 @@ public class Vehicle : WorldEntity
         _vehicle.GetDamageStatus(out panels, out doors, out lights, out tires);
     }
 
-    /// <summary>Sets the various visual damage statuses of this vehicle, such as popped tires, broken lights and damaged panels.</summary>
+    /// <summary>Sets the various visual damage statuses of this vehicle, such as popped tires, broken lights and
+    /// damaged panels.</summary>
     /// <param name="panels">A set of bits containing the panel damage status.</param>
     /// <param name="doors">A set of bits containing the door damage status.</param>
     /// <param name="lights">A set of bits containing the light damage status.</param>
@@ -453,7 +459,8 @@ public class Vehicle : WorldEntity
     {
         _vehicle.SetDamageStatus(panels, doors, (byte)lights, (byte)tires, updater ?? default(IPlayer));
     }
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -461,12 +468,14 @@ public class Vehicle : WorldEntity
             _vehicles.AsPool().Release(Id);
         }
     }
-
+    
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Model: {Model})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="Vehicle"/> to <see cref="IVehicle"/>.</summary>
     public static implicit operator IVehicle(Vehicle vehicle)
     {
         return vehicle._vehicle;

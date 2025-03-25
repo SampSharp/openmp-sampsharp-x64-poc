@@ -5,6 +5,7 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
+/// <summary>Represents a component which provides the data and functionality of a player.</summary>
 public class Player : WorldEntity
 {
     private readonly IOmpEntityProvider _entityProvider;
@@ -361,17 +362,13 @@ public class Player : WorldEntity
         get
         {
             var surf = _player.GetSurfingData();
-            switch (surf.type)
+            return surf.type switch
             {
-                case PlayerSurfingData.Type.Vehicle:
-                    return _entityProvider.GetVehicle(surf.ID);
-                case PlayerSurfingData.Type.Object:
-                    return _entityProvider.GetObject(surf.ID);
-                case PlayerSurfingData.Type.PlayerObject:
-                    return _entityProvider.GetComponent(ObjectData.AsPool().Get(surf.ID));
-                default:
-                    return null;
-            }
+                PlayerSurfingData.Type.Vehicle => _entityProvider.GetVehicle(surf.ID),
+                PlayerSurfingData.Type.Object => _entityProvider.GetObject(surf.ID),
+                PlayerSurfingData.Type.PlayerObject => _entityProvider.GetComponent(ObjectData.AsPool().Get(surf.ID)),
+                _ => null
+            };
         }
     }
 
@@ -1365,6 +1362,7 @@ public class Player : WorldEntity
         _player.UnsetMapIcon(iconId);
     }
     
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -1373,11 +1371,13 @@ public class Player : WorldEntity
         }
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Name: {Name})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="Player"/> to <see cref="IPlayer"/>.</summary>
     public static implicit operator IPlayer(Player player)
     {
         return player._player;

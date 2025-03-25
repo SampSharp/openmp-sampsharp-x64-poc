@@ -20,8 +20,7 @@ using SampSharp.OpenMp.Core;
 
 namespace SampSharp.Entities;
 
-/// <summary>Represents a system which invokes timers on every tick.</summary>
-public class TimerSystem : ITickingSystem, ITimerService
+internal class TimerSystem : ITickingSystem, ITimerService
 {
     private static readonly TimeSpan _lowIntervalThreshold = TimeSpan.FromSeconds(1.0 / 50); // 50Hz
 
@@ -32,7 +31,6 @@ public class TimerSystem : ITickingSystem, ITimerService
     private readonly List<TimerInfo> _timers = [];
     private long _lastTick;
 
-    /// <summary>Initializes a new instance of the <see cref="TimerSystem" /> class.</summary>
     public TimerSystem(IServiceProvider serviceProvider, ILogger<TimerSystem> logger, ISystemRegistry systemRegistry)
     {
         _serviceProvider = serviceProvider;

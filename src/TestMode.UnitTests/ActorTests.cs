@@ -15,7 +15,7 @@ public class ActorTests : TestBase
         _actor = Services.GetRequiredService<IWorldService>().CreateActor(46, new Vector3(4, 5, 6), 45);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _actor.DestroyEntity();
     }

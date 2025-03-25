@@ -25,7 +25,8 @@ public class Pickup : WorldEntity
 
     /// <summary>Gets the type of this <see cref="Pickup" />.</summary>
     public virtual PickupType SpawnType => (PickupType)_pickup.GetPickupType();
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -33,12 +34,14 @@ public class Pickup : WorldEntity
             _pickups.AsPool().Release(Id);
         }
     }
-
+    
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Model: {Model})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="Pickup"/> to <see cref="IPickup"/>.</summary>
     public static implicit operator IPickup(Pickup pickup)
     {
         return pickup._pickup;

@@ -18,34 +18,27 @@ using System.Collections;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>Represents a dialog with a list of selectable rows.</summary>
-public class ListDialog : IDialog<ListDialogResponse>, IEnumerable<ListDialogRow>
+/// <param name="caption">The caption.</param>
+/// <param name="button1">The text on the left button.</param>
+/// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+public class ListDialog(string caption, string? button1, string? button2 = null) : IDialog<ListDialogResponse>, IEnumerable<ListDialogRow>
 {
-    /// <summary>Initializes a new instance of the <see cref="ListDialog" /> class.</summary>
-    /// <param name="caption">The caption.</param>
-    /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
-    public ListDialog(string caption, string? button1, string? button2 = null)
-    {
-        Caption = caption;
-        Button1 = button1;
-        Button2 = button2;
-    }
 
     /// <summary>Gets the rows of this dialog.</summary>
-    public ListDialogRowCollection Rows { get; } = new();
+    public ListDialogRowCollection Rows { get; } = [];
 
     DialogStyle IDialog.Style => DialogStyle.List;
 
     string IDialog.Content => Rows.RawText;
 
     /// <summary>Gets or sets the caption of this list dialog.</summary>
-    public string? Caption { get; set; }
+    public string? Caption { get; set; } = caption;
 
     /// <summary>Gets or sets the text on the left button of this list dialog.</summary>
-    public string? Button1 { get; set; }
+    public string? Button1 { get; set; } = button1;
 
     /// <summary>Gets or sets the text on the right button of this list dialog. If the value is <c>null</c>, the right button is hidden.</summary>
-    public string? Button2 { get; set; }
+    public string? Button2 { get; set; } = button2;
 
     ListDialogResponse IDialog<ListDialogResponse>.Translate(DialogResult dialogResult)
     {
@@ -64,6 +57,10 @@ public class ListDialog : IDialog<ListDialogResponse>, IEnumerable<ListDialogRow
         return new ListDialogResponse(dialogResult.Response, index, item);
     }
 
+    /// <summary>
+    /// Returns an enumerator that iterates through the rows of this list dialog.
+    /// </summary>
+    /// <returns>The enumerator that can be used to iterate through the rows of this list dialog.</returns>
     public IEnumerator<ListDialogRow> GetEnumerator()
     {
         return Rows.GetEnumerator();

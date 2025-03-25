@@ -15,7 +15,7 @@ public class PlayerTextDrawTests : TestBase
         _textDraw = Services.GetRequiredService<IWorldService>().CreatePlayerTextDraw(Player, Vector2.One, "text");
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _textDraw.DestroyEntity();
     }

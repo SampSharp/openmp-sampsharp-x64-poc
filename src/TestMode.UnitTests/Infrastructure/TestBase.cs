@@ -7,7 +7,13 @@ public class TestBase : IDisposable
     public Player Player => XunitSystem.Player;
     public IServiceProvider Services => XunitSystem.ServiceProvider;
 
-    public virtual void Dispose()
+    protected virtual void Cleanup()
     {
+    }
+
+    public void Dispose()
+    {
+        Cleanup();
+        GC.SuppressFinalize(this);
     }
 }

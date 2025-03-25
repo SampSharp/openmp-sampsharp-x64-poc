@@ -15,7 +15,7 @@ public class PickupTests : TestBase
         _pickup = Services.GetRequiredService<IWorldService>().CreatePickup(1234, PickupType.ScriptedActionsOnlyEveryFewSeconds, new Vector3(10, 20, 30), 10);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _pickup.DestroyEntity();
     }

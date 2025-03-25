@@ -5,7 +5,7 @@ using SampSharp.OpenMp.Core;
 using OmpLogLevel = SampSharp.OpenMp.Core.Api.LogLevel;
 namespace SampSharp.Entities.Logging;
 
-internal class OmpLogger(SampSharp.OpenMp.Core.Api.ILogger inner, LogLevel minLogLevel, string name, ObjectPool<StringBuilder> objectPool) : ILogger
+internal class OmpLogger(OpenMp.Core.Api.ILogger inner, LogLevel minLogLevel, string name, ObjectPool<StringBuilder> objectPool) : ILogger
 {
     private readonly Dictionary<OmpLogLevel, LoggerTextWriter> _writers = new()
     {

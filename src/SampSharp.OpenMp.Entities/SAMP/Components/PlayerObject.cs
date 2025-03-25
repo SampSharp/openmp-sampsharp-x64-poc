@@ -124,6 +124,7 @@ public class PlayerObject : WorldEntity
         _playerObject.AttachToObject(target, offset, rotation);
     }
     
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -132,11 +133,13 @@ public class PlayerObject : WorldEntity
         }
     }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Model: {ModelId})";
     }
-
+    
+    /// <summary>Performs an implicit conversion from <see cref="PlayerObject"/> to <see cref="IPlayerObject"/>.</summary>
     public static implicit operator IPlayerObject(PlayerObject playerObject)
     {
         return playerObject._playerObject;

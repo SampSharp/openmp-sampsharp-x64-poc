@@ -2,6 +2,9 @@
 
 namespace SampSharp.Entities;
 
+/// <summary>
+/// Provides various default vector constants for GTA: San Andreas.
+/// </summary>
 public static class GtaVector
 {
     /// <summary>Returns a <see cref="Vector3" /> with components 0, 0, 1.</summary>

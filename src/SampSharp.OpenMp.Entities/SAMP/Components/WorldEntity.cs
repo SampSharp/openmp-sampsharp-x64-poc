@@ -6,22 +6,19 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>
 /// Represents a component which exists in the 3D world.
 /// </summary>
-public abstract class WorldEntity : IdProvider
+/// <remarks>
+/// Initializes a new instance of the <see cref="WorldEntity" /> class.
+/// </remarks>
+/// <param name="entity">The open.mp entity this component represents.</param>
+public abstract class WorldEntity(IEntity entity) : IdProvider((IIDProvider)entity)
 {
-    private readonly IEntity _entity;
-
-    protected WorldEntity(IEntity entity) : base((IIDProvider)entity)
-    {
-        _entity = entity;
-    }
-
     /// <summary>
     /// Gets or sets the position of this component.
     /// </summary>
     public virtual Vector3 Position
     {
-        get => _entity.GetPosition();
-        set => _entity.SetPosition(value);
+        get => entity.GetPosition();
+        set => entity.SetPosition(value);
     }
 
     /// <summary>
@@ -29,8 +26,8 @@ public abstract class WorldEntity : IdProvider
     /// </summary>
     public virtual Quaternion Rotation
     {
-        get => _entity.GetRotation();
-        set => _entity.SetRotation(value);
+        get => entity.GetRotation();
+        set => entity.SetRotation(value);
     }
 
     /// <summary>
@@ -48,7 +45,7 @@ public abstract class WorldEntity : IdProvider
     /// </summary>
     public virtual int VirtualWorld
     {
-        get => _entity.GetVirtualWorld();
-        set => _entity.SetVirtualWorld(value);
+        get => entity.GetVirtualWorld();
+        set => entity.SetVirtualWorld(value);
     }
 }

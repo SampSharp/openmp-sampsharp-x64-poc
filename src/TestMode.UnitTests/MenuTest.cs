@@ -16,7 +16,7 @@ public class MenuTest : TestBase
         _menu = Services.GetRequiredService<IWorldService>().CreateMenu("title", Vector2.One, 400, 200);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _menu.DestroyEntity();
     }

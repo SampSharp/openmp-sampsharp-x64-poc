@@ -63,16 +63,27 @@ public class PlayerTextLabel : WorldEntity
         }
     }
     
+    /// <summary>
+    /// Attaches this player text label to the specified player.
+    /// </summary>
+    /// <param name="player">The player to attach this player text label to.</param>
+    /// <param name="offset">The offset from the player's position to attach this player text label to.</param>
     public virtual void Attach(Player player, Vector3 offset = default)
     {
         _playerTextLabel.AttachToPlayer(player, offset);
     }
-
+    
+    /// <summary>
+    /// Attaches this player text label to the specified vehicle.
+    /// </summary>
+    /// <param name="vehicle">The vehicle to attach this text label to.</param>
+    /// <param name="offset">The offset from the vehicle's position to attach this text label to.</param>
     public virtual void Attach(Vehicle vehicle, Vector3 offset = default)
     {
         _playerTextLabel.AttachToVehicle(vehicle, offset);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -81,11 +92,13 @@ public class PlayerTextLabel : WorldEntity
         }
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Text: {Text})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="PlayerTextLabel"/> to <see cref="IPlayerTextLabel"/>.</summary>
     public static implicit operator IPlayerTextLabel(PlayerTextLabel playerTextLabel)
     {
         return playerTextLabel._playerTextLabel;

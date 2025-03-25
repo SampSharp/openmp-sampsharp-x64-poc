@@ -17,7 +17,7 @@ public class PlayerObjectTests : TestBase
         _object = _worldService.CreatePlayerObject(Player, 100, new Vector3(10, 20, 30), new Vector3(20, 10, 0), 30);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _object?.Destroy();
     }

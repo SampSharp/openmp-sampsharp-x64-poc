@@ -5,17 +5,11 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>
 /// Represents a component which provides an identifier.
 /// </summary>
-public abstract class IdProvider : Component
+/// <param name="idProvider">The open.mp id provider this component represents.</param>
+public abstract class IdProvider(IIDProvider idProvider) : Component
 {
-    private readonly IIDProvider _idProvider;
-
-    protected IdProvider(IIDProvider idProvider)
-    {
-        _idProvider = idProvider;
-    }
-
     /// <summary>
     /// Gets the identifier of this component.
     /// </summary>
-    public virtual int Id => _idProvider.GetID();
+    public virtual int Id => idProvider.GetID();
 }

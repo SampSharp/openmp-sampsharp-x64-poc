@@ -175,7 +175,8 @@ public class TextDraw : IdProvider
     {
         _textDraw.HideForPlayer(player);
     }
-    
+
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -184,11 +185,13 @@ public class TextDraw : IdProvider
         }
     }
 
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Text: {Text})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="TextDraw"/> to <see cref="ITextDraw"/>.</summary>
     public static implicit operator ITextDraw(TextDraw textDraw)
     {
         return textDraw._textDraw;

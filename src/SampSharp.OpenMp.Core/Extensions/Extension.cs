@@ -40,10 +40,16 @@ public abstract partial class Extension : IDisposable
         // object. But just to be sure, we'll free the resources here as well.
         FreeUnmanagedResources();
     }
-    
+
+    /// <summary>
+    /// Gets a value indicating whether this extension has been disposed.
+    /// </summary>
     [MemberNotNullWhen(false, nameof(_gcHandle), nameof(_unmanagedCounterpart))]
     protected bool IsDisposed => !_unmanagedCounterpart.HasValue;
 
+    /// <summary>
+    /// Detaches this extension from the extensible it is currently applied to and destroys all resources held by this extension.
+    /// </summary>
     public void Dispose()
     {
         Detach();

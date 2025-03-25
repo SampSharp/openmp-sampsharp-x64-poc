@@ -17,7 +17,7 @@ public class GangZoneTests : TestBase
         _gangZone.Color = new Colour(255, 0, 0, 100);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _gangZone?.Destroy();
     }

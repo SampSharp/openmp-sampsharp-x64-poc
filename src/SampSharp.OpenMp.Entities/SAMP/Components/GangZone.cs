@@ -110,7 +110,8 @@ public class GangZone : IdProvider
     {
         _gangZone.StopFlashForPlayer(player);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -119,11 +120,13 @@ public class GangZone : IdProvider
         }
     }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Color: {Color})";
     }
-
+    
+    /// <summary>Performs an implicit conversion from <see cref="GangZone"/> to <see cref="IGangZone"/>.</summary>
     public static implicit operator IGangZone(GangZone gangZone)
     {
         return gangZone._gangZone;

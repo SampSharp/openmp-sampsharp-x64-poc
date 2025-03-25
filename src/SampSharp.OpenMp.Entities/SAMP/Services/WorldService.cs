@@ -3,36 +3,18 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-public class WorldService : IWorldService
+internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManager, IOmpEntityProvider entityProvider) : IWorldService
 {
-    private readonly ICore _core;
-    private readonly IPlayerPool _players;
-    private readonly IVehiclesComponent _vehicles;
-    private readonly IObjectsComponent _objects;
-    private readonly IActorsComponent _actors;
-    private readonly IGangZonesComponent _gangZones;
-    private readonly IMenusComponent _menus;
-    private readonly IPickupsComponent _pickups;
-    private readonly ITextDrawsComponent _textDraws;
-    private readonly ITextLabelsComponent _textLabels;
-    private readonly IEntityManager _entityManager;
-    private readonly IOmpEntityProvider _entityProvider;
-
-    public WorldService(SampSharpEnvironment omp, IEntityManager entityManager, IOmpEntityProvider entityProvider)
-    {
-        _core = omp.Core;
-        _players = omp.Core.GetPlayers();
-        _entityManager = entityManager;
-        _entityProvider = entityProvider;
-        _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
-        _objects = omp.Components.QueryComponent<IObjectsComponent>();
-        _actors = omp.Components.QueryComponent<IActorsComponent>();
-        _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
-        _menus = omp.Components.QueryComponent<IMenusComponent>();
-        _pickups = omp.Components.QueryComponent<IPickupsComponent>();
-        _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
-        _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
-    }
+    private readonly ICore _core = omp.Core;
+    private readonly IPlayerPool _players = omp.Core.GetPlayers();
+    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
+    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
+    private readonly IActorsComponent _actors = omp.Components.QueryComponent<IActorsComponent>();
+    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
+    private readonly IMenusComponent _menus = omp.Components.QueryComponent<IMenusComponent>();
+    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
+    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
 
     public float Gravity
     {
@@ -45,7 +27,7 @@ public class WorldService : IWorldService
         var native = _actors.Create(modelId, position, rotation);
 
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Actor>(entityId, parent, _actors, native);
+        var component = entityManager.AddComponent<Actor>(entityId, parent, _actors, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -73,7 +55,7 @@ public class WorldService : IWorldService
     {
         var native = _gangZones.Create(new GangZonePos(min, max));
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<GangZone>(entityId, parent, _gangZones, native);
+        var component = entityManager.AddComponent<GangZone>(entityId, parent, _gangZones, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -85,7 +67,7 @@ public class WorldService : IWorldService
     {
         var native = _pickups.Create(model, (byte)type, position, (uint)virtualWorld, false);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Pickup>(entityId, parent, _pickups, native);
+        var component = entityManager.AddComponent<Pickup>(entityId, parent, _pickups, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -97,7 +79,7 @@ public class WorldService : IWorldService
     {
         var native = _pickups.Create(model, (byte)type, position, (uint)virtualWorld, true);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Pickup>(entityId, parent, _objects, native);
+        var component = entityManager.AddComponent<Pickup>(entityId, parent, _objects, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -109,7 +91,7 @@ public class WorldService : IWorldService
     {
         var native = _objects.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<GlobalObject>(entityId, parent, _objects, native);
+        var component = entityManager.AddComponent<GlobalObject>(entityId, parent, _objects, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -124,7 +106,7 @@ public class WorldService : IWorldService
 
         var native = playerObjectData.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<PlayerObject>(entityId, parent, playerObjectData, native);
+        var component = entityManager.AddComponent<PlayerObject>(entityId, parent, playerObjectData, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -136,7 +118,7 @@ public class WorldService : IWorldService
     {
         var native = _textLabels.Create(text, color, position, drawDistance, virtualWorld, testLos);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<TextLabel>(entityId, parent, _entityProvider, _textLabels, native);
+        var component = entityManager.AddComponent<TextLabel>(entityId, parent, entityProvider, _textLabels, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -152,7 +134,7 @@ public class WorldService : IWorldService
 
         var native = playerTextLabels.Create(text, color, position, drawDistance, testLos);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<PlayerTextLabel>(entityId, parent, _entityProvider, playerTextLabels, native);
+        var component = entityManager.AddComponent<PlayerTextLabel>(entityId, parent, entityProvider, playerTextLabels, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -164,7 +146,7 @@ public class WorldService : IWorldService
     {
         var native = _textDraws.Create(position, text);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<TextDraw>(entityId, parent, _textDraws, native);
+        var component = entityManager.AddComponent<TextDraw>(entityId, parent, _textDraws, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -179,7 +161,7 @@ public class WorldService : IWorldService
 
         var native = playerTextDrawData.Create(position, text);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<PlayerTextDraw>(entityId, parent, playerTextDrawData, native);
+        var component = entityManager.AddComponent<PlayerTextDraw>(entityId, parent, playerTextDrawData, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -191,7 +173,7 @@ public class WorldService : IWorldService
     {
         var native = _menus.Create(title, position, col1Width.HasValue ? (byte)2 : (byte)1, col0Width, col1Width ?? 0);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Menu>(entityId, parent, _menus, native, title);
+        var component = entityManager.AddComponent<Menu>(entityId, parent, _menus, native, title);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -205,7 +187,7 @@ public class WorldService : IWorldService
         var native = _vehicles.Create(isStatic, (int)type, position, rotation, color1, color2, respawnDelay, addSiren);
 
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<Vehicle>(entityId, parent, _vehicles, native);
+        var component = entityManager.AddComponent<Vehicle>(entityId, parent, _vehicles, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);
@@ -234,38 +216,39 @@ public class WorldService : IWorldService
     {
         SendClientMessage(Color.White, message);
     }
-
+    
     public void SendClientMessage(string messageFormat, params object[] args)
     {
         var message = string.Format(messageFormat, args);
         SendClientMessage(message);
     }
-
+    
     public void SendPlayerMessageToPlayer(Player sender, string message)
     {
         _players.SendChatMessageToAll(sender, message);
     }
-
+    
     public void SendDeathMessage(Player killer, Player killee, Weapon weapon)
     {
         _players.SendDeathMessageToAll(killer, killee, (int)weapon);
     }
-
+    
     public void GameText(string text, int time, int style)
     {
         GameText(text, TimeSpan.FromMilliseconds(time), style);
     }
+
     public void GameText(string text, TimeSpan time, int style)
     {
         // TODO: style enum?
         _players.SendGameTextToAll(text, time, style);
     }
-
+    
     public void CreateExplosion(Vector3 position, ExplosionType type, float radius)
     {
         _players.CreateExplosionForAll(position, (int)type, radius);
     }
-
+    
     public void SetWeather(int weather)
     {
         _core.SetWeather(weather);

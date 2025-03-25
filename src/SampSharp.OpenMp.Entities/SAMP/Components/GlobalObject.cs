@@ -124,7 +124,8 @@ public class GlobalObject : WorldEntity
     {
         _object.AttachToObject(target, offset, rotation, syncRotation);
     }
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -133,11 +134,13 @@ public class GlobalObject : WorldEntity
         }
     }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Model: {ModelId})";
     }
-
+    
+    /// <summary>Performs an implicit conversion from <see cref="GlobalObject"/> to <see cref="IObject"/>.</summary>
     public static implicit operator IObject(GlobalObject @object)
     {
         return @object._object;

@@ -105,6 +105,7 @@ public class Menu : IdProvider
         _menu.DisableRow((byte)row);
     }
     
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -112,12 +113,14 @@ public class Menu : IdProvider
             _menus.AsPool().Release(Id);
         }
     }
-
+    
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Title: {Title})";
     }
-    
+
+    /// <summary>Performs an implicit conversion from <see cref="Menu"/> to <see cref="IMenu"/>.</summary>
     public static implicit operator IMenu(Menu menu)
     {
         return menu._menu;

@@ -15,6 +15,10 @@ public readonly record struct EntityId
         _id = id;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EntityId" /> struct.
+    /// </summary>
+    /// <returns></returns>
     public static EntityId NewEntityId()
     {
         return new EntityId(Guid.NewGuid());
@@ -23,6 +27,7 @@ public readonly record struct EntityId
     /// <summary>Gets a value indicating whether this handle is empty.</summary>
     public bool IsEmpty => _id == Guid.Empty;
     
+    /// <inheritdoc />
     public override string ToString()
     {
         return IsEmpty

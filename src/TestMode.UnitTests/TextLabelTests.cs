@@ -15,7 +15,7 @@ public class TextLabelTests : TestBase
         _textLabel = Services.GetRequiredService<IWorldService>().CreateTextLabel("text", Color.Red, new Vector3(10, 20, 30), 40);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _textLabel.DestroyEntity();
     }

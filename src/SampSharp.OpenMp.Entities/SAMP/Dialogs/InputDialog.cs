@@ -18,6 +18,13 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Represents a dialog with an input field.</summary>
 public class InputDialog : IDialog<InputDialogResponse>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputDialog" /> class.
+    /// </summary>
+    /// <param name="caption">The caption of the input dialog.</param>
+    /// <param name="content">The content of the input dialog.</param>
+    /// <param name="button1">The left button text of the input dialog.</param>
+    /// <param name="button2">The right button text of the input dialog.</param>
     public InputDialog(string? caption, string? content, string? button1, string? button2 = null)
     {
         Caption = caption;
@@ -26,10 +33,14 @@ public class InputDialog : IDialog<InputDialogResponse>
         Button2 = button2;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputDialog" /> class.
+    /// </summary>
     public InputDialog()
     {
     }
 
+    /// <inheritdoc />
     public InputDialogResponse Translate(DialogResult dialogResult)
     {
         return new InputDialogResponse(dialogResult.Response, dialogResult.InputText);

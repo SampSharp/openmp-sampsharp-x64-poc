@@ -81,7 +81,8 @@ public class Actor : WorldEntity
     {
         _actor.ClearAnimations();
     }
-
+    
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -90,11 +91,13 @@ public class Actor : WorldEntity
         }
     }
     
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id})";
     }
-
+    
+    /// <summary>Performs an implicit conversion from <see cref="Actor"/> to <see cref="IActor"/>.</summary>
     public static implicit operator IActor(Actor actor)
     {
         return actor._actor;

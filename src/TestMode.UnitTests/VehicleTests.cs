@@ -16,7 +16,7 @@ public class VehicleTests : TestBase
         _vehicle = Services.GetRequiredService<IWorldService>().CreateVehicle(VehicleModelType.Landstalker, new Vector3(10, 0, 5), 30, 5, 8);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _vehicle?.Destroy();
     }

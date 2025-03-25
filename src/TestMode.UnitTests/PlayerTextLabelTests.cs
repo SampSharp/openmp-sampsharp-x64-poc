@@ -15,7 +15,7 @@ public class PlayerTextLabelTests : TestBase
         _textLabel = Services.GetRequiredService<IWorldService>().CreatePlayerTextLabel(Player, "text", Color.Red, new Vector3(10, 20, 30), 40);
     }
 
-    public override void Dispose()
+    protected override void Cleanup()
     {
         _textLabel.DestroyEntity();
     }

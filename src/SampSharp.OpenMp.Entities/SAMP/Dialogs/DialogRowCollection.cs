@@ -22,12 +22,14 @@ namespace SampSharp.Entities.SAMP;
 public class DialogRowCollection<T> : IEnumerable<T> where T : IDialogRow
 {
     private readonly List<T> _rows = [];
-
+    
+    /// <inheritdoc />
     public string RawText => string.Join("\n", _rows.Select(r => r.RawText));
 
     /// <summary>Gets the number of rows in the list.</summary>
     public int Count => _rows.Count;
-
+    
+    /// <inheritdoc />
     public IEnumerator<T> GetEnumerator()
     {
         return _rows.GetEnumerator();

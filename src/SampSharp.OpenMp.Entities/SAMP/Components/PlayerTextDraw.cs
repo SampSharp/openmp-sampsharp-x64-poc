@@ -156,6 +156,7 @@ public class PlayerTextDraw : IdProvider
         _playerTextDraw.Hide();
     }
     
+    /// <inheritdoc />
     protected override void OnDestroyComponent()
     {
         if (!IsOmpEntityDestroyed)
@@ -163,12 +164,14 @@ public class PlayerTextDraw : IdProvider
             _playerTextDraws.AsPool().Release(Id);
         }
     }
-
+    
+    /// <inheritdoc />
     public override string ToString()
     {
         return $"(Id: {Id}, Text: {Text})";
     }
     
+    /// <summary>Performs an implicit conversion from <see cref="PlayerTextDraw"/> to <see cref="IPlayerTextDraw"/>.</summary>
     public static implicit operator IPlayerTextDraw(PlayerTextDraw playerTextDraw)
     {
         return playerTextDraw._playerTextDraw;
