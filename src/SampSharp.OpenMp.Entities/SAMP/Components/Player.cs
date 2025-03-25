@@ -328,7 +328,7 @@ public class Player : WorldEntity
     public virtual GlobalObject? CameraTargetGlobalObject => _entityProvider.GetComponent(_player.GetCameraTargetObject());
 
     /// <summary>Gets the PlayerObject the camera of this player is pointing at.</summary>
-    public virtual PlayerObject? CameraTargetPlayerObject => null; // TODO: not implemented
+    public virtual PlayerObject? CameraTargetPlayerObject => null; // TODO: broken, see https://github.com/openmultiplayer/open.mp/issues/1070
 
     /// <summary>Gets the GtaVehicle the camera of this player is pointing at.</summary>
     public virtual Vehicle? CameraTargetVehicle => _entityProvider.GetComponent(_player.GetCameraTargetVehicle());

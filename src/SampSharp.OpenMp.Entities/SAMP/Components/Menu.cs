@@ -29,14 +29,7 @@ public class Menu : IdProvider
     public virtual int Columns => _menu.GetColumnCount();
 
     /// <summary>Gets the position of this menu.</summary>
-    public virtual Vector2 Position
-    {
-        get
-        {
-            var pos = _menu.GetPosition(); // TODO: test
-            return pos;
-        }
-    }
+    public virtual Vector2 Position => _menu.GetPosition();
 
     /// <summary>Gets the width of the left column in this menu.</summary>
     public virtual float Col0Width => _menu.GetColumnWidths().X;
