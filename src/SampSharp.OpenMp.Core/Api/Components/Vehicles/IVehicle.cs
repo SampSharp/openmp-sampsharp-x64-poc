@@ -9,13 +9,27 @@ namespace SampSharp.OpenMp.Core.Api;
 public readonly partial struct IVehicle
 {
     public partial void SetSpawnData(ref VehicleSpawnData data);
-    public partial void GetSpawnData(out VehicleSpawnData data);
+    private partial void GetSpawnData(out VehicleSpawnData data);
+
+    public VehicleSpawnData GetSpawnData()
+    {
+        GetSpawnData(out var data);
+        return data;
+    }
+
     public partial bool IsStreamedInForPlayer(IPlayer player);
     public partial void StreamInForPlayer(IPlayer player);
     public partial void StreamOutForPlayer(IPlayer player);
     public partial void SetColour(int col1, int col2);
     public partial void GetColour(out Pair<int, int> result);
-    public partial void SetHealth(float Health);
+
+    public (int, int) GetColour()
+    {
+        GetColour(out var result);
+        return result;
+    }
+
+    public partial void SetHealth(float health);
     public partial float GetHealth();
     public partial bool UpdateFromDriverSync(ref VehicleDriverSyncPacket vehicleSync, IPlayer player);
     public partial bool UpdateFromPassengerSync(ref VehiclePassengerSyncPacket passengerSync, IPlayer player);
@@ -26,26 +40,33 @@ public readonly partial struct IVehicle
     public partial FlatPtrHashSet<IPlayer> GetPassengers();
     public partial void SetPlate(string plate);
     public partial string GetPlate();
-    public partial void SetDamageStatus(int PanelStatus, int DoorStatus, byte LightStatus, byte TyreStatus, IPlayer vehicleUpdater = default);
-    public partial void GetDamageStatus(out int PanelStatus, out int DoorStatus, out int LightStatus, out int TyreStatus);
+    public partial void SetDamageStatus(int panelStatus, int doorStatus, byte lightStatus, byte tyreStatus, IPlayer vehicleUpdater = default);
+    public partial void GetDamageStatus(out int panelStatus, out int doorStatus, out int lightStatus, out int tyreStatus);
     public partial void SetPaintJob(int paintjob);
     public partial int GetPaintJob();
     public partial void AddComponent(int component);
     public partial int GetComponentInSlot(int slot);
     public partial void RemoveComponent(int component);
-    public partial void PutPlayer(IPlayer player, int SeatID);
+    public partial void PutPlayer(IPlayer player, int seatID);
     public partial void SetZAngle(float angle);
     public partial float GetZAngle();
     public partial void SetParams(ref VehicleParams parameters);
     public partial void SetParamsForPlayer(IPlayer player, ref VehicleParams parameters);
-    public partial void GetParams(out VehicleParams parameters);
+    private partial void GetParams(out VehicleParams parameters);
+
+    public VehicleParams GetParams()
+    {
+        GetParams(out var parameters);
+        return parameters;
+    }
+
     public partial bool IsDead();
     public partial void Respawn();
     [return: MarshalUsing(typeof(SecondsMarshaller))]
     public partial TimeSpan GetRespawnDelay();
     public partial void SetRespawnDelay([MarshalUsing(typeof(SecondsMarshaller))]TimeSpan delay);
     public partial bool IsRespawning();
-    public partial void SetInterior(int InteriorID);
+    public partial void SetInterior(int interiorID);
     public partial int GetInterior();
     public partial void AttachTrailer(IVehicle trailer);
     public partial void DetachTrailer();

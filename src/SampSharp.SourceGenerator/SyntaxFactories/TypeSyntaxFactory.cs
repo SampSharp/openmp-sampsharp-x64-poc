@@ -1,4 +1,6 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -60,6 +62,23 @@ public static class TypeSyntaxFactory
         if (symbol.TypeKind == TypeKind.TypeParameter)
         {
             return ParseTypeName(symbol.Name);
+        }
+
+        if (symbol is INamedTypeSymbol { IsTupleType: true } namedTypeSymbol)
+        {
+            var elements = new List<TupleElementSyntax>();
+            foreach (var element in namedTypeSymbol.TupleElements)
+            {
+                var el = TupleElement(TypeNameGlobal(element.Type));
+                if (element.IsExplicitlyNamedTupleElement)
+                {
+                    el = el.WithIdentifier(Identifier(element.Name));
+                }
+
+                elements.Add(el);
+            }
+
+            return TupleType(SeparatedList(elements));
         }
 
         return ParseTypeName(

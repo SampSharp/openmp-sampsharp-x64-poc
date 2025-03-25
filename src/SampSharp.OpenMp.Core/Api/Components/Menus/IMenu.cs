@@ -14,7 +14,14 @@ public readonly partial struct IMenu
     public partial ref Vector2 GetPosition();
     public partial int GetRowCount(byte column);
     public partial int GetColumnCount();
-    public partial void GetColumnWidths(out Vector2 widths);
+    private partial void GetColumnWidths(out Vector2 widths);
+
+    public Vector2 GetColumnWidths()
+    {
+        GetColumnWidths(out var result);
+        return result;
+    }
+
     public partial string? GetColumnHeader(byte column);
     public partial string? GetCell(byte column, byte row);
     public partial void InitForPlayer(IPlayer player);

@@ -24,23 +24,14 @@ public class PlayerTextDraw : IdProvider
     /// <summary>Gets or sets the size of the letters of this text draw.</summary>
     public virtual Vector2 LetterSize
     {
-        get
-        {
-            _playerTextDraw.GetLetterSize(out var size);
-            return size;
-        }
+        get => _playerTextDraw.GetLetterSize();
         set => _playerTextDraw.SetLetterSize(value);
     }
 
     /// <summary>Gets or sets the size of this text draw box and click-able area.</summary>
     public virtual Vector2 TextSize
     {
-        get
-        {
-            _playerTextDraw.GetTextSize(out var size);
-            return size;
-
-        }
+        get => _playerTextDraw.GetTextSize();
         set => _playerTextDraw.SetTextSize(value);
     }
 
@@ -54,11 +45,7 @@ public class PlayerTextDraw : IdProvider
     /// <summary>Gets or sets the color of the text of this text draw.</summary>
     public virtual Color ForeColor
     {
-        get
-        {
-            _playerTextDraw.GetLetterColour(out var colour);
-            return colour;
-        }
+        get => _playerTextDraw.GetLetterColour();
         set => _playerTextDraw.SetColour(value);
     }
 
@@ -97,11 +84,7 @@ public class PlayerTextDraw : IdProvider
     /// <summary>Gets or sets the background color of this text draw.</summary>
     public virtual Color BackColor
     {
-        get
-        {
-            _playerTextDraw.GetBackgroundColour(out var colour);
-            return colour;
-        }
+        get => _playerTextDraw.GetBackgroundColour();
         set => _playerTextDraw.SetBackgroundColour(value);
     }
 
@@ -141,14 +124,7 @@ public class PlayerTextDraw : IdProvider
     }
 
     /// <summary>Gets the position of this text draw.</summary>
-    public virtual Vector2 Position
-    {
-        get
-        {
-            _playerTextDraw.GetPosition(out var position);
-            return position;
-        }
-    }
+    public virtual Vector2 Position => _playerTextDraw.GetPosition();
 
 
     /// <summary>Sets the preview object rotation and zoom of this text draw.</summary>

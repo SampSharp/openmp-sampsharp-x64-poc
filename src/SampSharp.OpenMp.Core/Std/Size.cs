@@ -6,7 +6,7 @@ namespace SampSharp.OpenMp.Core;
 public readonly struct Size(nint value)
 {
     public const int Length = 8; // 64-bits
-
+    
     public nint Value { get; } = value;
 
     public int ToInt32()

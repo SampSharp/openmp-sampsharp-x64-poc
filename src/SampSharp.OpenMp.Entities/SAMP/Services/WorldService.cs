@@ -152,7 +152,7 @@ public class WorldService : IWorldService
 
         var native = playerTextLabels.Create(text, color, position, drawDistance, testLos);
         var entityId = EntityId.NewEntityId();
-        var component = _entityManager.AddComponent<PlayerTextLabel>(entityId, parent, entityId, playerTextLabels, native);
+        var component = _entityManager.AddComponent<PlayerTextLabel>(entityId, parent, _entityProvider, playerTextLabels, native);
 
         var extension = new ComponentExtension(component);
         native.AddExtension(extension);

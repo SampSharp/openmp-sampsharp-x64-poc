@@ -24,22 +24,14 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the size of the letters of this text draw.</summary>
     public virtual Vector2 LetterSize
     {
-        get
-        {
-            _textDraw.GetLetterSize(out var size);
-            return size;
-        }
+        get => _textDraw.GetLetterSize();
         set => _textDraw.SetLetterSize(value);
     }
 
     /// <summary>Gets or sets the size of this text draw box and click-able area.</summary>
     public virtual Vector2 TextSize
     {
-        get
-        {
-            _textDraw.GetTextSize(out var size);
-            return size;
-        }
+        get => _textDraw.GetTextSize();
         set => _textDraw.SetTextSize(value);
     }
 
@@ -53,11 +45,7 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the color of the text of this text draw.</summary>
     public virtual Color ForeColor
     {
-        get
-        {
-            _textDraw.GetLetterColour(out var colour);
-            return colour;
-        }
+        get => _textDraw.GetLetterColour();
         set => _textDraw.SetColour(value);
     }
 
@@ -96,11 +84,7 @@ public class TextDraw : IdProvider
     /// <summary>Gets or sets the background color of this text draw.</summary>
     public virtual Color BackColor
     {
-        get
-        {
-            _textDraw.GetBackgroundColour(out var colour);
-            return colour;
-        }
+        get => _textDraw.GetBackgroundColour();
         set => _textDraw.SetBackgroundColour(value);
     }
 
@@ -140,14 +124,7 @@ public class TextDraw : IdProvider
     }
 
     /// <summary>Gets the position of this text draw.</summary>
-    public virtual Vector2 Position
-    {
-        get
-        {
-            _textDraw.GetPosition(out var position);
-            return position;
-        }
-    }
+    public virtual Vector2 Position => _textDraw.GetPosition();
 
 
     /// <summary>Sets the preview object rotation and zoom of this text draw.</summary>

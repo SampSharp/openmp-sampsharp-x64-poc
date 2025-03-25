@@ -30,7 +30,14 @@ public readonly partial struct IPlayerPool
     public partial void SendDeathMessageToAll(IPlayer killer, IPlayer killee, int weapon);
     public partial void SendEmptyDeathMessageToAll();
     public partial void CreateExplosionForAll(Vector3 vec, int type, float radius);
-    public partial void RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms, out Pair<NewConnectionResult, IPlayer> result);
+    private partial void RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms, out Pair<NewConnectionResult, IPlayer> result);
+
+    public (NewConnectionResult, IPlayer) RequestPlayer(ref PeerNetworkData netData, ref PeerRequestParams parms)
+    {
+        RequestPlayer(ref netData, ref parms, out var result);
+        return result;
+    }
+
     public partial void BroadcastPacket(SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial void BroadcastRPC(int id, SpanLite<byte> data, int channel, IPlayer skipFrom = default, bool dispatchEvents = true);
     public partial bool IsNameValid(string name);

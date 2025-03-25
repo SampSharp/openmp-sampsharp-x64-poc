@@ -41,7 +41,14 @@ public readonly partial struct IPlayer
     public partial void RemoveWeapon(byte weapon);
     public partial void SetWeaponAmmo(WeaponSlotData data);
     public partial BlittableStructRef<WeaponSlots> GetWeapons();
-    public partial void GetWeaponSlot(int slot, out WeaponSlotData data);
+    private partial void GetWeaponSlot(int slot, out WeaponSlotData data);
+
+    public WeaponSlotData GetWeaponSlot(int slot)
+    {
+        GetWeaponSlot(slot, out var data);
+        return data;
+    }
+
     public partial void ResetWeapons();
     public partial void SetArmedWeapon(int weapon);
     public partial int GetArmedWeapon();
@@ -79,7 +86,14 @@ public readonly partial struct IPlayer
     public partial void UseStuntBonuses(bool enable);
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
     public partial void SetTime(int hr, int min);
-    public partial void GetTime(out Pair<int, int> result);
+    private partial void GetTime(out Pair<int, int> result);
+
+    public (int hour, int minutes) GetTime()
+    {
+        GetTime(out var result);
+        return result;
+    }
+
     public partial void UseClock(bool enable);
     public partial bool HasClock();
     public partial void UseWidescreen(bool enable);

@@ -606,7 +606,7 @@ public class Player : WorldEntity
     /// <param name="ammo">The variable in which to store the ammo, passed by reference.</param>
     public virtual void GetWeaponData(int slot, out Weapon weapon, out int ammo)
     {
-        _player.GetWeaponSlot(slot, out var data);
+        var data = _player.GetWeaponSlot(slot);
         weapon = (Weapon)data.Id;
         ammo = data.Ammo;
     }
@@ -653,9 +653,7 @@ public class Player : WorldEntity
     /// <param name="minutes">The variable to store the minutes in, passed by reference.</param>
     public virtual void GetTime(out int hour, out int minutes)
     {
-        _player.GetTime(out var hm);
-        hour = hm.First;
-        minutes = hm.Second;
+        (hour, minutes) = _player.GetTime();
     }
 
     /// <summary>Show/Hide the in-game clock (top right corner) for this player.</summary>

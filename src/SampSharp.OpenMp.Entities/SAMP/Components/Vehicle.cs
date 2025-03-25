@@ -67,7 +67,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return VehicleParameters.FromParams(ref parameters);
         }
         set
@@ -82,7 +82,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.engine == VehicleParameterValue.On;
         }
         set =>
@@ -97,7 +97,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.lights == VehicleParameterValue.On;
         }
         set =>
@@ -112,7 +112,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.alarm == VehicleParameterValue.On;
         }
         set =>
@@ -127,7 +127,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.doors == VehicleParameterValue.On;
         }
         set =>
@@ -142,7 +142,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.bonnet == VehicleParameterValue.On;
         }
         set =>
@@ -157,7 +157,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.boot == VehicleParameterValue.On;
         }
         set =>
@@ -172,7 +172,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.objective == VehicleParameterValue.On;
         }
         set =>
@@ -187,7 +187,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.doorDriver == VehicleParameterValue.On;
         }
         set =>
@@ -202,7 +202,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.doorPassenger == VehicleParameterValue.On;
         }
         set =>
@@ -217,7 +217,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.doorBackLeft == VehicleParameterValue.On;
         }
         set =>
@@ -232,7 +232,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.doorBackRight == VehicleParameterValue.On;
         }
         set =>
@@ -247,7 +247,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.windowDriver == VehicleParameterValue.On;
         }
         set =>
@@ -262,7 +262,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.windowPassenger == VehicleParameterValue.On;
         }
         set =>
@@ -277,7 +277,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.windowBackLeft == VehicleParameterValue.On;
         }
         set =>
@@ -292,7 +292,7 @@ public class Vehicle : WorldEntity
     {
         get
         {
-            _vehicle.GetParams(out var parameters);
+            var parameters = _vehicle.GetParams();
             return (VehicleParameterValue)parameters.windowBackRight == VehicleParameterValue.On;
         }
         set =>

@@ -11,9 +11,10 @@ public readonly partial struct IPool<T> : IEnumerable<T> where T : unmanaged, II
         return ((IReadOnlyPool<T>)this).Get(index);
     }
 
-    public void Bounds(out Pair<Size, Size> bounds)
+    public (Size, Size) Bounds()
     {
-        ((IReadOnlyPool<T>)this).Bounds(out bounds);
+        ((IReadOnlyPool<T>)this).Bounds(out var bounds);
+        return bounds;
     }
 
     public void Release(int index)
