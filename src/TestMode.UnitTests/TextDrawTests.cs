@@ -6,13 +6,13 @@ using Xunit;
 
 namespace TestMode.UnitTests;
 
-public class PlayerTextDrawTests : TestBase
+public class TextDrawTests : TestBase
 {
-    private readonly PlayerTextDraw _textDraw;
-
-    public PlayerTextDrawTests()
+    private readonly TextDraw _textDraw;
+    
+    public TextDrawTests()
     {
-        _textDraw = Services.GetRequiredService<IWorldService>().CreatePlayerTextDraw(Player, Vector2.One, "text");
+        _textDraw = Services.GetRequiredService<IWorldService>().CreateTextDraw(Vector2.One, "text");
     }
 
     public override void Dispose()
@@ -33,7 +33,7 @@ public class PlayerTextDrawTests : TestBase
         _textDraw.Text = "new text";
         _textDraw.Text.ShouldBe("new text");
     }
-
+    
     [Fact]
     public void Show_should_succeed()
     {
@@ -41,9 +41,21 @@ public class PlayerTextDrawTests : TestBase
     }
 
     [Fact]
+    public void Show_player_should_succeed()
+    {
+        _textDraw.Show(Player);
+    }
+    
+    [Fact]
     public void Hide_should_succeed()
     {
         _textDraw.Hide();
+    }
+
+    [Fact]
+    public void Hide_player_should_succeed()
+    {
+        _textDraw.Hide(Player);
     }
 
     [Fact]
@@ -156,5 +168,11 @@ public class PlayerTextDrawTests : TestBase
     {
         _textDraw.Selectable = true;
         _textDraw.Selectable.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void SetPreviewRotation_with_zoom_should_succeed()
+    {
+        _textDraw.SetPreviewRotation(Vector3.One, 2.0f);
     }
 }
