@@ -1,30 +1,19 @@
-﻿using SampSharp.OpenMp.Core.Api;
+﻿using System.Numerics;
+using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-internal class OmpEntityProvider : IOmpEntityProvider
+internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entityManager) : IOmpEntityProvider
 {
-    private readonly IEntityManager _entityManager;
-    private readonly IVehiclesComponent _vehicles;
-    private readonly IObjectsComponent _objects;
-    private readonly IGangZonesComponent _gangZones;
-    private readonly IActorsComponent _actors;
-    private readonly IPickupsComponent _pickups;
-    private readonly ITextDrawsComponent _textDraws;
-    private readonly IMenusComponent _menus;
-    private readonly IPlayerPool _players;
-    public OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entityManager)
-    {
-        _entityManager = entityManager;
-        _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
-        _objects = omp.Components.QueryComponent<IObjectsComponent>();
-        _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
-        _actors = omp.Components.QueryComponent<IActorsComponent>();
-        _pickups = omp.Components.QueryComponent<IPickupsComponent>();
-        _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
-        _menus = omp.Components.QueryComponent<IMenusComponent>();
-        _players = omp.Core.GetPlayers();
-    }
+    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
+    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
+    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
+    private readonly IActorsComponent _actors = omp.Components.QueryComponent<IActorsComponent>();
+    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
+    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly IMenusComponent _menus = omp.Components.QueryComponent<IMenusComponent>();
+    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
+    private readonly IPlayerPool _players = omp.Core.GetPlayers();
 
     public EntityId GetEntity(IActor actor)
     {
@@ -66,9 +55,19 @@ internal class OmpEntityProvider : IOmpEntityProvider
         return GetComponent(playerTextDraw)?.Entity ?? default;
     }
 
+    public EntityId GetEntity(IPlayerTextLabel playerTextLabel)
+    {
+        return GetComponent(playerTextLabel)?.Entity ?? default;
+    }
+
     public EntityId GetEntity(ITextDraw textDraw)
     {
         return GetComponent(textDraw)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(ITextLabel textLabel)
+    {
+        return GetComponent(textLabel)?.Entity ?? default;
     }
 
     public EntityId GetEntity(IVehicle vehicle)
@@ -86,7 +85,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         if (ext == null)
         {
 
-            var component = _entityManager.AddComponent<Actor>(EntityId.NewEntityId(), _actors, actor);
+            var component = entityManager.AddComponent<Actor>(EntityId.NewEntityId(), _actors, actor);
             ext = new ComponentExtension(component);
             actor.AddExtension(ext);
 
@@ -105,7 +104,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         if (ext == null)
         {
 
-            var component = _entityManager.AddComponent<GangZone>(EntityId.NewEntityId(), _gangZones, gangZone);
+            var component = entityManager.AddComponent<GangZone>(EntityId.NewEntityId(), _gangZones, gangZone);
             ext = new ComponentExtension(component);
             gangZone.AddExtension(ext);
 
@@ -139,7 +138,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         if (ext == null)
         {
 
-            var component = _entityManager.AddComponent<GlobalObject>(EntityId.NewEntityId(), _objects, @object);
+            var component = entityManager.AddComponent<GlobalObject>(EntityId.NewEntityId(), _objects, @object);
             ext = new ComponentExtension(component);
             @object.AddExtension(ext);
 
@@ -157,7 +156,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         var ext = pickup.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            var component = _entityManager.AddComponent<Pickup>(EntityId.NewEntityId(), _pickups, pickup);
+            var component = entityManager.AddComponent<Pickup>(EntityId.NewEntityId(), _pickups, pickup);
             ext = new ComponentExtension(component);
             pickup.AddExtension(ext);
 
@@ -175,7 +174,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         var ext = player.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            var component = _entityManager.AddComponent<Player>(EntityId.NewEntityId(), this, player);
+            var component = entityManager.AddComponent<Player>(EntityId.NewEntityId(), this, player);
             ext = new ComponentExtension(component);
             player.AddExtension(ext);
             return component;
@@ -214,6 +213,22 @@ internal class OmpEntityProvider : IOmpEntityProvider
         return (PlayerTextDraw)ext.Component;
     }
 
+    public PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel)
+    {
+        if (playerTextLabel == null)
+        {
+            return null;
+        }
+        var ext = playerTextLabel.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            // don't know for which player this text label is created - cannot create a component for the foreign entity.
+            return null;
+        }
+
+        return (PlayerTextLabel)ext.Component;
+    }
+
     public TextDraw? GetComponent(ITextDraw textDraw)
     {
         if (textDraw == null)
@@ -223,7 +238,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
         var ext = textDraw.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            var component = _entityManager.AddComponent<TextDraw>(EntityId.NewEntityId(), _textDraws, textDraw);
+            var component = entityManager.AddComponent<TextDraw>(EntityId.NewEntityId(), _textDraws, textDraw);
             ext = new ComponentExtension(component);
             textDraw.AddExtension(ext);
 
@@ -231,6 +246,25 @@ internal class OmpEntityProvider : IOmpEntityProvider
         }
 
         return (TextDraw)ext.Component;
+    }
+
+    public TextLabel? GetComponent(ITextLabel textLabel)
+    {
+        if (textLabel == null)
+        {
+            return null;
+        }
+        var ext = textLabel.TryGetExtension<ComponentExtension>();
+        if (ext == null)
+        {
+            var component = entityManager.AddComponent<TextLabel>(EntityId.NewEntityId(), this, _textLabels, textLabel);
+            ext = new ComponentExtension(component);
+            textLabel.AddExtension(ext);
+
+            return component;
+        }
+
+        return (TextLabel)ext.Component;
     }
 
     public Vehicle? GetComponent(IVehicle vehicle)
@@ -244,7 +278,7 @@ internal class OmpEntityProvider : IOmpEntityProvider
 
         if (ext == null)
         {
-            var component = _entityManager.AddComponent<Vehicle>(EntityId.NewEntityId(), _vehicles, vehicle);
+            var component = entityManager.AddComponent<Vehicle>(EntityId.NewEntityId(), _vehicles, vehicle);
             ext = new ComponentExtension(component);
             vehicle.AddExtension(ext);
 
@@ -254,9 +288,52 @@ internal class OmpEntityProvider : IOmpEntityProvider
         return (Vehicle)ext.Component;
     }
 
+    public Actor? GetActor(int id)
+    {
+        return GetComponent(_actors.AsPool().Get(id));
+    }
+
+    public GangZone? GetGangZone(int id)
+    {
+        return GetComponent(_gangZones.AsPool().Get(id));
+    }
+
+    public Pickup? GetPickup(int id)
+    {
+        return GetComponent(_pickups.AsPool().Get(id));
+    }
+
     public Player? GetPlayer(int id)
     {
         return GetComponent(_players.Get(id));
+    }
+
+    public PlayerObject? GetPlayerObject(Player player, int id)
+    {
+        var data = ((IPlayer)player).QueryExtension<IPlayerObjectData>();
+        return GetComponent(data.Get(id));
+    }
+
+    public PlayerTextDraw? GetPlayerTextDraw(Player player, int id)
+    {
+        var data = ((IPlayer)player).QueryExtension<IPlayerTextDrawData>();
+        return GetComponent(data.Get(id));
+    }
+
+    public PlayerTextLabel? GetPlayerTextLabel(Player player, int id)
+    {
+        var data = ((IPlayer)player).QueryExtension<IPlayerTextLabelData>();
+        return GetComponent(data.Get(id));
+    }
+
+    public TextDraw? GetTextDraw(int id)
+    {
+        return GetComponent(_textDraws.AsPool().Get(id));
+    }
+
+    public TextLabel? GetTextLabel(int id)
+    {
+        return GetComponent(_textLabels.AsPool().Get(id));
     }
 
     public Vehicle? GetVehicle(int id)

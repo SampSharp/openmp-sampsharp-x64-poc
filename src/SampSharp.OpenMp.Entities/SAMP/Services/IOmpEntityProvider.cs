@@ -5,8 +5,8 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>
 /// Provides methods for getting ECS entities/components for open.mp entities. For entities created through
 /// <c>SampSharp.Entities</c>, the existing entities and components are returned. For foreign entities (entities created
-/// through other scripts or open.mp components) new <c>SampSharp.Entities</c> entities and components are created and returned
-/// where possible.
+/// through other scripts or open.mp components) new ECS entities and components are created and returned where
+/// possible.
 /// </summary>
 public interface IOmpEntityProvider
 {
@@ -65,6 +65,13 @@ public interface IOmpEntityProvider
     /// <param name="playerTextDraw">The player text draw to get the entity for.</param>
     /// <returns>The player text draw entity.</returns>
     EntityId GetEntity(IPlayerTextDraw playerTextDraw);
+
+    /// <summary>
+    /// Gets the entity for the specified player text label.
+    /// </summary>
+    /// <param name="playerTextLabel">The player text label to get the entity for.</param>
+    /// <returns>The player text label entity.</returns>
+    EntityId GetEntity(IPlayerTextLabel playerTextLabel);
     
     /// <summary>
     /// Gets the entity for the specified text draw.
@@ -72,6 +79,13 @@ public interface IOmpEntityProvider
     /// <param name="textDraw">The text draw to get the entity for.</param>
     /// <returns>The text draw entity.</returns>
     EntityId GetEntity(ITextDraw textDraw);
+
+    /// <summary>
+    /// Gets the entity for the specified text label.
+    /// </summary>
+    /// <param name="textLabel">The text label to get the entity for.</param>
+    /// <returns>The text label entity.</returns>
+    EntityId GetEntity(ITextLabel textLabel);
 
     /// <summary>
     /// Gets the entity for the specified vehicle.
@@ -137,11 +151,25 @@ public interface IOmpEntityProvider
     PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw);
 
     /// <summary>
+    /// Gets the component for the specified player text label.
+    /// </summary>
+    /// <param name="playerTextLabel">The player text label to get the component for.</param>
+    /// <returns>The player text label component.</returns>
+    PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel);
+
+    /// <summary>
     /// Gets the component for the specified text draw.
     /// </summary>
     /// <param name="textDraw">The text draw to get the component for.</param>
     /// <returns>The text draw component.</returns>
     TextDraw? GetComponent(ITextDraw textDraw);
+    
+    /// <summary>
+    /// Gets the component for the specified text label.
+    /// </summary>
+    /// <param name="textLabel">The text label to get the component for.</param>
+    /// <returns>The text label component.</returns>
+    TextLabel? GetComponent(ITextLabel textLabel);
 
     /// <summary>
     /// Gets the component for the specified vehicle.
@@ -150,9 +178,90 @@ public interface IOmpEntityProvider
     /// <returns>The vehicle component.</returns>
     Vehicle? GetComponent(IVehicle vehicle);
 
-    //  TODO: all get by IDs
-    Player? GetPlayer(int id);
-    Vehicle? GetVehicle(int id);
-    GlobalObject? GetObject(int id);
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    Actor? GetActor(int id);
+    
+    /// <summary>
+    /// Gets the gang zone with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the gang zone.</param>
+    /// <returns>The gang zone with the specified identifier or <see langword="null" /> if no gang zone could be found.</returns>
+    GangZone? GetGangZone(int id);
+    
+    /// <summary>
+    /// Gets the menu with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the menu.</param>
+    /// <returns>The menu with the specified identifier or <see langword="null" /> if no menu could be found.</returns>
     Menu? GetMenu(int id);
+    
+    /// <summary>
+    /// Gets the object with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the object.</param>
+    /// <returns>The object with the specified identifier or <see langword="null" /> if no object could be found.</returns>
+    GlobalObject? GetObject(int id);
+    
+    /// <summary>
+    /// Gets the pickup with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the pickup.</param>
+    /// <returns>The pickup with the specified identifier or <see langword="null" /> if no pickup could be found.</returns>
+    Pickup? GetPickup(int id);
+    
+    /// <summary>
+    /// Gets the player with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the player.</param>
+    /// <returns>The player with the specified identifier or <see langword="null" /> if no player could be found.</returns>
+    Player? GetPlayer(int id);
+
+    /// <summary>
+    /// Gets the player object with the specified identifier.
+    /// </summary>
+    /// <param name="player">The owner of the player object.</param>
+    /// <param name="id">The identifier of the player object.</param>
+    /// <returns>The player object with the specified identifier or <see langword="null" /> if no player object could be found.</returns>
+    PlayerObject? GetPlayerObject(Player player, int id);
+    
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="player">The owner of the player text draw.</param>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    PlayerTextDraw? GetPlayerTextDraw(Player player, int id);
+    
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="player">The owner of the player text label.</param>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    PlayerTextLabel? GetPlayerTextLabel(Player player, int id);
+    
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    TextDraw? GetTextDraw(int id);
+    
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    TextLabel? GetTextLabel(int id);
+    
+    /// <summary>
+    /// Gets the actor with the specified identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the actor.</param>
+    /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
+    Vehicle? GetVehicle(int id);
 }
