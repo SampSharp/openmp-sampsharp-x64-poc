@@ -45,19 +45,19 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         return GetComponent(player)?.Entity ?? default;
     }
 
-    public EntityId GetEntity(IPlayerObject playerObject)
+    public EntityId GetEntity(IPlayerObject playerObject, IPlayer player = default)
     {
-        return GetComponent(playerObject)?.Entity ?? default;
+        return GetComponent(playerObject, player)?.Entity ?? default;
     }
 
-    public EntityId GetEntity(IPlayerTextDraw playerTextDraw)
+    public EntityId GetEntity(IPlayerTextDraw playerTextDraw, IPlayer player = default)
     {
-        return GetComponent(playerTextDraw)?.Entity ?? default;
+        return GetComponent(playerTextDraw, player)?.Entity ?? default;
     }
 
-    public EntityId GetEntity(IPlayerTextLabel playerTextLabel)
+    public EntityId GetEntity(IPlayerTextLabel playerTextLabel, IPlayer player = default)
     {
-        return GetComponent(playerTextLabel)?.Entity ?? default;
+        return GetComponent(playerTextLabel, player)?.Entity ?? default;
     }
 
     public EntityId GetEntity(ITextDraw textDraw)
@@ -182,7 +182,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         return (Player)ext.Component;
     }
 
-    public PlayerObject? GetComponent(IPlayerObject playerObject)
+    public PlayerObject? GetComponent(IPlayerObject playerObject, IPlayer player = default)
     {
         if (playerObject == null)
         {
@@ -191,13 +191,23 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         var ext = playerObject.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            // don't know for which player this object is created - cannot create a component for the foreign entity.
-            return null;
+            if (player == null)
+            {
+                // don't know for which player this object is created - cannot create a component for the foreign entity.
+                return null;
+            }
+
+            var data = player.QueryExtension<IPlayerObjectData>();
+            
+            var component = entityManager.AddComponent<PlayerObject>(EntityId.NewEntityId(), data, playerObject);
+            ext = new ComponentExtension(component);
+            player.AddExtension(ext);
+            return component;
         }
         return (PlayerObject)ext.Component;
     }
 
-    public PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw)
+    public PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw, IPlayer player = default)
     {
         if (playerTextDraw == null)
         {
@@ -206,24 +216,45 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         var ext = playerTextDraw.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            // don't know for which player this text draw is created - cannot create a component for the foreign entity.
-            return null;
+            if (player == null)
+            {
+                // don't know for which player this text draw is created - cannot create a component for the foreign entity.
+                return null;
+            }
+
+            var data = player.QueryExtension<IPlayerTextDrawData>();
+            
+            var component = entityManager.AddComponent<PlayerTextDraw>(EntityId.NewEntityId(), data, playerTextDraw);
+            ext = new ComponentExtension(component);
+            player.AddExtension(ext);
+            return component;
         }
 
         return (PlayerTextDraw)ext.Component;
     }
 
-    public PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel)
+    public PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel, IPlayer player = default)
     {
         if (playerTextLabel == null)
         {
             return null;
         }
+
         var ext = playerTextLabel.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-            // don't know for which player this text label is created - cannot create a component for the foreign entity.
-            return null;
+            if (player == null)
+            {
+                // don't know for which player this text label is created - cannot create a component for the foreign entity.
+                return null;
+            }
+
+            var data = player.QueryExtension<IPlayerTextLabelData>();
+            
+            var component = entityManager.AddComponent<PlayerTextLabel>(EntityId.NewEntityId(), this, data, playerTextLabel);
+            ext = new ComponentExtension(component);
+            player.AddExtension(ext);
+            return component;
         }
 
         return (PlayerTextLabel)ext.Component;
@@ -308,22 +339,22 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         return GetComponent(_players.Get(id));
     }
 
-    public PlayerObject? GetPlayerObject(Player player, int id)
+    public PlayerObject? GetPlayerObject(IPlayer player, int id)
     {
-        var data = ((IPlayer)player).QueryExtension<IPlayerObjectData>();
-        return GetComponent(data.Get(id));
+        var data = player.QueryExtension<IPlayerObjectData>();
+        return GetComponent(data.Get(id), player);
     }
 
-    public PlayerTextDraw? GetPlayerTextDraw(Player player, int id)
+    public PlayerTextDraw? GetPlayerTextDraw(IPlayer player, int id)
     {
-        var data = ((IPlayer)player).QueryExtension<IPlayerTextDrawData>();
-        return GetComponent(data.Get(id));
+        var data = player.QueryExtension<IPlayerTextDrawData>();
+        return GetComponent(data.Get(id), player);
     }
 
-    public PlayerTextLabel? GetPlayerTextLabel(Player player, int id)
+    public PlayerTextLabel? GetPlayerTextLabel(IPlayer player, int id)
     {
-        var data = ((IPlayer)player).QueryExtension<IPlayerTextLabelData>();
-        return GetComponent(data.Get(id));
+        var data = player.QueryExtension<IPlayerTextLabelData>();
+        return GetComponent(data.Get(id), player);
     }
 
     public TextDraw? GetTextDraw(int id)

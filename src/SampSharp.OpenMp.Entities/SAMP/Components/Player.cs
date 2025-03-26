@@ -366,7 +366,7 @@ public class Player : WorldEntity
             {
                 PlayerSurfingData.Type.Vehicle => _entityProvider.GetVehicle(surf.ID),
                 PlayerSurfingData.Type.Object => _entityProvider.GetObject(surf.ID),
-                PlayerSurfingData.Type.PlayerObject => _entityProvider.GetComponent(ObjectData.AsPool().Get(surf.ID)),
+                PlayerSurfingData.Type.PlayerObject => _entityProvider.GetPlayerObject(this, surf.ID),
                 _ => null
             };
         }

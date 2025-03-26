@@ -25,7 +25,7 @@ internal class TextDrawSystem : DisposableSystem, ITextDrawEventHandler
     {
         _eventDispatcher.Invoke("OnPlayerClickPlayerTextDraw",
             _entityProvider.GetEntity(player),
-            _entityProvider.GetEntity(td));
+            _entityProvider.GetEntity(td, player));
     }
 
     public bool OnPlayerCancelTextDrawSelection(IPlayer player)

@@ -22,7 +22,7 @@ internal class ObjectSystem : DisposableSystem, IObjectEventHandler
 
     public void OnPlayerObjectMoved(IPlayer player, IPlayerObject objekt)
     {
-        _eventDispatcher.Invoke("OnPlayerObjectMoved", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt));
+        _eventDispatcher.Invoke("OnPlayerObjectMoved", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt, player));
     }
 
     public void OnObjectSelected(IPlayer player, IObject objekt, int model, Vector3 position)
@@ -32,7 +32,7 @@ internal class ObjectSystem : DisposableSystem, IObjectEventHandler
 
     public void OnPlayerObjectSelected(IPlayer player, IPlayerObject objekt, int model, Vector3 position)
     {
-        _eventDispatcher.Invoke("OnPlayerObjectSelected", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt), model, position);
+        _eventDispatcher.Invoke("OnPlayerObjectSelected", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt, player), model, position);
     }
 
     public void OnObjectEdited(IPlayer player, IObject objekt, ObjectEditResponse response, Vector3 offset, Vector3 rotation)
@@ -42,7 +42,7 @@ internal class ObjectSystem : DisposableSystem, IObjectEventHandler
 
     public void OnPlayerObjectEdited(IPlayer player, IPlayerObject objekt, ObjectEditResponse response, Vector3 offset, Vector3 rotation)
     {
-        _eventDispatcher.Invoke("OnPlayerObjectEdited", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt), response, offset, rotation);
+        _eventDispatcher.Invoke("OnPlayerObjectEdited", _entityProvider.GetEntity(player), _entityProvider.GetEntity(objekt, player), response, offset, rotation);
     }
 
     public void OnPlayerAttachedObjectEdited(IPlayer player, int index, bool saved, ref ObjectAttachmentSlotData data)

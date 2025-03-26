@@ -37,6 +37,6 @@ internal class PlayerShotSystem : DisposableSystem, IPlayerShotEventHandler
 
     public bool OnPlayerShotPlayerObject(IPlayer player, IPlayerObject target, ref PlayerBulletData bulletData)
     {
-        return _eventDispatcher.InvokeAs("OnPlayerShotPlayerObject", true, _entityProvider.GetEntity(player), _entityProvider.GetEntity(target), bulletData);
+        return _eventDispatcher.InvokeAs("OnPlayerShotPlayerObject", true, _entityProvider.GetEntity(player), _entityProvider.GetEntity(target, player), bulletData);
     }
 }

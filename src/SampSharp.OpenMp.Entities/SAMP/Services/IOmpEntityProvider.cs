@@ -55,23 +55,26 @@ public interface IOmpEntityProvider
     /// <summary>
     /// Gets the entity for the specified player object.
     /// </summary>
+    /// <param name="player">The owner of the player object.</param>
     /// <param name="playerObject">The player object to get the entity for.</param>
     /// <returns>The player object entity.</returns>
-    EntityId GetEntity(IPlayerObject playerObject);
+    EntityId GetEntity(IPlayerObject playerObject, IPlayer player = default);
     
     /// <summary>
     /// Gets the entity for the specified player text draw.
     /// </summary>
+    /// <param name="player">The owner of the player text draw.</param>
     /// <param name="playerTextDraw">The player text draw to get the entity for.</param>
     /// <returns>The player text draw entity.</returns>
-    EntityId GetEntity(IPlayerTextDraw playerTextDraw);
+    EntityId GetEntity(IPlayerTextDraw playerTextDraw, IPlayer player = default);
 
     /// <summary>
     /// Gets the entity for the specified player text label.
     /// </summary>
+    /// <param name="player">The owner of the player text label.</param>
     /// <param name="playerTextLabel">The player text label to get the entity for.</param>
     /// <returns>The player text label entity.</returns>
-    EntityId GetEntity(IPlayerTextLabel playerTextLabel);
+    EntityId GetEntity(IPlayerTextLabel playerTextLabel, IPlayer player = default);
     
     /// <summary>
     /// Gets the entity for the specified text draw.
@@ -139,23 +142,26 @@ public interface IOmpEntityProvider
     /// <summary>
     /// Gets the component for the specified player object.
     /// </summary>
+    /// <param name="player">The owner of the player object.</param>
     /// <param name="playerObject">The player object to get the component for.</param>
     /// <returns>The player object component.</returns>
-    PlayerObject? GetComponent(IPlayerObject playerObject);
+    PlayerObject? GetComponent(IPlayerObject playerObject, IPlayer player = default);
     
     /// <summary>
     /// Gets the component for the specified player text draw.
     /// </summary>
+    /// <param name="player">The owner of the player text draw.</param>
     /// <param name="playerTextDraw">The player text draw to get the component for.</param>
     /// <returns>The player text draw component.</returns>
-    PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw);
+    PlayerTextDraw? GetComponent(IPlayerTextDraw playerTextDraw, IPlayer player = default);
 
     /// <summary>
     /// Gets the component for the specified player text label.
     /// </summary>
+    /// <param name="player">The owner of the player text label.</param>
     /// <param name="playerTextLabel">The player text label to get the component for.</param>
     /// <returns>The player text label component.</returns>
-    PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel);
+    PlayerTextLabel? GetComponent(IPlayerTextLabel playerTextLabel, IPlayer player = default);
 
     /// <summary>
     /// Gets the component for the specified text draw.
@@ -226,7 +232,7 @@ public interface IOmpEntityProvider
     /// <param name="player">The owner of the player object.</param>
     /// <param name="id">The identifier of the player object.</param>
     /// <returns>The player object with the specified identifier or <see langword="null" /> if no player object could be found.</returns>
-    PlayerObject? GetPlayerObject(Player player, int id);
+    PlayerObject? GetPlayerObject(IPlayer player, int id);
     
     /// <summary>
     /// Gets the actor with the specified identifier.
@@ -234,7 +240,7 @@ public interface IOmpEntityProvider
     /// <param name="player">The owner of the player text draw.</param>
     /// <param name="id">The identifier of the actor.</param>
     /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
-    PlayerTextDraw? GetPlayerTextDraw(Player player, int id);
+    PlayerTextDraw? GetPlayerTextDraw(IPlayer player, int id);
     
     /// <summary>
     /// Gets the actor with the specified identifier.
@@ -242,7 +248,7 @@ public interface IOmpEntityProvider
     /// <param name="player">The owner of the player text label.</param>
     /// <param name="id">The identifier of the actor.</param>
     /// <returns>The actor with the specified identifier or <see langword="null" /> if no actor could be found.</returns>
-    PlayerTextLabel? GetPlayerTextLabel(Player player, int id);
+    PlayerTextLabel? GetPlayerTextLabel(IPlayer player, int id);
     
     /// <summary>
     /// Gets the actor with the specified identifier.
