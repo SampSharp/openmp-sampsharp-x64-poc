@@ -18,11 +18,6 @@ public static class MicrosecondsMarshaller
         {
             return new Microseconds((int)managed.TotalMicroseconds);
         }
-
-        public static void Free(int a, int b)
-        {
-
-        }
     }
     public static class NativeToManaged
     {

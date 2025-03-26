@@ -2,11 +2,13 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
-internal static class PoolEventHandlerInterop
+internal static partial class PoolEventHandlerInterop
 {
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PoolEventHandlerImpl_create", ExactSpelling = true)]
-    public static extern nint PoolEventHandlerImpl_create(nint onPoolEntryCreated, nint onPoolEntryDestroyed);
+    [LibraryImport("SampSharp", EntryPoint = "PoolEventHandlerImpl_create")]
+    [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    public static partial nint PoolEventHandlerImpl_create(nint onPoolEntryCreated, nint onPoolEntryDestroyed);
 
-    [DllImport("SampSharp", CallingConvention = CallingConvention.Cdecl, EntryPoint = "PoolEventHandlerImpl_delete", ExactSpelling = true)]
-    public static extern void PoolEventHandlerImpl_delete(nint ptr);
+    [LibraryImport("SampSharp", EntryPoint = "PoolEventHandlerImpl_delete")]
+    [UnmanagedCallConv(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvCdecl)])]
+    public static partial void PoolEventHandlerImpl_delete(nint ptr);
 }

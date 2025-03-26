@@ -105,7 +105,7 @@ public static unsafe class StringViewMarshaller
             Encoding.UTF8.GetBytes(managed, heapBuffer);
         }
 
-        public StringView ToUnmanaged()
+        public readonly StringView ToUnmanaged()
         {
             return new StringView(_heapBuffer, new Size(_byteCount));
         }
@@ -115,7 +115,7 @@ public static unsafe class StringViewMarshaller
             _result = value.ToString();
         }
 
-        public string? ToManaged()
+        public readonly string? ToManaged()
         {
             return _result;
         }

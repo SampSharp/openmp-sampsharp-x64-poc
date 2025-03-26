@@ -12,9 +12,9 @@ namespace SampSharp.OpenMp.Core.Api;
 [StructLayout(LayoutKind.Sequential)]
 internal struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterator<T>> where T : unmanaged, IIDProviderInterface
 {
-    private IPool<T> _pool;
+    private readonly IPool<T> _pool;
     private int _lockedId;
-    private FlatPtrHashSet<T> _entries;
+    private readonly FlatPtrHashSet<T> _entries;
     private FlatPtrHashSetIterator _iter;
 
     internal MarkedPoolIterator(IPool<T> pool, FlatPtrHashSet<T> entries, FlatPtrHashSetIterator iter)
@@ -51,19 +51,19 @@ internal struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterat
         }
     }
 
-    public T Current => _iter.Get<T>();
+    public readonly T Current => _iter.Get<T>();
 
-    public bool Equals(MarkedPoolIterator<T> other)
+    public readonly bool Equals(MarkedPoolIterator<T> other)
     {
         return _iter.Equals(other._iter);
     }
 
-    public override bool Equals(object? obj)
+    public override readonly bool Equals(object? obj)
     {
         return obj is MarkedPoolIterator<T> other && Equals(other);
     }
 
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         return _iter.GetHashCode();
     }

@@ -62,12 +62,7 @@ public readonly partial struct IExtensible
     {
         var result = TryGetExtension<T>();
 
-        if (result == null)
-        {
-            throw new InvalidOperationException($"Extension of type '{typeof(T).Name}' not found.");
-        }
-
-        return result;
+        return result ?? throw new InvalidOperationException($"Extension of type '{typeof(T).Name}' not found.");
     }
 
     public T? TryGetExtension<T>() where T : Extension

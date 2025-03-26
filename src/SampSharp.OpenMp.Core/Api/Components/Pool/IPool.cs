@@ -120,9 +120,9 @@ public readonly partial struct IPool<T> : IEnumerable<T> where T : unmanaged, II
             throw new InvalidOperationException();
         }
 
-        public T Current => _iterator?.Current ?? throw new InvalidOperationException();
+        public readonly T Current => _iterator?.Current ?? throw new InvalidOperationException();
 
-        object IEnumerator.Current => Current;
+        readonly object IEnumerator.Current => Current;
 
         public void Dispose()
         {

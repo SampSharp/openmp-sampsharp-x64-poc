@@ -24,8 +24,7 @@ SOFTWARE. */
 
 // ReSharper disable once RedundantUsingDirective
 using System;
-#pragma warning disable CA1069
-#pragma warning disable 1591
+#pragma warning disable IDE0290 // Use primary constructor
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -1422,8 +1421,8 @@ internal sealed class AspMvcAreaViewComponentViewLocationFormatAttribute : Attri
   [AttributeUsage(AttributeTargets.Assembly | AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = true)]
 internal sealed class AspMvcAreaViewLocationFormatAttribute : Attribute
   {
-    public AspMvcAreaViewLocationFormatAttribute([NotNull] string format)
-    {
+        public AspMvcAreaViewLocationFormatAttribute([NotNull] string format)
+        {
       Format = format;
     }
 

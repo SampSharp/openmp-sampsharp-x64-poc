@@ -50,7 +50,7 @@ public static unsafe class AnimationDataMarshaller
         
         private static AnimationData FromNative(Native native)
         {
-            return new AnimationData(native.delta, native.loop, native.lockX, native.lockY, native.freeze, native.time, native.lib.ToString(), native.name.ToString());
+            return new AnimationData(native.Delta, native.Loop, native.LockX, native.LockY, native.Freeze, native.Time, native.Lib.ToString(), native.Name.ToString());
         }
     }
 
@@ -58,32 +58,32 @@ public static unsafe class AnimationDataMarshaller
     public struct Native
     {
         [FieldOffset(0)]
-        public float delta;
+        public float Delta;
         [FieldOffset(4)]
-        public bool loop;
+        public bool Loop;
         [FieldOffset(5)]
-        public bool lockX;
+        public bool LockX;
         [FieldOffset(6)]
-        public bool lockY;
+        public bool LockY;
         [FieldOffset(7)]
-        public bool freeze;
+        public bool Freeze;
         [FieldOffset(8)]
-        public uint time;
+        public uint Time;
         [FieldOffset(16)]
-        public HybridString16 lib;
+        public HybridString16 Lib;
         [FieldOffset(40)]
-        public HybridString24 name;
+        public HybridString24 Name;
 
         public Native(float delta, bool loop, bool lockX, bool lockY, bool freeze, uint time, HybridString16 lib, HybridString24 name)
         {
-            this.delta = delta;
-            this.loop = loop;
-            this.lockX = lockX;
-            this.lockY = lockY;
-            this.freeze = freeze;
-            this.time = time;
-            this.lib = lib;
-            this.name = name;
+            Delta = delta;
+            Loop = loop;
+            LockX = lockX;
+            LockY = lockY;
+            Freeze = freeze;
+            Time = time;
+            Lib = lib;
+            Name = name;
         }
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
