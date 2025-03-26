@@ -3,9 +3,13 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Represents a marshaller entrypoint for marshalling <see cref="ObjectMaterialData"/> to its native counterpart.
+/// </summary>
 [CustomMarshaller(typeof(ObjectMaterialData), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
 public static class ObjectMaterialDataMarshaller
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class NativeToManaged
     {
         public static ObjectMaterialData? ConvertToManaged(BlittableStructRef<NativeObjMat> unmanaged)
@@ -42,4 +46,5 @@ public static class ObjectMaterialDataMarshaller
         [FieldOffset(96)] public readonly MaterialType Type; // len = 1
         [FieldOffset(97)] public readonly BlittableBoolean Used; // len = 1
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

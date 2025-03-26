@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// This type represents a pointer to an unmanaged open.mp <see cref="IObjectsComponent"/> interface.
+/// </summary>
 [OpenMpApi(typeof(IPoolComponent<IObject>))]
 public readonly partial struct IObjectsComponent
 {

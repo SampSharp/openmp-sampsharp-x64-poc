@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core;
 
+/// <summary>
+/// Represents a marshaller entrypoint for marshalling <see langword="bool"/> to a native <see cref="BlittableBoolean"/> structure.
+/// </summary>
 [CustomMarshaller(typeof(bool), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(bool), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(bool), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
@@ -10,6 +13,7 @@ namespace SampSharp.OpenMp.Core;
 [CustomMarshaller(typeof(bool), MarshalMode.UnmanagedToManagedRef, typeof(Bidirectional))]
 public static class BooleanMarshaller
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class ManagedToNative
     {
         public static BlittableBoolean ConvertToUnmanaged(bool managed)
@@ -37,4 +41,5 @@ public static class BooleanMarshaller
             return unmanaged;
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// This type represents a pointer to an unmanaged open.mp <see cref="ITextLabelsComponent"/> interface.
+/// </summary>
 [OpenMpApi(typeof(IPoolComponent<ITextLabel>))]
 public readonly partial struct ITextLabelsComponent
 {

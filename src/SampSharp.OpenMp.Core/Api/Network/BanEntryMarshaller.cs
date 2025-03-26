@@ -5,10 +5,14 @@ using SampSharp.OpenMp.Core.Chrono;
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Represents a marshaller entrypoint for marshalling <see cref="BanEntry"/> to its native counterpart.
+/// </summary>
 [CustomMarshaller(typeof(BanEntry), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(BanEntry), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
 public static unsafe class BanEntryMarshaller
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class ManagedToNative
     {
         public static int BufferSize { get; } = Marshal.SizeOf<Native>();
@@ -64,4 +68,5 @@ public static unsafe class BanEntryMarshaller
         public readonly HybridString25 Name = name; // MAX_PLAYER_NAME + 1
         public readonly HybridString32 Reason = reason;
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

@@ -1,7 +1,9 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace SampSharp.OpenMp.Core.Api;
 
+[StructLayout(LayoutKind.Sequential)]
 public readonly struct PlayerClass
 {
     public readonly int Team;

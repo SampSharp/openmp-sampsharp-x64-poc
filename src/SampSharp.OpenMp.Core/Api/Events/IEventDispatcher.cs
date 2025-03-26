@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// This type represents a pointer to an unmanaged open.mp <see cref="IEventDispatcher{T}"/> interface.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
 {

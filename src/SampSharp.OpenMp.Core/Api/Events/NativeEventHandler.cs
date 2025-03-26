@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using System.Runtime.InteropServices;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 public readonly struct NativeEventHandler<TEventHandler> where TEventHandler : class
 {

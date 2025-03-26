@@ -1,5 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Provides methods related to animation names.
+/// </summary>
 public static class Animation
 {
     private static readonly HashSet<string> _animationNames =
@@ -1955,13 +1958,24 @@ public static class Animation
         "WOP"
     ];
 
-    public static bool IsNameValid(string lib, string name)
+    /// <summary>
+    /// Returns a value indicating whether the animation with the specified <paramref name="library"/> and <paramref name="name"/> is valid.
+    /// </summary>
+    /// <param name="library">The name of the animation library.</param>
+    /// <param name="name">The name of the animation.</param>
+    /// <returns><see langword="true" /> if the specified animation is valid; <see langword="false"/> otherwise.</returns>
+    public static bool IsNameValid(string library, string name)
     {
-        var fullName = $"{lib}:{name}".ToUpperInvariant();
+        var fullName = $"{library}:{name}".ToUpperInvariant();
         return _animationNames.Contains(fullName);
     }
 
-    public static (string? lib, string? name) GetAnmiation(int id)
+    /// <summary>
+    /// returns the library and name of the animation with the specified <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The identifier of the animation.</param>
+    /// <returns>The library and name of the animation. <see langword="null" /> values are returned if the specified identifier is invalid.</returns>
+    public static (string? library, string? name) GetAnmiation(int id)
     {
         if (id <= 0 || id >= _animationNames.Count)
         {
@@ -1974,11 +1988,17 @@ public static class Animation
         return (spl[..idx], spl[(idx + 1)..]);
     }
 
-    public static bool IsLibraryValid(string lib, bool v1_0 = true)
+    /// <summary>
+    /// Returns a value indicating whether the specified animation <paramref name="library"/> is valid.
+    /// </summary>
+    /// <param name="library">The name of the animation library.</param>
+    /// <param name="v1_0">Whether to consider GTA:SA v1.0 animation libraries as valid.</param>
+    /// <returns><see langword="true" /> if the specified animation library is valid; <see langword="false"/> otherwise.</returns>
+    public static bool IsLibraryValid(string library, bool v1_0 = true)
     {
-        lib = lib.ToUpperInvariant();
+        library = library.ToUpperInvariant();
 
-        if (_animLibs.Contains(lib))
+        if (_animLibs.Contains(library))
         {
             return true;
         }
@@ -1986,7 +2006,7 @@ public static class Animation
         if (v1_0)
         {
             // Check three more libraries, removed in version 1.1
-            return lib == "BLOWJOBZ" || lib == "SEX" || lib == "SNM";
+            return library == "BLOWJOBZ" || library == "SEX" || library == "SNM";
         }
 
         return false;

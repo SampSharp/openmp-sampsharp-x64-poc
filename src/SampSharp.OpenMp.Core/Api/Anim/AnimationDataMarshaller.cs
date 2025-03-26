@@ -4,14 +4,18 @@ using System.Runtime.InteropServices.Marshalling;
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Represents a marshaller entrypoint for marshalling <see cref="AnimationData"/> to its native counterpart.
+/// </summary>
 [CustomMarshaller(typeof(AnimationData), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(AnimationData), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
 public static unsafe class AnimationDataMarshaller
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class ManagedToNative
     {
         public static int BufferSize { get; } = Marshal.SizeOf<Native>();
-
+        
         public static BlittableStructRef<Native> ConvertToUnmanaged(AnimationData managed, Span<byte> callerAllocatedBuffer)
         {
             var native = ToNative(managed);
@@ -29,7 +33,7 @@ public static unsafe class AnimationDataMarshaller
                 new HybridString24(managed.Name));
         }
     }
-
+    
     public static class NativeToManaged
     {
         public static AnimationData? ConvertToManaged(BlittableStructRef<Native> unmanaged)
@@ -82,4 +86,5 @@ public static unsafe class AnimationDataMarshaller
             this.name = name;
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

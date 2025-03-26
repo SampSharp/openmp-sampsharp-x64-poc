@@ -5,6 +5,9 @@ using System.Text;
 
 namespace SampSharp.OpenMp.Core;
 
+/// <summary>
+/// Represents a marshaller entrypoint for marshalling <see langword="string"/> to a native <see cref="StringView"/> structure.
+/// </summary>
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
@@ -13,6 +16,7 @@ namespace SampSharp.OpenMp.Core;
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(Bidirectional))]
 public static unsafe class StringViewMarshaller
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public ref struct ManagedToNative
     {
         public static int BufferSize => 128;
@@ -126,4 +130,5 @@ public static unsafe class StringViewMarshaller
             }
         }
     }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
