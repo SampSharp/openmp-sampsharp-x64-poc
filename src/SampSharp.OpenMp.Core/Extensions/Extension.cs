@@ -70,7 +70,7 @@ public abstract partial class Extension : IDisposable
     /// Gets the managed extension counterpart of the specified unmanaged extension.
     /// </summary>
     /// <param name="ext">The unmanaged extension.</param>
-    /// <returns>The managed extension or <c>null</c> if the unmanaged extension is in an invalid state.</returns>
+    /// <returns>The managed extension or <see langword="null" /> if the unmanaged extension is in an invalid state.</returns>
     internal static Extension? Get(IExtension ext)
     {
         var handle = GetHandle(ext.Handle);

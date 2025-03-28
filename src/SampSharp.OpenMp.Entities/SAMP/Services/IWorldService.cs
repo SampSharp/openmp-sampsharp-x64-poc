@@ -110,7 +110,7 @@ public interface IWorldService
     /// <param name="position">The position.</param>
     /// <param name="drawDistance">The draw distance.</param>
     /// <param name="virtualWorld">The virtual world.</param>
-    /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
+    /// <param name="testLos">if set to <see langword="true" /> the line of sight is tested to decide whether the label is drawn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns>The created text label.</returns>
     TextLabel CreateTextLabel(string text, Color color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true,
@@ -122,7 +122,7 @@ public interface IWorldService
     /// <param name="color">The color.</param>
     /// <param name="position">The position.</param>
     /// <param name="drawDistance">The draw distance.</param>
-    /// <param name="testLos">if set to <c>true</c> the line of sight is tested to decide whether the label is drawn.</param>
+    /// <param name="testLos">if set to <see langword="true" /> the line of sight is tested to decide whether the label is drawn.</param>
     /// <param name="parent">The parent of the entity to be created.</param>
     /// <returns>The created text label.</returns>
     PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Color color, Vector3 position, float drawDistance, bool testLos = true, EntityId parent = default);

@@ -351,7 +351,7 @@ public class Vehicle : WorldEntity
 
     /// <summary>Checks if this vehicle is streamed in for the specified <paramref name="player" />.</summary>
     /// <param name="player">The player to check.</param>
-    /// <returns><c>true</c> if this vehicle is streamed in for the specified vehicle; <c>false</c> otherwise.</returns>
+    /// <returns><see langword="true" /> if this vehicle is streamed in for the specified vehicle; <see langword="false" /> otherwise.</returns>
     public virtual bool IsStreamedIn(Player player)
     {
         return _vehicle.IsStreamedInForPlayer(player);
@@ -475,7 +475,7 @@ public class Vehicle : WorldEntity
         return $"(Id: {Id}, Model: {Model})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="Vehicle"/> to <see cref="IVehicle"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="Vehicle" /> to <see cref="IVehicle" />.</summary>
     public static implicit operator IVehicle(Vehicle vehicle)
     {
         return vehicle._vehicle;

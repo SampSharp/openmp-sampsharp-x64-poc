@@ -141,7 +141,7 @@ public class Player : WorldEntity
     /// Sets the name of this player.
     /// </summary>
     /// <param name="name">The name to be set.</param>
-    /// <exception cref="InvalidPlayerNameException">Thrown when the name is invalid of already in use.</exception>
+    /// <exception cref="InvalidPlayerNameException">Thrown if the name is invalid of already in use.</exception>
     public virtual void SetName(string name)
     {
         var result = _player.SetName(name);
@@ -716,14 +716,14 @@ public class Player : WorldEntity
     }
 
     /// <summary>Allows you to disable collisions between vehicles for a player.</summary>
-    /// <param name="disable">if set to <c>true</c> disables the collision between vehicles.</param>
+    /// <param name="disable">if set to <see langword="true" /> disables the collision between vehicles.</param>
     public virtual void DisableRemoteVehicleCollisions(bool disable)
     {
         _player.SetRemoteVehicleCollisions(!disable);
     }
 
     /// <summary>Toggles camera targeting functions for a player.</summary>
-    /// <param name="enable">if set to <c>true</c> the functionality is enabled.</param>
+    /// <param name="enable">if set to <see langword="true" /> the functionality is enabled.</param>
     public virtual void EnablePlayerCameraTarget(bool enable)
     {
         _player.UseCameraTargeting(enable);
@@ -908,7 +908,7 @@ public class Player : WorldEntity
     /// </param>
     /// <param name="freeze">Will freeze the player in position after the animation finishes.</param>
     /// <param name="time">Timer in milliseconds. For a never ending loop it should be 0.</param>
-    /// <param name="forceSync">Set to <c>true</c> to force the player to sync animation with other players in all instances</param>
+    /// <param name="forceSync">Set to <see langword="true" /> to force the player to sync animation with other players in all instances</param>
     public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time,
         bool forceSync)
     {
@@ -1029,7 +1029,7 @@ public class Player : WorldEntity
     /// This functions allows you to toggle the drawing of player name tags, health bars and armor bars which display above their head. For use of a similar
     /// function like this on a global level, <see cref="IServerService.ShowNameTags" /> function.
     /// </summary>
-    /// <remarks><see cref="IServerService.ShowNameTags" /> must be set to <c>true</c> to be able to show name tags with <see cref="ShowNameTagForPlayer" />.</remarks>
+    /// <remarks><see cref="IServerService.ShowNameTags" /> must be set to <see langword="true" /> to be able to show name tags with <see cref="ShowNameTagForPlayer" />.</remarks>
     /// <param name="player">The player whose name tag will be shown or hidden.</param>
     /// <param name="show">True to show name tag, False to hide name tag.</param>
     public virtual void ShowNameTagForPlayer(Player player, bool show)
@@ -1377,7 +1377,7 @@ public class Player : WorldEntity
         return $"(Id: {Id}, Name: {Name})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="Player"/> to <see cref="IPlayer"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="Player" /> to <see cref="IPlayer" />.</summary>
     public static implicit operator IPlayer(Player player)
     {
         return player._player;

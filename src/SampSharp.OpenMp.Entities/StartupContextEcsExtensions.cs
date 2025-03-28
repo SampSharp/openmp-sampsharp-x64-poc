@@ -3,7 +3,7 @@
 namespace SampSharp.Entities;
 
 /// <summary>
-/// Contains extension methods for <see cref="IStartupContext"/> to configure the ECS system.
+/// Contains extension methods for <see cref="IStartupContext" /> to configure the ECS system.
 /// </summary>
 public static class StartupContextEcsExtensions
 {
@@ -13,7 +13,7 @@ public static class StartupContextEcsExtensions
     /// <param name="context">The startup context.</param>
     /// <param name="configure">An optional action to configure the ECS system.</param>
     /// <returns>The startup context.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the startup type does not implement the <see cref="IEcsStartup"/> interface or if ECS has already been configured.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if the startup type does not implement the <see cref="IEcsStartup" /> interface or if ECS has already been configured.</exception>
     public static IStartupContext UseEntities(this IStartupContext context, Action<EcsConfiguration>? configure = null)
     {
         if (context.Configurator is not IEcsStartup)

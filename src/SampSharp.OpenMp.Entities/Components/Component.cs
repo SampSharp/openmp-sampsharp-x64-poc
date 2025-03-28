@@ -25,14 +25,14 @@ public abstract class Component
     public bool IsComponentAlive { get; private set; } = true;
 
     /// <summary>
-    /// Gets a value indicating whether this component is being destroyed. This property is set to <c>true</c> when the
+    /// Gets a value indicating whether this component is being destroyed. This property is set to <see langword="true" /> when the
     /// destruction of this component has been initiated.
     /// </summary>
     public bool IsDestroying { get; private set; }
 
     /// <summary>Gets a component of the specified type <typeparamref name="T" /> attached to the entity.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     public T? GetComponent<T>() where T : Component
     {
@@ -97,7 +97,7 @@ public abstract class Component
     /// <summary>Gets a component of the specified type <typeparamref name="T" /> attached to a child entity of the
     /// entity using a depth first search.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     public T? GetComponentInChildren<T>() where T : Component
     {
@@ -117,7 +117,7 @@ public abstract class Component
     /// <summary>Gets a component of the specified type <typeparamref name="T" /> attached to a parent entity of the
     /// entity.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     public T? GetComponentInParent<T>() where T : Component
     {
@@ -156,30 +156,30 @@ public abstract class Component
         IsComponentAlive = false;
     }
 
-    /// <summary>Implements the operator true. Returns <c>true</c> if the specified <paramref name="component" /> is
+    /// <summary>Implements the operator true. Returns <see langword="true" /> if the specified <paramref name="component" /> is
     /// alive.</summary>
     /// <param name="component">The component.</param>
-    /// <returns><c>true</c> if the specified <paramref name="component" /> is alive; <c>false</c> otherwise.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="component" /> is alive; <see langword="false" /> otherwise.</returns>
     public static bool operator true([NotNullWhen(true)]Component? component)
     {
         return component is { IsComponentAlive: true };
     }
 
-    /// <summary>Implements the operator false. Returns <c>true</c> if the specified <paramref name="component" /> is
+    /// <summary>Implements the operator false. Returns <see langword="true" /> if the specified <paramref name="component" /> is
     /// not alive.</summary>
     /// <param name="component">The component.</param>
-    /// <returns><c>true</c> if the specified <paramref name="component" /> is not alive; <c>false</c>
+    /// <returns><see langword="true" /> if the specified <paramref name="component" /> is not alive; <see langword="false" />
     /// otherwise.</returns>
     public static bool operator false([NotNullWhen(false)]Component? component)
     {
         return component is not { IsComponentAlive: true };
     }
 
-    /// <summary>Implements the operator !. Returns <c>true</c> if the specified <paramref name="component" /> is not
+    /// <summary>Implements the operator !. Returns <see langword="true" /> if the specified <paramref name="component" /> is not
     /// alive.</summary>
     /// <param name="component">The component.</param>
-    /// <returns><c>true</c> if the specified <paramref name="component" /> is not alive; otherwise
-    /// <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="component" /> is not alive; otherwise
+    /// <see langword="false" />.</returns>
     public static bool operator !([NotNullWhen(false)]Component? component)
     {
         return component is not { IsComponentAlive: true };

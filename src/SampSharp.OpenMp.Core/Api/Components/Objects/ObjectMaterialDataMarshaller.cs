@@ -4,7 +4,7 @@ using System.Runtime.InteropServices.Marshalling;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see cref="ObjectMaterialData"/> to its native counterpart.
+/// Represents a marshaller entrypoint for marshalling <see cref="ObjectMaterialData" /> to its unmanaged counterpart.
 /// </summary>
 [CustomMarshaller(typeof(ObjectMaterialData), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]
 public static class ObjectMaterialDataMarshaller

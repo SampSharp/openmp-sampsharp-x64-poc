@@ -22,10 +22,10 @@ public class GangZone : IdProvider
     /// </summary>
     protected bool IsOmpEntityDestroyed => _gangZone.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
-    /// <summary>Gets the minimum position of this <see cref="GangZone"/>.</summary>
+    /// <summary>Gets the minimum position of this <see cref="GangZone" />.</summary>
     public virtual Vector2 Min => _gangZone.GetPosition().Min;
 
-    /// <summary>Gets the maximum position of this <see cref="GangZone"/>.</summary>
+    /// <summary>Gets the maximum position of this <see cref="GangZone" />.</summary>
     public virtual Vector2 Max => _gangZone.GetPosition().Max;
 
     /// <summary>Gets the minimum x value for this <see cref="GangZone" />.</summary>
@@ -126,7 +126,7 @@ public class GangZone : IdProvider
         return $"(Id: {Id}, Color: {Color})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="GangZone"/> to <see cref="IGangZone"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="GangZone" /> to <see cref="IGangZone" />.</summary>
     public static implicit operator IGangZone(GangZone gangZone)
     {
         return gangZone._gangZone;

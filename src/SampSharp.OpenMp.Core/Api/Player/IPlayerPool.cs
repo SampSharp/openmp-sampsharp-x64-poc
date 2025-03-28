@@ -6,7 +6,7 @@ using SampSharp.OpenMp.Core.RobinHood;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerPool"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerPool" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtensible), typeof(IReadOnlyPool<IPlayer>))]
 public readonly partial struct IPlayerPool

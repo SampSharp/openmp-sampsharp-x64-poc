@@ -88,7 +88,7 @@ public interface IServerService
     /// Enables or disables stunt bonuses for all players. If enabled, players will receive monetary rewards when performing a stunt in a vehicle (e.g. a
     /// wheelie).
     /// </summary>
-    /// <param name="enable">if set to <c>true</c> stunt bonuses are enabled.</param>
+    /// <param name="enable">if set to <see langword="true" /> stunt bonuses are enabled.</param>
     void EnableStuntBonus(bool enable);
 
     /// <summary>Enable friendly fire for team vehicles. Players will be unable to damage teammates' vehicles.</summary>
@@ -146,7 +146,7 @@ public interface IServerService
     void SetWorldTime(int hour);
 
     /// <summary>Shows the name tags. This function can only be used in OnGameModeInit.</summary>
-    /// <param name="show">if set to <c>true</c> name tags are enabled; otherwise the tags are disabled.</param>
+    /// <param name="show">if set to <see langword="true" /> name tags are enabled; otherwise the tags are disabled.</param>
     void ShowNameTags(bool show);
 
     /// <summary>Toggles player markers (blips on the radar). This function can only be used in OnGameModeInit..</summary>

@@ -109,7 +109,7 @@ public static class MathHelper
     }
 
     /// <summary>
-    /// Gets the Z angle of the specified <paramref name="rotationMatrix"/>.
+    /// Gets the Z angle of the specified <paramref name="rotationMatrix" />.
     /// </summary>
     /// <param name="rotationMatrix">The rotation matrix to the Z angle of.</param>
     /// <returns>The Z angle.</returns>
@@ -119,7 +119,7 @@ public static class MathHelper
     }
 
     /// <summary>
-    /// Gets the yaw, pitch and roll in radians from the specified <paramref name="quat"/>.
+    /// Gets the yaw, pitch and roll in radians from the specified <paramref name="quat" />.
     /// </summary>
     /// <param name="quat">The quaternion</param>
     /// <returns>A vector containing the roll, pitch and yaw components in radians.</returns>
@@ -194,7 +194,7 @@ public static class MathHelper
 
     /// <summary>Determines if value is powered by two.</summary>
     /// <param name="value">A value.</param>
-    /// <returns><c>true</c> if <c>value</c> is powered by two; otherwise <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if <c>value</c> is powered by two; otherwise <see langword="false" />.</returns>
     public static bool IsPowerOfTwo(int value)
     {
         return value > 0 && (value & value - 1) == 0;

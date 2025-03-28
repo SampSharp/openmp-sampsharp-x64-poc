@@ -31,7 +31,7 @@ public interface ITimerService
     TimerReference Start(Action<IServiceProvider, TimerReference> action, TimeSpan interval);
 
     /// <summary>
-    /// Starts a timer with the specified <paramref name="action" /> which will tick only once after the specified <paramref name="delay"/>.
+    /// Starts a timer with the specified <paramref name="action" /> which will tick only once after the specified <paramref name="delay" />.
     /// </summary>
     /// <param name="action">The action perform at the ticker</param>
     /// <param name="delay">The delay after which the timer will tick.</param>

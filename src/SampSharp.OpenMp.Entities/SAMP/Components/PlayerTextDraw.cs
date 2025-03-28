@@ -9,7 +9,7 @@ public class PlayerTextDraw : IdProvider
     private readonly IPlayerTextDrawData _playerTextDraws;
     private readonly IPlayerTextDraw _playerTextDraw;
 
-    /// <summary>Constructs an instance of <see cref="PlayerTextDraw"/>, should be used internally.</summary>
+    /// <summary>Constructs an instance of <see cref="PlayerTextDraw" />, should be used internally.</summary>
     protected PlayerTextDraw(IPlayerTextDrawData playerTextDraws, IPlayerTextDraw playerTextDraw) : base((IIDProvider)playerTextDraw)
     {
         _playerTextDraws = playerTextDraws;
@@ -171,7 +171,7 @@ public class PlayerTextDraw : IdProvider
         return $"(Id: {Id}, Text: {Text})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="PlayerTextDraw"/> to <see cref="IPlayerTextDraw"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="PlayerTextDraw" /> to <see cref="IPlayerTextDraw" />.</summary>
     public static implicit operator IPlayerTextDraw(PlayerTextDraw playerTextDraw)
     {
         return playerTextDraw._playerTextDraw;

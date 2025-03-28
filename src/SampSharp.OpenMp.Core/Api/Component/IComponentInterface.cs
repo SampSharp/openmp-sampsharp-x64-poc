@@ -1,7 +1,9 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IComponentInterface"/> interface.
+/// Marker interface for components. This interface is automatically implemented by the code generator when an open.mp
+/// interface struct is marked with the <see cref="OpenMpApiAttribute" /> and marks <see cref="IComponent" /> as a base
+/// type.
 /// </summary>
 public interface IComponentInterface
 {

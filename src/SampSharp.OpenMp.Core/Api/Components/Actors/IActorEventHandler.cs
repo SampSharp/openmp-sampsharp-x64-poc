@@ -1,5 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Provides events for the <see cref="IActorsComponent.GetEventDispatcher" />.
+/// </summary>
 [OpenMpEventHandler]
 public partial interface IActorEventHandler
 {

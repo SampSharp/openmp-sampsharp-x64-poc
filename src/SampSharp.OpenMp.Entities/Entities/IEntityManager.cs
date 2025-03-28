@@ -89,7 +89,7 @@ public interface IEntityManager
 
     /// <summary>Gets a component of the specified type <typeparamref name="T" /> attached to any entity.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     T? GetComponent<T>() where T : Component;
 
@@ -97,7 +97,7 @@ public interface IEntityManager
     /// name="entity" />.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
     /// <param name="entity">The entity to get the component from.</param>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     T? GetComponent<T>(EntityId entity) where T : Component;
 
@@ -107,7 +107,7 @@ public interface IEntityManager
     /// </summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
     /// <param name="entity">The entity to get the component from.</param>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     T? GetComponentInChildren<T>(EntityId entity) where T : Component;
 
@@ -115,7 +115,7 @@ public interface IEntityManager
     /// specified <paramref name="entity" />.</summary>
     /// <typeparam name="T">The type of the component to find.</typeparam>
     /// <param name="entity">The entity to get the component from.</param>
-    /// <returns>The found component or <c>null</c> if no component of the specified type could be found.</returns>
+    /// <returns>The found component or <see langword="null" /> if no component of the specified type could be found.</returns>
     [Pure]
     T? GetComponentInParent<T>(EntityId entity) where T : Component;
 
@@ -160,7 +160,7 @@ public interface IEntityManager
 
     /// <summary>Returns a value indicating whether the specified <paramref name="entity" /> exists.</summary>
     /// <param name="entity">The entity to check its existence.</param>
-    /// <returns><c>true</c> if the specified <paramref name="entity" /> exists; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="entity" /> exists; otherwise, <see langword="false" />.</returns>
     [Pure]
     bool Exists(EntityId entity);
 }

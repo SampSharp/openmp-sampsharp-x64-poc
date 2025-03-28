@@ -5,7 +5,7 @@ using System.Runtime.InteropServices.Marshalling;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see cref="AnimationData"/> to its native counterpart.
+/// Represents a marshaller entrypoint for marshalling <see cref="AnimationData" /> to its unmanaged counterpart.
 /// </summary>
 [CustomMarshaller(typeof(AnimationData), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(AnimationData), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]

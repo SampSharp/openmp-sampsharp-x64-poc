@@ -1959,11 +1959,11 @@ public static class Animation
     ];
 
     /// <summary>
-    /// Returns a value indicating whether the animation with the specified <paramref name="library"/> and <paramref name="name"/> is valid.
+    /// Returns a value indicating whether the animation with the specified <paramref name="library" /> and <paramref name="name" /> is valid.
     /// </summary>
     /// <param name="library">The name of the animation library.</param>
     /// <param name="name">The name of the animation.</param>
-    /// <returns><see langword="true" /> if the specified animation is valid; <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true" /> if the specified animation is valid; <see langword="false" /> otherwise.</returns>
     public static bool IsNameValid(string library, string name)
     {
         var fullName = $"{library}:{name}".ToUpperInvariant();
@@ -1971,7 +1971,7 @@ public static class Animation
     }
 
     /// <summary>
-    /// returns the library and name of the animation with the specified <paramref name="id"/>.
+    /// returns the library and name of the animation with the specified <paramref name="id" />.
     /// </summary>
     /// <param name="id">The identifier of the animation.</param>
     /// <returns>The library and name of the animation. <see langword="null" /> values are returned if the specified identifier is invalid.</returns>
@@ -1989,11 +1989,11 @@ public static class Animation
     }
 
     /// <summary>
-    /// Returns a value indicating whether the specified animation <paramref name="library"/> is valid.
+    /// Returns a value indicating whether the specified animation <paramref name="library" /> is valid.
     /// </summary>
     /// <param name="library">The name of the animation library.</param>
     /// <param name="v1_0">Whether to consider GTA:SA v1.0 animation libraries as valid.</param>
-    /// <returns><see langword="true" /> if the specified animation library is valid; <see langword="false"/> otherwise.</returns>
+    /// <returns><see langword="true" /> if the specified animation library is valid; <see langword="false" /> otherwise.</returns>
     public static bool IsLibraryValid(string library, bool v1_0 = true)
     {
         library = library.ToUpperInvariant();

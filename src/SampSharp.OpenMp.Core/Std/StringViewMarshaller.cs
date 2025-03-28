@@ -6,7 +6,7 @@ using System.Text;
 namespace SampSharp.OpenMp.Core;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see langword="string"/> to a native <see cref="StringView"/> structure.
+/// Represents a marshaller entrypoint for marshalling <see langword="string" /> to a native <see cref="StringView" /> structure.
 /// </summary>
 [CustomMarshaller(typeof(string), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]

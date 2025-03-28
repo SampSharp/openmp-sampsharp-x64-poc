@@ -32,7 +32,7 @@ public abstract class WorldEntity(IEntity entity) : IdProvider((IIDProvider)enti
 
     /// <summary>
     /// Gets or sets the rotation of this component in euler angles. Note: this is less accurate than the quaternion
-    /// representation available through the <see cref="Rotation"/> property.
+    /// representation available through the <see cref="Rotation" /> property.
     /// </summary>
     public virtual Vector3 RotationEuler
     {

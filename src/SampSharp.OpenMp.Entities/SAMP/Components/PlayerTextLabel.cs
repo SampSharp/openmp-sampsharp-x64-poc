@@ -98,7 +98,7 @@ public class PlayerTextLabel : WorldEntity
         return $"(Id: {Id}, Text: {Text})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="PlayerTextLabel"/> to <see cref="IPlayerTextLabel"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="PlayerTextLabel" /> to <see cref="IPlayerTextLabel" />.</summary>
     public static implicit operator IPlayerTextLabel(PlayerTextLabel playerTextLabel)
     {
         return playerTextLabel._playerTextLabel;

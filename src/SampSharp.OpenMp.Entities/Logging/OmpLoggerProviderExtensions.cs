@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace SampSharp.Entities.Logging;
 
 /// <summary>
-/// Provides extension methods for adding an open.mp logger to an <see cref="ILoggingBuilder"/>.
+/// Provides extension methods for adding an open.mp logger to an <see cref="ILoggingBuilder" />.
 /// </summary>
 public static class OmpLoggerProviderExtensions
 {

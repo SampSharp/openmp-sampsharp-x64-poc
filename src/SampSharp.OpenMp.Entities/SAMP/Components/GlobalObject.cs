@@ -119,7 +119,7 @@ public class GlobalObject : WorldEntity
     /// <param name="target">The object.</param>
     /// <param name="offset">The offset.</param>
     /// <param name="rotation">The rotation.</param>
-    /// <param name="syncRotation">if set to <c>true</c> synchronize rotation with objects attached to.</param>
+    /// <param name="syncRotation">if set to <see langword="true" /> synchronize rotation with objects attached to.</param>
     public virtual void AttachTo(GlobalObject target, Vector3 offset, Vector3 rotation, bool syncRotation = false)
     {
         _object.AttachToObject(target, offset, rotation, syncRotation);
@@ -140,7 +140,7 @@ public class GlobalObject : WorldEntity
         return $"(Id: {Id}, Model: {ModelId})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="GlobalObject"/> to <see cref="IObject"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="GlobalObject" /> to <see cref="IObject" />.</summary>
     public static implicit operator IObject(GlobalObject @object)
     {
         return @object._object;

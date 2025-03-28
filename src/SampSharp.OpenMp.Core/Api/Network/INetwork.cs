@@ -4,7 +4,7 @@ using SampSharp.OpenMp.Core.Chrono;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="INetwork"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="INetwork" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtensible))]
 public readonly partial struct INetwork

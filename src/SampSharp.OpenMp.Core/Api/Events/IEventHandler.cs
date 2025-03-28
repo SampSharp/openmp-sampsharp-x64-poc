@@ -1,5 +1,10 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Base interface for event handlers. This interface is automatically implemented by the code generator for event
+/// handlers which are marked with the <see cref="OpenMpEventHandlerAttribute" />.
+/// </summary>
+/// <typeparam name="TEventHandler"></typeparam>
 public interface IEventHandler<TEventHandler> where TEventHandler : class
 {
     /// <summary>

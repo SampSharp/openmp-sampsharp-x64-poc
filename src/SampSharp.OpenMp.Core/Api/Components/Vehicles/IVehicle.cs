@@ -6,7 +6,7 @@ using SampSharp.OpenMp.Core.RobinHood;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IVehicle"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IVehicle" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 public readonly partial struct IVehicle

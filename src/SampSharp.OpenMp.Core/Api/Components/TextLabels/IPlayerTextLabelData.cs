@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerTextLabelData"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerTextLabelData" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtension), typeof(IPool<IPlayerTextLabel>))]
 public readonly partial struct IPlayerTextLabelData

@@ -6,7 +6,7 @@ using SampSharp.OpenMp.Core.Chrono;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see cref="BanEntry"/> to its native counterpart.
+/// Represents a marshaller entrypoint for marshalling <see cref="BanEntry" /> to its unmanaged counterpart.
 /// </summary>
 [CustomMarshaller(typeof(BanEntry), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(BanEntry), MarshalMode.ManagedToUnmanagedOut, typeof(NativeToManaged))]

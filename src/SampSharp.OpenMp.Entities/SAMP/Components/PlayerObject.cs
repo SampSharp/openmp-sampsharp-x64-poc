@@ -139,7 +139,7 @@ public class PlayerObject : WorldEntity
         return $"(Id: {Id}, Model: {ModelId})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="PlayerObject"/> to <see cref="IPlayerObject"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="PlayerObject" /> to <see cref="IPlayerObject" />.</summary>
     public static implicit operator IPlayerObject(PlayerObject playerObject)
     {
         return playerObject._playerObject;

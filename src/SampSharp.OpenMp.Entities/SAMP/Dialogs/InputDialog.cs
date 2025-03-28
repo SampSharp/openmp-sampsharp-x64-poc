@@ -62,6 +62,6 @@ public class InputDialog : IDialog<InputDialogResponse>
     /// <summary>Gets or sets the text on the left button of this input dialog.</summary>
     public string? Button1 { get; set; }
 
-    /// <summary>Gets or sets the text on the right button of this input dialog. If the value is <c>null</c>, the right button is hidden.</summary>
+    /// <summary>Gets or sets the text on the right button of this input dialog. If the value is <see langword="null" />, the right button is hidden.</summary>
     public string? Button2 { get; set; }
 }

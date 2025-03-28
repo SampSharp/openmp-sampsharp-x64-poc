@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IVehiclesComponent"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IVehiclesComponent" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IPoolComponent<IVehicle>))]
 public readonly partial struct IVehiclesComponent

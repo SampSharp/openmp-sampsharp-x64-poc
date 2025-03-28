@@ -20,7 +20,7 @@ namespace SampSharp.Entities.SAMP;
 /// <summary>Represents a dialog with a list of selectable rows.</summary>
 /// <param name="caption">The caption.</param>
 /// <param name="button1">The text on the left button.</param>
-/// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+/// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
 public class ListDialog(string caption, string? button1, string? button2 = null) : IDialog<ListDialogResponse>, IEnumerable<ListDialogRow>
 {
 
@@ -37,7 +37,7 @@ public class ListDialog(string caption, string? button1, string? button2 = null)
     /// <summary>Gets or sets the text on the left button of this list dialog.</summary>
     public string? Button1 { get; set; } = button1;
 
-    /// <summary>Gets or sets the text on the right button of this list dialog. If the value is <c>null</c>, the right button is hidden.</summary>
+    /// <summary>Gets or sets the text on the right button of this list dialog. If the value is <see langword="null" />, the right button is hidden.</summary>
     public string? Button2 { get; set; } = button2;
 
     ListDialogResponse IDialog<ListDialogResponse>.Translate(DialogResult dialogResult)

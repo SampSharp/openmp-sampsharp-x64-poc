@@ -120,7 +120,7 @@ public class Menu : IdProvider
         return $"(Id: {Id}, Title: {Title})";
     }
 
-    /// <summary>Performs an implicit conversion from <see cref="Menu"/> to <see cref="IMenu"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="Menu" /> to <see cref="IMenu" />.</summary>
     public static implicit operator IMenu(Menu menu)
     {
         return menu._menu;

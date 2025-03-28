@@ -9,7 +9,7 @@ public class TextDraw : IdProvider
     private readonly ITextDrawsComponent _textDraws;
     private readonly ITextDraw _textDraw;
 
-    /// <summary>Constructs an instance of <see cref="TextDraw"/>, should be used internally.</summary>
+    /// <summary>Constructs an instance of <see cref="TextDraw" />, should be used internally.</summary>
     protected TextDraw(ITextDrawsComponent textDraws, ITextDraw textDraw) : base((IIDProvider)textDraw)
     {
         _textDraws = textDraws;
@@ -153,7 +153,7 @@ public class TextDraw : IdProvider
         }
     }
 
-    /// <summary>Shows this text draw to the specified <paramref name="player"/>.</summary>
+    /// <summary>Shows this text draw to the specified <paramref name="player" />.</summary>
     /// <param name="player">The player to show this text draw to.</param>
     public virtual void Show(Player player)
     {
@@ -169,7 +169,7 @@ public class TextDraw : IdProvider
         }
     }
 
-    /// <summary>Hides this text draw for the specified <paramref name="player"/>.</summary>
+    /// <summary>Hides this text draw for the specified <paramref name="player" />.</summary>
     /// <param name="player">The player to hide this text draw from.</param>
     public virtual void Hide(Player player)
     {
@@ -191,7 +191,7 @@ public class TextDraw : IdProvider
         return $"(Id: {Id}, Text: {Text})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="TextDraw"/> to <see cref="ITextDraw"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="TextDraw" /> to <see cref="ITextDraw" />.</summary>
     public static implicit operator ITextDraw(TextDraw textDraw)
     {
         return textDraw._textDraw;

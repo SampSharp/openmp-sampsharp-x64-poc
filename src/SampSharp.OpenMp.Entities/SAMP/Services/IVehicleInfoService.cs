@@ -22,7 +22,7 @@ public interface IVehicleInfoService
     /// </summary>
     /// <param name="vehicleModel">The model of the vehicle.</param>
     /// <param name="componentId">The component to check.</param>
-    /// <returns><c>true</c> if the component is valid for the vehicle model; <c>false</c> otherwise.</returns>
+    /// <returns><see langword="true" /> if the component is valid for the vehicle model; <see langword="false" /> otherwise.</returns>
     public bool IsValidComponentForVehicle(VehicleModelType vehicleModel, int componentId);
 
     /// <summary>
@@ -33,11 +33,11 @@ public interface IVehicleInfoService
     public (int, int, int, int) GetRandomVehicleColor(VehicleModelType vehicleModel);
 
     /// <summary>
-    /// Gets the <see cref="Color"/> representation of the specified <paramref name="vehicleColor"/>.
+    /// Gets the <see cref="Color" /> representation of the specified <paramref name="vehicleColor" />.
     /// </summary>
     /// <param name="vehicleColor">The vehicle color.</param>
     /// <param name="alpha">The alpha value of the result.</param>
-    /// <returns>A <see cref="Color"/> value representing the specified vehicle color.</returns>
+    /// <returns>A <see cref="Color" /> value representing the specified vehicle color.</returns>
     public Color GetColorFromVehicleColor(int vehicleColor, uint alpha = 0xff);
 
     /// <summary>

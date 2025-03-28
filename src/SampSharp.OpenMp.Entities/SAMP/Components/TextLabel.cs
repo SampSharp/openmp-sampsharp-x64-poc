@@ -103,7 +103,7 @@ public class TextLabel : WorldEntity
         return $"(Id: {Id}, Text: {Text})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="TextLabel"/> to <see cref="ITextLabel"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="TextLabel" /> to <see cref="ITextLabel" />.</summary>
     public static implicit operator ITextLabel(TextLabel textLabel)
     {
         return textLabel._textLabel;

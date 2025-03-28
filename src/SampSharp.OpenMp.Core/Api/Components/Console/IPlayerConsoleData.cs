@@ -1,7 +1,7 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerConsoleData"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IPlayerConsoleData" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerConsoleData

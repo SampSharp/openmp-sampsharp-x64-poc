@@ -9,14 +9,14 @@ namespace SampSharp.Entities;
 public interface IEcsStartup : IStartup
 {
     /// <summary>
-    /// Register services into the <see cref="IServiceCollection"/>.
+    /// Register services into the <see cref="IServiceCollection" />.
     /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/> to add the services to.</param>
+    /// <param name="services">The <see cref="IServiceCollection" /> to add the services to.</param>
     void ConfigureServices(IServiceCollection services);
 
     /// <summary>
     /// Configures the application.
     /// </summary>
-    /// <param name="builder">An <see cref="IEcsBuilder"/> for the app to configure.</param>
+    /// <param name="builder">An <see cref="IEcsBuilder" /> for the app to configure.</param>
     void Configure(IEcsBuilder builder);
 }

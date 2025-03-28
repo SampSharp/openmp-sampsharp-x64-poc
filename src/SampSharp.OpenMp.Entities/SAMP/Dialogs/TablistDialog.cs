@@ -25,7 +25,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnCount">The number of columns in this dialog.</param>
     public TablistDialog(string? caption, string? button1, string? button2, int columnCount)
     {
@@ -44,7 +44,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnHeaders">The column headers.</param>
     public TablistDialog(string? caption, string? button1, string? button2, string[] columnHeaders)
     {
@@ -66,7 +66,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnHeader1">The first column header.</param>
     public TablistDialog(string? caption, string? button1, string? button2, string columnHeader1) : this(caption, button1, button2, [columnHeader1])
     {
@@ -75,7 +75,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnHeader1">The first column header.</param>
     /// <param name="columnHeader2">The second column header.</param>
     public TablistDialog(string? caption, string? button1, string? button2, string columnHeader1, string columnHeader2) : this(caption, button1, button2, [columnHeader1, columnHeader2
@@ -86,7 +86,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnHeader1">The first column header.</param>
     /// <param name="columnHeader2">The second column header.</param>
     /// <param name="columnHeader3">The third column header.</param>
@@ -98,7 +98,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Initializes a new instance of the <see cref="TablistDialog" /> class.</summary>
     /// <param name="caption">The caption.</param>
     /// <param name="button1">The text on the left button.</param>
-    /// <param name="button2">The text on the right button. If the value is <c>null</c>, the right button is hidden.</param>
+    /// <param name="button2">The text on the right button. If the value is <see langword="null" />, the right button is hidden.</param>
     /// <param name="columnHeader1">The first column header.</param>
     /// <param name="columnHeader2">The second column header.</param>
     /// <param name="columnHeader3">The third column header.</param>
@@ -143,7 +143,7 @@ public class TablistDialog : IDialog<TablistDialogResponse>, IEnumerable<Tablist
     /// <summary>Gets or sets the text on the left button of this tablist dialog.</summary>
     public string? Button1 { get; set; }
 
-    /// <summary>Gets or sets the text on the right button of this tablist dialog. If the value is <c>null</c>, the right button is hidden.</summary>
+    /// <summary>Gets or sets the text on the right button of this tablist dialog. If the value is <see langword="null" />, the right button is hidden.</summary>
     public string? Button2 { get; set; }
 
     TablistDialogResponse IDialog<TablistDialogResponse>.Translate(DialogResult dialogResult)

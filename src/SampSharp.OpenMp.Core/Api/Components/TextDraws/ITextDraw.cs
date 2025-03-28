@@ -1,7 +1,7 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="ITextDraw"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="ITextDraw" /> interface.
 /// </summary>
 [OpenMpApi(typeof(ITextDrawBase))]
 public readonly partial struct ITextDraw

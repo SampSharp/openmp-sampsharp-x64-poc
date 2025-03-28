@@ -6,6 +6,9 @@
 [AttributeUsage(AttributeTargets.Interface)]
 public class OpenMpEventHandlerAttribute : Attribute
 {
+    /// <summary>
+    /// Gets or sets the name of the library that contains the native event handler. Defaults to "SampSharp".
+    /// </summary>
     public string Library { get; set; } = "SampSharp";
     
     /// <summary>

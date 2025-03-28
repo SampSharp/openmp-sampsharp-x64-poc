@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="ICheckpointDataBase"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="ICheckpointDataBase" /> interface.
 /// </summary>
 [OpenMpApi]
 public readonly partial struct ICheckpointDataBase

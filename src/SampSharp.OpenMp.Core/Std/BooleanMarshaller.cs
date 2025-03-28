@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see langword="bool"/> to a native <see cref="BlittableBoolean"/> structure.
+/// Represents a marshaller entrypoint for marshalling <see langword="bool" /> to a native <see cref="BlittableBoolean" /> structure.
 /// </summary>
 [CustomMarshaller(typeof(bool), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(bool), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]

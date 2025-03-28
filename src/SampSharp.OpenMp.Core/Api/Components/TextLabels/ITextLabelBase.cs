@@ -4,7 +4,7 @@ using System.Numerics;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="ITextLabelBase"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="ITextLabelBase" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IExtensible), typeof(IEntity))]
 [SuppressMessage("ReSharper", "InconsistentNaming")]

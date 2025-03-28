@@ -41,7 +41,7 @@ public class Pickup : WorldEntity
         return $"(Id: {Id}, Model: {Model})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="Pickup"/> to <see cref="IPickup"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="Pickup" /> to <see cref="IPickup" />.</summary>
     public static implicit operator IPickup(Pickup pickup)
     {
         return pickup._pickup;

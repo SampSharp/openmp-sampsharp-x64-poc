@@ -21,7 +21,7 @@ public interface IEventDispatcher
     /// <param name="name">The name of the event.</param>
     /// <param name="defaultValue">The default value to be returned in case no event handler returned a result.</param>
     /// <param name="arguments">The arguments of the event.</param>
-    /// <returns>The result as returned by an event handler or <paramref name="defaultValue"/> if no non-null value was returned.</returns>
+    /// <returns>The result as returned by an event handler or <paramref name="defaultValue" /> if no non-null value was returned.</returns>
     [return: NotNullIfNotNull(nameof(defaultValue))]
     public T? InvokeAs<T>(string name, T defaultValue, params ReadOnlySpan<object> arguments);
 }

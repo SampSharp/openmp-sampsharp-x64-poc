@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.Chrono;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling <see cref="TimeSpan"/> to a native <see cref="Milliseconds"/> structure.
+/// Represents a marshaller entrypoint for marshalling <see cref="TimeSpan" /> to a native <see cref="Milliseconds" /> structure.
 /// </summary>
 [CustomMarshaller(typeof(TimeSpan), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(TimeSpan), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]

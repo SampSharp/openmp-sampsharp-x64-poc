@@ -4,7 +4,7 @@ using SampSharp.OpenMp.Core.RobinHood;
 namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// This type represents a pointer to an unmanaged open.mp <see cref="IPool{T}"/> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="IPool{T}" /> interface.
 /// </summary>
 [OpenMpApi]
 public readonly partial struct IPool<T> : IEnumerable<T> where T : unmanaged, IIDProviderInterface

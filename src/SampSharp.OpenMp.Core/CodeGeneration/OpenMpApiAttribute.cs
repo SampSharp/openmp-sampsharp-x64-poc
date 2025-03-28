@@ -6,7 +6,7 @@
 /// by the source generator. The invoked function name will be
 /// <c>{interface}_{method_in_pascalCase}{overloadAppendix}</c>. For example for the function <c>IConfig.RemoveBan</c>,
 /// the C function will be <c>IConfig_removeBan</c>. The overload appendix can be controlled using the <see
-/// cref="OpenMpApiOverloadAttribute"/>.
+/// cref="OpenMpApiOverloadAttribute" />.
 /// </summary>
 /// <param name="baseTypeList">Specifies which open.mp API interface struct types this struct implements. Equality
 /// members, cast operators and forwarding methods will be generated for all specified interfaces.</param>

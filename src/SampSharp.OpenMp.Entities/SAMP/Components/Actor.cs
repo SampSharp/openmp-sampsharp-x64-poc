@@ -63,10 +63,10 @@ public class Actor : WorldEntity
     /// <param name="library">The animation library from which to apply an animation.</param>
     /// <param name="name">The name of the animation to apply, within the specified library.</param>
     /// <param name="fDelta">The speed to play the animation.</param>
-    /// <param name="loop">if set to <c>true</c> the animation will loop.</param>
-    /// <param name="lockX">if set to <c>true</c> allow this Actor to move it's x-coordinate.</param>
-    /// <param name="lockY">if set to <c>true</c> allow this Actor to move it's y-coordinate.</param>
-    /// <param name="freeze">if set to <c>true</c> freeze this Actor at the end of the animation.</param>
+    /// <param name="loop">if set to <see langword="true" /> the animation will loop.</param>
+    /// <param name="lockX">if set to <see langword="true" /> allow this Actor to move it's x-coordinate.</param>
+    /// <param name="lockY">if set to <see langword="true" /> allow this Actor to move it's y-coordinate.</param>
+    /// <param name="freeze">if set to <see langword="true" /> freeze this Actor at the end of the animation.</param>
     /// <param name="time">The amount of time (in milliseconds) to play the animation.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="library" /> or <paramref name="name" /> is null.</exception>
     public virtual void ApplyAnimation(string library, string name, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
@@ -97,7 +97,7 @@ public class Actor : WorldEntity
         return $"(Id: {Id})";
     }
     
-    /// <summary>Performs an implicit conversion from <see cref="Actor"/> to <see cref="IActor"/>.</summary>
+    /// <summary>Performs an implicit conversion from <see cref="Actor" /> to <see cref="IActor" />.</summary>
     public static implicit operator IActor(Actor actor)
     {
         return actor._actor;

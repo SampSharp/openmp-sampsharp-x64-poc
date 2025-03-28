@@ -3,7 +3,7 @@
 namespace SampSharp.Entities;
 
 /// <summary>
-/// Represents an extension to an open.mp component which binds its lifetime to the lifetime of an <see cref="Entities.Component"/>.
+/// Represents an extension to an open.mp component which binds its lifetime to the lifetime of an <see cref="Entities.Component" />.
 /// </summary>
 /// <param name="component">The component to which this extension is bound.</param>
 [Extension(0x53d3b0b0bbb28a7f)]

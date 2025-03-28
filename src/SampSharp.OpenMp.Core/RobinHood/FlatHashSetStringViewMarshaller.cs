@@ -3,7 +3,7 @@
 namespace SampSharp.OpenMp.Core.RobinHood;
 
 /// <summary>
-/// Represents a marshaller entrypoint for marshalling a native <see cref="FlatHashSetStringView"/> structure to to a managed enumerable of <see langword="string" /> values.
+/// Represents a marshaller entrypoint for marshalling a native <see cref="FlatHashSetStringView" /> structure to to a managed enumerable of <see langword="string" /> values.
 /// </summary>
 [CustomMarshaller(typeof(IEnumerable<string>), MarshalMode.UnmanagedToManagedIn, typeof(FlatHashSetStringViewMarshaller))]
 public static class FlatHashSetStringViewMarshaller
