@@ -28,11 +28,11 @@ namespace SampSharp.SourceGenerator.Generators;
 [Generator]
 public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 {
-    private const string ClassNativeEventHandlerManager = "NativeEventHandlerManager";
+    private const string ClassEventHandlerMarshaller = "EventHandlerMarshaller";
     private const string LocalHandle = "handle";
     private const string ParamHandle = "handle";
     private const string MethodPInvoke = "__PInvoke";
-    private static readonly SyntaxToken _idToken = Identifier("Manager");
+    private static readonly SyntaxToken _idToken = Identifier("Marshaller");
     private static readonly SyntaxToken _idInstance = Identifier("Instance");
 
     private static readonly ApiEventDelegateMarshallingGenerator _marshallingGenerator = new();
@@ -99,7 +99,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                     IdentifierName(
                         Token(SyntaxKind.GlobalKeyword)),
                     GenericName(
-                            Identifier(Constants.INativeEventHandlerManagerFQN))
+                            Identifier(Constants.IEventHandlerMarshallerFQN))
                         .WithTypeArgumentList(
                             TypeArgumentList(
                                 SingletonSeparatedList(ctx.Type)))),
@@ -121,7 +121,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                 ArrowExpressionClause(
                     MemberAccessExpression(
                         SyntaxKind.SimpleMemberAccessExpression,
-                        IdentifierName(ClassNativeEventHandlerManager),
+                        IdentifierName(ClassEventHandlerMarshaller),
                         IdentifierName("Instance"))))
             .WithSemicolonToken(
                 Token(SyntaxKind.SemicolonToken));
@@ -129,13 +129,13 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
 
     private static ClassDeclarationSyntax GenerateManagerClass(EventInterfaceStubGenerationContext ctx)
     {
-        return ClassDeclaration(Identifier(ClassNativeEventHandlerManager))
+        return ClassDeclaration(Identifier(ClassEventHandlerMarshaller))
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
             .WithBaseList(BaseList(
                 SingletonSeparatedList<BaseTypeSyntax>(
                     SimpleBaseType(
                         GenericType(
-                            Constants.NativeEventHandlerManagerFQN, 
+                            Constants.EventHandlerMarshallerFQN, 
                             ParseTypeName(ctx.Symbol.Name))))))
             .WithMembers(GenerateManagerMembers(ctx));
     }
@@ -153,7 +153,7 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
     private static PropertyDeclarationSyntax GenerateInstancePropertyMember()
     {
         return PropertyDeclaration(
-                IdentifierName(ClassNativeEventHandlerManager),
+                IdentifierName(ClassEventHandlerMarshaller),
                 _idInstance)
             .WithModifiers(
                 TokenList(

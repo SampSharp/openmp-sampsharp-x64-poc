@@ -107,14 +107,14 @@ public static class Constants
     public const string EventHandlerFQN = "SampSharp.OpenMp.Core.Api.IEventHandler";
     
     /// <summary>
-    /// SampSharp.OpenMp.Core.Api.NativeEventHandlerManager{TEventHandler}
+    /// SampSharp.OpenMp.Core.Api.EventHandlerMarshaller{TEventHandler}
     /// </summary>
-    public const string NativeEventHandlerManagerFQN = "SampSharp.OpenMp.Core.Api.NativeEventHandlerManager";
+    public const string EventHandlerMarshallerFQN = "SampSharp.OpenMp.Core.Api.EventHandlerMarshaller";
 
     /// <summary>
-    /// SampSharp.OpenMp.Core.Api.INativeEventHandlerManager{TEventHandler}
+    /// SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller{TEventHandler}
     /// </summary>
-    public const string INativeEventHandlerManagerFQN = "SampSharp.OpenMp.Core.Api.INativeEventHandlerManager";
+    public const string IEventHandlerMarshallerFQN = "SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller";
 
     /// <summary>
     /// SampSharp.OpenMp.Core.Api.IExtension

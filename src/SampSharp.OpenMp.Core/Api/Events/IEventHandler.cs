@@ -4,11 +4,11 @@
 /// Base interface for event handlers. This interface is automatically implemented by the code generator for event
 /// handlers which are marked with the <see cref="OpenMpEventHandlerAttribute" />.
 /// </summary>
-/// <typeparam name="TEventHandler"></typeparam>
+/// <typeparam name="TEventHandler">The type of the event handler interface.</typeparam>
 public interface IEventHandler<TEventHandler> where TEventHandler : class
 {
     /// <summary>
-    /// Gets the manager for the creation of native event handler handles.
+    /// Gets the marshaller which can marshal the event handler to its unmanaged representation.
     /// </summary>
-    static abstract INativeEventHandlerManager<TEventHandler> Manager { get; }
+    static abstract IEventHandlerMarshaller<TEventHandler> Marshaller { get; }
 }

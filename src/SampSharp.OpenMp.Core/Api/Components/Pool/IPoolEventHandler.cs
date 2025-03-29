@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace SampSharp.OpenMp.Core.Api;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> where T : unmanaged
 {
@@ -9,9 +7,9 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
 
     // [OpenMpEventHandler] does not support generic types - implement it manually
 
-    static INativeEventHandlerManager<IPoolEventHandler<T>> IEventHandler<IPoolEventHandler<T>>.Manager => NativeEventHandlerManager.Instance;
+    static IEventHandlerMarshaller<IPoolEventHandler<T>> IEventHandler<IPoolEventHandler<T>>.Marshaller => NativeEventHandlerManager.Instance;
 
-    public class NativeEventHandlerManager : NativeEventHandlerManager<IPoolEventHandler<T>>
+    public class NativeEventHandlerManager : EventHandlerMarshaller<IPoolEventHandler<T>>
     {
         public static NativeEventHandlerManager Instance { get; } = new();
 
@@ -20,8 +18,8 @@ public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> wher
             Delegate onPoolEntryCreatedDelegate = (PoolDelegate)(h => handler.OnPoolEntryCreated(StructPointer.AsStruct<T>(h))),
                 onPoolEntryDestroyedDelegate = (PoolDelegate)(h => handler.OnPoolEntryDestroyed(StructPointer.AsStruct<T>(h)));
 
-            nint onPoolEntryCreatedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryCreatedDelegate),
-                onPoolEntryDestroyedPtr = Marshal.GetFunctionPointerForDelegate(onPoolEntryDestroyedDelegate);
+            nint onPoolEntryCreatedPtr = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(onPoolEntryCreatedDelegate),
+                onPoolEntryDestroyedPtr = System.Runtime.InteropServices.Marshal.GetFunctionPointerForDelegate(onPoolEntryDestroyedDelegate);
 
             object[] data = [onPoolEntryCreatedDelegate, onPoolEntryDestroyedDelegate];
 

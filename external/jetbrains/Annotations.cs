@@ -24,6 +24,8 @@ SOFTWARE. */
 
 // ReSharper disable once RedundantUsingDirective
 using System;
+#pragma warning disable IDE0079 // Remove unnecessary suppression
+#pragma warning disable CA1069
 #pragma warning disable IDE0290 // Use primary constructor
 // ReSharper disable UnusedType.Global
 // ReSharper disable UnusedMember.Global

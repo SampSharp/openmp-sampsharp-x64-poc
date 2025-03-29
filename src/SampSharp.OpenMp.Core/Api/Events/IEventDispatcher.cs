@@ -27,7 +27,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     /// <returns><see langword="true" /> if the handler was added; otherwise <see langword="false" />.</returns>
     public bool AddEventHandler(T handler, EventPriority priority = EventPriority.Default)
     {
-        var handlerHandle = T.Manager.Get(handler).Create();
+        var handlerHandle = T.Marshaller.Marshal(handler).Create();
 
         return EventDispatcherInterop.AddEventHandler(_handle, handlerHandle, priority);
     }
@@ -39,7 +39,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     /// <returns><see langword="true" /> if the event handler was removed; otherwise <see langword="false" />.</returns>
     public bool RemoveEventHandler(T handler)
     {
-        var reference = T.Manager.Get(handler);
+        var reference = T.Marshaller.Marshal(handler);
         var handlerHandle = reference.Handle;
 
         if (!handlerHandle.HasValue)
@@ -64,7 +64,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     /// <returns><see langword="true" /> if the event handler was added; otherwise <see langword="false" />.</returns>
     public bool HasEventHandler(T handler, out EventPriority priority)
     {
-        var handlerHandle = T.Manager.Get(handler).Handle;
+        var handlerHandle = T.Marshaller.Marshal(handler).Handle;
         priority = default;
 
         return handlerHandle.HasValue && EventDispatcherInterop.HasEventHandler(_handle, handlerHandle.Value, out priority);
