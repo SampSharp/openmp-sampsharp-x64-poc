@@ -10,7 +10,7 @@ namespace SampSharp.OpenMp.Core.Api;
 /// In the proxy wrapper code we assume all IPools to be of type IDProvider, which would cause mismatching vtable refs.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-internal struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterator<T>> where T : unmanaged, IIDProviderInterface
+internal struct MarkedPoolIterator<T> : IDisposable, IEquatable<MarkedPoolIterator<T>> where T : unmanaged, IIDProvider.IManagedInterface
 {
     private readonly IPool<T> _pool;
     private int _lockedId;

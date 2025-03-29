@@ -99,6 +99,11 @@ public static class Constants
     /// </summary>
     public const string InitParamsFQN = "SampSharp.OpenMp.Core.SampSharpInitParams";
 
+    /// <summary>
+    /// SampSharp.OpenMp.Core.IUnmanagedInterface
+    /// </summary>
+    public const string UnmanagedInterfaceFQN = "SampSharp.OpenMp.Core.IUnmanagedInterface";
+
     // SampSharp.OpenMp.Core.Api
 
     /// <summary>
@@ -115,36 +120,6 @@ public static class Constants
     /// SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller{TEventHandler}
     /// </summary>
     public const string IEventHandlerMarshallerFQN = "SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IExtension
-    /// </summary>
-    public const string ExtensionFQN = "SampSharp.OpenMp.Core.Api.IExtension";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IExtensionInterface
-    /// </summary>
-    public const string ExtensionInterfaceFQN = "SampSharp.OpenMp.Core.Api.IExtensionInterface";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IIDProviderInterface
-    /// </summary>
-    public const string IdProviderInterfaceFQN = "SampSharp.OpenMp.Core.Api.IIDProviderInterface";
-    
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IIDProvider
-    /// </summary>
-    public const string IdProviderFQN = "SampSharp.OpenMp.Core.Api.IIDProvider";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IComponent
-    /// </summary>
-    public const string ComponentFQN = "SampSharp.OpenMp.Core.Api.IComponent";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.IComponentInterface
-    /// </summary>
-    public const string ComponentInterfaceFQN = "SampSharp.OpenMp.Core.Api.IComponentInterface";
 
     /// <summary>
     /// SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage

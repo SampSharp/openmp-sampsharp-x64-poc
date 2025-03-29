@@ -127,7 +127,7 @@ public readonly partial struct IExtensible
     /// </summary>
     /// <typeparam name="T">The type of the unmanaged extension.</typeparam>
     /// <returns>The unmanaged extension or <see langword="null" /> if the extension could not be found.</returns>
-    public T QueryExtension<T>() where T : unmanaged, IExtensionInterface
+    public T QueryExtension<T>() where T : unmanaged, IExtension.IManagedInterface
     {
         if (!HasValue)
         {
@@ -145,7 +145,7 @@ public readonly partial struct IExtensible
     /// <typeparam name="T">The type of the unmanaged extension.</typeparam>
     /// <param name="extension">The extension if found, otherwise <see langword="null" />.</param>
     /// <returns><see langword="true" /> if the extension was found; <see langword="false" /> otherwise.</returns>
-    public bool TryQueryExtension<T>(out T extension) where T : unmanaged, IExtensionInterface
+    public bool TryQueryExtension<T>(out T extension) where T : unmanaged, IExtension.IManagedInterface
     {
         extension = QueryExtension<T>();
         return extension.HasValue;

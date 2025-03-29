@@ -4,6 +4,7 @@
 /// This type represents a pointer to an unmanaged open.mp <see cref="IComponent" /> interface.
 /// </summary>
 [OpenMpApi]
+[OpenMpApiPartial]
 public readonly partial struct IComponent
 {
     /// <summary>
@@ -36,4 +37,12 @@ public readonly partial struct IComponent
     /// </summary>
     /// <returns>The component version.</returns>
     public partial SemanticVersion ComponentVersion();
+
+    public partial interface IManagedInterface
+    {
+        /// <summary>
+        /// Gets the identifier of the component type.
+        /// </summary>
+        static abstract UID ComponentId { get; }
+    }
 }

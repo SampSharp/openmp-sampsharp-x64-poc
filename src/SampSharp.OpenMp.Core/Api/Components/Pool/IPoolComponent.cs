@@ -5,7 +5,7 @@
 /// </summary>
 [OpenMpApi(typeof(IComponent))]
 [OpenMpApiPartial]
-public readonly partial struct IPoolComponent<T> where T : unmanaged, IIDProviderInterface
+public readonly partial struct IPoolComponent<T> where T : unmanaged, IIDProvider.IManagedInterface
 {
     public IPool<T> AsPool()
     {

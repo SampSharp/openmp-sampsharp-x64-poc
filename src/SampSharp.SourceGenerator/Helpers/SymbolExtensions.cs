@@ -10,9 +10,12 @@ namespace SampSharp.SourceGenerator.Helpers;
 
 public static class SymbolExtensions
 {
+    private static readonly SymbolDisplayFormat _fullyQualifiedFormatWithoutGlobal =
+        SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining);
+
     public static bool IsPartial(this MemberDeclarationSyntax syntax)
     {
-        return syntax.Modifiers.Any(m => m.IsKind(SyntaxKind.PartialKeyword));
+        return HasModifier(syntax, SyntaxKind.PartialKeyword);
     }
 
     public static bool HasModifier(this MemberDeclarationSyntax syntax, SyntaxKind modifier)
@@ -33,13 +36,14 @@ public static class SymbolExtensions
 
     public static AttributeData? GetReturnTypeAttribute(this IMethodSymbol symbol, string attributeName)
     {
-        return symbol.GetReturnTypeAttributes(attributeName)
+        return symbol.GetReturnTypeAttributes()
+            .GetAttributes(attributeName)
             .FirstOrDefault();
     }
 
     public static bool IsSame(this ITypeSymbol symbol, string typeFQN)
     {
-        return string.Equals(symbol.ToDisplayString(FullyQualifiedFormatWithoutGlobal), typeFQN, StringComparison.Ordinal);
+        return string.Equals(symbol.ToDisplayString(_fullyQualifiedFormatWithoutGlobal), typeFQN, StringComparison.Ordinal);
     }
 
     public static bool IsSame(this ISymbol symbol, ISymbol other)
@@ -47,24 +51,15 @@ public static class SymbolExtensions
         return SymbolEqualityComparer.Default.Equals(symbol, other);
     }
 
-    private static IEnumerable<AttributeData> GetReturnTypeAttributes(this IMethodSymbol symbol, string attributeName)
-    {
-        return symbol.GetReturnTypeAttributes()
-            .GetAttributes(attributeName);
-    }
-
     private static IEnumerable<AttributeData> GetAttributes(this ImmutableArray<AttributeData> attribute, string attributeName)
     {
         return attribute
             .Where(x =>
                 string.Equals(
-                    x.AttributeClass?.ToDisplayString(FullyQualifiedFormatWithoutGlobal),
+                    x.AttributeClass?.ToDisplayString(_fullyQualifiedFormatWithoutGlobal),
                     attributeName,
                     StringComparison.Ordinal
                 )
             );
     }
-
-    private static readonly SymbolDisplayFormat FullyQualifiedFormatWithoutGlobal =
-        SymbolDisplayFormat.FullyQualifiedFormat.WithGlobalNamespaceStyle(SymbolDisplayGlobalNamespaceStyle.OmittedAsContaining);
 }

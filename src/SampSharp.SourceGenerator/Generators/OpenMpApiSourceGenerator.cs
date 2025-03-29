@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -58,8 +60,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         {
             modifiers = modifiers.Insert(modifiers.IndexOf(SyntaxKind.PartialKeyword), Token(SyntaxKind.UnsafeKeyword));
         }
-
-
+        
         var structDeclaration = StructDeclaration(info.Syntax.Identifier)
             .WithModifiers(modifiers)
             .WithMembers(GenerateStructMembers(info))
@@ -107,6 +108,7 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                             ctx.Syntax.TypeParameterList.Parameters.Select(x => IdentifierName(x.Identifier)))));
         }
 
+        
         IEnumerable<SimpleBaseTypeSyntax> result = [
             SimpleBaseType(
                 GenericType(
@@ -114,27 +116,18 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
                     self))
         ];
 
-        if (ctx.IsComponent)
+        if(!ctx.IsPartial)
         {
-            result = result.Append(
-                SimpleBaseType(
-                    ParseTypeName(Constants.ComponentInterfaceFQN)));
+            result = result
+                .Append(
+                    SimpleBaseType(
+                        ParseTypeName($"{TypeNameGlobal((ITypeSymbol)ctx.Symbol)}.IManagedInterface")))
+                .Concat(
+                ctx.ImplementingTypes.Select(
+                (x) => SimpleBaseType(
+                    ParseTypeName(
+                        $"{TypeNameGlobal(x.Type.Symbol)}.IManagedInterface"))));
         }
-
-        if (ctx.IsExtension)
-        {
-            result = result.Append(
-                SimpleBaseType(
-                    ParseTypeName(Constants.ExtensionInterfaceFQN)));
-        }
-
-        if (ctx.IsIdProvider)
-        {
-            result = result.Append(
-                SimpleBaseType(
-                    ParseTypeName(Constants.IdProviderInterfaceFQN)));
-        }
-
         return result;
     }
 
@@ -148,7 +141,8 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             ..CastMembersGenerator.GenerateCastMembers(ctx),
             ..EqualityMembersGenerator.GenerateEqualityMembers(ctx),
             ..ForwardingMembersGenerator.GenerateImplementingTypeMembers(ctx),
-            ..NativeMembersGenerator.GenerateNativeMethods(ctx)
+            ..NativeMembersGenerator.GenerateNativeMethods(ctx),
+            ..InterfaceMemberGenerator.GenerateNativeMethods(ctx)
         ]);
     }
     
@@ -180,9 +174,6 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
         var implementingTypes = new List<ImplementingType>();
         AddImplementingTypes(implementingTypes, attribute, [], [], targetNode);
 
-        var isComponent = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ComponentFQN);
-        var isExtension = !isPartial && implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.ExtensionFQN);
-        var isIdProvider = implementingTypes.Any(x => x.Type.Symbol.ToDisplayString() == Constants.IdProviderFQN);
         // filter methods: partial, non-static, non-generic
         var methods = targetNode.Members
             .OfType<MethodDeclarationSyntax>()
@@ -216,7 +207,14 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             .Where(x => x != null)
             .ToArray();
 
-        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isExtension, isComponent, isIdProvider, library);
+        var rewriter = new FullyQualifiedTypeRewriter(ctx.SemanticModel);
+
+        var publicMembers = targetNode.Members.Where(x => x.HasModifier(SyntaxKind.PublicKeyword))
+            .Select(MemberDeclarationSyntax (member) => (MemberDeclarationSyntax)rewriter.Visit(member))
+            .ToList();
+
+
+        return new StructStubGenerationContext(symbol, targetNode, methods!, implementingTypes.ToArray(), isPartial, library, publicMembers);
     }
 
     private static void AddImplementingTypes(List<ImplementingType> implementingTypes, AttributeData attribute, DefiniteType[] castPath, List<ITypeSymbol> trace,

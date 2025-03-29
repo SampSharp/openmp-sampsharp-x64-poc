@@ -34,13 +34,26 @@ public static class ForwardingMembersGenerator
 
             foreach (var implementingMethod in implementingMethods)
             {
+                SyntaxTriviaList leadingTrivia = default;
+                foreach (var reference in implementingMethod.DeclaringSyntaxReferences)
+                {
+                    var syntax = reference.GetSyntax();
+
+                    if (syntax is MethodDeclarationSyntax { HasLeadingTrivia: true })
+                    {
+                        leadingTrivia = syntax.GetLeadingTrivia();
+                        break;
+                    }
+                }
+
                 var method = MethodDeclaration(
                         TypeNameGlobal(implementingMethod, true), 
                         implementingMethod.Name)
                     .WithParameterList(ToParameterListSyntax(implementingMethod.Parameters))
                     .WithModifiers(
                         TokenList(
-                            Token(SyntaxKind.PublicKeyword)));
+                            Token(SyntaxKind.PublicKeyword)))
+                    .WithLeadingTrivia(leadingTrivia);
 
                 SimpleNameSyntax memberName = IdentifierName(implementingMethod.Name);
                 if (implementingMethod.TypeParameters.Length > 0)

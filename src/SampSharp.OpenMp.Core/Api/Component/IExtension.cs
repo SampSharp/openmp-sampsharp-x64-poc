@@ -4,4 +4,14 @@
 /// This type represents a pointer to an unmanaged open.mp <see cref="IExtension" /> interface.
 /// </summary>
 [OpenMpApi]
-public readonly partial struct IExtension;
+[OpenMpApiPartial]
+public readonly partial struct IExtension
+{
+    public partial interface IManagedInterface
+    {
+        /// <summary>
+        /// Gets the identifier of the extension type.
+        /// </summary>
+        static abstract UID ExtensionId { get; }
+    }
+}

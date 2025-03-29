@@ -22,7 +22,7 @@ public readonly partial struct IComponentList
     /// <typeparam name="T">The type of the component.</typeparam>
     /// <returns>The component or <see langword="null" /> if not found.</returns>
     [Pure]
-    public T QueryComponent<T>() where T : unmanaged, IComponentInterface
+    public T QueryComponent<T>() where T : unmanaged, IComponent.IManagedInterface
     {
         var component = QueryComponent(T.ComponentId).Handle;
         return StructPointer.AsStruct<T>(component);

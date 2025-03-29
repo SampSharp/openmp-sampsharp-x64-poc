@@ -9,6 +9,10 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IExtensible), typeof(ILogger))]
 public readonly partial struct ICore
 {
+    /// <summary>
+    /// Gets the version of the open.mp server.
+    /// </summary>
+    /// <returns>The version of the open.mp server package.</returns>
     public partial SemanticVersion GetVersion();
 
     public partial int GetNetworkBitStreamVersion();

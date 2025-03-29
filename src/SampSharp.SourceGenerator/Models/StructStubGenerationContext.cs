@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -10,10 +11,9 @@ public record StructStubGenerationContext(
     StructDeclarationSyntax Syntax,
     ApiMethodStubGenerationContext[] Methods,
     ImplementingType[] ImplementingTypes,
-    bool IsExtension,
-    bool IsComponent,
-    bool IsIdProvider,
-    string Library)
+    bool IsPartial,
+    string Library,
+    List<MemberDeclarationSyntax> PublicMembers)
 {
     public TypeSyntax Type { get; } = GetSelfType(Symbol, Syntax);
     
