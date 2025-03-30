@@ -10,7 +10,7 @@ namespace SampSharp.OpenMp.Core;
 internal static unsafe class StructPointer
 {
     /// <summary>
-    /// Reinterprets the given pointer as an open.mp pointer struct of type <typeparamref name="T"/>.
+    /// Reinterprets the given pointer as an open.mp pointer struct of type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The open.mp pointer struct type.</typeparam>
     /// <param name="pointer">The pointer to reinterpret.</param>
@@ -23,7 +23,7 @@ internal static unsafe class StructPointer
     }
 
     /// <summary>
-    ///Deference the given pointer and return the value as a struct of type <typeparamref name="T"/>.
+    ///Deference the given pointer and return the value as a struct of type <typeparamref name="T" />.
     /// </summary>
     /// <typeparam name="T">The unmanaged type the pointer points to.</typeparam>
     /// <param name="pointer">The pointer to dereference.</param>

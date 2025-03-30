@@ -1,7 +1,7 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// Represents the priority of receiving events in an <see cref="IEventDispatcher{T}"/>.
+/// Represents the priority of receiving events in an <see cref="IEventDispatcher{T}" />.
 /// </summary>
 public enum EventPriority : sbyte
 {

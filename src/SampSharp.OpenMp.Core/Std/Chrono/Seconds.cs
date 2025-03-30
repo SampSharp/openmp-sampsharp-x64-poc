@@ -21,16 +21,16 @@ public readonly struct Seconds
     }
     
     /// <summary>
-    /// Converts this duration to a <see cref="TimeSpan"/>.
+    /// Converts this duration to a <see cref="TimeSpan" />.
     /// </summary>
-    /// <returns>The duration as a <see cref="TimeSpan"/>.</returns>
+    /// <returns>The duration as a <see cref="TimeSpan" />.</returns>
     public TimeSpan AsTimeSpan()
     {
         return TimeSpan.FromSeconds(_value);
     }
     
     /// <summary>
-    /// Converts a <see cref="Seconds" /> to a <see cref="TimeSpan"/>.
+    /// Converts a <see cref="Seconds" /> to a <see cref="TimeSpan" />.
     /// </summary>
     /// <param name="seconds">The value to convert.</param>
     public static implicit operator TimeSpan(Seconds seconds)
@@ -39,7 +39,7 @@ public readonly struct Seconds
     }
     
     /// <summary>
-    /// Converts a <see cref="TimeSpan"/> to a <see cref="Seconds"/>.
+    /// Converts a <see cref="TimeSpan" /> to a <see cref="Seconds" />.
     /// </summary>
     /// <param name="timeSpan">The  time span to convert.</param>
     public static implicit operator Seconds(TimeSpan timeSpan)

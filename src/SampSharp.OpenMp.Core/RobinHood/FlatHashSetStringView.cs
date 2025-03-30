@@ -4,13 +4,20 @@ using SampSharp.OpenMp.Core.Std;
 
 namespace SampSharp.OpenMp.Core.RobinHood;
 
+/// <summary>
+/// Represent a pointer to an <c>robin_hood::unordered_flat_set</c> of <see cref="StringView" /> values.  <c>robin_hood::unordered_flat_set</c> is part of the <c>robin_hood</c> C++ library.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
 {
     private readonly nint _data;
 
+    /// <summary>
+    /// Gets the number of elements in this set.
+    /// </summary>
     public int Count => RobinHoodInterop.FlatHashSetStringView_size(_data).Value.ToInt32();
 
+    /// <inheritdoc />
     public IEnumerator<string?> GetEnumerator()
     {
         var iter = RobinHoodInterop.FlatHashSetStringView_begin(_data);
@@ -22,6 +29,10 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
         }
     }
 
+    /// <summary>
+    /// Adds a value to this set.
+    /// </summary>
+    /// <param name="value">The value to add.</param>
     public void Emplace(string value)
     {
         scoped StringViewMarshaller.ManagedToNative valueMarshaller = new();

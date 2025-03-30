@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core;
 
+/// <summary>
+/// Provides extension methods related to open.mp logging for the <see cref="IStartupContext" />.
+/// </summary>
 public static class StartupContextLoggingExtensions
 {
     /// <summary>

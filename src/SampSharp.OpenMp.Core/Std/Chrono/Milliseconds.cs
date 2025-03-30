@@ -21,16 +21,16 @@ public readonly struct Milliseconds
     }
     
     /// <summary>
-    /// Converts this duration to a <see cref="TimeSpan"/>.
+    /// Converts this duration to a <see cref="TimeSpan" />.
     /// </summary>
-    /// <returns>The duration as a <see cref="TimeSpan"/>.</returns>
+    /// <returns>The duration as a <see cref="TimeSpan" />.</returns>
     public TimeSpan AsTimeSpan()
     {
         return TimeSpan.FromMilliseconds(_value);
     }
     
     /// <summary>
-    /// Converts a <see cref="Milliseconds" /> to a <see cref="TimeSpan"/>.
+    /// Converts a <see cref="Milliseconds" /> to a <see cref="TimeSpan" />.
     /// </summary>
     /// <param name="milliseconds">The value to convert.</param>
     public static implicit operator TimeSpan(Milliseconds milliseconds)
@@ -39,7 +39,7 @@ public readonly struct Milliseconds
     }
     
     /// <summary>
-    /// Converts a <see cref="TimeSpan"/> to a <see cref="Milliseconds"/>.
+    /// Converts a <see cref="TimeSpan" /> to a <see cref="Milliseconds" />.
     /// </summary>
     /// <param name="timeSpan">The  time span to convert.</param>
     public static implicit operator Milliseconds(TimeSpan timeSpan)

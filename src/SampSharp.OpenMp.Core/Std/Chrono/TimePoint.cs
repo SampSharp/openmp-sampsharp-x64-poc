@@ -28,7 +28,7 @@ public readonly struct TimePoint
     }
 
     /// <summary>
-    /// Converts this time point to a <see cref="DateTimeOffset"/>.
+    /// Converts this time point to a <see cref="DateTimeOffset" />.
     /// </summary>
     /// <returns>The converted value.</returns>
     public DateTimeOffset ToDateTimeOffset()
@@ -37,7 +37,7 @@ public readonly struct TimePoint
     }
 
     /// <summary>
-    /// Converts a <see cref="TimePoint" /> to a <see cref="DateTimeOffset"/>.
+    /// Converts a <see cref="TimePoint" /> to a <see cref="DateTimeOffset" />.
     /// </summary>
     /// <param name="timePoint">The value to convert.</param>
     public static implicit operator DateTimeOffset(TimePoint timePoint)
@@ -46,7 +46,7 @@ public readonly struct TimePoint
     }
 
     /// <summary>
-    /// Converts a <see cref="DateTimeOffset"/> to a <see cref="TimePoint"/>.
+    /// Converts a <see cref="DateTimeOffset" /> to a <see cref="TimePoint" />.
     /// </summary>
     /// <param name="time">The value to convert.</param>
     public static implicit operator TimePoint(DateTimeOffset time)

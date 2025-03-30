@@ -36,7 +36,7 @@ public readonly struct Size
     public nint Value { get; }
 
     /// <summary>
-    /// Converts the size to an <see cref="int"/>.
+    /// Converts the size to an <see cref="int" />.
     /// </summary>
     /// <returns>The converted value.</returns>
     public int ToInt32()
@@ -45,7 +45,7 @@ public readonly struct Size
     }
 
     /// <summary>
-    /// Converts the size to an <see cref="int"/>.
+    /// Converts the size to an <see cref="int" />.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     public static explicit operator int(Size value)
@@ -54,7 +54,7 @@ public readonly struct Size
     }
 
     /// <summary>
-    /// Converts an <see cref="int"/> to a size.
+    /// Converts an <see cref="int" /> to a size.
     /// </summary>
     /// <param name="value">The value to convert.</param>
     public static implicit operator Size(int value)

@@ -20,7 +20,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     }
 
     /// <summary>
-    /// Adds the specified <paramref name="handler"/> to this event dispatcher.
+    /// Adds the specified <paramref name="handler" /> to this event dispatcher.
     /// </summary>
     /// <param name="handler">The event handler to add.</param>
     /// <param name="priority">The priority at which the handler should receive the events.</param>
@@ -33,7 +33,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     }
 
     /// <summary>
-    /// Removes the specified <paramref name="handler"/> from this event dispatcher.
+    /// Removes the specified <paramref name="handler" /> from this event dispatcher.
     /// </summary>
     /// <param name="handler">The event handler to remove.</param>
     /// <returns><see langword="true" /> if the event handler was removed; otherwise, <see langword="false" />.</returns>
@@ -57,7 +57,7 @@ public readonly struct IEventDispatcher<T> where T : class, IEventHandler<T>
     }
 
     /// <summary>
-    /// Returns a value indicating whether the specified <paramref name="handler"/> is registered with this event dispatcher.
+    /// Returns a value indicating whether the specified <paramref name="handler" /> is registered with this event dispatcher.
     /// </summary>
     /// <param name="handler">The event handler to check</param>
     /// <param name="priority">The priority at which the handler receives the events.</param>

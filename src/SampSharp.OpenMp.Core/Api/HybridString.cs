@@ -25,7 +25,7 @@ public readonly struct HybridString16
     private readonly byte[]? _static;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="HybridString16"/> struct.
+    /// Initializes a new instance of the <see cref="HybridString16" /> struct.
     /// </summary>
     /// <param name="inp">The value to set.</param>
     /// <exception cref="NotImplementedException">Throw if heap allocation is required; this has not been implemented.</exception>
@@ -53,7 +53,7 @@ public readonly struct HybridString16
     }
 
     /// <summary>
-    /// Copies the value of this <see cref="HybridString16"/> to a destination <see cref="Span{T}"/>.
+    /// Copies the value of this <see cref="HybridString16" /> to a destination <see cref="Span{T}" />.
     /// </summary>
     /// <param name="dest">The destination span.</param>
     public void CopyTo(Span<byte> dest)

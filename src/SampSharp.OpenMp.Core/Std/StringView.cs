@@ -72,7 +72,7 @@ public readonly unsafe struct StringView : ISpanFormattable
     }
 
     /// <summary>
-    /// Converts a <see cref="StringView" /> to a <see cref="string"/> using UTF-8 encoding.
+    /// Converts a <see cref="StringView" /> to a <see cref="string" /> using UTF-8 encoding.
     /// </summary>
     /// <param name="view"></param>
     public static implicit operator string?(StringView view)

@@ -24,7 +24,7 @@ public readonly unsafe struct SpanLite<T> where T : unmanaged
     }
 
     /// <summary>
-    /// Converts the span to a <see cref="Span{T}"/>.
+    /// Converts the span to a <see cref="Span{T}" />.
     /// </summary>
     /// <returns>The converted span.</returns>
     public Span<T> AsSpan()

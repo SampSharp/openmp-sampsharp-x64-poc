@@ -8,5 +8,8 @@
 [AttributeUsage(AttributeTargets.Method)]
 public class OpenMpApiOverloadAttribute(string overload) : Attribute
 {
+    /// <summary>
+    /// Gets the overload name to append to the function name.
+    /// </summary>
     public string Overload { get; } = overload;
 }
