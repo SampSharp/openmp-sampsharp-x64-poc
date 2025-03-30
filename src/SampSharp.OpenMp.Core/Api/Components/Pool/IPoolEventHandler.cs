@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
-public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> where T : unmanaged
+public interface IPoolEventHandler<T> : IEventHandler<IPoolEventHandler<T>> where T : unmanaged, IUnmanagedInterface
 {
     void OnPoolEntryCreated(T entry);
     void OnPoolEntryDestroyed(T entry);

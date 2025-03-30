@@ -49,7 +49,7 @@ public readonly record struct EntityId
     /// specified <paramref name="value" /> is not empty.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is not empty; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is not empty; otherwise, <see langword="false" />.</returns>
     public static implicit operator bool(EntityId value)
     {
         return !value.IsEmpty;
@@ -60,7 +60,7 @@ public readonly record struct EntityId
     /// empty.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is not empty; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is not empty; otherwise, <see langword="false" />.</returns>
     public static bool operator true(EntityId value)
     {
         return !value.IsEmpty;
@@ -69,7 +69,7 @@ public readonly record struct EntityId
     /// <summary>Implements the operator <see langword="false" />. Returns <see langword="true" /> if the specified <paramref name="value" /> is
     /// empty.</summary>
     /// <param name="value">The value.</param>
-    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is empty; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is empty; otherwise, <see langword="false" />.</returns>
     public static bool operator false(EntityId value)
     {
         return value.IsEmpty;
@@ -77,7 +77,7 @@ public readonly record struct EntityId
 
     /// <summary>Implements the operator <c>!</c>. Returns <see langword="true" /> if the specified <paramref name="value" /> is empty.</summary>
     /// <param name="value">The value.</param>
-    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is empty; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the specified <paramref name="value" /> is empty; otherwise, <see langword="false" />.</returns>
     public static bool operator !(EntityId value)
     {
         return value.IsEmpty;

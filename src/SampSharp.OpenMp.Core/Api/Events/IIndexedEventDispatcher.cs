@@ -37,7 +37,7 @@ public readonly struct IIndexedEventDispatcher<T> where T : class, IEventHandler
     /// <param name="handler">The event handler to add.</param>
     /// <param name="index">The index for which to add the handler.</param>
     /// <param name="priority">The priority at which the handler should receive the events.</param>
-    /// <returns><see langword="true" /> if the event handler was added; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the event handler was added; otherwise, <see langword="false" />.</returns>
     public bool AddEventHandler(T handler, int index, EventPriority priority = EventPriority.Default)
     {
         var handlerHandle = T.Marshaller.Marshal(handler).Create();
@@ -50,7 +50,7 @@ public readonly struct IIndexedEventDispatcher<T> where T : class, IEventHandler
     /// </summary>
     /// <param name="handler">The event handler to remove.</param>
     /// <param name="index">The index from which to remove the handler.</param>
-    /// <returns><see langword="true" /> if the event handler was removed; otherwise <see langword="false" />.</returns>
+    /// <returns><see langword="true" /> if the event handler was removed; otherwise, <see langword="false" />.</returns>
     public bool RemoveEventHandler(T handler, int index)
     {
         var reference = T.Marshaller.Marshal(handler);

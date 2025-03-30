@@ -4,7 +4,7 @@ namespace SampSharp.OpenMp.Core;
 
 /// <summary>Represents an awaiter for the <see cref="SyncToMainThreadTask" />.</summary>
 /// <seealso cref="INotifyCompletion" />
-public struct MainThreadTaskAwaiter : INotifyCompletion
+public readonly struct MainThreadTaskAwaiter : INotifyCompletion
 {
     /// <summary>Gets a value indicating whether the task is completed.</summary>
     public bool IsCompleted => SynchronizationContextExtension.Active.IsMainThread();

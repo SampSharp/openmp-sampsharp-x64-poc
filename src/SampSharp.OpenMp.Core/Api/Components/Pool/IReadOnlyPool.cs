@@ -4,7 +4,7 @@
 /// This type represents a pointer to an unmanaged open.mp <see cref="IReadOnlyPool{T}" /> interface.
 /// </summary>
 [OpenMpApi]
-public readonly partial struct IReadOnlyPool<T> where T : unmanaged
+public readonly partial struct IReadOnlyPool<T> where T : unmanaged, IUnmanagedInterface
 {
     public T Get(int index)
     {
