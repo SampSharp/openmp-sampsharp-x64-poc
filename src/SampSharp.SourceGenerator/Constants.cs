@@ -120,9 +120,4 @@ public static class Constants
     /// SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller{TEventHandler}
     /// </summary>
     public const string IEventHandlerMarshallerFQN = "SampSharp.OpenMp.Core.Api.IEventHandlerMarshaller";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage
-    /// </summary>
-    public const string EventHandlerNativeHandleStorageFQN = "SampSharp.OpenMp.Core.Api.EventHandlerNativeHandleStorage";
 }

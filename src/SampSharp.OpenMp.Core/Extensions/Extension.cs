@@ -88,11 +88,11 @@ public abstract partial class Extension : IDisposable
     /// Gets a pointer to the unmanaged counterpart of this extension.
     /// </summary>
     /// <returns>A pointer.</returns>
-    internal nint GetUnmanaged()
+    internal IExtension GetUnmanaged()
     {
         ObjectDisposedException.ThrowIf(IsDisposed, GetType());
         
-        return _unmanagedCounterpart.Value;
+        return new IExtension(_unmanagedCounterpart.Value);
     }
 
     /// <summary>

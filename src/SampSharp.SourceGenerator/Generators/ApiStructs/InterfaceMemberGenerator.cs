@@ -12,6 +12,8 @@ namespace SampSharp.SourceGenerator.Generators.ApiStructs;
 
 public static class InterfaceMemberGenerator
 {
+    public const string InterfaceName = "IManagedInterface";
+
     public static IEnumerable<MemberDeclarationSyntax> GenerateNativeMethods(StructStubGenerationContext ctx)
     {
         var publicMembers = ctx.PublicMembers
@@ -83,7 +85,7 @@ public static class InterfaceMemberGenerator
                                                         TriviaList())))
                                     ]))));
 
-        yield return InterfaceDeclaration("IManagedInterface")
+        yield return InterfaceDeclaration(InterfaceName)
             .WithModifiers(TokenList(
                 Token(SyntaxKind.PublicKeyword),
                 Token(SyntaxKind.PartialKeyword)

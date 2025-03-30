@@ -59,19 +59,20 @@ public readonly partial struct IExtensible
     /// <exception cref="ArgumentException">Thrown if the extension could not be found.</exception>
     public void RemoveExtension<T>(T extension) where T : Extension
     {
-        RemoveExtension(new IExtension(extension.GetUnmanaged()));
+        RemoveExtension(extension.GetUnmanaged());
     }
 
     /// <summary>
     /// Adds the specified managed <paramref name="extension" /> to this extensible.
     /// </summary>
     /// <typeparam name="T">The type of the managed extension.</typeparam>
-    /// <param name="extension">An instance of the extension to add.</param>
+    /// <param name="extension">An instance of the extension to add. The extension will be disposed if the extension could not be added to this extensible.</param>
     /// <remarks>A managed extension can only be added to one extensible.</remarks>
     /// <exception cref="ArgumentException">Throw when an instance of the extension type was already added to this extensible.</exception>
     public void AddExtension<T>(T extension) where T : Extension
     {
-        var unmanaged = new IExtension(extension.GetUnmanaged());
+        var unmanaged = extension.GetUnmanaged();
+
         try
         {
             if (!AddExtension(unmanaged, true))

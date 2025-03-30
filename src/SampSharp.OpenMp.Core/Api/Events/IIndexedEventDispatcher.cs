@@ -6,11 +6,15 @@ namespace SampSharp.OpenMp.Core.Api;
 /// This type represents a pointer to an unmanaged open.mp <see cref="IIndexedEventDispatcher{T}" /> interface.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct IIndexedEventDispatcher<T> where T : class, IEventHandler<T>
+public readonly struct IIndexedEventDispatcher<T> : IUnmanagedInterface where T : class, IEventHandler<T>
 {
     private readonly nint _handle;
 
+    /// <inheritdoc />
     public nint Handle => _handle;
+
+    /// <inheritdoc />
+    public bool HasValue => Handle != 0;
 
     /// <summary>
     /// Gets the number of event handlers registered.

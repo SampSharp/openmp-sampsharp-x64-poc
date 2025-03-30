@@ -121,12 +121,16 @@ public class OpenMpApiSourceGenerator : IIncrementalGenerator
             result = result
                 .Append(
                     SimpleBaseType(
-                        ParseTypeName($"{TypeNameGlobal((ITypeSymbol)ctx.Symbol)}.IManagedInterface")))
+                        ParseTypeName($"{TypeNameGlobal((ITypeSymbol)ctx.Symbol)}.{InterfaceMemberGenerator.InterfaceName}")))
                 .Concat(
                 ctx.ImplementingTypes.Select(
-                (x) => SimpleBaseType(
+                x => SimpleBaseType(
                     ParseTypeName(
-                        $"{TypeNameGlobal(x.Type.Symbol)}.IManagedInterface"))));
+                        $"{TypeNameGlobal(x.Type.Symbol)}.{InterfaceMemberGenerator.InterfaceName}"))));
+        }
+        else
+        {
+            result = result.Append(SimpleBaseType(ParseTypeName($"{TypeNameGlobal(Constants.UnmanagedInterfaceFQN)}")));
         }
         return result;
     }
