@@ -1,5 +1,5 @@
 ﻿using SampSharp.OpenMp.Core.Api;
-using SampSharp.OpenMp.Core.Chrono;
+using SampSharp.OpenMp.Core.Std.Chrono;
 
 namespace SampSharp.Entities.SAMP;
 

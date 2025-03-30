@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using SampSharp.OpenMp.Core.Std;
 
 namespace SampSharp.OpenMp.Core.Api;
 

@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices.Marshalling;
 
-namespace SampSharp.OpenMp.Core.Chrono;
+namespace SampSharp.OpenMp.Core.Std.Chrono;
 
 /// <summary>
 /// Represents a marshaller entrypoint for marshalling <see cref="TimeSpan" /> to a native <see cref="Seconds" /> structure.

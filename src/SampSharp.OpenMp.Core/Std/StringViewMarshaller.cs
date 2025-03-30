@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Std;
 
 /// <summary>
 /// Represents a marshaller entrypoint for marshalling <see langword="string" /> to a native <see cref="StringView" /> structure.

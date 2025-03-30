@@ -1,7 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 using System.Text;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Std;
 
 /// <summary>
 /// Represents a view of a string which is represented in memory like an <c>std::basic_string_view</c> from the C++

@@ -165,7 +165,7 @@ public class NumberedTypeSourceGenerator : IIncrementalGenerator
         var semanticModel = compilation.GetSemanticModel(structDeclaration.SyntaxTree);
 
         // Create a new rewriter that works on symbols tied to the original syntax tree
-        var rewriter = new SimpleFullyQualifyRewriter(semanticModel);
+        var rewriter = new FullyQualifiedTypeRewriter(semanticModel);
         return (StructDeclarationSyntax)rewriter.Visit(structDeclaration);
     }
 
@@ -173,66 +173,4 @@ public class NumberedTypeSourceGenerator : IIncrementalGenerator
     private readonly record struct StructData(StructDeclarationSyntax Declaration, AttributeData[] Attributes);
 
     private readonly record struct AttributeData(string Field, int Value);
-
-    private class SimpleFullyQualifyRewriter : CSharpSyntaxRewriter
-    {
-        private readonly SemanticModel _semanticModel;
-
-        public SimpleFullyQualifyRewriter(SemanticModel semanticModel)
-        {
-            _semanticModel = semanticModel;
-        }
-
-        public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
-        {
-            var symbol = _semanticModel.GetSymbolInfo(node).Symbol;
-
-            if (symbol is ITypeSymbol { SpecialType: SpecialType.None } typeSymbol)
-            {
-                // Fully qualify the type
-                var fullyQualifiedName = ParseName(TypeSyntaxFactory.ToGlobalTypeString(typeSymbol));
-                return fullyQualifiedName;
-            }
-
-            return base.VisitIdentifierName(node);
-        }
-
-        public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
-        {
-            return ResolveMemberAccessSyntaxTree(node);
-        }
-
-        private MemberAccessExpressionSyntax ResolveMemberAccessSyntaxTree(MemberAccessExpressionSyntax node)
-        {
-            if (node.Expression is MemberAccessExpressionSyntax access)
-            {
-                return node.WithExpression(ResolveMemberAccessSyntaxTree(access));
-            }
-
-            if (node.Expression is IdentifierNameSyntax name)
-            {
-                var symbol = _semanticModel.GetSymbolInfo(name);
-                if (symbol.Symbol is INamedTypeSymbol type)
-                {
-                    return node.WithExpression(name.WithIdentifier(Identifier(TypeSyntaxFactory.ToGlobalTypeString(type))));
-                }
-            }
-
-            return node;
-        }
-
-        public override SyntaxNode VisitAttribute(AttributeSyntax node)
-        {
-            var symbol = _semanticModel.GetSymbolInfo(node.Name).Symbol;
-
-            node = (AttributeSyntax)base.VisitAttribute(node)!;
-
-            if (symbol != null)
-            {
-                node = node.WithName(ParseName($"global::{symbol.ContainingNamespace}.{node.Name}"));
-            }
-
-            return node;
-        }
-    }
 }

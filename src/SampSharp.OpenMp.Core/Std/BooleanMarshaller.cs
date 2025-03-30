@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices.Marshalling;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Std;
 
 /// <summary>
 /// Represents a marshaller entrypoint for marshalling <see langword="bool" /> to a native <see cref="BlittableBoolean" /> structure.

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator;
@@ -16,14 +17,58 @@ public class FullyQualifiedTypeRewriter : CSharpSyntaxRewriter
         _semanticModel = semanticModel;
     }
 
+    public override SyntaxNode VisitMemberAccessExpression(MemberAccessExpressionSyntax node)
+    {
+        return ResolveMemberAccessSyntaxTree(node);
+    }
+
+    private MemberAccessExpressionSyntax ResolveMemberAccessSyntaxTree(MemberAccessExpressionSyntax node)
+    {
+        switch (node.Expression)
+        {
+            case MemberAccessExpressionSyntax access:
+                return node.WithExpression(ResolveMemberAccessSyntaxTree(access));
+            case IdentifierNameSyntax name:
+                {
+                    var symbol = _semanticModel.GetSymbolInfo(name);
+                    if (symbol.Symbol is INamedTypeSymbol type)
+                    {
+                        return node.WithExpression(name.WithIdentifier(Identifier(TypeSyntaxFactory.ToGlobalTypeString(type))));
+                    }
+
+                    break;
+                }
+        }
+
+        return node;
+    }
+
+    public override SyntaxNode VisitAttribute(AttributeSyntax node)
+    {
+        var symbol = _semanticModel.GetSymbolInfo(node.Name).Symbol;
+    
+        if (symbol != null && !node.Name.ToString().StartsWith("global::"))
+        {
+            node = node
+                .WithName(ParseName($"global::{symbol.ContainingNamespace}.{node.Name}"))
+                .WithArgumentList((AttributeArgumentListSyntax?)Visit(node.ArgumentList));
+
+        }
+    
+        return node;
+    }
+
     public override SyntaxNode? VisitIdentifierName(IdentifierNameSyntax node)
     {
         var symbolInfo = _semanticModel.GetSymbolInfo(node);
         var symbol = symbolInfo.Symbol;
 
-        if (symbol != null)
+        if (symbol is ITypeSymbol { SpecialType: SpecialType.None } typeSymbol)
         {
-            return IdentifierName(ToFQN(symbol));
+            if (typeSymbol.TypeKind != TypeKind.TypeParameter)
+            {
+                return IdentifierName(TypeSyntaxFactory.ToGlobalTypeString(typeSymbol));
+            }
         }
 
         return base.VisitIdentifierName(node);
@@ -34,9 +79,9 @@ public class FullyQualifiedTypeRewriter : CSharpSyntaxRewriter
         var symbolInfo = _semanticModel.GetSymbolInfo(node);
         var symbol = symbolInfo.Symbol;
 
-        if (symbol != null)
+        if (symbol is ITypeSymbol typeSymbol)
         {
-            return IdentifierName(ToFQN(symbol));
+            return IdentifierName(TypeSyntaxFactory.ToGlobalTypeString(typeSymbol));
         }
 
         return base.VisitQualifiedName(node);
@@ -47,31 +92,52 @@ public class FullyQualifiedTypeRewriter : CSharpSyntaxRewriter
         var symbolInfo = _semanticModel.GetSymbolInfo(node);
         var symbol = symbolInfo.Symbol;
 
-        if (symbol != null)
+        if (symbol is ITypeSymbol typeSymbol)
         {
-            var fullyQualifiedName = ToFQN(symbol);
+            var fullyQualifiedName = TypeSyntaxFactory.ToGlobalTypeString(typeSymbol);
             var identifier = fullyQualifiedName.Split('<')[0]; // Get the identifier part
             var typeArguments = node.TypeArgumentList.Arguments.Select(arg => (TypeSyntax)Visit(arg)).ToArray();
-            return GenericName(identifier).WithTypeArgumentList(TypeArgumentList(SeparatedList(typeArguments)));
+
+            return GenericName(identifier)
+                .WithTypeArgumentList(
+                    TypeArgumentList(
+                        SeparatedList(typeArguments)));
         }
 
         return base.VisitGenericName(node);
     }
-
-    private static string ToFQN(ISymbol symbol)
+    public override SyntaxNode? VisitInvocationExpression(InvocationExpressionSyntax node)
     {
-        var fqn = symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-        if (symbol is ITypeParameterSymbol)
+        if (node.Expression is MemberAccessExpressionSyntax { Name: GenericNameSyntax memberGenericName } memberAccess)
         {
-            return fqn;
-        }
-      
-        if (!fqn.StartsWith("global::"))
-        {
-            return $"global::{fqn}";
+            var typeArguments = memberGenericName.TypeArgumentList.Arguments.Select(arg =>
+                {
+                    var symbolInfo = _semanticModel.GetSymbolInfo(arg);
+                    var symbol = symbolInfo.Symbol;
+
+                    if (symbol is ITypeSymbol typeSymbol)
+                    {
+                        return IdentifierName(TypeSyntaxFactory.ToGlobalTypeString(typeSymbol));
+                    }
+
+                    return arg;
+                })
+                .ToArray();
+
+            var newExpression = memberAccess
+                .WithName(memberGenericName
+                    .WithTypeArgumentList(
+                        TypeArgumentList(
+                            SeparatedList(typeArguments))))
+                .WithExpression(
+                    (ExpressionSyntax)Visit(memberAccess.Expression));
+
+            return node
+                .WithExpression(newExpression)
+                .WithArgumentList(
+                    (ArgumentListSyntax)Visit(node.ArgumentList));
         }
 
-        return fqn;
+        return base.VisitInvocationExpression(node);
     }
 }

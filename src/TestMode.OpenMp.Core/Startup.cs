@@ -2,8 +2,9 @@
 using System.Numerics;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
-using SampSharp.OpenMp.Core.Chrono;
 using SampSharp.OpenMp.Core.RobinHood;
+using SampSharp.OpenMp.Core.Std;
+using SampSharp.OpenMp.Core.Std.Chrono;
 
 namespace TestMode.OpenMp.Core;
 

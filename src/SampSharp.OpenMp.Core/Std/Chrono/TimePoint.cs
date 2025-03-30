@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core.Chrono;
+namespace SampSharp.OpenMp.Core.Std.Chrono;
 
 /// <summary>
 /// Represents a point in time which is represented in memory like an <c>std::chrono::TimePoint</c> from the C++

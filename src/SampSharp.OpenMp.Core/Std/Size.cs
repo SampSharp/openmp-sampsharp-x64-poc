@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Std;
 
 /// <summary>
 /// Represents a size which is represented in memory like an <c>std::size_t</c> from the C++ standard library.

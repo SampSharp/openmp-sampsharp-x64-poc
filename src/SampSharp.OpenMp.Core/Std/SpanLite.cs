@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core;
+namespace SampSharp.OpenMp.Core.Std;
 
 /// <summary>
 /// Represents a span which is represented in memory like an <c>std::span_t</c> from the C++ standard library.

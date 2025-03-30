@@ -1,4 +1,6 @@
-﻿namespace SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.Std;
+
+namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
 /// This type represents a pointer to an unmanaged open.mp <see cref="IReadOnlyPool{T}" /> interface.
