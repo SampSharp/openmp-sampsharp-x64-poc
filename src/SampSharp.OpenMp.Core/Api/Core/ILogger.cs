@@ -8,11 +8,36 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi]
 public readonly unsafe partial struct ILogger
 {
+    /// <summary>
+    /// Prints a new line to the console.
+    /// </summary>
+    /// <param name="msg">The message to log.</param>
     public partial void PrintLn(byte* msg);
+
+    /// <summary>
+    /// Prints a new line to the console with the specified severity level.
+    /// </summary>
+    /// <param name="level">The severity level at which to log the line.</param>
+    /// <param name="msg">The message to log.</param>
     public partial void LogLn(LogLevel level, byte* msg);
+
+    /// <summary>
+    /// Prints a new line to the console in UTF-8 encoding.
+    /// </summary>
+    /// <param name="msg">The message to log.</param>
     public partial void PrintLnU8(byte* msg);
+    /// <summary>
+    /// Prints a new line to the console of the specified log type in UTF-8 encoding.
+    /// </summary>
+    /// <param name="level">The severity level at which to log the line.</param>
+    /// <param name="msg">The message to log.</param>
     public partial void LogLnU8(LogLevel level, byte* msg);
-    
+
+    /// <summary>
+    /// Logs a new line to the console with the specified severity level.
+    /// </summary>
+    /// <param name="level">The severity level at which to log the line.</param>
+    /// <param name="msg">The message to log.</param>
     public void LogLine(LogLevel level, string msg)
     {
         var arr = new byte[Encoding.UTF8.GetByteCount(msg) + 1];
@@ -24,6 +49,10 @@ public readonly unsafe partial struct ILogger
         }
     }
 
+    /// <summary>
+    /// Prints a new line to the console.
+    /// </summary>
+    /// <param name="msg">The message to log.</param>
     public void PrintLine(string msg)
     {
         var arr = new byte[Encoding.UTF8.GetByteCount(msg) + 1];
