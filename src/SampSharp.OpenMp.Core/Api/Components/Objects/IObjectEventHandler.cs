@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Provides the events for <see cref="IObjectsComponent.GetEventDispatcher" />.
+/// </summary>
 [OpenMpEventHandler]
 public partial interface IObjectEventHandler
 {

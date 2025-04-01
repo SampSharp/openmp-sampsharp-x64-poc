@@ -1,5 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Provides the events for <see cref="IVehiclesComponent.GetEventDispatcher" />.
+/// </summary>
 [OpenMpEventHandler]
 public partial interface IVehicleEventHandler
 {

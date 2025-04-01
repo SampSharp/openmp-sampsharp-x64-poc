@@ -17,7 +17,7 @@ internal class TickingSystem : DisposableSystem, ICoreEventHandler
         AddDisposable(omp.Core.GetEventDispatcher().Add(this));
     }
 
-    public void OnTick(Microseconds micros, TimePoint now)
+    public void OnTick(Microseconds elapsed, TimePoint now)
     {
         for (var i = 0; i < _tickers.Length; i++)
         {

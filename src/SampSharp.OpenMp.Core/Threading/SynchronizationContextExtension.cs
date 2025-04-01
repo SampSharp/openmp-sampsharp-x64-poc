@@ -43,7 +43,7 @@ internal class SynchronizationContextExtension : Extension, ICoreEventHandler
         _core.GetEventDispatcher().RemoveEventHandler(this);
     }
 
-    public void OnTick(Microseconds micros, TimePoint now)
+    public void OnTick(Microseconds elapsed, TimePoint now)
     {
         while (true)
         {

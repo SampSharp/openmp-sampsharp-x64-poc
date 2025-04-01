@@ -132,7 +132,7 @@ public class Startup : IStartup,
         }
     }
 
-    public void OnTick(Microseconds micros, TimePoint now)
+    public void OnTick(Microseconds elapsed, TimePoint now)
     {
     }
     
