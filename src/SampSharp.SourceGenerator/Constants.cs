@@ -80,16 +80,6 @@ public static class Constants
     public const string NumberedTypeGeneratorAttributeFQN = "SampSharp.OpenMp.Core.NumberedTypeGeneratorAttribute";
     
     /// <summary>
-    /// SampSharp.OpenMp.Core.StringViewMarshaller
-    /// </summary>
-    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.StringViewMarshaller";
-
-    /// <summary>
-    /// SampSharp.OpenMp.Core.BooleanMarshaller
-    /// </summary>
-    public const string BooleanMarshallerFQN = "SampSharp.OpenMp.Core.BooleanMarshaller";
-
-    /// <summary>
     /// SampSharp.OpenMp.Core.StartupContext
     /// </summary>
     public const string StartupContextFQN = "SampSharp.OpenMp.Core.StartupContext";
@@ -103,6 +93,18 @@ public static class Constants
     /// SampSharp.OpenMp.Core.IUnmanagedInterface
     /// </summary>
     public const string UnmanagedInterfaceFQN = "SampSharp.OpenMp.Core.IUnmanagedInterface";
+
+    // SampSharp.OpenMp.Core.Std
+    
+    /// <summary>
+    /// SampSharp.OpenMp.Core.Std.StringViewMarshaller
+    /// </summary>
+    public const string StringViewMarshallerFQN = "SampSharp.OpenMp.Core.Std.StringViewMarshaller";
+
+    /// <summary>
+    /// SampSharp.OpenMp.Core.Std.BooleanMarshaller
+    /// </summary>
+    public const string BooleanMarshallerFQN = "SampSharp.OpenMp.Core.Std.BooleanMarshaller";
 
     // SampSharp.OpenMp.Core.Api
 

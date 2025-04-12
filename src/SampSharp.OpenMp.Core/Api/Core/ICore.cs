@@ -30,7 +30,7 @@ public readonly partial struct ICore
     /// <summary>
     /// Gets the core event dispatcher.
     /// </summary>
-    /// <returns>The core event dispatcher./returns>
+    /// <returns>The core event dispatcher.</returns>
     public partial IEventDispatcher<ICoreEventHandler> GetEventDispatcher();
 
     /// <summary>
@@ -42,7 +42,7 @@ public readonly partial struct ICore
     /// <summary>
     /// Gets a list of available networks.
     /// </summary>
-    /// <returns>A list of avaailable networks.</returns>
+    /// <returns>A list of available networks.</returns>
     public partial FlatPtrHashSet<INetwork> GetNetworks();
 
     /// <summary>

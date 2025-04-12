@@ -10,7 +10,7 @@ public readonly partial struct IExtension
     public partial interface IManagedInterface
     {
         /// <summary>
-        /// Gets the identifier of the extension type.
+        /// Gets the identifier of the extension type. <see cref="IPool{T}"/>
         /// </summary>
         static abstract UID ExtensionId { get; }
     }

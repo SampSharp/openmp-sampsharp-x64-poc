@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
+using static SampSharp.SourceGenerator.SyntaxFactories.TriviaFactory;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;
 
@@ -26,16 +28,31 @@ public static class CreationMembersGenerator
 
     private static PropertyDeclarationSyntax GenerateHandleProperty()
     {
-        return PropertyDeclaration(ParseTypeName("nint"), "Handle")
-            .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
-            .WithExpressionBody(ArrowExpressionClause(IdentifierName("_handle")))
-            .WithSemicolonToken(Token(SyntaxKind.SemicolonToken));
+        return PropertyDeclaration(
+                ParseTypeName("nint"),
+                "Handle")
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PublicKeyword)))
+            .WithExpressionBody(
+                ArrowExpressionClause(
+                    IdentifierName("_handle")))
+            .WithSemicolonToken(
+                Token(SyntaxKind.SemicolonToken))
+            .WithLeadingTrivia(
+                InheritDoc());
     }
 
     private static FieldDeclarationSyntax GenerateHandleField()
     {
-        return FieldDeclaration(VariableDeclaration(ParseTypeName("nint"), SingletonSeparatedList(VariableDeclarator("_handle"))))
-            .WithModifiers(TokenList(Token(SyntaxKind.PrivateKeyword), Token(SyntaxKind.ReadOnlyKeyword)));
+        return FieldDeclaration(
+                VariableDeclaration(ParseTypeName("nint"),
+                    SingletonSeparatedList(
+                        VariableDeclarator("_handle"))))
+            .WithModifiers(
+                TokenList(
+                    Token(SyntaxKind.PrivateKeyword), 
+                    Token(SyntaxKind.ReadOnlyKeyword)));
     }
 
     private static ConstructorDeclarationSyntax GenerateConstructor(StructStubGenerationContext ctx)
@@ -46,6 +63,12 @@ public static class CreationMembersGenerator
                     Parameter(Identifier("handle")).WithType(ParseTypeName("nint"))
                 )))
             .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+            .WithLeadingTrivia(
+                DocsStructConstructor(
+                    ctx.Type, 
+                    new ParameterDoc(
+                        "handle",
+                        "A pointer to the unmanaged interface.")))
             .WithBody(Block(
                 SingletonList(
                     ExpressionStatement(

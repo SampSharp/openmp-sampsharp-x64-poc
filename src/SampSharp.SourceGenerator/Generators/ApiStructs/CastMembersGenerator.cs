@@ -86,6 +86,8 @@ public static class CastMembersGenerator
                                     Identifier("value"))
                                 .WithType(
                                     ctx.Type))))
+                .WithLeadingTrivia(
+                    TriviaFactory.DocsOpCast(ctx.Type, impl.Type.Syntax))
                 .WithBody(block);
 
             isFirst = false;

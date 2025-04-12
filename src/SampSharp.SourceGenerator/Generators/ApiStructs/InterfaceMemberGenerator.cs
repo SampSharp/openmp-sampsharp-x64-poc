@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -27,7 +28,7 @@ public static class InterfaceMemberGenerator
                     member = method.WithParameterList(ParameterList(SeparatedList(method.ParameterList.Parameters.Select(x => x.WithAttributeLists([])))));
                 }
 
-                member = member.WithAttributeLists([]);
+                var trivia = member.GetLeadingTrivia();
 
                 var modifiers = member.Modifiers;
                 var partialIdx = modifiers.IndexOf(SyntaxKind.PartialKeyword);
@@ -37,53 +38,15 @@ public static class InterfaceMemberGenerator
                     modifiers = modifiers.RemoveAt(partialIdx);
                 }
 
-                member = member.WithModifiers(modifiers);
+                member = member
+                    .WithAttributeLists([])
+                    .WithModifiers(modifiers)
+                    .WithLeadingTrivia(trivia);
 
                 return member;
             })
             .ToList();
 
-        var trivia = TriviaList(
-                            Trivia(
-                                DocumentationCommentTrivia(
-                                    SyntaxKind.SingleLineDocumentationCommentTrivia,
-                                    List<XmlNodeSyntax>([
-                                        XmlText()
-                                            .WithTextTokens(
-                                                TokenList(
-                                                    XmlTextLiteral(
-                                                        TriviaList(
-                                                            DocumentationCommentExterior("///")),
-                                                        " ",
-                                                        " ",
-                                                        TriviaList()))),
-                                            XmlExampleElement(
-                                                SingletonList<XmlNodeSyntax>(
-                                                    XmlText()
-                                                    .WithTextTokens(
-                                                        TokenList(
-                                                            XmlTextLiteral(
-                                                                TriviaList(),
-                                                                "Represents the managed interface implemented by its unmanaged counterpart.",
-                                                                "Represents the managed interface implemented by its unmanaged counterpart.",
-                                                                TriviaList())))))
-                                            .WithStartTag(
-                                                XmlElementStartTag(
-                                                    XmlName(
-                                                        Identifier("summary"))))
-                                            .WithEndTag(
-                                                XmlElementEndTag(
-                                                    XmlName(
-                                                        Identifier("summary")))),
-                                            XmlText()
-                                            .WithTextTokens(
-                                                TokenList(
-                                                    XmlTextNewLine(
-                                                        TriviaList(),
-                                                        "\n",
-                                                        "\n",
-                                                        TriviaList())))
-                                    ]))));
 
         yield return InterfaceDeclaration(InterfaceName)
             .WithModifiers(TokenList(
@@ -95,7 +58,8 @@ public static class InterfaceMemberGenerator
                 SingletonSeparatedList<BaseTypeSyntax>(
                     SimpleBaseType(
                         TypeSyntaxFactory.TypeNameGlobal(Constants.UnmanagedInterfaceFQN)))))
-            .WithLeadingTrivia(trivia);
+            .WithLeadingTrivia(
+                TriviaFactory.Docs("Represents the managed interface implemented by its unmanaged counterpart.", []));
     }
 }
 

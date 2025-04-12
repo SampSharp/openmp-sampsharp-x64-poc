@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SampSharp.SourceGenerator.Models;
+using SampSharp.SourceGenerator.SyntaxFactories;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SampSharp.SourceGenerator.Generators.ApiStructs;
@@ -31,9 +32,10 @@ public static class EqualityMembersGenerator
                 Identifier("HasValue"))
             .WithModifiers(
                 TokenList(
-                    new []{
-                        Token(SyntaxKind.PublicKeyword),
-                        Token(SyntaxKind.ReadOnlyKeyword)}))
+                    Token(SyntaxKind.PublicKeyword),
+                    Token(SyntaxKind.ReadOnlyKeyword)))
+            .WithLeadingTrivia(
+                TriviaFactory.InheritDoc())
             .WithExpressionBody(
                 ArrowExpressionClause(
                     BinaryExpression(
@@ -55,6 +57,8 @@ public static class EqualityMembersGenerator
                     Token(SyntaxKind.PublicKeyword),
                     Token(SyntaxKind.OverrideKeyword)
                 ))
+            .WithLeadingTrivia(
+                TriviaFactory.InheritDoc())
             .WithBody(
                 Block(
                     SingletonList<StatementSyntax>(
@@ -79,6 +83,8 @@ public static class EqualityMembersGenerator
                         Parameter(
                             Identifier("other"))
                         .WithType(ctx.Type))))
+            .WithLeadingTrivia(
+                TriviaFactory.InheritDoc())
             .WithBody(
                 Block(
                     SingletonList<StatementSyntax>(
@@ -100,6 +106,8 @@ public static class EqualityMembersGenerator
                     TokenList(
                         Token(SyntaxKind.PublicKeyword), 
                         Token(SyntaxKind.OverrideKeyword)))
+                .WithLeadingTrivia(
+                    TriviaFactory.InheritDoc())
                 .WithParameterList(
                     ParameterList(
                         SingletonSeparatedList(
@@ -154,7 +162,7 @@ public static class EqualityMembersGenerator
                             LiteralExpression(
                                 SyntaxKind.FalseLiteralExpression))));
 
-        // public static bool operator ==(MyType left, object? right)
+        // public static bool operator ==(MyType lhs, object? rhs)
         yield return OperatorDeclaration(
                         PredefinedType(
                             Token(SyntaxKind.BoolKeyword)),
@@ -167,19 +175,21 @@ public static class EqualityMembersGenerator
                         ParameterList(
                             SeparatedList([
                                 Parameter(
-                                    Identifier("left"))
+                                    Identifier("lhs"))
                                 .WithType(self),
                                 Parameter(
-                                    Identifier("right"))
+                                    Identifier("rhs"))
                                 .WithType(
                                     NullableType(
                                         PredefinedType(
                                             Token(SyntaxKind.ObjectKeyword))))])))
+                    .WithLeadingTrivia(
+                        TriviaFactory.DocsOpEqual())
                     .WithBody(
                         Block(
                             IfStatement(
                                 IsPatternExpression(
-                                    IdentifierName("right"),
+                                    IdentifierName("rhs"),
                                     ConstantPattern(
                                         LiteralExpression(
                                             SyntaxKind.NullLiteralExpression))),
@@ -188,11 +198,11 @@ public static class EqualityMembersGenerator
                                         SyntaxKind.LogicalNotExpression,
                                         MemberAccessExpression(
                                             SyntaxKind.SimpleMemberAccessExpression,
-                                            IdentifierName("left"),
+                                            IdentifierName("lhs"),
                                             IdentifierName("HasValue"))))),
                             IfStatement(
                                 IsPatternExpression(
-                                    IdentifierName("right"),
+                                    IdentifierName("rhs"),
                                     DeclarationPattern(
                                         self,
                                         SingleVariableDesignation(
@@ -201,7 +211,7 @@ public static class EqualityMembersGenerator
                                     InvocationExpression(
                                         MemberAccessExpression(
                                             SyntaxKind.SimpleMemberAccessExpression,
-                                            IdentifierName("left"),
+                                            IdentifierName("lhs"),
                                             IdentifierName("Equals")))
                                     .WithArgumentList(
                                         ArgumentList(
@@ -211,8 +221,8 @@ public static class EqualityMembersGenerator
                             ReturnStatement(
                                 LiteralExpression(
                                     SyntaxKind.FalseLiteralExpression))));
-
-        // public static bool operator !=(MyType left, object? right)
+        
+        // public static bool operator !=(MyType lhs, object? rhs)
         yield return OperatorDeclaration(
                         PredefinedType(
                             Token(SyntaxKind.BoolKeyword)),
@@ -225,15 +235,16 @@ public static class EqualityMembersGenerator
                         ParameterList(
                             SeparatedList([
                                 Parameter(
-                                    Identifier("left"))
-                                .WithType(
-                                    self),
+                                    Identifier("lhs"))
+                                .WithType(self),
                                 Parameter(
-                                    Identifier("right"))
+                                    Identifier("rhs"))
                                 .WithType(
                                     NullableType(
                                         PredefinedType(
                                             Token(SyntaxKind.ObjectKeyword))))])))
+                    .WithLeadingTrivia(
+                        TriviaFactory.DocsOpNotEqual())
                     .WithExpressionBody(
                         ArrowExpressionClause(
                             PrefixUnaryExpression(
@@ -241,8 +252,8 @@ public static class EqualityMembersGenerator
                                 ParenthesizedExpression(
                                     BinaryExpression(
                                         SyntaxKind.EqualsExpression,
-                                        IdentifierName("left"),
-                                        IdentifierName("right"))))))
+                                        IdentifierName("lhs"),
+                                        IdentifierName("rhs"))))))
                     .WithSemicolonToken(
                         Token(SyntaxKind.SemicolonToken));
     }
