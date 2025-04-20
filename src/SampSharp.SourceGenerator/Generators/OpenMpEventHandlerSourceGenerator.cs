@@ -137,6 +137,12 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         GenericType(
                             Constants.EventHandlerMarshallerFQN, 
                             ParseTypeName(ctx.Symbol.Name))))))
+            .WithLeadingTrivia(TriviaFactory.Docs([
+                XmlText("Manages the marshalling of native event handlers for "),
+                TriviaFactory.SeeElement(
+                    ParseTypeName(ctx.Symbol.Name)),
+                XmlText(".")
+                ], []))
             .WithMembers(GenerateManagerMembers(ctx));
     }
 
@@ -169,6 +175,13 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
             .WithInitializer(
                 EqualsValueClause(
                     ImplicitObjectCreationExpression()))
+            .WithLeadingTrivia(
+                TriviaFactory.Docs([
+                    XmlText("Gets the singleton instance of the "),
+                    TriviaFactory.SeeElement(
+                        IdentifierName(ClassEventHandlerMarshaller)),
+                    XmlText("."),
+                ], []))
             .WithSemicolonToken(
                 Token(SyntaxKind.SemicolonToken));
     }
@@ -217,6 +230,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         Parameter(
                                 Identifier("handler"))
                             .WithType(ParseTypeName(ctx.Symbol.Name)))))
+            .WithLeadingTrivia(
+                TriviaFactory.InheritDoc())
             .WithBody(
                 Block(List<StatementSyntax>([
                     // Delegate __x_delegate = (Method_)handler.Method, ...;
@@ -310,6 +325,8 @@ public class OpenMpEventHandlerSourceGenerator : IIncrementalGenerator
                         Parameter(
                                 Identifier(ParamHandle))
                             .WithType(IntPtrType))))
+            .WithLeadingTrivia(
+                TriviaFactory.InheritDoc())
             .WithBody(
                 Block(
                     ExpressionStatement(

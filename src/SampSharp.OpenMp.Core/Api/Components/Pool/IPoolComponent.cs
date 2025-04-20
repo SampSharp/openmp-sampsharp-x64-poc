@@ -8,9 +8,9 @@
 public readonly partial struct IPoolComponent<T> where T : unmanaged, IIDProvider.IManagedInterface
 {
     /// <summary>
-    /// Converts this component to a pool of <typeparamref name="T"/>.
+    /// Converts this component to a pool.
     /// </summary>
-    /// <returns>A pool of <typeparamref name="T"/>.</returns>
+    /// <returns>A pool.</returns>
     public IPool<T> AsPool()
     {
         return new IPool<T>(IPoolComponentInterop.cast_IPoolComponent_to_IPool(_handle));

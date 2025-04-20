@@ -146,6 +146,7 @@ public static class TriviaFactory
                 SeeElement(to),
                 XmlText(".")]));
     }
+
     public static SyntaxTriviaList Docs(string summary, ParameterDoc[] parameters, string? returns = null)
     {
         var r = returns == null 
