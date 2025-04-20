@@ -26,7 +26,7 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Checks if the player is a bot (NPC).
     /// </summary>
-    /// <returns><c>true</c> if the player is a bot; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the player is a bot; otherwise, <see langword="false" />.</returns>
     public partial bool IsBot();
 
     /// <summary>
@@ -47,7 +47,7 @@ public readonly partial struct IPlayer
     /// <param name="data">The data to send.</param>
     /// <param name="channel">The channel to send the packet on.</param>
     /// <param name="dispatchEvents">Whether to dispatch events for the packet.</param>
-    /// <returns><c>true</c> if the packet was sent successfully; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the packet was sent successfully; otherwise, <see langword="false" />.</returns>
     public partial bool SendPacket(SpanLite<byte> data, int channel, bool dispatchEvents = true);
 
     /// <summary>
@@ -57,7 +57,7 @@ public readonly partial struct IPlayer
     /// <param name="data">The data to send.</param>
     /// <param name="channel">The channel to send the RPC on.</param>
     /// <param name="dispatchEvents">Whether to dispatch events for the RPC.</param>
-    /// <returns><c>true</c> if the RPC was sent successfully; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the RPC was sent successfully; otherwise, <see langword="false" />.</returns>
     public partial bool SendRPC(int id, SpanLite<byte> data, int channel, bool dispatchEvents = true);
 
     /// <summary>
@@ -295,25 +295,25 @@ public readonly partial struct IPlayer
     /// </summary>
     /// <param name="other">The other player.</param>
     /// <param name="colour">A reference to store the color of the other player.</param>
-    /// <returns><c>true</c> if the color was successfully retrieved; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the color was successfully retrieved; otherwise, <see langword="false" />.</returns>
     public partial bool GetOtherColour(IPlayer other, ref Colour colour);
 
     /// <summary>
     /// Sets whether the player is controllable.
     /// </summary>
-    /// <param name="controllable"><c>true</c> to make the player controllable; otherwise, <c>false</c>.</param>
+    /// <param name="controllable"><see langword="true" /> to make the player controllable; otherwise, <see langword="false" />.</param>
     public partial void SetControllable(bool controllable);
 
     /// <summary>
     /// Gets whether the player is controllable.
     /// </summary>
-    /// <returns><c>true</c> if the player is controllable; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the player is controllable; otherwise, <see langword="false" />.</returns>
     public partial bool GetControllable();
 
     /// <summary>
     /// Sets whether the player is spectating.
     /// </summary>
-    /// <param name="spectating"><c>true</c> to make the player spectate; otherwise, <c>false</c>.</param>
+    /// <param name="spectating"><see langword="true" /> to make the player spectate; otherwise, <see langword="false" />.</param>
     public partial void SetSpectating(bool spectating);
 
     /// <summary>
@@ -345,7 +345,7 @@ public readonly partial struct IPlayer
     /// Plays an audio stream for the player.
     /// </summary>
     /// <param name="url">The URL of the audio stream.</param>
-    /// <param name="usePos"><c>true</c> to play the audio at a specific position; otherwise, <c>false</c>.</param>
+    /// <param name="usePos"><see langword="true" /> to play the audio at a specific position; otherwise, <see langword="false" />.</param>
     /// <param name="pos">The position where the audio should be played.</param>
     /// <param name="distance">The maximum distance at which the audio can be heard.</param>
     public partial void PlayAudio(string url, bool usePos = false, Vector3 pos = default, float distance = 0);
@@ -445,14 +445,14 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Enables or disables stunt bonuses for the player.
     /// </summary>
-    /// <param name="enable"><c>true</c> to enable stunt bonuses; otherwise, <c>false</c>.</param>
+    /// <param name="enable"><see langword="true" /> to enable stunt bonuses; otherwise, <see langword="false" />.</param>
     public partial void UseStuntBonuses(bool enable);
 
     /// <summary>
     /// Toggles the visibility of another player's name tag for this player.
     /// </summary>
     /// <param name="other">The other player.</param>
-    /// <param name="toggle"><c>true</c> to show the name tag; <c>false</c> to hide it.</param>
+    /// <param name="toggle"><see langword="true" /> to show the name tag; <see langword="false" /> to hide it.</param>
     public partial void ToggleOtherNameTag(IPlayer other, bool toggle);
 
     /// <summary>
@@ -477,25 +477,25 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Enables or disables the in-game clock for the player.
     /// </summary>
-    /// <param name="enable"><c>true</c> to enable the clock; otherwise, <c>false</c>.</param>
+    /// <param name="enable"><see langword="true" /> to enable the clock; otherwise, <see langword="false" />.</param>
     public partial void UseClock(bool enable);
 
     /// <summary>
     /// Checks if the in-game clock is enabled for the player.
     /// </summary>
-    /// <returns><c>true</c> if the clock is enabled; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the clock is enabled; otherwise, <see langword="false" />.</returns>
     public partial bool HasClock();
 
     /// <summary>
     /// Enables or disables widescreen mode for the player.
     /// </summary>
-    /// <param name="enable"><c>true</c> to enable widescreen mode; otherwise, <c>false</c>.</param>
+    /// <param name="enable"><see langword="true" /> to enable widescreen mode; otherwise, <see langword="false" />.</param>
     public partial void UseWidescreen(bool enable);
 
     /// <summary>
     /// Checks if widescreen mode is enabled for the player.
     /// </summary>
-    /// <returns><c>true</c> if widescreen mode is enabled; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if widescreen mode is enabled; otherwise, <see langword="false" />.</returns>
     public partial bool HasWidescreen();
 
     /// <summary>
@@ -593,7 +593,7 @@ public readonly partial struct IPlayer
     /// Checks if another player is streamed in for this player.
     /// </summary>
     /// <param name="other">The player to check.</param>
-    /// <returns><c>true</c> if the other player is streamed in for this player; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the other player is streamed in for this player; otherwise, <see langword="false" />.</returns>
     public partial bool IsStreamedInForPlayer(IPlayer other);
 
     /// <summary>
@@ -630,7 +630,7 @@ public readonly partial struct IPlayer
     /// Sets the player's skin.
     /// </summary>
     /// <param name="skin">The skin ID to set.</param>
-    /// <param name="send"><c>true</c> to send the update to other players; otherwise, <c>false</c>.</param>
+    /// <param name="send"><see langword="true" /> to send the update to other players; otherwise, <see langword="false" />.</param>
     public partial void SetSkin(int skin, bool send = true);
 
     /// <summary>
@@ -686,7 +686,7 @@ public readonly partial struct IPlayer
     /// Checks if game text is currently displayed for the player.
     /// </summary>
     /// <param name="style">The style of the game text to check.</param>
-    /// <returns><c>true</c> if game text is displayed; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if game text is displayed; otherwise, <see langword="false" />.</returns>
     public partial bool HasGameText(int style);
 
     /// <summary>
@@ -696,7 +696,7 @@ public readonly partial struct IPlayer
     /// <param name="message">The message of the game text.</param>
     /// <param name="time">The duration for which the text is displayed.</param>
     /// <param name="remaining">The remaining time for the text to be displayed.</param>
-    /// <returns><c>true</c> if game text is currently displayed; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if game text is currently displayed; otherwise, <see langword="false" />.</returns>
     public partial bool GetGameText(int style, out string? message, [MarshalUsing(typeof(MillisecondsMarshaller))] out TimeSpan time, [MarshalUsing(typeof(MillisecondsMarshaller))] out TimeSpan remaining);
 
     /// <summary>
@@ -809,19 +809,19 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Enables or disables camera targeting for the player.
     /// </summary>
-    /// <param name="enable"><c>true</c> to enable camera targeting; otherwise, <c>false</c>.</param>
+    /// <param name="enable"><see langword="true" /> to enable camera targeting; otherwise, <see langword="false" />.</param>
     public partial void UseCameraTargeting(bool enable);
 
     /// <summary>
     /// Checks if camera targeting is enabled for the player.
     /// </summary>
-    /// <returns><c>true</c> if camera targeting is enabled; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if camera targeting is enabled; otherwise, <see langword="false" />.</returns>
     public partial bool HasCameraTargeting();
 
     /// <summary>
     /// Removes the player from their vehicle.
     /// </summary>
-    /// <param name="force"><c>true</c> to forcefully remove the player; otherwise, <c>false</c>.</param>
+    /// <param name="force"><see langword="true" /> to forcefully remove the player; otherwise, <see langword="false" />.</param>
     public partial void RemoveFromVehicle(bool force);
 
     /// <summary>
@@ -863,7 +863,7 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Sets whether the player should collide with remote vehicles.
     /// </summary>
-    /// <param name="collide"><c>true</c> to enable collisions; otherwise, <c>false</c>.</param>
+    /// <param name="collide"><see langword="true" /> to enable collisions; otherwise, <see langword="false" />.</param>
     public partial void SetRemoteVehicleCollisions(bool collide);
 
     /// <summary>
@@ -898,13 +898,13 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Toggles ghost mode for the player.
     /// </summary>
-    /// <param name="toggle"><c>true</c> to enable ghost mode; otherwise, <c>false</c>.</param>
+    /// <param name="toggle"><see langword="true" /> to enable ghost mode; otherwise, <see langword="false" />.</param>
     public partial void ToggleGhostMode(bool toggle);
 
     /// <summary>
     /// Checks if ghost mode is enabled for the player.
     /// </summary>
-    /// <returns><c>true</c> if ghost mode is enabled; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if ghost mode is enabled; otherwise, <see langword="false" />.</returns>
     public partial bool IsGhostModeEnabled();
 
     /// <summary>
@@ -916,7 +916,7 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Checks if the player is about to be kicked.
     /// </summary>
-    /// <returns><c>true</c> if the player is about to be kicked; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the player is about to be kicked; otherwise, <see langword="false" />.</returns>
     public partial bool GetKickStatus();
 
     /// <summary>
@@ -928,30 +928,30 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Allows or disallows the player to use weapons.
     /// </summary>
-    /// <param name="allow"><c>true</c> to allow weapons; otherwise, <c>false</c>.</param>
+    /// <param name="allow"><see langword="true" /> to allow weapons; otherwise, <see langword="false" />.</param>
     public partial void AllowWeapons(bool allow);
 
     /// <summary>
     /// Checks if the player is allowed to use weapons.
     /// </summary>
-    /// <returns><c>true</c> if the player is allowed to use weapons; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the player is allowed to use weapons; otherwise, <see langword="false" />.</returns>
     public partial bool AreWeaponsAllowed();
 
     /// <summary>
     /// Allows or disallows the player to teleport by clicking the map.
     /// </summary>
-    /// <param name="allow"><c>true</c> to allow teleporting; otherwise, <c>false</c>.</param>
+    /// <param name="allow"><see langword="true" /> to allow teleporting; otherwise, <see langword="false" />.</param>
     public partial void AllowTeleport(bool allow);
 
     /// <summary>
     /// Checks if the player is allowed to teleport by clicking the map.
     /// </summary>
-    /// <returns><c>true</c> if teleporting is allowed; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if teleporting is allowed; otherwise, <see langword="false" />.</returns>
     public partial bool IsTeleportAllowed();
 
     /// <summary>
     /// Checks if the player is using an official client.
     /// </summary>
-    /// <returns><c>true</c> if the player is using an official client; otherwise, <c>false</c>.</returns>
+    /// <returns><see langword="true" /> if the player is using an official client; otherwise, <see langword="false" />.</returns>
     public partial bool IsUsingOfficialClient();
 }
