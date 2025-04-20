@@ -19,9 +19,9 @@ public readonly partial struct IPlayer
     public partial uint GetPing();
     public partial bool SendPacket(SpanLite<byte> data, int channel, bool dispatchEvents = true);
     public partial bool SendRPC(int id, SpanLite<byte> data, int channel, bool dispatchEvents = true);
-    public partial void BroadcastRPCToStreamed(int id, SpanLite<byte> data, int channel, bool skipFrom = false)    ;
-    public partial void BroadcastPacketToStreamed(SpanLite<byte> data, int channel, bool skipFrom = true)    ;
-    public partial void BroadcastSyncPacket(SpanLite<byte> data, int channel)    ;
+    public partial void BroadcastRPCToStreamed(int id, SpanLite<byte> data, int channel, bool skipFrom = false);
+    public partial void BroadcastPacketToStreamed(SpanLite<byte> data, int channel, bool skipFrom = true);
+    public partial void BroadcastSyncPacket(SpanLite<byte> data, int channel);
     public partial void Spawn();
     public partial ClientVersion GetClientVersion();
     public partial string GetClientVersionName();

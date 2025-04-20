@@ -60,10 +60,12 @@ public class Sash0001ExtensionAttributeCodeFixProvider : CodeFixProvider
             return document;
         }
 
+#pragma warning disable RS1035 // Do not use APIs banned for analyzers
         var random = new Random();
 
         var bytes = new byte[8];
         random.NextBytes(bytes);
+#pragma warning restore RS1035 // Do not use APIs banned for analyzers
         var id = BitConverter.ToUInt64(bytes, 0);
 
         var newClassDeclaration = classDeclaration.AddAttributeLists(
