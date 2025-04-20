@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerClassData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0x185655ded843788b);
 
     public partial ref PlayerClass GetClass();

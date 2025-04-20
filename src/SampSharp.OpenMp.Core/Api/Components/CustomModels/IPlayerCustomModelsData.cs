@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerCustomModelsData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0xD3E2F572B38FB3F2);
 
     public partial uint GetCustomSkin();

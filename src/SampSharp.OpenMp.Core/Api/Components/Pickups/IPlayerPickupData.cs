@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerPickupData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0x98376F4428D7B70B);
 
     public partial int ToLegacyID(int real);

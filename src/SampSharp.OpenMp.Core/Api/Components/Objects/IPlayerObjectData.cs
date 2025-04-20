@@ -8,6 +8,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IExtension), typeof(IPool<IPlayerObject>))]
 public readonly partial struct IPlayerObjectData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0x93d4ed2344b07456);
 
     public partial IPlayerObject Create(int modelID, Vector3 position, Vector3 rotation, float drawDist = 0);

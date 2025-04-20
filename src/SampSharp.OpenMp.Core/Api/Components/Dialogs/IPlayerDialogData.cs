@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerDialogData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0xbc03376aa3591a11);
 
     public partial void Hide(IPlayer player);

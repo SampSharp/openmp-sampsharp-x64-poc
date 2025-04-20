@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct ICustomModelsComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0x15E3CB1E7C77FFFF);
 
     public partial bool AddCustomModel(ModelType type, int id, int baseId, string dffName, string txdName, int virtualWorld = -1, byte timeOn = 0, byte timeOff = 0);

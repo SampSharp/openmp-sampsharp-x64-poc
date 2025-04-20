@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct IConsoleComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0xbfa24e49d0c95ee4);
 
     public partial IEventDispatcher<IConsoleEventHandler> GetEventDispatcher();

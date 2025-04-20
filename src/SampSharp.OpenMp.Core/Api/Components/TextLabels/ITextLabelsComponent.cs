@@ -8,7 +8,9 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IPoolComponent<ITextLabel>))]
 public readonly partial struct ITextLabelsComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0xa0c57ea80a009742);
+
     public partial ITextLabel Create(string text, Colour colour, Vector3 pos, float drawDist, int vw, bool los);
 
     [OpenMpApiOverload("_player")]

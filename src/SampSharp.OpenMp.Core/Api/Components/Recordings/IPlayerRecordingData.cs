@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerRecordingData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0x34DB532857286482);
 
     public partial void Start(PlayerRecordingType type, string file);

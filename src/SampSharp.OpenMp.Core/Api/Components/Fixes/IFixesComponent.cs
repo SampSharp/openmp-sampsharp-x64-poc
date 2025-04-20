@@ -9,6 +9,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IComponent))]
 public readonly partial struct IFixesComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0xb5c615eff0329ff7);
 
     public partial bool SendGameTextToAll(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);

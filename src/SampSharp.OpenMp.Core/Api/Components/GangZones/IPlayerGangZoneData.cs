@@ -6,6 +6,7 @@
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerGangZoneData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0xee8d8056b3351d11);
 
     public partial int ToLegacyID(int real);

@@ -6,6 +6,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IExtension))]
 public readonly partial struct IPlayerFixesData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0x672d5d6fbb094ef7);
 
     public partial bool SendGameText(string message, [MarshalUsing(typeof(MillisecondsMarshaller))]TimeSpan time, int style);

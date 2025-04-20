@@ -8,6 +8,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IPoolComponent<IObject>))]
 public readonly partial struct IObjectsComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0x59f8415f72da6160);
 
     public partial IEventDispatcher<IObjectEventHandler> GetEventDispatcher();

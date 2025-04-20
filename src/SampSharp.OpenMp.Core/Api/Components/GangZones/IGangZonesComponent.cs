@@ -8,6 +8,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IPoolComponent<IGangZone>))]
 public readonly partial struct IGangZonesComponent
 {
+    /// <inheritdoc />
     public static UID ComponentId => new(0xb3351d11ee8d8056);
 
     public partial IEventDispatcher<IGangZoneEventHandler> GetEventDispatcher();

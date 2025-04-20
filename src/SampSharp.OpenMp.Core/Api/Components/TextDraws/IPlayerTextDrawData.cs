@@ -8,6 +8,7 @@ namespace SampSharp.OpenMp.Core.Api;
 [OpenMpApi(typeof(IExtension), typeof(IPool<IPlayerTextDraw>))]
 public readonly partial struct IPlayerTextDrawData
 {
+    /// <inheritdoc />
     public static UID ExtensionId => new(0xbf08495682312400);
 
     public partial void BeginSelection(Colour highlight);
