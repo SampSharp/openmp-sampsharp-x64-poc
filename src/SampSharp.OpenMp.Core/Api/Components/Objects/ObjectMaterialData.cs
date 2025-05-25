@@ -16,7 +16,18 @@ public record ObjectMaterialData(
     MaterialType Type,
     bool Used)
 {
+    /// <summary>
+    /// Gets the color of the font used in the material.
+    /// </summary>
     public Colour FontColour => MaterialColour;
+
+    /// <summary>
+    /// Gets the texture dictionary (TXD) name used in the material.
+    /// </summary>
     public string Txd => Text;
+
+    /// <summary>
+    /// Gets the texture name used in the material.
+    /// </summary>
     public string Texture => Font;
 }
