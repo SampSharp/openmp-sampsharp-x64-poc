@@ -590,6 +590,29 @@ public class Player : WorldEntity
         _player.ResetWeapons();
     }
 
+    /// <summary>Removes a single <see cref="Weapon"/> from this player.</summary>
+    /// <param name="weapon">The weapon to remove.</param>
+    public virtual void RemoveWeapon(Weapon weapon)
+    {
+        _player.RemoveWeapon((byte)weapon);
+    }
+
+    /// <summary>Gets or sets this player's gravity.</summary>
+    public virtual float Gravity
+    {
+        get => _player.GetGravity();
+        set => _player.SetGravity(value);
+    }
+
+    /// <summary>Whether this player is using the official Rockstar/SA-MP client (as opposed to open.mp, mobile/PSP, or an unofficial fork).</summary>
+    public virtual bool IsUsingOfficialClient => _player.IsUsingOfficialClient();
+
+    /// <summary>Whether this player connected using the open.mp client.</summary>
+    public virtual bool IsUsingOmp => _player.GetClientVersion() == ClientVersion.openmp;
+
+    /// <summary>Gets this player's <see cref="ClientVersion"/>.</summary>
+    public virtual ClientVersion ClientVersion => _player.GetClientVersion();
+
     /// <summary>Sets the armed weapon of this player.</summary>
     /// <param name="weapon">The weapon that the player should be armed with.</param>
     public virtual void SetArmedWeapon(Weapon weapon)
