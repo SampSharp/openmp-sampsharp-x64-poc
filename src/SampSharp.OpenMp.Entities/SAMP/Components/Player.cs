@@ -9,13 +9,33 @@ namespace SampSharp.Entities.SAMP;
 public class Player : WorldEntity
 {
     private readonly IOmpEntityProvider _entityProvider;
-    private readonly IPlayer _player;
+    private readonly IPlayer _rawPlayer;
+
+    /// <summary>
+    /// Safe accessor for the underlying <see cref="IPlayer"/> handle. Throws
+    /// <see cref="ObjectDisposedException"/> if the component has been destroyed,
+    /// which means open.mp already fired <see cref="ComponentExtension.Cleanup"/>
+    /// and the native pointer is (or is about to be) freed. Without this guard,
+    /// P/Invokes against a stale handle AV the process (0xC0000005) when gamemode
+    /// code holds onto a <see cref="Player"/> reference across disconnect (e.g. via
+    /// an async continuation).
+    /// </summary>
+    private IPlayer _player
+    {
+        get
+        {
+            if (!IsComponentAlive)
+                throw new ObjectDisposedException(nameof(Player),
+                    "Player has disconnected; native IPlayer handle is no longer valid.");
+            return _rawPlayer;
+        }
+    }
 
     /// <summary>Constructs an instance of Player, should be used internally.</summary>
     protected Player(IOmpEntityProvider entityProvider, IPlayer player) : base((IEntity)player)
     {
         _entityProvider = entityProvider;
-        _player = player;
+        _rawPlayer = player;
     }
     
     private IPlayerCheckpointData CheckpointData
