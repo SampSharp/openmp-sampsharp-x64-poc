@@ -34,12 +34,13 @@ public readonly unsafe struct StringView : ISpanFormattable
     }
 
     /// <summary>
-    /// Converts this view to a <see langword="string" /> using UTF-8 encoding.
+    /// Converts this view to a <see langword="string" /> using <see cref="StringViewMarshaller.Encoding"/>
+    /// (UTF-8 by default, can be overridden at startup).
     /// </summary>
     /// <returns>The converted string.</returns>
     public override string? ToString()
     {
-        return _reference == null ? null : Encoding.UTF8.GetString(AsSpan());
+        return _reference == null ? null : StringViewMarshaller.Encoding.GetString(AsSpan());
     }
 
     /// <summary>
@@ -68,7 +69,7 @@ public readonly unsafe struct StringView : ISpanFormattable
     /// <see langword="true" /> if the formatting was successful; otherwise, <see langword="false" />.</returns>
     public bool TryFormat(Span<char> destination, out int charsWritten, ReadOnlySpan<char> format, IFormatProvider? provider)
     {
-        return Encoding.UTF8.TryGetChars(AsSpan(), destination, out charsWritten);
+        return StringViewMarshaller.Encoding.TryGetChars(AsSpan(), destination, out charsWritten);
     }
 
     /// <summary>

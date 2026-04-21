@@ -16,6 +16,15 @@ namespace SampSharp.OpenMp.Core.Std;
 [CustomMarshaller(typeof(string), MarshalMode.UnmanagedToManagedRef, typeof(Bidirectional))]
 public static unsafe class StringViewMarshaller
 {
+    /// <summary>
+    /// Encoding used for every managed and native <see cref="string"/>
+    /// crossing this marshaller. Defaults to UTF-8 (what open.mp clients speak).
+    /// Gamemodes targeting clients with Cyrillic chat usually set
+    /// this to Windows-1251 at startup (requires <c>System.Text.Encoding.CodePages</c>
+    /// + <c>Encoding.RegisterProvider(CodePagesEncodingProvider.Instance)</c>).
+    /// </summary>
+    public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public ref struct ManagedToNative
     {
@@ -35,11 +44,11 @@ public static unsafe class StringViewMarshaller
                 return;
             }
 
-            _byteCount = Encoding.UTF8.GetByteCount(managed);
+            _byteCount = Encoding.GetByteCount(managed);
 
             if (_byteCount < buffer.Length)
             {
-                Encoding.UTF8.GetBytes(managed, buffer[.._byteCount]);
+                Encoding.GetBytes(managed, buffer[.._byteCount]);
                 buffer[_byteCount] = 0;
                 _heapBuffer = null;
             }
@@ -52,7 +61,7 @@ public static unsafe class StringViewMarshaller
                 {
                     [_byteCount] = 0
                 };
-                Encoding.UTF8.GetBytes(managed, heapBuffer);
+                Encoding.GetBytes(managed, heapBuffer);
             }
             
         }
@@ -95,14 +104,14 @@ public static unsafe class StringViewMarshaller
                 return;
             }
 
-            _byteCount = Encoding.UTF8.GetByteCount(managed);
+            _byteCount = Encoding.GetByteCount(managed);
             _heapBuffer = (byte*)Marshal.AllocHGlobal(_byteCount + 1);
 
             var heapBuffer = new Span<byte>(_heapBuffer, _byteCount + 1)
             {
                 [_byteCount] = 0
             };
-            Encoding.UTF8.GetBytes(managed, heapBuffer);
+            Encoding.GetBytes(managed, heapBuffer);
         }
 
         public readonly StringView ToUnmanaged()
