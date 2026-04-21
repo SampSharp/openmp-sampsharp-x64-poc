@@ -304,6 +304,36 @@ internal class ServerService : IServerService
         _core.SetData(SettableCoreDataType.ModeText, text);
     }
 
+    public void SetServerName(string name)
+    {
+        _core.SetData(SettableCoreDataType.ServerName, name);
+    }
+
+    public void SetMapName(string name)
+    {
+        _core.SetData(SettableCoreDataType.MapName, name);
+    }
+
+    public void SetLanguage(string language)
+    {
+        _core.SetData(SettableCoreDataType.Language, language);
+    }
+
+    public void SetWebsiteUrl(string url)
+    {
+        _core.SetData(SettableCoreDataType.URL, url);
+    }
+
+    public void SetServerPassword(string? password)
+    {
+        _core.SetData(SettableCoreDataType.Password, password ?? string.Empty);
+    }
+
+    public void SetAdminPassword(string password)
+    {
+        _core.SetData(SettableCoreDataType.AdminPassword, password ?? string.Empty);
+    }
+
     public void SetNameTagDrawDistance(float distance = 70)
     {
         ref var fld = ref _config.GetFloat("game.nametag_draw_radius").Value;

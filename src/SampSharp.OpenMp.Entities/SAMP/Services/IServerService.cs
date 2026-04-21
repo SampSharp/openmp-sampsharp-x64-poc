@@ -137,6 +137,30 @@ public interface IServerService
     /// <param name="text">The game mode name to display.</param>
     void SetGameModeText(string text);
 
+    /// <summary>Set the server name (as shown in the SA:MP server browser).</summary>
+    /// <param name="name">The new server name.</param>
+    void SetServerName(string name);
+
+    /// <summary>Set the map name (displayed in the query response's "map" field).</summary>
+    /// <param name="name">The new map name.</param>
+    void SetMapName(string name);
+
+    /// <summary>Set the server language (displayed in the query response's "lan" field).</summary>
+    /// <param name="language">The language identifier.</param>
+    void SetLanguage(string language);
+
+    /// <summary>Set the server website URL.</summary>
+    /// <param name="url">The website URL.</param>
+    void SetWebsiteUrl(string url);
+
+    /// <summary>Set the connect password. Pass <see langword="null"/> or empty string to clear.</summary>
+    /// <param name="password">The password, or null/empty to disable password auth.</param>
+    void SetServerPassword(string? password);
+
+    /// <summary>Set the RCON admin password.</summary>
+    /// <param name="password">The RCON password.</param>
+    void SetAdminPassword(string password);
+
     /// <summary>Set the maximum distance to display the names of players. The default draw distance is 70.0.</summary>
     /// <param name="distance">The distance to set.</param>
     void SetNameTagDrawDistance(float distance = 70);
