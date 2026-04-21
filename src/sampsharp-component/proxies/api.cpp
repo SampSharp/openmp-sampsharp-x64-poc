@@ -98,6 +98,10 @@ PROXY(IClass, const PlayerClass&, getClass);
 PROXY(IClass, void, setClass, PlayerClass&);
 PROXY_CAST(IClass, IIDProvider);
 
+PROXY(IPlayerClassData, const PlayerClass&, getClass);
+PROXY(IPlayerClassData, void, setSpawnInfo, PlayerClass&);
+PROXY(IPlayerClassData, void, spawnPlayer);
+
 PROXY(IClassesComponent, IClass*, create, int, int, Vector3, float, WeaponSlots&);
 
 PROXY_EVENT_DISPATCHER(IClassesComponent, ClassEventHandler, getEventDispatcher);
