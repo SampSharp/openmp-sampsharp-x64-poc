@@ -330,9 +330,22 @@ public class Player : WorldEntity
     }
 
     /// <summary>Gets or sets the position of the camera of this player.</summary>
+    /// <remarks>
+    /// The getter prefers the real-time client-reported camera position
+    /// (<c>aimData.camPos</c>) and only falls back to <c>getCameraPosition()</c>
+    /// (the last value explicitly set via <c>setCameraPosition</c>) when aim data
+    /// hasn't arrived yet. open.mp's <c>getCameraPosition</c> returns
+    /// <c>(0,0,0)</c> when the camera is in default 3rd-person mode (i.e. never
+    /// explicitly set), which is what legacy SampSharp users would not expect —
+    /// they need the actual visual camera location, not the last server intent.
+    /// </remarks>
     public virtual Vector3 CameraPosition
     {
-        get => _player.GetCameraPosition();
+        get
+        {
+            var camPos = _player.GetAimData().camPos;
+            return camPos != Vector3.Zero ? camPos : _player.GetCameraPosition();
+        }
         set => _player.SetCameraPosition(value);
     }
 
