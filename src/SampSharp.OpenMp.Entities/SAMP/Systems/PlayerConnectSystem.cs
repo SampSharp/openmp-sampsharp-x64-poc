@@ -6,11 +6,13 @@ internal class PlayerConnectSystem : DisposableSystem, IPlayerConnectEventHandle
 {
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
+    private readonly IEntityManager _entityManager;
 
-    public PlayerConnectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
+    public PlayerConnectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, IEntityManager entityManager, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
+        _entityManager = entityManager;
 
         AddDisposable(environment.Core.GetPlayers().GetPlayerConnectDispatcher().Add(this));
     }
@@ -27,7 +29,15 @@ internal class PlayerConnectSystem : DisposableSystem, IPlayerConnectEventHandle
 
     public void OnPlayerDisconnect(IPlayer player, PeerDisconnectReason reason)
     {
-        _eventDispatcher.Invoke("OnPlayerDisconnect", _entityProvider.GetEntity(player), reason);
+        var entity = _entityProvider.GetEntity(player);
+        _eventDispatcher.Invoke("OnPlayerDisconnect", entity, reason);
+
+        if (entity.IsEmpty) return;
+        var component = _entityManager.GetComponent<Player>(entity);
+        if (component is not { IsComponentAlive: true, IsDestroying: false }) return;
+
+        player.TryGetExtension<ComponentExtension>()?.MarkOmpEntityDestroyed();
+        component.Destroy();
     }
 
     public void OnPlayerClientInit(IPlayer player)
