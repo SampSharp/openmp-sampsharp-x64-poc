@@ -9,6 +9,6 @@ public readonly partial struct IPlayerCheckpointData
     /// <inheritdoc />
     public static UID ExtensionId => new(0xbc07576aa3591a66);
 
-    public partial ref IRaceCheckpointData GetRaceCheckpoint();
-    public partial ref ICheckpointData GetCheckpoint();
+    public partial IRaceCheckpointData GetRaceCheckpoint();
+    public partial ICheckpointData GetCheckpoint();
 }
