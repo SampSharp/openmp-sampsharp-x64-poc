@@ -6,14 +6,14 @@ namespace SampSharp.Entities;
 internal class EntityManager : IEntityManager
 {
     private readonly ComponentStore _components;
-    private readonly ObjectPool<EntityNode> _entityPool;
     private readonly Dictionary<EntityId, EntityNode> _entities = new(100);
+    private readonly ObjectPool<EntityNode> _entityPool;
     private readonly HashSet<EntityId> _rootEntities = new(100);
 
     public EntityManager()
     {
-        var componentPool = new DefaultObjectPool<ComponentNode>(new ComponentNodeObjectPolicy(), maximumRetained: 100);
-        _entityPool = new DefaultObjectPool<EntityNode>(new EntityNodeObjectPolicy(componentPool), maximumRetained: 100);
+        var componentPool = new DefaultObjectPool<ComponentNode>(new ComponentNodeObjectPolicy(), 100);
+        _entityPool = new DefaultObjectPool<EntityNode>(new EntityNodeObjectPolicy(componentPool), 100);
         _components = new ComponentStore(componentPool);
     }
 
@@ -36,10 +36,11 @@ internal class EntityManager : IEntityManager
     {
         AddComponent(entity, default, component);
     }
-    
+
     public T AddComponent<T>(EntityId entity, EntityId parent, params object[] args) where T : Component
     {
-        var component = (T)Activator.CreateInstance(typeof(T), BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, args, null)!;
+        var component = (T)Activator.CreateInstance(typeof(T),
+            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, args, null)!;
 
         AddComponent(entity, parent, component);
 
@@ -59,54 +60,6 @@ internal class EntityManager : IEntityManager
         _components.Add(component);
 
         component.InvokeInitialize();
-    }
-
-    private EntityNode AddEntityNode(EntityId entity, EntityId parent)
-    {
-        if (!_entities.TryGetValue(entity, out var entityNode))
-        {
-            // New entity
-            EntityNode? parentNode = null;
-
-            if (parent != default && !_entities.TryGetValue(parent, out parentNode))
-            {
-                // Parent is new too
-                parentNode = AddEntityNode(parent, default);
-            }
-
-            // Create the entity
-            _entities[entity] = entityNode = _entityPool.Get();
-            entityNode.Id = entity;
-
-            if (parentNode != null)
-            {
-                // Assign the parent in the node
-                entityNode.Parent = parentNode;
-
-                // Append the entity to the parent
-                parentNode.AppendChild(entityNode);
-            }
-
-            // Keep track of roots
-            if(parentNode == null)
-            {
-                _rootEntities.Add(entity);
-            }
-        }
-        else
-        {
-            // Existing entity
-            if (parent != default)
-            {
-                // Verify parent matches
-                if (entityNode.Parent == null || entityNode.Parent.Id != parent)
-                {
-                    throw new ArgumentException("The specified parent does not match the current parent entity.", nameof(parent));
-                }
-            }
-        }
-
-        return entityNode;
     }
 
     public void Destroy(Component component)
@@ -129,6 +82,23 @@ internal class EntityManager : IEntityManager
         if (!_entities.TryGetValue(entity, out var node))
         {
             return;
+        }
+
+        while (node.FirstChild != null)
+        {
+            Destroy(node.FirstChild.Id);
+        }
+
+        foreach (var component in node.Components.GetAll<Component>())
+        {
+            if (!component.IsComponentAlive)
+            {
+                continue;
+            }
+
+            node.Components.Remove(component);
+            _components.Remove(component);
+            component.InvokedDestroy();
         }
 
         RemoveOne(node);
@@ -164,49 +134,6 @@ internal class EntityManager : IEntityManager
 
                     break;
                 }
-        }
-    }
-    
-    private void RemoveOne<T>(EntityNode node, T component) where T : Component
-    {
-        node.Components.Remove(component);
-        _components.Remove(component);
-
-        component.InvokedDestroy();
-
-        if (node.IsEmpty)
-        {
-            RemoveOne(node);
-        }
-    }
-
-    private void RemoveOne(EntityNode node)
-    {
-        if (node.Next != null)
-        {
-            node.Next.Previous = node.Previous;
-        }
-        if(node.Previous != null)
-        {
-            node.Previous.Next = node.Next;
-        }
-
-        if (node.Parent == null)
-        {
-            _rootEntities.Remove(node.Id);
-        }
-        else
-        {
-            node.Parent.ChildCount--;
-            if (node.Parent.FirstChild == node)
-            {
-                node.Parent.FirstChild = node.Next;
-            }
-
-            if (node.Parent.IsEmpty)
-            {
-                RemoveOne(node.Parent);
-            }
         }
     }
 
@@ -448,5 +375,97 @@ internal class EntityManager : IEntityManager
     {
         return _entities.ContainsKey(entity);
     }
-    
+
+    private EntityNode AddEntityNode(EntityId entity, EntityId parent)
+    {
+        if (!_entities.TryGetValue(entity, out var entityNode))
+        {
+            // New entity
+            EntityNode? parentNode = null;
+
+            if (parent != default && !_entities.TryGetValue(parent, out parentNode))
+            {
+                // Parent is new too
+                parentNode = AddEntityNode(parent, default);
+            }
+
+            // Create the entity
+            _entities[entity] = entityNode = _entityPool.Get();
+            entityNode.Id = entity;
+
+            if (parentNode != null)
+            {
+                // Assign the parent in the node
+                entityNode.Parent = parentNode;
+
+                // Append the entity to the parent
+                parentNode.AppendChild(entityNode);
+            }
+
+            // Keep track of roots
+            if (parentNode == null)
+            {
+                _rootEntities.Add(entity);
+            }
+        }
+        else
+        {
+            // Existing entity
+            if (parent != default)
+            {
+                // Verify parent matches
+                if (entityNode.Parent == null || entityNode.Parent.Id != parent)
+                {
+                    throw new ArgumentException("The specified parent does not match the current parent entity.",
+                        nameof(parent));
+                }
+            }
+        }
+
+        return entityNode;
+    }
+
+    private void RemoveOne<T>(EntityNode node, T component) where T : Component
+    {
+        node.Components.Remove(component);
+        _components.Remove(component);
+
+        component.InvokedDestroy();
+
+        if (node.IsEmpty)
+        {
+            RemoveOne(node);
+        }
+    }
+
+    private void RemoveOne(EntityNode node)
+    {
+        if (node.Next != null)
+        {
+            node.Next.Previous = node.Previous;
+        }
+
+        if (node.Previous != null)
+        {
+            node.Previous.Next = node.Next;
+        }
+
+        if (node.Parent == null)
+        {
+            _rootEntities.Remove(node.Id);
+        }
+        else
+        {
+            node.Parent.ChildCount--;
+            if (node.Parent.FirstChild == node)
+            {
+                node.Parent.FirstChild = node.Next;
+            }
+
+            if (node.Parent.IsEmpty)
+            {
+                RemoveOne(node.Parent);
+            }
+        }
+    }
 }
