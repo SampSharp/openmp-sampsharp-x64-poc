@@ -950,12 +950,12 @@ public class Player : WorldEntity
     /// to True.
     /// </param>
     /// <param name="freeze">Will freeze the player in position after the animation finishes.</param>
-    /// <param name="time">Timer in milliseconds. For a never ending loop it should be 0.</param>
+    /// <param name="time">Animation duration. <see cref="TimeSpan.Zero"/> for a never-ending loop.</param>
     /// <param name="forceSync">Set to <see langword="true" /> to force the player to sync animation with other players in all instances</param>
-    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time,
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time,
         bool forceSync)
     {
-        var anim = new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time, animationLibrary, animationName);
+        var anim = new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time.TotalMilliseconds, animationLibrary, animationName);
 
         // TODO: other sync?
         _player.ApplyAnimation(anim, forceSync ? PlayerAnimationSyncType.Sync : PlayerAnimationSyncType.NoSync);
@@ -975,11 +975,22 @@ public class Player : WorldEntity
     /// to True.
     /// </param>
     /// <param name="freeze">Will freeze the player in position after the animation finishes.</param>
-    /// <param name="time">Timer in milliseconds. For a never ending loop it should be 0.</param>
-    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+    /// <param name="time">Animation duration. <see cref="TimeSpan.Zero"/> for a never-ending loop.</param>
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time)
     {
         ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, time, false);
     }
+
+    /// <inheritdoc cref="ApplyAnimation(string, string, float, bool, bool, bool, bool, TimeSpan, bool)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time,
+        bool forceSync)
+        => ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, TimeSpan.FromMilliseconds(time), forceSync);
+
+    /// <inheritdoc cref="ApplyAnimation(string, string, float, bool, bool, bool, bool, TimeSpan)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+        => ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, TimeSpan.FromMilliseconds(time), false);
 
     /// <summary>Clears all animations for this player.</summary>
     /// <param name="forceSync">Specifies whether the animation should be shown to streamed in players.</param>
@@ -1098,22 +1109,32 @@ public class Player : WorldEntity
     /// <summary>Move this player's camera from one position to another, within the set time.</summary>
     /// <param name="from">The position the camera should start to move from.</param>
     /// <param name="to">The position the camera should move to.</param>
-    /// <param name="time">Time in milliseconds.</param>
+    /// <param name="time">Interpolation duration.</param>
     /// <param name="cut">The jump cut to use. Defaults to CameraCut.Cut. Set to CameraCut. Move for a smooth movement.</param>
-    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, CameraCut cut)
+    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, TimeSpan time, CameraCut cut)
     {
-        _player.InterpolateCameraPosition(from, to, time,(PlayerCameraCutType) cut);
+        _player.InterpolateCameraPosition(from, to, (int)time.TotalMilliseconds, (PlayerCameraCutType)cut);
     }
+
+    /// <inheritdoc cref="InterpolateCameraPosition(Vector3, Vector3, TimeSpan, CameraCut)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, CameraCut cut)
+        => InterpolateCameraPosition(from, to, TimeSpan.FromMilliseconds(time), cut);
 
     /// <summary>Interpolate this player's camera's 'look at' point between two coordinates with a set speed.</summary>
     /// <param name="from">The position the camera should start to move from.</param>
     /// <param name="to">The position the camera should move to.</param>
-    /// <param name="time">Time in milliseconds to complete interpolation.</param>
+    /// <param name="time">Interpolation duration.</param>
     /// <param name="cut">The jump cut to use. Defaults to CameraCut.Cut (pointless). Set to CameraCut.Move for interpolation.</param>
-    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, CameraCut cut)
+    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, TimeSpan time, CameraCut cut)
     {
-        _player.InterpolateCameraLookAt(from, to, time, (PlayerCameraCutType)cut);
+        _player.InterpolateCameraLookAt(from, to, (int)time.TotalMilliseconds, (PlayerCameraCutType)cut);
     }
+
+    /// <inheritdoc cref="InterpolateCameraLookAt(Vector3, Vector3, TimeSpan, CameraCut)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, CameraCut cut)
+        => InterpolateCameraLookAt(from, to, TimeSpan.FromMilliseconds(time), cut);
 
     /// <summary>Checks if this player is in a specific vehicle.</summary>
     /// <param name="vehicle">The vehicle.</param>
