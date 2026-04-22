@@ -3,7 +3,7 @@
 namespace SampSharp.Entities.Utilities;
 
 /// <summary>Represents a utility for scanning for classes and members with specific attributes in loaded assemblies.</summary>
-internal sealed class ClassScanner
+public sealed class ClassScanner
 {
     private List<Assembly> _assemblies = [];
     private List<Type> _classAttributes = [];

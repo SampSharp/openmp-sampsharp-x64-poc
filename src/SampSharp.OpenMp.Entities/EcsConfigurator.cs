@@ -3,26 +3,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Logging;
 using SampSharp.Entities.SAMP;
+using SampSharp.Entities.SAMP.Commands;
 using SampSharp.OpenMp.Core;
 
 namespace SampSharp.Entities;
 
 [Extension(0x57e43771d28c5e7e)]
-internal class EcsConfigurator : Extension
+internal class EcsConfigurator(EcsConfiguration configuration) : Extension
 {
-    private readonly EcsConfiguration _configuration;
     private IServiceProvider? _serviceProvider;
-
-    public EcsConfigurator(EcsConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
 
     public void Bind(IStartupContext context)
     {
         context.UseSynchronizationContext();
-        
-        context.Initialized += OnContextInitialized; 
+
+        context.Initialized += OnContextInitialized;
         context.Cleanup += OnContextCleanup;
 
         context.Core.AddExtension(this);
@@ -32,7 +27,8 @@ internal class EcsConfigurator : Extension
     {
         var configurator = (IEcsStartup)context.Configurator;
 
-        var environment = new SampSharpEnvironment(configurator.GetType().Assembly, context.Core, context.ComponentList);
+        var environment =
+            new SampSharpEnvironment(configurator.GetType().Assembly, context.Core, context.ComponentList);
 
         // Build the service provider
         BuildServiceProvider(environment, configurator);
@@ -56,25 +52,26 @@ internal class EcsConfigurator : Extension
         services.AddLogging(builder =>
         {
             builder.AddOpenMp();
-            _configuration.LoggingBuilder?.Invoke(builder);
+            configuration.LoggingBuilder?.Invoke(builder);
         });
 
         ConfigureDefaultServices(services);
         configurator.ConfigureServices(services);
 
-        var factory = _configuration.ServiceProviderFactory ?? (s => s.BuildServiceProvider());
+        var factory = configuration.ServiceProviderFactory ?? (s => s.BuildServiceProvider());
         _serviceProvider = factory(services);
     }
 
     private void UnhandledExceptionHandler(string context, Exception exception)
     {
-        if (_configuration.UnhandledExceptionHandler != null)
+        if (configuration.UnhandledExceptionHandler != null)
         {
-            _configuration.UnhandledExceptionHandler(_serviceProvider!, context, exception);
+            configuration.UnhandledExceptionHandler(_serviceProvider!, context, exception);
         }
         else
         {
-            _serviceProvider!.GetRequiredService<ILoggerFactory>().CreateLogger(context).LogError(exception, "Unhandled exception during: {context}", context);
+            _serviceProvider!.GetRequiredService<ILoggerFactory>().CreateLogger(context)
+                .LogError(exception, "Unhandled exception during: {context}", context);
         }
     }
 
@@ -114,7 +111,7 @@ internal class EcsConfigurator : Extension
             .AddSingleton<SystemRegistry>()
             .AddSingleton<ISystemRegistry>(x => x.GetRequiredService<SystemRegistry>())
             .AddSingleton<IEntityManager, EntityManager>()
-            // TODO: .AddSingleton<IPlayerCommandService, PlayerCommandService>()
+            .AddPlayerCommands()
             // TODO: .AddSingleton<IRconCommandService, RconCommandService>()
             .AddSingleton<ITimerService>(s => s.GetRequiredService<TimerSystem>())
             .AddSystem<TimerSystem>()
