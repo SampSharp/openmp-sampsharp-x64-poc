@@ -16,6 +16,7 @@ internal static class ServiceCollectionSampExtensions
             .AddSystem<ConsoleSystem>()
             .AddSystem<GangZoneSystem>()
             .AddSystem<MenuSystem>()
+            .AddSystem<NpcSystem>()
             .AddSystem<ObjectSystem>()
             .AddSystem<PickupSystem>()
             .AddSystem<PlayerChangeSystem>()
