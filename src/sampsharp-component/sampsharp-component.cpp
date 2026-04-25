@@ -1,4 +1,5 @@
 #include "sampsharp-component.hpp"
+#include "crash-handler.hpp"
 #include "version.hpp"
 
 #define CFG_DIRECTORY "sampsharp.directory"
@@ -20,6 +21,7 @@ SemanticVersion SampSharpComponent::componentVersion() const
 void SampSharpComponent::onLoad(ICore* c)
 {
 	core_ = c;
+	sampsharp::crash::install(c);
 }
 
 void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& config, const bool defaults)
