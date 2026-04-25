@@ -1,4 +1,5 @@
-﻿using SampSharp.OpenMp.Core.RobinHood;
+﻿using System.Runtime.InteropServices.Marshalling;
+using SampSharp.OpenMp.Core.RobinHood;
 using SampSharp.OpenMp.Core.Std.Chrono;
 
 namespace SampSharp.OpenMp.Core.Api;
@@ -72,8 +73,8 @@ public readonly partial struct ICore
     /// <summary>
     /// Sets the server world time.
     /// </summary>
-    /// <param name="time">The world time in hours.</param>
-    public partial void SetWorldTime(int time);
+    /// <param name="time">The world time, truncated to whole hours on the native side.</param>
+    public partial void SetWorldTime([MarshalUsing(typeof(HoursMarshaller))] TimeSpan time);
 
     /// <summary>
     /// Toggles server stunt bonuses.

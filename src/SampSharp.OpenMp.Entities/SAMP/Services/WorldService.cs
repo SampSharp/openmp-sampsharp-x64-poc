@@ -184,7 +184,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     private Vehicle CreateVehicle(bool isStatic, VehicleModelType type, Vector3 position, float rotation, int color1, int color2, int respawnDelay = -1, bool addSiren = false,
         EntityId parent = default)
     {
-        var native = _vehicles.Create(isStatic, (int)type, position, rotation, color1, color2, respawnDelay, addSiren);
+        var respawnDelaySpan = respawnDelay < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(respawnDelay);
+        var native = _vehicles.Create(isStatic, (int)type, position, rotation, color1, color2, respawnDelaySpan, addSiren);
 
         var entityId = EntityId.NewEntityId();
         var component = entityManager.AddComponent<Vehicle>(entityId, parent, _vehicles, native);

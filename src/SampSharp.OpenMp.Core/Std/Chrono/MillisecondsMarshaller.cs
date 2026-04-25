@@ -16,7 +16,7 @@ public static class MillisecondsMarshaller
     {
         public static Milliseconds ConvertToUnmanaged(TimeSpan managed)
         {
-            return new Milliseconds((int)managed.TotalMilliseconds);
+            return new Milliseconds((long)managed.TotalMilliseconds);
         }
     }
     public static class NativeToManaged

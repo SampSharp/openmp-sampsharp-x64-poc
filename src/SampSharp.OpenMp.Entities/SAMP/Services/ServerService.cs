@@ -342,7 +342,7 @@ internal class ServerService : IServerService
 
     public void SetWorldTime(int hour)
     {
-        _core.SetWorldTime(hour);
+        _core.SetWorldTime(TimeSpan.FromHours(hour));
     }
 
     public void ShowNameTags(bool show)

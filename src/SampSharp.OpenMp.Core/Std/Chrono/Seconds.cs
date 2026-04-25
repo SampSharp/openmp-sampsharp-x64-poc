@@ -9,13 +9,13 @@ namespace SampSharp.OpenMp.Core.Std.Chrono;
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct Seconds
 {
-    private readonly int _value;
+    private readonly long _value;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Seconds" /> struct.
     /// </summary>
     /// <param name="value"></param>
-    public Seconds(int value)
+    public Seconds(long value)
     {
         _value = value;
     }
@@ -44,7 +44,7 @@ public readonly struct Seconds
     /// <param name="timeSpan">The  time span to convert.</param>
     public static implicit operator Seconds(TimeSpan timeSpan)
     {
-        return new Seconds((int)(timeSpan.Ticks / TimeSpan.TicksPerSecond));
+        return new Seconds(timeSpan.Ticks / TimeSpan.TicksPerSecond);
     }
     
     /// <inheritdoc />

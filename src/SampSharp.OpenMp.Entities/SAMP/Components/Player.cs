@@ -698,7 +698,7 @@ public class Player : WorldEntity
     /// <param name="minutes">Minutes to set (0-59).</param>
     public virtual void SetTime(int hour, int minutes)
     {
-        _player.SetTime(hour, minutes);
+        _player.SetTime(TimeSpan.FromHours(hour), TimeSpan.FromMinutes(minutes));
     }
 
     /// <summary>Get this player's current game time. Set by <see cref="IServerService.SetWorldTime" />, or by <see cref="ToggleClock" />.</summary>

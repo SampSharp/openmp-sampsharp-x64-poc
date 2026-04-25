@@ -458,12 +458,14 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Sets the in-game time for the player.
     /// </summary>
-    /// <param name="hr">The hour to set (0-23).</param>
-    /// <param name="min">The minute to set (0-59).</param>
-    public partial void SetTime(int hr, int min);
+    /// <param name="hr">The hour to set (0-23), truncated to whole hours on the native side.</param>
+    /// <param name="min">The minute to set (0-59), truncated to whole minutes on the native side.</param>
+    public partial void SetTime(
+        [MarshalUsing(typeof(HoursMarshaller))] TimeSpan hr,
+        [MarshalUsing(typeof(MinutesMarshaller))] TimeSpan min);
 
-    private partial void GetTime(out Pair<int, int> result);
-    
+    private partial void GetTime(out Pair<Hours, Minutes> result);
+
     /// <summary>
     /// Gets the in-game time for the player.
     /// </summary>
@@ -471,7 +473,7 @@ public readonly partial struct IPlayer
     public (int hour, int minutes) GetTime()
     {
         GetTime(out var result);
-        return result;
+        return ((int)((TimeSpan)result.First).TotalHours, (int)((TimeSpan)result.Second).TotalMinutes);
     }
 
     /// <summary>
@@ -555,8 +557,8 @@ public readonly partial struct IPlayer
     /// <summary>
     /// Sets the in-game world time for the player.
     /// </summary>
-    /// <param name="time">The world time to set (0-23).</param>
-    public partial void SetWorldTime(int time);
+    /// <param name="time">The world time to set, truncated to whole hours on the native side.</param>
+    public partial void SetWorldTime([MarshalUsing(typeof(HoursMarshaller))] TimeSpan time);
 
     /// <summary>
     /// Applies an animation to the player.
