@@ -13,11 +13,11 @@ public readonly partial struct IPlayerCheckpointData
     /// Gets the player's current race checkpoint data.
     /// </summary>
     /// <returns>A reference to the race checkpoint data.</returns>
-    public partial ref IRaceCheckpointData GetRaceCheckpoint();
+    public partial IRaceCheckpointData GetRaceCheckpoint();
 
     /// <summary>
     /// Gets the player's current checkpoint data.
     /// </summary>
     /// <returns>A reference to the checkpoint data.</returns>
-    public partial ref ICheckpointData GetCheckpoint();
+    public partial ICheckpointData GetCheckpoint();
 }

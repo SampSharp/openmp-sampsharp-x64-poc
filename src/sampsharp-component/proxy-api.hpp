@@ -1,11 +1,63 @@
 #pragma once
 
+#include <type_traits>
+#include <exception>
+#include <cstdio>
 
 #if defined(_WIN32)
     #define API_CALLTYPE __stdcall
 #else
     #define API_CALLTYPE
 #endif
+
+//
+// Null-subject guard. Used by PROXY() macros to avoid dereferencing a null
+// pointer when gamemode code calls a method on a destroyed/disconnected
+// open.mp entity (IPlayer, IVehicle, etc.). Every proxy export goes through
+// this helper when `subject == nullptr`.
+//
+// * void return -> return;
+// * reference return -> terminate (cannot manufacture a reference).
+// * anything default-constructible -> return T{} (e.g. 0, nullptr, {}).
+//
+// NOTE: This catches only literal null handles. Stale/freed pointers that
+// the managed side cached before a disconnect are still UB; tracking live
+// handles in a registry is a separate follow-up.
+//
+namespace sampsharp
+{
+    template <typename T>
+    [[noreturn]] inline T proxy_default_unsupported(const char* name)
+    {
+        std::fprintf(stderr,
+            "sampsharp: PROXY call with null subject returning an unsupported type for '%s'. Aborting.\n",
+            name);
+        std::terminate();
+    }
+
+    template <typename T>
+    inline T proxy_default(const char* name)
+    {
+        if constexpr (std::is_void_v<T>)
+        {
+            (void)name;
+            return;
+        }
+        else if constexpr (std::is_reference_v<T>)
+        {
+            proxy_default_unsupported<T>(name);
+        }
+        else if constexpr (std::is_default_constructible_v<T>)
+        {
+            (void)name;
+            return T{};
+        }
+        else
+        {
+            proxy_default_unsupported<T>(name);
+        }
+    }
+} // namespace sampsharp
 
 //
 // internal macros
@@ -69,6 +121,7 @@
     extern "C" SDK_EXPORT type_return __CDECL \
     proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,##__VA_ARGS__))) \
     { \
+        if (!subject) { return ::sampsharp::proxy_default<type_return>(#proxy_name); } \
         return subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(,##__VA_ARGS__)) \
         ); \
@@ -78,6 +131,7 @@
     extern "C" SDK_EXPORT void __CDECL \
     proxy_name(type_subject * subject __VA_OPT__(, _EXPAND_PARAM(,,__VA_ARGS__)), type_return * result) \
     { \
+        if (!subject) { if (result) { *result = type_return{}; } return; } \
         *result = subject -> method ( \
             __VA_OPT__(_EXPAND_ARG(,##__VA_ARGS__)) \
         ); \

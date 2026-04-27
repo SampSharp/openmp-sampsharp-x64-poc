@@ -56,8 +56,10 @@ target_compile_definitions(SampSharp PUBLIC
 )
 
 if(WIN32)
-target_link_libraries(SampSharp PRIVATE 
+target_link_libraries(SampSharp PRIVATE
     OMP-SDK
+    dbghelp
+    psapi
     $<$<CONFIG:Debug>:nethost>
     $<$<CONFIG:Release>:${LIBNETHOST}>
     $<$<CONFIG:RelWithDebInfo>:${LIBNETHOST}>

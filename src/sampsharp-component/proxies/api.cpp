@@ -10,6 +10,7 @@
 #include <Server/Components/GangZones/gangzones.hpp>
 #include <Server/Components/LegacyConfig/legacyconfig.hpp>
 #include <Server/Components/Menus/menus.hpp>
+#include <Server/Components/NPCs/npcs.hpp>
 #include <Server/Components/Objects/objects.hpp>
 #include <Server/Components/Pickups/pickups.hpp>
 #include <Server/Components/Recordings/recordings.hpp>
@@ -23,11 +24,13 @@
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wreturn-type-c-linkage" // <FUNC> has C-linkage specified, but returns user-defined type '<TYPE>' which is incompatible with C [-Wreturn-type-c-linkage]
+
 #endif
 
 #ifdef _MSC_VER
 #  pragma warning(push)
 #  pragma warning(disable: 4190) // <FUNC> has C-linkage specified, but returns UDT '<TYPE>' which is incompatible with C
+
 #endif
 
 // Type aliases to prevent them from breaking proxy macros
@@ -91,12 +94,17 @@ PROXY_EVENT_HANDLER_BEGIN(PlayerCheckpointEventHandler)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerLeaveCheckpoint, IPlayer&)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerEnterRaceCheckpoint, IPlayer&)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerLeaveRaceCheckpoint, IPlayer&)
-PROXY_EVENT_HANDLER_END(PlayerCheckpointEventHandler, onPlayerEnterCheckpoint, onPlayerLeaveCheckpoint, onPlayerEnterRaceCheckpoint, onPlayerLeaveRaceCheckpoint)
+PROXY_EVENT_HANDLER_END(PlayerCheckpointEventHandler, onPlayerEnterCheckpoint, onPlayerLeaveCheckpoint,
+                            onPlayerEnterRaceCheckpoint, onPlayerLeaveRaceCheckpoint)
 
 // include/Server/Components/Classes
 PROXY(IClass, const PlayerClass&, getClass);
 PROXY(IClass, void, setClass, PlayerClass&);
 PROXY_CAST(IClass, IIDProvider);
+
+PROXY(IPlayerClassData, const PlayerClass&, getClass);
+PROXY(IPlayerClassData, void, setSpawnInfo, PlayerClass&);
+PROXY(IPlayerClassData, void, spawnPlayer);
 
 PROXY(IClassesComponent, IClass*, create, int, int, Vector3, float, WeaponSlots&);
 
@@ -125,7 +133,8 @@ PROXY(IPlayerCustomModelsData, uint32_t, getCustomSkin);
 PROXY(IPlayerCustomModelsData, void, setCustomSkin, uint32_t);
 PROXY(IPlayerCustomModelsData, bool, sendDownloadUrl, StringView);
 
-PROXY(ICustomModelsComponent, bool, addCustomModel, ModelType, int32_t, int32_t, StringView, StringView, int32_t, uint8_t, uint8_t);
+PROXY(ICustomModelsComponent, bool, addCustomModel, ModelType, int32_t, int32_t, StringView, StringView, int32_t,
+      uint8_t, uint8_t);
 PROXY(ICustomModelsComponent, bool, getBaseModel, uint32_t&, uint32_t&);
 PROXY(ICustomModelsComponent, StringView, getModelNameFromChecksum, uint32_t);
 PROXY(ICustomModelsComponent, bool, isValidCustomModel, int32_t);
@@ -217,7 +226,7 @@ PROXY(IMenu, void, disableRow, MenuRow);
 PROXY(IMenu, bool, isRowEnabled, MenuRow);
 PROXY(IMenu, void, disable);
 PROXY(IMenu, bool, isEnabled);
-PROXY(IMenu, const Vector2&,  getPosition);
+PROXY(IMenu, const Vector2&, getPosition);
 PROXY(IMenu, int, getRowCount, MenuColumn);
 PROXY(IMenu, int, getColumnCount);
 PROXY_PTR(IMenu, Vector2, getColumnWidths);
@@ -239,6 +248,65 @@ PROXY_EVENT_HANDLER_BEGIN(MenuEventHandler)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerExitedMenu, IPlayer&)
 PROXY_EVENT_HANDLER_END(MenuEventHandler, onPlayerSelectedMenuRow, onPlayerExitedMenu)
 
+// include/Server/Components/NPCs
+PROXY(INPC, IPlayer*, getPlayer);
+PROXY(INPC, Vector3, getPosition);
+PROXY(INPC, void, setPosition, const Vector3&, bool);
+PROXY(INPC, GTAQuat, getRotation);
+PROXY(INPC, void, setRotation, const GTAQuat&, bool);
+PROXY(INPC, int, getVirtualWorld);
+PROXY(INPC, void, setVirtualWorld, int);
+PROXY(INPC, unsigned, getInterior);
+PROXY(INPC, void, setInterior, unsigned);
+PROXY(INPC, Vector3, getVelocity);
+PROXY(INPC, void, setVelocity, Vector3, bool);
+PROXY(INPC, void, spawn);
+PROXY(INPC, void, respawn);
+PROXY(INPC, bool, isDead);
+PROXY(INPC, void, setSkin, int);
+PROXY(INPC, void, setWeapon, uint8_t);
+PROXY(INPC, uint8_t, getWeapon);
+PROXY(INPC, void, setAmmo, int);
+PROXY(INPC, int, getAmmo);
+PROXY(INPC, float, getHealth);
+PROXY(INPC, void, setHealth, float);
+PROXY(INPC, float, getArmour);
+PROXY(INPC, void, setArmour, float);
+PROXY(INPC, bool, isInvulnerable);
+PROXY(INPC, void, setInvulnerable, bool);
+PROXY(INPC, bool, isMoving);
+PROXY(INPC, bool, move, Vector3, NPCMoveType, float, float);
+PROXY(INPC, void, stopMove);
+PROXY(INPC, void, clearAnimations);
+PROXY(INPC, void, applyAnimation, const AnimationData&);
+PROXY(INPC, bool, isStreamedInForPlayer, const IPlayer&);
+PROXY_CAST(INPC, IIDProvider);
+
+extern "C" SDK_EXPORT INPCComponent* __CDECL cast_IComponent_to_INPCComponent(IComponent* from)
+{
+    return dynamic_cast<INPCComponent*>(from);
+}
+
+PROXY(INPCComponent, INPC*, create, StringView);
+PROXY(INPCComponent, void, destroy, INPC&);
+PROXY(INPCComponent, int, createPath);
+PROXY(INPCComponent, bool, destroyPath, int);
+PROXY(INPCComponent, bool, addPointToPath, int, const Vector3&, float);
+PROXY(INPCComponent, bool, isValidPath, int);
+PROXY(INPCComponent, int, loadRecord, StringView);
+PROXY(INPCComponent, bool, unloadRecord, int);
+
+PROXY_EVENT_DISPATCHER(INPCComponent, NPCEventHandler, getEventDispatcher);
+PROXY_EVENT_HANDLER_BEGIN(NPCEventHandler)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCFinishMove, INPC&)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCCreate, INPC&)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCDestroy, INPC&)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCSpawn, INPC&)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCRespawn, INPC&)
+    PROXY_EVENT_HANDLER_EVENT(void, onNPCDeath, INPC&, IPlayer*, int)
+PROXY_EVENT_HANDLER_END(NPCEventHandler, onNPCFinishMove, onNPCCreate, onNPCDestroy, onNPCSpawn, onNPCRespawn,
+                            onNPCDeath)
+
 // include/Server/Components/Objects
 PROXY(IBaseObject, void, setDrawDistance, float);
 PROXY(IBaseObject, float, getDrawDistance);
@@ -255,7 +323,8 @@ PROXY(IBaseObject, void, resetAttachment);
 PROXY(IBaseObject, const ObjectAttachmentData&, getAttachmentData);
 PROXY(IBaseObject, bool, getMaterialData, uint32_t, const ObjectMaterialData*&);
 PROXY(IBaseObject, void, setMaterial, uint32_t, int, StringView, StringView, Colour);
-PROXY(IBaseObject, void, setMaterialText, uint32_t, StringView, ObjectMaterialSize, StringView, int, bool, Colour, Colour, ObjectMaterialTextAlign);
+PROXY(IBaseObject, void, setMaterialText, uint32_t, StringView, ObjectMaterialSize, StringView, int, bool, Colour,
+      Colour, ObjectMaterialTextAlign);
 PROXY_CAST(IBaseObject, IEntity);
 
 PROXY(IObject, void, attachToPlayer, IPlayer&, Vector3, Vector3);
@@ -269,14 +338,16 @@ PROXY(IObjectsComponent, bool, getDefaultCameraCollision);
 PROXY(IObjectsComponent, IObject*, create, int, Vector3, Vector3, float);
 PROXY_EVENT_DISPATCHER(IObjectsComponent, ObjectEventHandler, getEventDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(ObjectEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onMoved, IObject&)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectMoved, IPlayer&, IPlayerObject&)
-	PROXY_EVENT_HANDLER_EVENT(void, onObjectSelected, IPlayer&, IObject&, int, Vector3)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectSelected, IPlayer&, IPlayerObject&, int, Vector3)
-	PROXY_EVENT_HANDLER_EVENT(void, onObjectEdited, IPlayer&, IObject&, ObjectEditResponse, Vector3, Vector3)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectEdited, IPlayer&, IPlayerObject&, ObjectEditResponse, Vector3, Vector3)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerAttachedObjectEdited, IPlayer&, int, bool, const ObjectAttachmentSlotData&)
-PROXY_EVENT_HANDLER_END(ObjectEventHandler, onMoved, onPlayerObjectMoved, onObjectSelected, onPlayerObjectSelected, onObjectEdited, onPlayerObjectEdited, onPlayerAttachedObjectEdited)
+    PROXY_EVENT_HANDLER_EVENT(void, onMoved, IObject&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectMoved, IPlayer&, IPlayerObject&)
+    PROXY_EVENT_HANDLER_EVENT(void, onObjectSelected, IPlayer&, IObject&, int, Vector3)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectSelected, IPlayer&, IPlayerObject&, int, Vector3)
+    PROXY_EVENT_HANDLER_EVENT(void, onObjectEdited, IPlayer&, IObject&, ObjectEditResponse, Vector3, Vector3)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerObjectEdited, IPlayer&, IPlayerObject&, ObjectEditResponse, Vector3,
+                              Vector3)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerAttachedObjectEdited, IPlayer&, int, bool, const ObjectAttachmentSlotData&)
+PROXY_EVENT_HANDLER_END(ObjectEventHandler, onMoved, onPlayerObjectMoved, onObjectSelected, onPlayerObjectSelected,
+                            onObjectEdited, onPlayerObjectEdited, onPlayerAttachedObjectEdited)
 
 PROXY(IPlayerObjectData, IPlayerObject*, create, int, Vector3, Vector3, float);
 PROXY(IPlayerObjectData, void, setAttachedObject, int, ObjectAttachmentSlotData&);
@@ -395,7 +466,8 @@ PROXY_EVENT_HANDLER_BEGIN(TextDrawEventHandler)
     PROXY_EVENT_HANDLER_EVENT(void, onPlayerClickPlayerTextDraw, IPlayer&, IPlayerTextDraw&)
     PROXY_EVENT_HANDLER_EVENT(bool, onPlayerCancelTextDrawSelection, IPlayer&)
     PROXY_EVENT_HANDLER_EVENT(bool, onPlayerCancelPlayerTextDrawSelection, IPlayer&)
-PROXY_EVENT_HANDLER_END(TextDrawEventHandler, onPlayerClickTextDraw, onPlayerClickPlayerTextDraw, onPlayerCancelTextDrawSelection, onPlayerCancelPlayerTextDrawSelection)
+PROXY_EVENT_HANDLER_END(TextDrawEventHandler, onPlayerClickTextDraw, onPlayerClickPlayerTextDraw,
+                            onPlayerCancelTextDrawSelection, onPlayerCancelPlayerTextDrawSelection)
 
 PROXY(IPlayerTextDrawData, void, beginSelection, Colour);
 PROXY(IPlayerTextDrawData, bool, isSelecting);
@@ -426,20 +498,24 @@ PROXY(ITextLabel, void, streamInForPlayer, IPlayer&);
 PROXY(ITextLabel, void, streamOutForPlayer, IPlayer&);
 
 PROXY(ITextLabelsComponent, ITextLabel *, create, StringView, Colour, Vector3, float, int, bool);
-PROXY_OVERLOAD(ITextLabelsComponent, ITextLabel *, create, _player, StringView, Colour, Vector3, float, int, bool, IPlayer&);
-PROXY_OVERLOAD(ITextLabelsComponent, ITextLabel *, create, _vehicle, StringView, Colour, Vector3, float, int, bool, IVehicle&);
+PROXY_OVERLOAD(ITextLabelsComponent, ITextLabel *, create, _player, StringView, Colour, Vector3, float, int, bool,
+               IPlayer&);
+PROXY_OVERLOAD(ITextLabelsComponent, ITextLabel *, create, _vehicle, StringView, Colour, Vector3, float, int, bool,
+               IVehicle&);
 
 PROXY(IPlayerTextLabelData, IPlayerTextLabel *, create, StringView, Colour, Vector3, float, bool);
-PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _player, StringView, Colour, Vector3, float, bool, IPlayer&);
-PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _vehicle, StringView, Colour, Vector3, float, bool, IVehicle&);
+PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _player, StringView, Colour, Vector3, float, bool,
+               IPlayer&);
+PROXY_OVERLOAD(IPlayerTextLabelData, IPlayerTextLabel *, create, _vehicle, StringView, Colour, Vector3, float, bool,
+               IVehicle&);
 PROXY_CAST_NAMED(IPlayerTextLabelData, IPlayerTextLabelData, IPool<IPlayerTextLabel>, IPool);
 
 // include/Server/Components/Timers
 // @skip
-	
+
 // include/Server/Components/Unicode
 // @skip
-	
+
 // include/Server/Components/Variables
 // @skip
 
@@ -513,21 +589,24 @@ PROXY(IVehiclesComponent, VehicleModelArray&, models);
 PROXY(IVehiclesComponent, IVehicle*, create, bool, int, Vector3, float, int, int, Seconds, bool);
 PROXY_EVENT_DISPATCHER(IVehiclesComponent, VehicleEventHandler, getEventDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(VehicleEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onVehicleStreamIn, IVehicle&, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onVehicleStreamOut, IVehicle&, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onVehicleDeath, IVehicle&, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerEnterVehicle, IPlayer&, IVehicle&, bool)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerExitVehicle, IPlayer&, IVehicle&)
-	PROXY_EVENT_HANDLER_EVENT(void, onVehicleDamageStatusUpdate, IVehicle&, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onVehiclePaintJob, IPlayer&, IVehicle&, int)
-	PROXY_EVENT_HANDLER_EVENT(bool, onVehicleMod, IPlayer&, IVehicle&, int)
-	PROXY_EVENT_HANDLER_EVENT(bool, onVehicleRespray, IPlayer&, IVehicle&, int, int)
-	PROXY_EVENT_HANDLER_EVENT(void, onEnterExitModShop, IPlayer&, bool, int)
-	PROXY_EVENT_HANDLER_EVENT(void, onVehicleSpawn, IVehicle&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onUnoccupiedVehicleUpdate, IVehicle&, IPlayer&, UnoccupiedVehicleUpdate const)
-	PROXY_EVENT_HANDLER_EVENT(bool, onTrailerUpdate, IPlayer&, IVehicle&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onVehicleSirenStateChange, IPlayer&, IVehicle&, uint8_t)
-PROXY_EVENT_HANDLER_END(VehicleEventHandler, onVehicleStreamIn, onVehicleStreamOut, onVehicleDeath, onPlayerEnterVehicle, onPlayerExitVehicle, onVehicleDamageStatusUpdate, onVehiclePaintJob, onVehicleMod, onVehicleRespray, onEnterExitModShop, onVehicleSpawn, onUnoccupiedVehicleUpdate, onTrailerUpdate, onVehicleSirenStateChange)
+    PROXY_EVENT_HANDLER_EVENT(void, onVehicleStreamIn, IVehicle&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onVehicleStreamOut, IVehicle&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onVehicleDeath, IVehicle&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerEnterVehicle, IPlayer&, IVehicle&, bool)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerExitVehicle, IPlayer&, IVehicle&)
+    PROXY_EVENT_HANDLER_EVENT(void, onVehicleDamageStatusUpdate, IVehicle&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onVehiclePaintJob, IPlayer&, IVehicle&, int)
+    PROXY_EVENT_HANDLER_EVENT(bool, onVehicleMod, IPlayer&, IVehicle&, int)
+    PROXY_EVENT_HANDLER_EVENT(bool, onVehicleRespray, IPlayer&, IVehicle&, int, int)
+    PROXY_EVENT_HANDLER_EVENT(void, onEnterExitModShop, IPlayer&, bool, int)
+    PROXY_EVENT_HANDLER_EVENT(void, onVehicleSpawn, IVehicle&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onUnoccupiedVehicleUpdate, IVehicle&, IPlayer&, UnoccupiedVehicleUpdate const)
+    PROXY_EVENT_HANDLER_EVENT(bool, onTrailerUpdate, IPlayer&, IVehicle&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onVehicleSirenStateChange, IPlayer&, IVehicle&, uint8_t)
+PROXY_EVENT_HANDLER_END(VehicleEventHandler, onVehicleStreamIn, onVehicleStreamOut, onVehicleDeath,
+                            onPlayerEnterVehicle, onPlayerExitVehicle, onVehicleDamageStatusUpdate, onVehiclePaintJob,
+                            onVehicleMod, onVehicleRespray, onEnterExitModShop, onVehicleSpawn,
+                            onUnoccupiedVehicleUpdate, onTrailerUpdate, onVehicleSirenStateChange)
 
 PROXY(IPlayerVehicleData, IVehicle*, getVehicle);
 PROXY(IPlayerVehicleData, void, resetVehicle);
@@ -616,8 +695,10 @@ PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, bool, hasEventHandler, v
 PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, bool, removeEventHandler, void **);
 PROXY_NAMED(IEventDispatcher<void *>, IEventDispatcher, size_t, count);
 
-PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, addEventHandler, void **, size_t, event_order_t);
-PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, hasEventHandler, void **, size_t, event_order_t);
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, addEventHandler, void **, size_t,
+            event_order_t);
+PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, hasEventHandler, void **, size_t,
+            event_order_t);
 PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, bool, removeEventHandler, void **, size_t);
 PROXY_NAMED(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, size_t, count, size_t);
 PROXY_NAMED_OVERLOAD(IIndexedEventDispatcher<void *>, IIndexedEventDispatcher, size_t, count, _index, size_t);
@@ -655,7 +736,7 @@ PROXY_EVENT_DISPATCHER(INetwork, NetworkOutEventHandler, getOutEventDispatcher);
 PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkOutEventHandler, getPerRPCOutEventDispatcher);
 PROXY_INDEXED_EVENT_DISPATCHER(INetwork, SingleNetworkOutEventHandler, getPerPacketOutEventDispatcher);
 PROXY(INetwork, bool, sendPacket, IPlayer&, Span<uint8_t>, int, bool);
-PROXY(INetwork, bool, broadcastPacket, Span<uint8_t>, int, const IPlayer* , bool);
+PROXY(INetwork, bool, broadcastPacket, Span<uint8_t>, int, const IPlayer*, bool);
 PROXY(INetwork, bool, sendRPC, IPlayer&, int, Span<uint8_t>, int, bool);
 PROXY(INetwork, bool, broadcastRPC, int, Span<uint8_t>, int, IPlayer*, bool);
 PROXY(INetwork, NetworkStats, getStatistics, IPlayer*);
@@ -841,70 +922,73 @@ PROXY_CAST_NAMED(IPlayerPool, IPlayerPool, IReadOnlyPool<IPlayer>, IReadOnlyPool
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerSpawnEventHandler, getPlayerSpawnDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerSpawnEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerRequestSpawn, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerSpawn, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerRequestSpawn, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerSpawn, IPlayer&)
 PROXY_EVENT_HANDLER_END(PlayerSpawnEventHandler, onPlayerRequestSpawn, onPlayerSpawn)
 
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerConnectEventHandler, getPlayerConnectDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerConnectEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onIncomingConnection, IPlayer&, StringView, unsigned short)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerConnect, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerDisconnect, IPlayer&, PeerDisconnectReason)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerClientInit, IPlayer&)
-PROXY_EVENT_HANDLER_END(PlayerConnectEventHandler, onIncomingConnection, onPlayerConnect, onPlayerDisconnect, onPlayerClientInit)
+    PROXY_EVENT_HANDLER_EVENT(void, onIncomingConnection, IPlayer&, StringView, unsigned short)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerConnect, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerDisconnect, IPlayer&, PeerDisconnectReason)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerClientInit, IPlayer&)
+PROXY_EVENT_HANDLER_END(PlayerConnectEventHandler, onIncomingConnection, onPlayerConnect, onPlayerDisconnect,
+                            onPlayerClientInit)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerStreamEventHandler, getPlayerStreamDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerStreamEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerStreamIn, IPlayer&, IPlayer&)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerStreamOut, IPlayer&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerStreamIn, IPlayer&, IPlayer&)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerStreamOut, IPlayer&, IPlayer&)
 PROXY_EVENT_HANDLER_END(PlayerStreamEventHandler, onPlayerStreamIn, onPlayerStreamOut)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerTextEventHandler, getPlayerTextDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerTextEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerText, IPlayer&, StringView)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerCommandText, IPlayer&, StringView)
-PROXY_EVENT_HANDLER_END(PlayerTextEventHandler, onPlayerText ,onPlayerCommandText)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerText, IPlayer&, StringView)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerCommandText, IPlayer&, StringView)
+PROXY_EVENT_HANDLER_END(PlayerTextEventHandler, onPlayerText, onPlayerCommandText)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerShotEventHandler, getPlayerShotDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerShotEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotMissed, IPlayer&, const PlayerBulletData&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotPlayer, IPlayer&, IPlayer&, const PlayerBulletData&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotVehicle, IPlayer&, IVehicle&, const PlayerBulletData&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotObject, IPlayer&, IObject&, const PlayerBulletData&)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotPlayerObject, IPlayer&, IPlayerObject&, const PlayerBulletData&)
-PROXY_EVENT_HANDLER_END(PlayerShotEventHandler, onPlayerShotMissed, onPlayerShotPlayer, onPlayerShotVehicle, onPlayerShotObject, onPlayerShotPlayerObject)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotMissed, IPlayer&, const PlayerBulletData&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotPlayer, IPlayer&, IPlayer&, const PlayerBulletData&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotVehicle, IPlayer&, IVehicle&, const PlayerBulletData&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotObject, IPlayer&, IObject&, const PlayerBulletData&)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerShotPlayerObject, IPlayer&, IPlayerObject&, const PlayerBulletData&)
+PROXY_EVENT_HANDLER_END(PlayerShotEventHandler, onPlayerShotMissed, onPlayerShotPlayer, onPlayerShotVehicle,
+                            onPlayerShotObject, onPlayerShotPlayerObject)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerChangeEventHandler, getPlayerChangeDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerChangeEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerScoreChange, IPlayer&, int)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerNameChange, IPlayer&, StringView)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerInteriorChange, IPlayer&, unsigned, unsigned)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerStateChange, IPlayer&, PlayerState, PlayerState)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerKeyStateChange, IPlayer&, uint32_t, uint32_t)
-PROXY_EVENT_HANDLER_END(PlayerChangeEventHandler, onPlayerScoreChange, onPlayerNameChange, onPlayerInteriorChange, onPlayerStateChange, onPlayerKeyStateChange)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerScoreChange, IPlayer&, int)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerNameChange, IPlayer&, StringView)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerInteriorChange, IPlayer&, unsigned, unsigned)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerStateChange, IPlayer&, PlayerState, PlayerState)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerKeyStateChange, IPlayer&, uint32_t, uint32_t)
+PROXY_EVENT_HANDLER_END(PlayerChangeEventHandler, onPlayerScoreChange, onPlayerNameChange, onPlayerInteriorChange,
+                            onPlayerStateChange, onPlayerKeyStateChange)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerDamageEventHandler, getPlayerDamageDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerDamageEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerDeath, IPlayer&, IPlayer*, int)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerTakeDamage, IPlayer&, IPlayer*, float, unsigned, BodyPart)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerGiveDamage, IPlayer&, IPlayer&, float, unsigned, BodyPart)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerDeath, IPlayer&, IPlayer*, int)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerTakeDamage, IPlayer&, IPlayer*, float, unsigned, BodyPart)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerGiveDamage, IPlayer&, IPlayer&, float, unsigned, BodyPart)
 PROXY_EVENT_HANDLER_END(PlayerDamageEventHandler, onPlayerDeath, onPlayerTakeDamage, onPlayerGiveDamage)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerClickEventHandler, getPlayerClickDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerClickEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerClickMap, IPlayer&, Vector3)
-	PROXY_EVENT_HANDLER_EVENT(void, onPlayerClickPlayer, IPlayer&, IPlayer&, PlayerClickSource)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerClickMap, IPlayer&, Vector3)
+    PROXY_EVENT_HANDLER_EVENT(void, onPlayerClickPlayer, IPlayer&, IPlayer&, PlayerClickSource)
 PROXY_EVENT_HANDLER_END(PlayerClickEventHandler, onPlayerClickMap, onPlayerClickPlayer)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerCheckEventHandler, getPlayerCheckDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerCheckEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(void, onClientCheckResponse, IPlayer&, int, int, int)
+    PROXY_EVENT_HANDLER_EVENT(void, onClientCheckResponse, IPlayer&, int, int, int)
 PROXY_EVENT_HANDLER_END(PlayerCheckEventHandler, onClientCheckResponse)
 
 PROXY_EVENT_DISPATCHER(IPlayerPool, PlayerUpdateEventHandler, getPlayerUpdateDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(PlayerUpdateEventHandler)
-	PROXY_EVENT_HANDLER_EVENT(bool, onPlayerUpdate, IPlayer&, TimePoint)
+    PROXY_EVENT_HANDLER_EVENT(bool, onPlayerUpdate, IPlayer&, TimePoint)
 PROXY_EVENT_HANDLER_END(PlayerUpdateEventHandler, onPlayerUpdate)
 
 PROXY_EVENT_DISPATCHER_NAMED(IPlayerPool, PoolEventHandler<IPlayer>, PoolEventHandler, getPoolEventDispatcher);

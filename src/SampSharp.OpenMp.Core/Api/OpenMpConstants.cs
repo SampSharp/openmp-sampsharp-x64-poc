@@ -19,6 +19,11 @@ public static class OpenMpConstants
     public const int PLAYER_POOL_SIZE = 1000;
 
     /// <summary>
+    /// The maximum number of NPCs in the server.
+    /// </summary>
+    public const int MPC_POOL_SIZE = 1000;
+
+    /// <summary>
     /// The maximum number of vehicles in the server.
     /// </summary>
     public const int VEHICLE_POOL_SIZE = 2000;
@@ -51,7 +56,7 @@ public static class OpenMpConstants
     /// <summary>
     /// The highest weapon ID.
     /// </summary>
-    public const int MAX_WEAPON_ID = 46;
+    public const int MAX_WEAPON_ID = 47;
 
     /// <summary>
     /// The number of skills a player has.
@@ -314,6 +319,21 @@ public static class OpenMpConstants
     public const int MAX_CUSTOM_OBJECT_ID = -1000;
 
     /// <summary>
+    /// The ID used to represent an invalid path ID.
+    /// </summary>
+    public const int INVALID_PATH_ID = -1;
+
+    /// <summary>
+    /// The ID used to represent an invalid node ID.
+    /// </summary>
+    public const int INVALID_NODE_ID = -1;
+
+    /// <summary>
+    /// The ID used to represent an invalid record ID.
+    /// </summary>
+    public const int INVALID_RECORD_ID = -1;
+
+    /// <summary>
     /// The ID used to represent an invalid model ID.
     /// </summary>
     public const ushort INVALID_MODEL_ID = 65535;
@@ -322,4 +342,24 @@ public static class OpenMpConstants
     /// The ID of the question mark object model.
     /// </summary>
     public const int QUESTION_MARK_MODEL_ID = 18631;
+
+    /// <summary>
+    /// The speed at which NPCs will move when using the "auto" movement type.
+    /// </summary>
+    public const float NPC_MOVE_SPEED_AUTO = -1.0f;
+
+    /// <summary>
+    /// The speed at which NPCs will move when using the "walk" movement type.
+    /// </summary>
+    public const float NPC_MOVE_SPEED_WALK = 0.1552086f;
+
+    /// <summary>
+    /// The speed at which NPCs will move when using the "jog" movement type.
+    /// </summary>
+    public const float NPC_MOVE_SPEED_JOG = 0.56444f;
+
+    /// <summary>
+    /// The speed at which NPCs will move when using the "sprint" movement type.
+    /// </summary>
+    public const float NPC_MOVE_SPEED_SPRINT = 0.926784f;
 }
