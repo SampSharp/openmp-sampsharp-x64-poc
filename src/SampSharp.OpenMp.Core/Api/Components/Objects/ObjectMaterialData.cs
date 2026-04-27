@@ -2,6 +2,9 @@
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Represents material data applied to an object.
+/// </summary>
 [NativeMarshalling(typeof(ObjectMaterialDataMarshaller))]
 public record ObjectMaterialData(
     int Model,

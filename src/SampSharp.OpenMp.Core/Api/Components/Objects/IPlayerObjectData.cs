@@ -88,6 +88,10 @@ public readonly partial struct IPlayerObjectData
     /// <param name="index">The index of the attachment slot to edit.</param>
     public partial void EditAttachedObject(int index);
 
+    /// <summary>
+    /// Gets the pool interface for managing player objects.
+    /// </summary>
+    /// <returns>A pool interface for player objects.</returns>
     public IPool<IPlayerObject> AsPool()
     {
         return (IPool<IPlayerObject>)this;

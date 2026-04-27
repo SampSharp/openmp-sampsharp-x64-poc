@@ -45,6 +45,10 @@ public readonly partial struct IPlayerTextDrawData
     [OpenMpApiOverload("_model")]
     public partial IPlayerTextDraw Create(Vector2 position, int model);
     
+    /// <summary>
+    /// Gets the pool interface for managing player-specific text draws.
+    /// </summary>
+    /// <returns>A pool interface for player-specific text draws.</returns>
     public IPool<IPlayerTextDraw> AsPool()
     {
         return (IPool<IPlayerTextDraw>)this;

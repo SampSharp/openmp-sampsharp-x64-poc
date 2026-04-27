@@ -1,5 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Specifies the size of an object material for text rendering.
+/// </summary>
 public enum ObjectMaterialSize
 {
     /// <summary>
