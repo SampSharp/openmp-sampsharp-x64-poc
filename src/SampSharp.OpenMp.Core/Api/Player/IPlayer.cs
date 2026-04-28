@@ -294,9 +294,9 @@ public readonly partial struct IPlayer
     /// Gets the color of another player as seen by this player.
     /// </summary>
     /// <param name="other">The other player.</param>
-    /// <param name="colour">A reference to store the color of the other player.</param>
+    /// <param name="colour">When this method returns, contains the color of the other player.</param>
     /// <returns><see langword="true" /> if the color was successfully retrieved; otherwise, <see langword="false" />.</returns>
-    public partial bool GetOtherColour(IPlayer other, ref Colour colour);
+    public partial bool GetOtherColour(IPlayer other, out Colour colour);
 
     /// <summary>
     /// Sets whether the player is controllable.
