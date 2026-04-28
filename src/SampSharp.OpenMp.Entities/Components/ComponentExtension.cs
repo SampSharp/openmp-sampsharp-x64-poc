@@ -20,18 +20,6 @@ public sealed class ComponentExtension(Component component) : Extension
     /// </summary>
     public bool IsOmpEntityDestroyed { get; private set; }
 
-    /// <summary>
-    /// Marks the underlying open.mp entity as no longer accessible from managed code.
-    /// Use this when the disconnect / removal event has fired and any further native
-    /// call on the entity is unsafe (e.g. open.mp will free the IPlayer pointer
-    /// momentarily). Prevents <see cref="Component.OnDestroyComponent"/> from
-    /// performing redundant/dangerous native cleanup such as Kick().
-    /// </summary>
-    public void MarkOmpEntityDestroyed()
-    {
-        IsOmpEntityDestroyed = true;
-    }
-
     /// <inheritdoc />
     protected override void Cleanup()
     {
