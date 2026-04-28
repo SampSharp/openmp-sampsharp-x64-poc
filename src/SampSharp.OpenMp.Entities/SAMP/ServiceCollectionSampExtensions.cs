@@ -12,6 +12,8 @@ internal static class ServiceCollectionSampExtensions
             .AddSingleton<IVehicleInfoService, VehicleInfoService>()
             .AddSingleton<IDialogService, DialogService>()
             .AddSystem<CheckpointSystem>()
+            .AddSystem<ClassSystem>()
+            .AddSystem<CustomModelsSystem>()
             .AddSystem<DialogSystem>()
             .AddSystem<ActorSystem>()
             .AddSystem<ConsoleSystem>()

@@ -16,7 +16,10 @@ internal class PickupSystem : DisposableSystem, IPickupEventHandler
     
     public void OnPlayerPickUpPickup(IPlayer player, IPickup pickup)
     {
-        _eventDispatcher.Invoke("OnPlayerPickUpPickup",
+        var name = pickup.GetLegacyPlayer().HasValue
+            ? "OnPlayerPickUpPlayerPickup"
+            : "OnPlayerPickUpPickup";
+        _eventDispatcher.Invoke(name,
             _entityProvider.GetEntity(player),
             _entityProvider.GetEntity(pickup));
     }

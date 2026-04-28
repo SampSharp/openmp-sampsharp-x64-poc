@@ -17,7 +17,7 @@ internal class ObjectSystem : DisposableSystem, IObjectEventHandler
 
     public void OnMoved(IObject objekt)
     {
-        _eventDispatcher.Invoke("OnMoved", _entityProvider.GetEntity(objekt));
+        _eventDispatcher.Invoke("OnObjectMoved", _entityProvider.GetEntity(objekt));
     }
 
     public void OnPlayerObjectMoved(IPlayer player, IPlayerObject objekt)
