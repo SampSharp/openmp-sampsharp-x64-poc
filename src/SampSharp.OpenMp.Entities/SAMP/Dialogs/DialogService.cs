@@ -31,12 +31,17 @@ internal class DialogService : IDialogService
 
     public void Show<TResponse>(Player player, IDialog<TResponse> dialog, Action<TResponse> responseHandler) where TResponse : struct
     {
+        ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(dialog);
+        ArgumentNullException.ThrowIfNull(responseHandler);
 
         _entityManager.Destroy<VisibleDialog>(player);
 
         IPlayer native = player;
-        var dialogData = native.QueryExtension<IPlayerDialogData>();
+        if (!native.TryQueryExtension<IPlayerDialogData>(out var dialogData))
+        {
+            throw new InvalidOperationException("Missing dialog data");
+        }
 
         dialogData.Show(native, DialogId, (SampSharp.OpenMp.Core.Api.DialogStyle)dialog.Style, dialog.Caption ?? string.Empty, dialog.Content ?? string.Empty,
             dialog.Button1 ?? string.Empty, dialog.Button2 ?? string.Empty);
@@ -56,6 +61,7 @@ internal class DialogService : IDialogService
     
     public Task<TResponse> ShowAsync<TResponse>(Player player, IDialog<TResponse> dialog) where TResponse : struct
     {
+        ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(dialog);
 
         var taskCompletionSource = new TaskCompletionSource<TResponse>();

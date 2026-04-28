@@ -52,6 +52,9 @@ public class VisibleDialog(IDialog dialog, Action<DialogResult> handler) : Compo
         Handler(new DialogResult(DialogResponse.RightButtonOrCancel, 0, null));
 
         IPlayer native = player;
-        native.QueryExtension<IPlayerDialogData>().Hide(native);
+        if (native.TryQueryExtension<IPlayerDialogData>(out var dialogData))
+        {
+            dialogData.Hide(native);
+        }
     }
 }

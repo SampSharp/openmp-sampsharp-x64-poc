@@ -67,14 +67,19 @@ public class Actor : WorldEntity
     /// <param name="lockX">if set to <see langword="true" /> allow this Actor to move it's x-coordinate.</param>
     /// <param name="lockY">if set to <see langword="true" /> allow this Actor to move it's y-coordinate.</param>
     /// <param name="freeze">if set to <see langword="true" /> freeze this Actor at the end of the animation.</param>
-    /// <param name="time">The amount of time (in milliseconds) to play the animation.</param>
+    /// <param name="time">The amount of time to play the animation.</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="library" /> or <paramref name="name" /> is null.</exception>
-    public virtual void ApplyAnimation(string library, string name, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+    public virtual void ApplyAnimation(string library, string name, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time)
     {
         ArgumentNullException.ThrowIfNull(library);
         ArgumentNullException.ThrowIfNull(name);
-        _actor.ApplyAnimation(new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time, library, name));
+        _actor.ApplyAnimation(new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time.TotalMilliseconds, library, name));
     }
+
+    /// <inheritdoc cref="ApplyAnimation(string, string, float, bool, bool, bool, bool, TimeSpan)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void ApplyAnimation(string library, string name, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+        => ApplyAnimation(library, name, fDelta, loop, lockX, lockY, freeze, TimeSpan.FromMilliseconds(time));
 
     /// <summary>Clear any animations applied to this actor.</summary>
     public virtual void ClearAnimations()

@@ -210,6 +210,12 @@ public interface IWorldService
     [Obsolete("Use GameText(string, TimeSpan, int) instead.")]
     void GameText(string text, int time, int style);
 
+    /// <summary>Shows 'game text' (on-screen text) for a certain length of time for all players.</summary>
+    /// <param name="text">The text to be displayed.</param>
+    /// <param name="time">The duration of the text being shown.</param>
+    /// <param name="style">The style of text to be displayed.</param>
+    void GameText(string text, TimeSpan time, int style);
+
     /// <summary>Creates an explosion for all players.</summary>
     /// <param name="position">The position of the explosion.</param>
     /// <param name="type">The explosion type.</param>

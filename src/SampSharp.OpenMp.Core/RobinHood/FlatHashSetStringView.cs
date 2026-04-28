@@ -35,6 +35,8 @@ public readonly struct FlatHashSetStringView : IReadOnlyCollection<string?>
     /// <param name="value">The value to add.</param>
     public void Emplace(string value)
     {
+        ArgumentNullException.ThrowIfNull(value);
+
         scoped StringViewMarshaller.ManagedToNative valueMarshaller = new();
 
         try

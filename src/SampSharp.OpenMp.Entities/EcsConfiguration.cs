@@ -32,6 +32,7 @@ public sealed class EcsConfiguration
     /// <returns>The updated configuration.</returns>
     public EcsConfiguration ConfigureLogging(Action<ILoggingBuilder> builder)
     {
+        ArgumentNullException.ThrowIfNull(builder);
         LoggingBuilder = builder;
         return this;
     }
@@ -43,6 +44,7 @@ public sealed class EcsConfiguration
     /// <returns>The updated configuration.</returns>
     public EcsConfiguration ConfigureUnhandledExceptionhandler(UnhandledExceptionHandler handler)
     {
+        ArgumentNullException.ThrowIfNull(handler);
         UnhandledExceptionHandler = handler;
         return this;
     }
@@ -56,6 +58,7 @@ public sealed class EcsConfiguration
     public EcsConfiguration UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> serviceProviderFactory)
         where TContainerBuilder : notnull
     {
+        ArgumentNullException.ThrowIfNull(serviceProviderFactory);
         ServiceProviderFactory = services => serviceProviderFactory.CreateServiceProvider(serviceProviderFactory.CreateBuilder(services));
         return this;
     }

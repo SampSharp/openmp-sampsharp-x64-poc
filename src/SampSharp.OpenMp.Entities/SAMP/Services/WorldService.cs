@@ -102,7 +102,10 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     public PlayerObject CreatePlayerObject(Player player, int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default)
     {
         IPlayer nativePlayer = player;
-        var playerObjectData = nativePlayer.QueryExtension<IPlayerObjectData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerObjectData>(out var playerObjectData))
+        {
+            throw new InvalidOperationException("Missing object data");
+        }
 
         var native = playerObjectData.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
@@ -116,6 +119,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
 
     public TextLabel CreateTextLabel(string text, Color color, Vector3 position, float drawDistance, int virtualWorld = 0, bool testLos = true, EntityId parent = default)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         var native = _textLabels.Create(text, color, position, drawDistance, virtualWorld, testLos);
         var entityId = EntityId.NewEntityId();
         var component = entityManager.AddComponent<TextLabel>(entityId, parent, entityProvider, _textLabels, native);
@@ -129,8 +134,14 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     public PlayerTextLabel CreatePlayerTextLabel(Player player, string text, Color color, Vector3 position, float drawDistance, bool testLos = true,
         EntityId parent = default)
     {
+        ArgumentNullException.ThrowIfNull(player);
+        ArgumentNullException.ThrowIfNull(text);
+
         IPlayer nativePlayer = player;
-        var playerTextLabels = nativePlayer.QueryExtension<IPlayerTextLabelData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerTextLabelData>(out var playerTextLabels))
+        {
+            throw new InvalidOperationException("Missing text label data");
+        }
 
         var native = playerTextLabels.Create(text, color, position, drawDistance, testLos);
         var entityId = EntityId.NewEntityId();
@@ -144,6 +155,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
 
     public TextDraw CreateTextDraw(Vector2 position, string text, EntityId parent = default)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         var native = _textDraws.Create(position, text);
         var entityId = EntityId.NewEntityId();
         var component = entityManager.AddComponent<TextDraw>(entityId, parent, _textDraws, native);
@@ -156,8 +169,14 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
 
     public PlayerTextDraw CreatePlayerTextDraw(Player player, Vector2 position, string text, EntityId parent = default)
     {
+        ArgumentNullException.ThrowIfNull(player);
+        ArgumentNullException.ThrowIfNull(text);
+
         IPlayer nativePlayer = player;
-        var playerTextDrawData = nativePlayer.QueryExtension<IPlayerTextDrawData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerTextDrawData>(out var playerTextDrawData))
+        {
+            throw new InvalidOperationException("Missing text draw data");
+        }
 
         var native = playerTextDrawData.Create(position, text);
         var entityId = EntityId.NewEntityId();
@@ -171,6 +190,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
 
     public Menu CreateMenu(string title, Vector2 position, float col0Width, float? col1Width = null, EntityId parent = default)
     {
+        ArgumentNullException.ThrowIfNull(title);
+
         var native = _menus.Create(title, position, col1Width.HasValue ? (byte)2 : (byte)1, col0Width, col1Width ?? 0);
         var entityId = EntityId.NewEntityId();
         var component = entityManager.AddComponent<Menu>(entityId, parent, _menus, native, title);
@@ -184,7 +205,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     private Vehicle CreateVehicle(bool isStatic, VehicleModelType type, Vector3 position, float rotation, int color1, int color2, int respawnDelay = -1, bool addSiren = false,
         EntityId parent = default)
     {
-        var native = _vehicles.Create(isStatic, (int)type, position, rotation, color1, color2, respawnDelay, addSiren);
+        var respawnDelaySpan = respawnDelay < 0 ? TimeSpan.Zero : TimeSpan.FromSeconds(respawnDelay);
+        var native = _vehicles.Create(isStatic, (int)type, position, rotation, color1, color2, respawnDelaySpan, addSiren);
 
         var entityId = EntityId.NewEntityId();
         var component = entityManager.AddComponent<Vehicle>(entityId, parent, _vehicles, native);
@@ -202,6 +224,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
 
     public void SendClientMessage(Color color, string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         Colour clr = color;
         _players.SendClientMessageToAll(ref clr, message);
     }
@@ -225,6 +249,8 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     
     public void SendPlayerMessageToPlayer(Player sender, string message)
     {
+        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentNullException.ThrowIfNull(message);
         _players.SendChatMessageToAll(sender, message);
     }
     
