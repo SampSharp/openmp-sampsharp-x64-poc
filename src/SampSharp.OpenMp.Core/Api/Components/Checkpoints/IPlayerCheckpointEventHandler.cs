@@ -1,4 +1,4 @@
-namespace SampSharp.OpenMp.Core.Api;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
 /// Provides the events for <see cref="ICheckpointsComponent.GetEventDispatcher" />.

@@ -1,7 +1,7 @@
-namespace SampSharp.OpenMp.Core.Api.NPCs;
+﻿namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
-/// Provides the events for <see cref="NPCs.INPCComponent.GetEventDispatcher" />.
+/// Provides the events for <see cref="INPCComponent.GetEventDispatcher" />.
 /// </summary>
 [OpenMpEventHandler]
 public partial interface INPCEventHandler
@@ -9,7 +9,7 @@ public partial interface INPCEventHandler
     /// <summary>Fired when an NPC finishes a Move() command (reaches the target position).</summary>
     void OnNPCFinishMove(INPC npc);
 
-    /// <summary>Fired right after an NPC is created via <see cref="NPCs.INPCComponent.Create" />.</summary>
+    /// <summary>Fired right after an NPC is created via <see cref="INPCComponent.Create" />.</summary>
     void OnNPCCreate(INPC npc);
 
     /// <summary>Fired when the NPC is destroyed.</summary>

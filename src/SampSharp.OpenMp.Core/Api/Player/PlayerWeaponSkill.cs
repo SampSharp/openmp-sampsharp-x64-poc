@@ -6,6 +6,11 @@
 public enum PlayerWeaponSkill
 {
     /// <summary>
+    /// Invalid weapon skill.
+    /// </summary>
+    Invalid = -1,
+
+    /// <summary>
     /// The skill level for pistols.
     /// </summary>
     Pistol,

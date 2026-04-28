@@ -1,5 +1,5 @@
 ﻿using SampSharp.OpenMp.Core.Api;
-using INPC = SampSharp.OpenMp.Core.Api.NPCs.INPC;
+using INPC = SampSharp.OpenMp.Core.Api.INPC;
 
 namespace SampSharp.Entities.SAMP;
 

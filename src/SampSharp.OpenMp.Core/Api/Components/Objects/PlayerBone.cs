@@ -1,5 +1,8 @@
 ﻿namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Specifies the bones of a player model that objects can be attached to.
+/// </summary>
 public enum PlayerBone
 {
     /// <summary>

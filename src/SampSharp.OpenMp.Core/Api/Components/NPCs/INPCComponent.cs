@@ -1,7 +1,7 @@
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.InteropServices;
 
-namespace SampSharp.OpenMp.Core.Api.NPCs;
+namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
 /// This type represents a pointer to an unmanaged open.mp <see cref="INPCComponent" /> interface.
@@ -15,6 +15,7 @@ public readonly partial struct INPCComponent
     /// <summary>
     /// Casts an <see cref="IComponent" /> to an <see cref="INPCComponent" /> using
     /// a runtime-checked cast on the C++ side.
+    /// </summary>
     public static INPCComponent FromIComponent(IComponent component)
     {
         return !component.HasValue ? default : new INPCComponent(NativeCast(component.Handle));
@@ -31,7 +32,7 @@ public readonly partial struct INPCComponent
 
     /// <summary>
     /// Creates a controllable NPC with the given name. The NPC must be spawned via
-    /// <see cref="NPCs.INPC.Spawn" /> separately before it appears in the world.
+    /// <see cref="INPC.Spawn" /> separately before it appears in the world.
     /// </summary>
     /// <param name="name">The NPC name (must follow the same rules as normal player names).</param>
     public partial INPC Create(string name);

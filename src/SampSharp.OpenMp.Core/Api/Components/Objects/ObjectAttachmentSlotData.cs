@@ -3,6 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace SampSharp.OpenMp.Core.Api;
 
+/// <summary>
+/// Represents attachment data for an object attached to a player bone.
+/// </summary>
 [StructLayout(LayoutKind.Sequential)]
 public readonly struct ObjectAttachmentSlotData
 {

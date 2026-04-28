@@ -1,8 +1,7 @@
 using System.Numerics;
 using SampSharp.OpenMp.Core.Api;
-using SampSharp.OpenMp.Core.Api.NPCs;
-using INPC = SampSharp.OpenMp.Core.Api.NPCs.INPC;
-using INPCComponent = SampSharp.OpenMp.Core.Api.NPCs.INPCComponent;
+using INPC = SampSharp.OpenMp.Core.Api.INPC;
+using INPCComponent = SampSharp.OpenMp.Core.Api.INPCComponent;
 
 namespace SampSharp.Entities.SAMP;
 

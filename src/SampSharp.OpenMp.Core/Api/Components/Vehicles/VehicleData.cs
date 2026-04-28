@@ -5,6 +5,9 @@ namespace SampSharp.OpenMp.Core.Api;
 
 #pragma warning disable CA1401
 
+/// <summary>
+/// Provides utility functions and data for vehicle operations.
+/// </summary>
 public static class VehicleData
 {
     /// <summary>

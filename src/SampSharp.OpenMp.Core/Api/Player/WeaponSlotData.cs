@@ -28,4 +28,6 @@ public readonly struct WeaponSlotData
     /// Gets the amount of ammunition for the weapon in the slot.
     /// </summary>
     public readonly int Ammo;
+
+    // TODO: WeaponInfo related extensions from open.mp-sdk.
 }

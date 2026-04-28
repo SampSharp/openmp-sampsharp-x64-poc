@@ -1,48 +1,6 @@
-using System.Numerics;
+﻿using System.Numerics;
 
-namespace SampSharp.OpenMp.Core.Api.NPCs;
-
-/// <summary>
-/// Movement type for an NPC.
-/// </summary>
-public enum NPCMoveType
-{
-    /// <summary>Not moving.</summary>
-    None = 0,
-
-    /// <summary>Walk speed.</summary>
-    Walk = 1,
-
-    /// <summary>Jog speed.</summary>
-    Jog = 2,
-
-    /// <summary>Sprint speed.</summary>
-    Sprint = 3,
-
-    /// <summary>Drive (in vehicle).</summary>
-    Drive = 4,
-
-    /// <summary>Pick a sensible default automatically.</summary>
-    Auto = 5
-}
-
-/// <summary>
-/// Bitfield flags for NPC AimAt / Shoot 'in-between' entity checks.
-/// </summary>
-[Flags]
-public enum EntityCheckType : byte
-{
-    None = 0,
-    Player = 1,
-    NPC = 2,
-    Actor = 4,
-    Vehicle = 8,
-    Object = 16,
-    ProjectOrig = 32,
-    ProjectTarg = 64,
-    Map = 128,
-    All = 255
-}
+namespace SampSharp.OpenMp.Core.Api;
 
 /// <summary>
 /// This type represents a pointer to an unmanaged open.mp <see cref="INPC" /> interface
