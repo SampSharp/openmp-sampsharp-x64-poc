@@ -14,24 +14,18 @@ internal class GangZoneSystem : DisposableSystem, IGangZoneEventHandler
         AddDisposable(omp.Components.QueryComponent<IGangZonesComponent>().GetEventDispatcher().Add(this));
     }
 
-    public void OnPlayerEnterGangZone(IPlayer player, IGangZone zone)
-    {
-        _eventDispatcher.Invoke("OnPlayerEnterGangZone",
-            _entityProvider.GetEntity(player),
-            _entityProvider.GetEntity(zone));
-    }
+    public void OnPlayerEnterGangZone(IPlayer player, IGangZone zone) =>
+        Dispatch("OnPlayerEnterGangZone", "OnPlayerEnterPlayerGangZone", player, zone);
 
-    public void OnPlayerLeaveGangZone(IPlayer player, IGangZone zone)
-    {
-        _eventDispatcher.Invoke("OnPlayerLeaveGangZone",
-            _entityProvider.GetEntity(player),
-            _entityProvider.GetEntity(zone));
-    }
+    public void OnPlayerLeaveGangZone(IPlayer player, IGangZone zone) =>
+        Dispatch("OnPlayerLeaveGangZone", "OnPlayerLeavePlayerGangZone", player, zone);
 
-    public void OnPlayerClickGangZone(IPlayer player, IGangZone zone)
+    public void OnPlayerClickGangZone(IPlayer player, IGangZone zone) =>
+        Dispatch("OnPlayerClickGangZone", "OnPlayerClickPlayerGangZone", player, zone);
+
+    private void Dispatch(string globalName, string perPlayerName, IPlayer player, IGangZone zone)
     {
-        _eventDispatcher.Invoke("OnPlayerClickGangZone",
-            _entityProvider.GetEntity(player),
-            _entityProvider.GetEntity(zone));
+        var name = zone.GetLegacyPlayer().HasValue ? perPlayerName : globalName;
+        _eventDispatcher.Invoke(name, _entityProvider.GetEntity(player), _entityProvider.GetEntity(zone));
     }
 }

@@ -1,11 +1,12 @@
-﻿using System.Linq.Expressions;
+﻿using System.Globalization;
+using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace SampSharp.Entities;
 
 /// <summary>Provides a compiler for an invoke method for an instance method with injected dependencies and entity-to-component conversion.</summary>
-internal static class MethodInvokerFactory
+public static class MethodInvokerFactory
 {
     private static readonly MethodInfo _getComponentInfo = typeof(IEntityManager).GetMethod(nameof(IEntityManager.GetComponent),
         BindingFlags.Public | BindingFlags.Instance, null, [typeof(EntityId)], null)!;
@@ -94,11 +95,26 @@ internal static class MethodInvokerFactory
             }
             else if (source.ParameterIndex >= 0)
             {
-                // Pass through
+                // Pass through. Args come in as boxed object[]; an exact unbox-to-T cast
+                // (Expression.Convert(object, T)) only succeeds when the boxed value's
+                // runtime type is exactly T. open.mp dispatchers commonly hand us a
+                // uint where the [Event] handler signature wants int (and similar
+                // numeric mismatches across enums) — for those we route through
+                // Convert.ChangeType so a boxed uint → int conversion succeeds.
                 Expression index = Expression.Constant(source.ParameterIndex);
-
                 var getValue = Expression.ArrayIndex(argsArg, index);
-                methodArguments[i] = Expression.Convert(getValue, parameterType);
+
+                if (RequiresPrimitiveConversion(parameterType))
+                {
+                    var convertMethod = typeof(MethodInvokerFactory).GetMethod(
+                        nameof(ConvertNumeric), BindingFlags.NonPublic | BindingFlags.Static)!;
+                    var converted = Expression.Call(convertMethod, getValue, Expression.Constant(parameterType, typeof(Type)));
+                    methodArguments[i] = Expression.Convert(converted, parameterType);
+                }
+                else
+                {
+                    methodArguments[i] = Expression.Convert(getValue, parameterType);
+                }
             }
         }
 
@@ -138,5 +154,51 @@ internal static class MethodInvokerFactory
     private static object GetService(IServiceProvider serviceProvider, Type type)
     {
         return serviceProvider.GetRequiredService(type);
+    }
+
+    /// <summary>
+    /// Returns <see langword="true"/> for primitive-numeric / enum types where the
+    /// dispatcher might box a value of a different (but assignable) numeric type
+    /// (uint↔int, ushort↔int, the enum's underlying type, etc.).
+    /// </summary>
+    private static bool RequiresPrimitiveConversion(Type t)
+    {
+        if (t.IsEnum) return true;
+        return Type.GetTypeCode(t) is
+            TypeCode.SByte or TypeCode.Byte or
+            TypeCode.Int16 or TypeCode.UInt16 or
+            TypeCode.Int32 or TypeCode.UInt32 or
+            TypeCode.Int64 or TypeCode.UInt64 or
+            TypeCode.Single or TypeCode.Double or
+            TypeCode.Char;
+    }
+
+    /// <summary>
+    /// Runtime numeric/enum coercion. Same-type pass-through; otherwise routes
+    /// through <see cref="Convert.ChangeType(object,Type,IFormatProvider)"/>
+    /// (or <see cref="Enum.ToObject(Type,object)"/> for enum targets). When
+    /// the source isn't <see cref="IConvertible"/> (e.g. a Vector3 mistakenly
+    /// landed at an int slot due to dispatcher arg-order mismatch), returns
+    /// the value as-is so the outer <see cref="Expression.Convert(Expression,Type)"/>
+    /// throws an <see cref="InvalidCastException"/> with the actual managed
+    /// types — much easier to debug than "Object must implement IConvertible".
+    /// </summary>
+    private static object? ConvertNumeric(object? value, Type targetType)
+    {
+        if (value is null) return null;
+        var sourceType = value.GetType();
+        if (sourceType == targetType) return value;
+
+        if (value is not IConvertible) return value;
+
+        if (targetType.IsEnum)
+        {
+            var underlying = Enum.GetUnderlyingType(targetType);
+            var asUnderlying = sourceType == underlying
+                ? value
+                : Convert.ChangeType(value, underlying, CultureInfo.InvariantCulture);
+            return Enum.ToObject(targetType, asUnderlying);
+        }
+        return Convert.ChangeType(value, targetType, CultureInfo.InvariantCulture);
     }
 }

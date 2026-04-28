@@ -192,7 +192,11 @@ public abstract class MarshallingGeneratorBase(MarshalDirection direction)
         // add return statement if the method returns a value
         if (!ctx.Symbol.ReturnsVoid)
         {
-            ExpressionSyntax returnExpression = IdentifierName(MarshallerConstants.LocalReturnValue);
+            var returnIdentifier = ctx.ReturnValue.Generator.UsesNativeIdentifier
+                ? ctx.ReturnValue.GetNativeId()
+                : MarshallerConstants.LocalReturnValue;
+
+            ExpressionSyntax returnExpression = IdentifierName(returnIdentifier);
 
             if (ctx.ReturnsByRef)
             {

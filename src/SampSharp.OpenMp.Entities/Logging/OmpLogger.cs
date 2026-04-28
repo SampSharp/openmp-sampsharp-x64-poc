@@ -2,10 +2,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.ObjectPool;
 using SampSharp.OpenMp.Core;
+using ILogger = SampSharp.OpenMp.Core.Api.ILogger;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 using OmpLogLevel = SampSharp.OpenMp.Core.Api.LogLevel;
+
 namespace SampSharp.Entities.Logging;
 
-internal class OmpLogger(OpenMp.Core.Api.ILogger inner, LogLevel minLogLevel, string name, ObjectPool<StringBuilder> objectPool) : ILogger
+internal class OmpLogger(ILogger inner, LogLevel minLogLevel, string name, ObjectPool<StringBuilder> objectPool)
+    : Microsoft.Extensions.Logging.ILogger
 {
     private readonly Dictionary<OmpLogLevel, LoggerTextWriter> _writers = new()
     {
@@ -15,7 +19,8 @@ internal class OmpLogger(OpenMp.Core.Api.ILogger inner, LogLevel minLogLevel, st
         [OmpLogLevel.Error] = new LoggerTextWriter(inner, OmpLogLevel.Error)
     };
 
-public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception,
+        Func<TState, Exception?, string> formatter)
     {
         if (!IsEnabled(logLevel))
         {
@@ -41,7 +46,7 @@ public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Except
             if (exception != null)
             {
                 sb.AppendLine();
-                sb.Append(exception.StackTrace);
+                sb.Append(exception);
             }
 
             _writers[Convert(logLevel)].WriteLine(sb.ToString());
@@ -52,19 +57,6 @@ public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Except
         }
     }
 
-    private static OmpLogLevel Convert(LogLevel level)
-    {
-        return level switch
-        {
-            LogLevel.Trace => OmpLogLevel.Debug,
-            LogLevel.Debug => OmpLogLevel.Debug,
-            LogLevel.Warning => OmpLogLevel.Warning,
-            LogLevel.Error => OmpLogLevel.Error,
-            LogLevel.Critical => OmpLogLevel.Error,
-            _ => OmpLogLevel.Message
-        };
-    }
-
     public bool IsEnabled(LogLevel logLevel)
     {
         return logLevel >= minLogLevel;
@@ -73,5 +65,16 @@ public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Except
     public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
         return null;
+    }
+
+    private static OmpLogLevel Convert(LogLevel level)
+    {
+        return level switch
+        {
+            LogLevel.Trace or LogLevel.Debug => OmpLogLevel.Debug,
+            LogLevel.Warning => OmpLogLevel.Warning,
+            LogLevel.Error or LogLevel.Critical => OmpLogLevel.Error,
+            _ => OmpLogLevel.Message
+        };
     }
 }

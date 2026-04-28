@@ -45,6 +45,8 @@ public readonly partial struct IExtensible
     /// <exception cref="ArgumentException">Thrown if the extension could not be found.</exception>
     public void RemoveExtension(IExtension extension)
     {
+        ArgumentNullException.ThrowIfNull(extension);
+
         if (!RemoveExtensionInternal(extension))
         {
             throw new ArgumentException("Failed to remove extension", nameof(extension));
@@ -59,6 +61,8 @@ public readonly partial struct IExtensible
     /// <exception cref="ArgumentException">Thrown if the extension could not be found.</exception>
     public void RemoveExtension<T>(T extension) where T : Extension
     {
+        ArgumentNullException.ThrowIfNull(extension);
+
         RemoveExtension(extension.GetUnmanaged());
     }
 
@@ -71,6 +75,8 @@ public readonly partial struct IExtensible
     /// <exception cref="ArgumentException">Throw when an instance of the extension type was already added to this extensible.</exception>
     public void AddExtension<T>(T extension) where T : Extension
     {
+        ArgumentNullException.ThrowIfNull(extension);
+
         var unmanaged = extension.GetUnmanaged();
 
         try

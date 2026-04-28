@@ -1,23 +1,33 @@
-﻿using System.Numerics;
-using SampSharp.OpenMp.Core.Api;
+﻿using SampSharp.OpenMp.Core.Api;
+using INPC = SampSharp.OpenMp.Core.Api.INPC;
+using INPCComponent = SampSharp.OpenMp.Core.Api.INPCComponent;
 
 namespace SampSharp.Entities.SAMP;
 
 internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entityManager) : IOmpEntityProvider
 {
-    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
-    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
-    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
     private readonly IActorsComponent _actors = omp.Components.QueryComponent<IActorsComponent>();
-    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
-    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
     private readonly IMenusComponent _menus = omp.Components.QueryComponent<IMenusComponent>();
-    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
+
+    private readonly INPCComponent _npcs =
+        INPCComponent.FromIComponent(omp.Components.QueryComponent(INPCComponent.ComponentId));
+
+    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
+    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
     private readonly IPlayerPool _players = omp.Core.GetPlayers();
+    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
+    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
 
     public EntityId GetEntity(IActor actor)
     {
         return GetComponent(actor)?.Entity ?? default;
+    }
+
+    public EntityId GetEntity(INPC npc)
+    {
+        return GetComponent(npc)?.Entity ?? default;
     }
 
     public EntityId GetEntity(IGangZone gangZone)
@@ -81,17 +91,37 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = actor.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-
             var component = entityManager.AddComponent<Actor>(EntityId.NewEntityId(), _actors, actor);
             ext = new ComponentExtension(component);
             actor.AddExtension(ext);
 
             return component;
         }
+
         return (Actor)ext.Component;
+    }
+
+    public Npc? GetComponent(INPC npc)
+    {
+        if (npc == null)
+        {
+            return null;
+        }
+
+        var ext = npc.TryGetExtension<ComponentExtension>();
+        if (ext != null)
+        {
+            return (Npc)ext.Component;
+        }
+
+        var component = entityManager.AddComponent<Npc>(EntityId.NewEntityId(), _npcs, npc);
+        ext = new ComponentExtension(component);
+        npc.AddExtension(ext);
+        return component;
     }
 
     public GangZone? GetComponent(IGangZone gangZone)
@@ -100,16 +130,17 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = gangZone.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-
             var component = entityManager.AddComponent<GangZone>(EntityId.NewEntityId(), _gangZones, gangZone);
             ext = new ComponentExtension(component);
             gangZone.AddExtension(ext);
 
             return component;
         }
+
         return (GangZone)ext.Component;
     }
 
@@ -119,12 +150,14 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = menu.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
             // don't know the title of the menu (which cannot be retrieved through open.mp api) - cannot create a component for the foreign entity.
             return null;
         }
+
         return (Menu)ext.Component;
     }
 
@@ -134,16 +167,17 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = @object.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
-
             var component = entityManager.AddComponent<GlobalObject>(EntityId.NewEntityId(), _objects, @object);
             ext = new ComponentExtension(component);
             @object.AddExtension(ext);
 
             return component;
         }
+
         return (GlobalObject)ext.Component;
     }
 
@@ -153,6 +187,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = pickup.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -162,6 +197,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
 
             return component;
         }
+
         return (Pickup)ext.Component;
     }
 
@@ -171,6 +207,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = player.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -179,6 +216,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
             player.AddExtension(ext);
             return component;
         }
+
         return (Player)ext.Component;
     }
 
@@ -188,6 +226,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = playerObject.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -197,13 +236,17 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerObjectData>();
-            
+            if (!player.TryQueryExtension<IPlayerObjectData>(out var data))
+            {
+                return null;
+            }
+
             var component = entityManager.AddComponent<PlayerObject>(EntityId.NewEntityId(), data, playerObject);
             ext = new ComponentExtension(component);
-            player.AddExtension(ext);
+            playerObject.AddExtension(ext);
             return component;
         }
+
         return (PlayerObject)ext.Component;
     }
 
@@ -213,6 +256,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = playerTextDraw.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -222,11 +266,14 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerTextDrawData>();
-            
+            if (!player.TryQueryExtension<IPlayerTextDrawData>(out var data))
+            {
+                return null;
+            }
+
             var component = entityManager.AddComponent<PlayerTextDraw>(EntityId.NewEntityId(), data, playerTextDraw);
             ext = new ComponentExtension(component);
-            player.AddExtension(ext);
+            playerTextDraw.AddExtension(ext);
             return component;
         }
 
@@ -249,11 +296,15 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerTextLabelData>();
-            
-            var component = entityManager.AddComponent<PlayerTextLabel>(EntityId.NewEntityId(), this, data, playerTextLabel);
+            if (!player.TryQueryExtension<IPlayerTextLabelData>(out var data))
+            {
+                return null;
+            }
+
+            var component =
+                entityManager.AddComponent<PlayerTextLabel>(EntityId.NewEntityId(), this, data, playerTextLabel);
             ext = new ComponentExtension(component);
-            player.AddExtension(ext);
+            playerTextLabel.AddExtension(ext);
             return component;
         }
 
@@ -266,6 +317,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = textDraw.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -285,6 +337,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         {
             return null;
         }
+
         var ext = textLabel.TryGetExtension<ComponentExtension>();
         if (ext == null)
         {
@@ -324,6 +377,26 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
         return GetComponent(_actors.AsPool().Get(id));
     }
 
+    public Npc? GetNpc(int id)
+    {
+        if (!_npcs.HasValue)
+        {
+            return null;
+        }
+
+        return GetComponent(_npcs.AsPool().Get(id));
+    }
+
+    public Npc? CreateNpc(string name)
+    {
+        if (!_npcs.HasValue)
+        {
+            return null;
+        }
+
+        return GetComponent(_npcs.Create(name));
+    }
+
     public GangZone? GetGangZone(int id)
     {
         return GetComponent(_gangZones.AsPool().Get(id));
@@ -341,19 +414,28 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
 
     public PlayerObject? GetPlayerObject(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerObjectData>();
+        if (!player.TryQueryExtension<IPlayerObjectData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 
     public PlayerTextDraw? GetPlayerTextDraw(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerTextDrawData>();
+        if (!player.TryQueryExtension<IPlayerTextDrawData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 
     public PlayerTextLabel? GetPlayerTextLabel(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerTextLabelData>();
+        if (!player.TryQueryExtension<IPlayerTextLabelData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 

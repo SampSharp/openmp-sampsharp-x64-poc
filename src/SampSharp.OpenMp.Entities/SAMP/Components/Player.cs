@@ -9,13 +9,33 @@ namespace SampSharp.Entities.SAMP;
 public class Player : WorldEntity
 {
     private readonly IOmpEntityProvider _entityProvider;
-    private readonly IPlayer _player;
+    private readonly IPlayer _rawPlayer;
+
+    /// <summary>
+    /// Safe accessor for the underlying <see cref="IPlayer"/> handle. Throws
+    /// <see cref="ObjectDisposedException"/> if the component has been destroyed,
+    /// which means open.mp already fired <see cref="ComponentExtension.Cleanup"/>
+    /// and the native pointer is (or is about to be) freed. Without this guard,
+    /// P/Invokes against a stale handle AV the process (0xC0000005) when gamemode
+    /// code holds onto a <see cref="Player"/> reference across disconnect (e.g. via
+    /// an async continuation).
+    /// </summary>
+    private IPlayer _player
+    {
+        get
+        {
+            if (!IsComponentAlive)
+                throw new ObjectDisposedException(nameof(Player),
+                    "Player has disconnected; native IPlayer handle is no longer valid.");
+            return _rawPlayer;
+        }
+    }
 
     /// <summary>Constructs an instance of Player, should be used internally.</summary>
     protected Player(IOmpEntityProvider entityProvider, IPlayer player) : base((IEntity)player)
     {
         _entityProvider = entityProvider;
-        _player = player;
+        _rawPlayer = player;
     }
     
     private IPlayerCheckpointData CheckpointData
@@ -144,6 +164,8 @@ public class Player : WorldEntity
     /// <exception cref="InvalidPlayerNameException">Thrown if the name is invalid of already in use.</exception>
     public virtual void SetName(string name)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         var result = _player.SetName(name);
         switch (result)
         {
@@ -310,9 +332,22 @@ public class Player : WorldEntity
     }
 
     /// <summary>Gets or sets the position of the camera of this player.</summary>
+    /// <remarks>
+    /// The getter prefers the real-time client-reported camera position
+    /// (<c>aimData.camPos</c>) and only falls back to <c>getCameraPosition()</c>
+    /// (the last value explicitly set via <c>setCameraPosition</c>) when aim data
+    /// hasn't arrived yet. open.mp's <c>getCameraPosition</c> returns
+    /// <c>(0,0,0)</c> when the camera is in default 3rd-person mode (i.e. never
+    /// explicitly set), which is what legacy SampSharp users would not expect —
+    /// they need the actual visual camera location, not the last server intent.
+    /// </remarks>
     public virtual Vector3 CameraPosition
     {
-        get => _player.GetCameraPosition();
+        get
+        {
+            var camPos = _player.GetAimData().camPos;
+            return camPos != Vector3.Zero ? camPos : _player.GetCameraPosition();
+        }
         set => _player.SetCameraPosition(value);
     }
 
@@ -590,6 +625,29 @@ public class Player : WorldEntity
         _player.ResetWeapons();
     }
 
+    /// <summary>Removes a single <see cref="Weapon"/> from this player.</summary>
+    /// <param name="weapon">The weapon to remove.</param>
+    public virtual void RemoveWeapon(Weapon weapon)
+    {
+        _player.RemoveWeapon((byte)weapon);
+    }
+
+    /// <summary>Gets or sets this player's gravity.</summary>
+    public virtual float Gravity
+    {
+        get => _player.GetGravity();
+        set => _player.SetGravity(value);
+    }
+
+    /// <summary>Whether this player is using the official Rockstar/SA-MP client (as opposed to open.mp, mobile/PSP, or an unofficial fork).</summary>
+    public virtual bool IsUsingOfficialClient => _player.IsUsingOfficialClient();
+
+    /// <summary>Whether this player connected using the open.mp client.</summary>
+    public virtual bool IsUsingOmp => _player.GetClientVersion() == ClientVersion.openmp;
+
+    /// <summary>Gets this player's <see cref="ClientVersion"/>.</summary>
+    public virtual ClientVersion ClientVersion => _player.GetClientVersion();
+
     /// <summary>Sets the armed weapon of this player.</summary>
     /// <param name="weapon">The weapon that the player should be armed with.</param>
     public virtual void SetArmedWeapon(Weapon weapon)
@@ -642,7 +700,7 @@ public class Player : WorldEntity
     /// <param name="minutes">Minutes to set (0-59).</param>
     public virtual void SetTime(int hour, int minutes)
     {
-        _player.SetTime(hour, minutes);
+        _player.SetTime(TimeSpan.FromHours(hour), TimeSpan.FromMinutes(minutes));
     }
 
     /// <summary>Get this player's current game time. Set by <see cref="IServerService.SetWorldTime" />, or by <see cref="ToggleClock" />.</summary>
@@ -705,6 +763,7 @@ public class Player : WorldEntity
     /// <param name="distance">The distance over which the audio will be heard.</param>
     public virtual void PlayAudioStream(string url, Vector3 position, float distance)
     {
+        ArgumentNullException.ThrowIfNull(url);
         _player.PlayAudio(url, true, position, distance);
     }
 
@@ -712,6 +771,7 @@ public class Player : WorldEntity
     /// <param name="url">The url to play. Valid formats are mp3 and ogg/vorbis. A link to a .pls (playlist) file will play that playlist.</param>
     public virtual void PlayAudioStream(string url)
     {
+        ArgumentNullException.ThrowIfNull(url);
         _player.PlayAudio(url);
     }
 
@@ -739,6 +799,7 @@ public class Player : WorldEntity
     /// <param name="shopName">The name of the shop, see <see cref="ShopName" /> for shop names.</param>
     public virtual void SetShopName(string shopName)
     {
+        ArgumentNullException.ThrowIfNull(shopName);
         _player.SetShopName(shopName);
     }
 
@@ -836,6 +897,8 @@ public class Player : WorldEntity
     /// <param name="expireTime">The time the bubble should be displayed for.</param>
     public virtual void SetChatBubble(string text, Color color, float drawDistance, TimeSpan expireTime)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         Colour clr = color;
         _player.SetChatBubble(text, ref clr, drawDistance, expireTime);
     }
@@ -907,12 +970,15 @@ public class Player : WorldEntity
     /// to True.
     /// </param>
     /// <param name="freeze">Will freeze the player in position after the animation finishes.</param>
-    /// <param name="time">Timer in milliseconds. For a never ending loop it should be 0.</param>
+    /// <param name="time">Animation duration. <see cref="TimeSpan.Zero"/> for a never-ending loop.</param>
     /// <param name="forceSync">Set to <see langword="true" /> to force the player to sync animation with other players in all instances</param>
-    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time,
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time,
         bool forceSync)
     {
-        var anim = new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time, animationLibrary, animationName);
+        ArgumentNullException.ThrowIfNull(animationLibrary);
+        ArgumentNullException.ThrowIfNull(animationName);
+
+        var anim = new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time.TotalMilliseconds, animationLibrary, animationName);
 
         // TODO: other sync?
         _player.ApplyAnimation(anim, forceSync ? PlayerAnimationSyncType.Sync : PlayerAnimationSyncType.NoSync);
@@ -932,11 +998,22 @@ public class Player : WorldEntity
     /// to True.
     /// </param>
     /// <param name="freeze">Will freeze the player in position after the animation finishes.</param>
-    /// <param name="time">Timer in milliseconds. For a never ending loop it should be 0.</param>
-    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+    /// <param name="time">Animation duration. <see cref="TimeSpan.Zero"/> for a never-ending loop.</param>
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time)
     {
         ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, time, false);
     }
+
+    /// <inheritdoc cref="ApplyAnimation(string, string, float, bool, bool, bool, bool, TimeSpan, bool)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time,
+        bool forceSync)
+        => ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, TimeSpan.FromMilliseconds(time), forceSync);
+
+    /// <inheritdoc cref="ApplyAnimation(string, string, float, bool, bool, bool, bool, TimeSpan)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, int time)
+        => ApplyAnimation(animationLibrary, animationName, fDelta, loop, lockX, lockY, freeze, TimeSpan.FromMilliseconds(time), false);
 
     /// <summary>Clears all animations for this player.</summary>
     /// <param name="forceSync">Specifies whether the animation should be shown to streamed in players.</param>
@@ -1055,22 +1132,32 @@ public class Player : WorldEntity
     /// <summary>Move this player's camera from one position to another, within the set time.</summary>
     /// <param name="from">The position the camera should start to move from.</param>
     /// <param name="to">The position the camera should move to.</param>
-    /// <param name="time">Time in milliseconds.</param>
+    /// <param name="time">Interpolation duration.</param>
     /// <param name="cut">The jump cut to use. Defaults to CameraCut.Cut. Set to CameraCut. Move for a smooth movement.</param>
-    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, CameraCut cut)
+    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, TimeSpan time, CameraCut cut)
     {
-        _player.InterpolateCameraPosition(from, to, time,(PlayerCameraCutType) cut);
+        _player.InterpolateCameraPosition(from, to, (int)time.TotalMilliseconds, (PlayerCameraCutType)cut);
     }
+
+    /// <inheritdoc cref="InterpolateCameraPosition(Vector3, Vector3, TimeSpan, CameraCut)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void InterpolateCameraPosition(Vector3 from, Vector3 to, int time, CameraCut cut)
+        => InterpolateCameraPosition(from, to, TimeSpan.FromMilliseconds(time), cut);
 
     /// <summary>Interpolate this player's camera's 'look at' point between two coordinates with a set speed.</summary>
     /// <param name="from">The position the camera should start to move from.</param>
     /// <param name="to">The position the camera should move to.</param>
-    /// <param name="time">Time in milliseconds to complete interpolation.</param>
+    /// <param name="time">Interpolation duration.</param>
     /// <param name="cut">The jump cut to use. Defaults to CameraCut.Cut (pointless). Set to CameraCut.Move for interpolation.</param>
-    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, CameraCut cut)
+    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, TimeSpan time, CameraCut cut)
     {
-        _player.InterpolateCameraLookAt(from, to, time, (PlayerCameraCutType)cut);
+        _player.InterpolateCameraLookAt(from, to, (int)time.TotalMilliseconds, (PlayerCameraCutType)cut);
     }
+
+    /// <inheritdoc cref="InterpolateCameraLookAt(Vector3, Vector3, TimeSpan, CameraCut)"/>
+    [Obsolete("Use the TimeSpan overload. This int-milliseconds variant is kept for source compatibility and will be removed.")]
+    public virtual void InterpolateCameraLookAt(Vector3 from, Vector3 to, int time, CameraCut cut)
+        => InterpolateCameraLookAt(from, to, TimeSpan.FromMilliseconds(time), cut);
 
     /// <summary>Checks if this player is in a specific vehicle.</summary>
     /// <param name="vehicle">The vehicle.</param>
@@ -1137,6 +1224,7 @@ public class Player : WorldEntity
     /// </param>
     public virtual void StartRecordingPlayerData(PlayerRecordingType recordingType, string recordingName)
     {
+        ArgumentNullException.ThrowIfNull(recordingName);
         RecordingData.Start((SampSharp.OpenMp.Core.Api.PlayerRecordingType)recordingType, recordingName);
     }
 
@@ -1165,6 +1253,8 @@ public class Player : WorldEntity
     /// <param name="message">The text that will be displayed.</param>
     public virtual void SendClientMessage(Color color, string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         Colour clr = color;
         if (message.Length > 144)
         {
@@ -1231,6 +1321,7 @@ public class Player : WorldEntity
     /// <param name="reason">The reason for the ban.</param>
     public virtual void Ban(string reason)
     {
+        ArgumentNullException.ThrowIfNull(reason);
         _player.Ban(reason);
     }
 
@@ -1242,6 +1333,8 @@ public class Player : WorldEntity
     /// <param name="message">The message that will be sent.</param>
     public virtual void SendPlayerMessageToPlayer(Player sender, string message)
     {
+        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentNullException.ThrowIfNull(message);
         _player.SendChatMessage(sender, message);
     }
 
@@ -1261,6 +1354,7 @@ public class Player : WorldEntity
     /// <param name="style">The style of text to be displayed.</param>
     public virtual void GameText(string text, TimeSpan time, int style)
     {
+        ArgumentNullException.ThrowIfNull(text);
         _player.SendGameText(text, time, style);
     }
 
