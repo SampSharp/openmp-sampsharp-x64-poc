@@ -3,7 +3,7 @@ using System.Numerics;
 namespace SampSharp.OpenMp.Core.Api.NPCs;
 
 /// <summary>
-///     Movement type for an NPC.
+/// Movement type for an NPC.
 /// </summary>
 public enum NPCMoveType
 {
@@ -27,7 +27,7 @@ public enum NPCMoveType
 }
 
 /// <summary>
-///     Bitfield flags for NPC AimAt / Shoot 'in-between' entity checks.
+/// Bitfield flags for NPC AimAt / Shoot 'in-between' entity checks.
 /// </summary>
 [Flags]
 public enum EntityCheckType : byte
@@ -45,8 +45,8 @@ public enum EntityCheckType : byte
 }
 
 /// <summary>
-///     This type represents a pointer to an unmanaged open.mp <see cref="INPC" /> interface
-///     (a server-controlled bot built on top of an <see cref="IPlayer" />).
+/// This type represents a pointer to an unmanaged open.mp <see cref="INPC" /> interface
+/// (a server-controlled bot built on top of an <see cref="IPlayer" />).
 /// </summary>
 [OpenMpApi(typeof(IExtensible), typeof(IIDProvider))]
 public readonly partial struct INPC
@@ -58,8 +58,8 @@ public readonly partial struct INPC
     public partial Vector3 GetPosition();
 
     /// <summary>
-    ///     Sets the NPC's position. <paramref name="immediateUpdate" />=true broadcasts a sync
-    ///     to streamed-in players right away instead of waiting for the next tick.
+    /// Sets the NPC's position. <paramref name="immediateUpdate" />=true broadcasts a sync
+    /// to streamed-in players right away instead of waiting for the next tick.
     /// </summary>
     public partial void SetPosition(Vector3 position, bool immediateUpdate);
 

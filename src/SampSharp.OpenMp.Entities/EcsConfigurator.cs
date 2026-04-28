@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SampSharp.Entities.Logging;
 using SampSharp.Entities.SAMP;
-using SampSharp.Entities.SAMP.Commands;
 using SampSharp.OpenMp.Core;
 
 namespace SampSharp.Entities;
@@ -111,7 +110,6 @@ internal class EcsConfigurator(EcsConfiguration configuration) : Extension
             .AddSingleton<SystemRegistry>()
             .AddSingleton<ISystemRegistry>(x => x.GetRequiredService<SystemRegistry>())
             .AddSingleton<IEntityManager, EntityManager>()
-            .AddPlayerCommands()
             // TODO: .AddSingleton<IRconCommandService, RconCommandService>()
             .AddSingleton<ITimerService>(s => s.GetRequiredService<TimerSystem>())
             .AddSystem<TimerSystem>()

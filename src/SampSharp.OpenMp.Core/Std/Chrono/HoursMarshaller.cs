@@ -3,8 +3,8 @@ using System.Runtime.InteropServices.Marshalling;
 namespace SampSharp.OpenMp.Core.Std.Chrono;
 
 /// <summary>
-///     Represents a marshaller entrypoint for marshalling <see cref="TimeSpan" /> to a native <see cref="Hours" />
-///     structure.
+/// Represents a marshaller entrypoint for marshalling <see cref="TimeSpan" /> to a native <see cref="Hours" />
+/// structure.
 /// </summary>
 [CustomMarshaller(typeof(TimeSpan), MarshalMode.ManagedToUnmanagedIn, typeof(ManagedToNative))]
 [CustomMarshaller(typeof(TimeSpan), MarshalMode.UnmanagedToManagedOut, typeof(ManagedToNative))]

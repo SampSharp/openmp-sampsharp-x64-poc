@@ -1,7 +1,7 @@
 namespace SampSharp.OpenMp.Core.Api.NPCs;
 
 /// <summary>
-///     Provides the events for <see cref="NPCs.INPCComponent.GetEventDispatcher" />.
+/// Provides the events for <see cref="NPCs.INPCComponent.GetEventDispatcher" />.
 /// </summary>
 [OpenMpEventHandler]
 public partial interface INPCEventHandler

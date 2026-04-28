@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace SampSharp.OpenMp.Core.Api.NPCs;
 
 /// <summary>
-///     This type represents a pointer to an unmanaged open.mp <see cref="INPCComponent" /> interface.
+/// This type represents a pointer to an unmanaged open.mp <see cref="INPCComponent" /> interface.
 /// </summary>
 [OpenMpApi(typeof(IPoolComponent<INPC>))]
 public readonly partial struct INPCComponent
@@ -13,8 +13,8 @@ public readonly partial struct INPCComponent
     public static UID ComponentId => new(0x3D0E59E87F4E90BC);
 
     /// <summary>
-    ///     Casts an <see cref="IComponent" /> to an <see cref="INPCComponent" /> using
-    ///     a runtime-checked cast on the C++ side.
+    /// Casts an <see cref="IComponent" /> to an <see cref="INPCComponent" /> using
+    /// a runtime-checked cast on the C++ side.
     public static INPCComponent FromIComponent(IComponent component)
     {
         return !component.HasValue ? default : new INPCComponent(NativeCast(component.Handle));
@@ -25,19 +25,19 @@ public readonly partial struct INPCComponent
     }
 
     /// <summary>
-    ///     Gets the event dispatcher for NPC-related events.
+    /// Gets the event dispatcher for NPC-related events.
     /// </summary>
     public partial IEventDispatcher<INPCEventHandler> GetEventDispatcher();
 
     /// <summary>
-    ///     Creates a controllable NPC with the given name. The NPC must be spawned via
-    ///     <see cref="NPCs.INPC.Spawn" /> separately before it appears in the world.
+    /// Creates a controllable NPC with the given name. The NPC must be spawned via
+    /// <see cref="NPCs.INPC.Spawn" /> separately before it appears in the world.
     /// </summary>
     /// <param name="name">The NPC name (must follow the same rules as normal player names).</param>
     public partial INPC Create(string name);
 
     /// <summary>
-    ///     Destroys the given NPC. Required because NPC removal is more than a pool release.
+    /// Destroys the given NPC. Required because NPC removal is more than a pool release.
     /// </summary>
     public partial void Destroy(INPC npc);
 

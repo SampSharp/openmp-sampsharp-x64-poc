@@ -7,15 +7,15 @@ using INPCComponent = SampSharp.OpenMp.Core.Api.NPCs.INPCComponent;
 namespace SampSharp.Entities.SAMP;
 
 /// <summary>
-///     ECS-side wrapper around an open.mp <see cref="INPC" /> (a server-controlled bot
-///     built on top of an <see cref="IPlayer" />).
+/// ECS-side wrapper around an open.mp <see cref="INPC" /> (a server-controlled bot
+/// built on top of an <see cref="IPlayer" />).
 /// </summary>
 /// <remarks>
-///     Unlike <see cref="WorldEntity" />-based components, <see cref="Npc" /> does NOT
-///     derive from <see cref="IEntity" /> — open.mp's <see cref="INPC" /> only implements
-///     <see cref="IIDProvider" />, and its position/rotation setters take an extra
-///     "immediate update" boolean. Position / Rotation / VirtualWorld are exposed
-///     directly here.
+/// Unlike <see cref="WorldEntity" />-based components, <see cref="Npc" /> does NOT
+/// derive from <see cref="IEntity" /> — open.mp's <see cref="INPC" /> only implements
+/// <see cref="IIDProvider" />, and its position/rotation setters take an extra
+/// "immediate update" boolean. Position / Rotation / VirtualWorld are exposed
+/// directly here.
 /// </remarks>
 public class Npc : IdProvider
 {
@@ -30,7 +30,7 @@ public class Npc : IdProvider
     }
 
     /// <summary>
-    ///     Gets a value indicating whether the open.mp entity counterpart has been destroyed.
+    /// Gets a value indicating whether the open.mp entity counterpart has been destroyed.
     /// </summary>
     protected bool IsOmpEntityDestroyed => _npc.TryGetExtension<ComponentExtension>()?.IsOmpEntityDestroyed ?? true;
 
@@ -116,8 +116,8 @@ public class Npc : IdProvider
     public virtual Vector3 Velocity => _npc.GetVelocity();
 
     /// <summary>
-    ///     Sets the NPC's position. <paramref name="immediateUpdate" />=true broadcasts a sync
-    ///     to streamed-in players right away instead of waiting for the next tick.
+    /// Sets the NPC's position. <paramref name="immediateUpdate" />=true broadcasts a sync
+    /// to streamed-in players right away instead of waiting for the next tick.
     /// </summary>
     public virtual void SetPosition(Vector3 position, bool immediateUpdate)
     {

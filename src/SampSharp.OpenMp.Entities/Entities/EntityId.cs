@@ -29,8 +29,8 @@ public readonly record struct EntityId
     }
 
     /// <summary>
-    ///     Performs an implicit conversion from <see cref="Component" /> to <see cref="EntityId" />.
-    ///     Returns the entity of the component.
+    /// Performs an implicit conversion from <see cref="Component" /> to <see cref="EntityId" />.
+    /// Returns the entity of the component.
     /// </summary>
     public static implicit operator EntityId(Component component)
     {
@@ -38,8 +38,8 @@ public readonly record struct EntityId
     }
 
     /// <summary>
-    ///     Performs an implicit conversion from <see cref="EntityId" /> to <see cref="bool" />.
-    ///     Returns <see langword="true" /> if the specified <paramref name="value" /> is not empty.
+    /// Performs an implicit conversion from <see cref="EntityId" /> to <see cref="bool" />.
+    /// Returns <see langword="true" /> if the specified <paramref name="value" /> is not empty.
     /// </summary>
     public static implicit operator bool(EntityId value)
     {

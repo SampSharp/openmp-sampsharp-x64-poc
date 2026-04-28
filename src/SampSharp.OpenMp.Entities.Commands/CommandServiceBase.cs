@@ -4,15 +4,15 @@ using SampSharp.Entities.SAMP.Commands.Parsers;
 namespace SampSharp.Entities.SAMP.Commands;
 
 /// <summary>
-///     Base class for command dispatchers. Subclasses provide the source of methods
-///     to scan (<see cref="ScanMethods" />) and the format of the usage message
-///     (<see cref="GetUsageMessage" />); everything else — argument parsing,
-///     invocation, dependency injection, entity-to-component coercion — is shared.
+/// Base class for command dispatchers. Subclasses provide the source of methods
+/// to scan (<see cref="ScanMethods" />) and the format of the usage message
+/// (<see cref="GetUsageMessage" />); everything else — argument parsing,
+/// invocation, dependency injection, entity-to-component coercion — is shared.
 /// </summary>
 /// <remarks>
-///     The dispatcher reflects every <see cref="ISystem" /> in the registry once at
-///     construction and compiles an expression-tree invoker per command method, so
-///     dispatch at runtime costs only a dictionary lookup + parser run.
+/// The dispatcher reflects every <see cref="ISystem" /> in the registry once at
+/// construction and compiles an expression-tree invoker per command method, so
+/// dispatch at runtime costs only a dictionary lookup + parser run.
 /// </remarks>
 public abstract class CommandServiceBase
 {
@@ -24,8 +24,8 @@ public abstract class CommandServiceBase
     /// <param name="entityManager">ECS entity manager.</param>
     /// <param name="systemRegistry">Source of <see cref="ISystem" /> types to scan for commands.</param>
     /// <param name="prefixParameters">
-    ///     Number of "prefix" parameters that are supplied by the caller (not parsed from chat input).
-    ///     For player commands this is 1 (the invoking player).
+    /// Number of "prefix" parameters that are supplied by the caller (not parsed from chat input).
+    /// For player commands this is 1 (the invoking player).
     /// </param>
     protected CommandServiceBase(IEntityManager entityManager, ISystemRegistry systemRegistry, int prefixParameters)
     {
@@ -152,8 +152,8 @@ public abstract class CommandServiceBase
     }
 
     /// <summary>
-    ///     Provides the methods to register as commands. Override to filter or augment.
-    ///     Each yielded tuple is <c>(method, info-from-attribute)</c>.
+    /// Provides the methods to register as commands. Override to filter or augment.
+    /// Each yielded tuple is <c>(method, info-from-attribute)</c>.
     /// </summary>
     protected abstract IEnumerable<(MethodInfo method, ICommandMethodInfo commandInfo)> ScanMethods();
 
@@ -200,9 +200,9 @@ public abstract class CommandServiceBase
     }
 
     /// <summary>
-    ///     Tries to collect parameter info. Default impl walks parameters skipping the prefix,
-    ///     asks <see cref="CreateParameterParser" /> for each; parameters without a parser are
-    ///     treated as DI services.
+    /// Tries to collect parameter info. Default impl walks parameters skipping the prefix,
+    /// asks <see cref="CreateParameterParser" /> for each; parameters without a parser are
+    /// treated as DI services.
     /// </summary>
     protected virtual bool TryCollectParameters(ParameterInfo[] parameters, int prefixParameters,
         out CommandParameterInfo[]? result)
