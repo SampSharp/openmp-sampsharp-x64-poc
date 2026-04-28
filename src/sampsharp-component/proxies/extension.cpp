@@ -46,23 +46,8 @@ extern "C" SDK_EXPORT void * __CDECL ManagedExtensionImpl_getHandle(ManagedExten
     return handler->getHandle();
 }
 
-struct workaround {
-    void * vptr;
-    FlatHashMap<UID, Pair<IExtension*, bool>> miscExtensions;
-};
-
 extern "C" SDK_EXPORT IExtension * __CDECL IExtensible_getExtension_workaround(IExtensible * subject, UID extensionID)
 {
-    // workaround for the fact that the SDK doesn't expose the miscExtensions field
-    // ref: https://github.com/openmultiplayer/open.mp-sdk/issues/44
-    workaround * w = (workaround *) subject;
-
-    auto it = w->miscExtensions.find(extensionID);
-    if (it != w->miscExtensions.end())
-    {
-        return it->second.first;
-    }
-
     return subject->getExtension(extensionID);
 }
 
