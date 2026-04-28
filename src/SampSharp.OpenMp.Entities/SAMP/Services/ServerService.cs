@@ -116,6 +116,8 @@ internal class ServerService : IServerService
 
     public void BlockIpAddress(string ipAddress, TimeSpan time = default)
     {
+        ArgumentNullException.ThrowIfNull(ipAddress);
+
         var entry = new BanEntry(ipAddress);
         foreach (var network in _core.GetNetworks())
         {
@@ -125,6 +127,9 @@ internal class ServerService : IServerService
 
     public void ConnectNpc(string name, string script)
     {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(script);
+
         _core.ConnectBot(name, script);
     }
 
@@ -152,6 +157,8 @@ internal class ServerService : IServerService
 
     public bool GetConsoleVarAsBool(string variableName)
     {
+        ArgumentNullException.ThrowIfNull(variableName);
+
         var res = _config.GetNameFromAlias(variableName);
 
         BlittableRef<bool> v0;
@@ -196,6 +203,8 @@ internal class ServerService : IServerService
 
     public int GetConsoleVarAsInt(string variableName)
     {
+        ArgumentNullException.ThrowIfNull(variableName);
+
         var res = _config.GetNameFromAlias(variableName);
 
         BlittableRef<bool> v0 = default;
@@ -241,6 +250,8 @@ internal class ServerService : IServerService
 
     public string? GetConsoleVarAsString(string variableName)
     {
+        ArgumentNullException.ThrowIfNull(variableName);
+
         var gm = variableName.StartsWith("gamemode");
         var res = _config.GetNameFromAlias(gm ? "gamemode" : variableName);
 
@@ -295,32 +306,39 @@ internal class ServerService : IServerService
 
     public void SendRconCommand(string command)
     {
+        ArgumentNullException.ThrowIfNull(command);
+
         var snd = new ConsoleCommandSenderData(SampSharp.OpenMp.Core.Api.ConsoleCommandSender.Console, 0);
         _console.Send(command, ref snd);
     }
 
     public void SetGameModeText(string text)
     {
+        ArgumentNullException.ThrowIfNull(text);
         _core.SetData(SettableCoreDataType.ModeText, text);
     }
 
     public void SetServerName(string name)
     {
+        ArgumentNullException.ThrowIfNull(name);
         _core.SetData(SettableCoreDataType.ServerName, name);
     }
 
     public void SetMapName(string name)
     {
+        ArgumentNullException.ThrowIfNull(name);
         _core.SetData(SettableCoreDataType.MapName, name);
     }
 
     public void SetLanguage(string language)
     {
+        ArgumentNullException.ThrowIfNull(language);
         _core.SetData(SettableCoreDataType.Language, language);
     }
 
     public void SetWebsiteUrl(string url)
     {
+        ArgumentNullException.ThrowIfNull(url);
         _core.SetData(SettableCoreDataType.URL, url);
     }
 

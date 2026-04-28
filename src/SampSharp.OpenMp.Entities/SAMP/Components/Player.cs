@@ -164,6 +164,8 @@ public class Player : WorldEntity
     /// <exception cref="InvalidPlayerNameException">Thrown if the name is invalid of already in use.</exception>
     public virtual void SetName(string name)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         var result = _player.SetName(name);
         switch (result)
         {
@@ -761,6 +763,7 @@ public class Player : WorldEntity
     /// <param name="distance">The distance over which the audio will be heard.</param>
     public virtual void PlayAudioStream(string url, Vector3 position, float distance)
     {
+        ArgumentNullException.ThrowIfNull(url);
         _player.PlayAudio(url, true, position, distance);
     }
 
@@ -768,6 +771,7 @@ public class Player : WorldEntity
     /// <param name="url">The url to play. Valid formats are mp3 and ogg/vorbis. A link to a .pls (playlist) file will play that playlist.</param>
     public virtual void PlayAudioStream(string url)
     {
+        ArgumentNullException.ThrowIfNull(url);
         _player.PlayAudio(url);
     }
 
@@ -795,6 +799,7 @@ public class Player : WorldEntity
     /// <param name="shopName">The name of the shop, see <see cref="ShopName" /> for shop names.</param>
     public virtual void SetShopName(string shopName)
     {
+        ArgumentNullException.ThrowIfNull(shopName);
         _player.SetShopName(shopName);
     }
 
@@ -892,6 +897,8 @@ public class Player : WorldEntity
     /// <param name="expireTime">The time the bubble should be displayed for.</param>
     public virtual void SetChatBubble(string text, Color color, float drawDistance, TimeSpan expireTime)
     {
+        ArgumentNullException.ThrowIfNull(text);
+
         Colour clr = color;
         _player.SetChatBubble(text, ref clr, drawDistance, expireTime);
     }
@@ -968,6 +975,9 @@ public class Player : WorldEntity
     public virtual void ApplyAnimation(string animationLibrary, string animationName, float fDelta, bool loop, bool lockX, bool lockY, bool freeze, TimeSpan time,
         bool forceSync)
     {
+        ArgumentNullException.ThrowIfNull(animationLibrary);
+        ArgumentNullException.ThrowIfNull(animationName);
+
         var anim = new AnimationData(fDelta, loop, lockX, lockY, freeze, (uint)time.TotalMilliseconds, animationLibrary, animationName);
 
         // TODO: other sync?
@@ -1214,6 +1224,7 @@ public class Player : WorldEntity
     /// </param>
     public virtual void StartRecordingPlayerData(PlayerRecordingType recordingType, string recordingName)
     {
+        ArgumentNullException.ThrowIfNull(recordingName);
         RecordingData.Start((SampSharp.OpenMp.Core.Api.PlayerRecordingType)recordingType, recordingName);
     }
 
@@ -1242,6 +1253,8 @@ public class Player : WorldEntity
     /// <param name="message">The text that will be displayed.</param>
     public virtual void SendClientMessage(Color color, string message)
     {
+        ArgumentNullException.ThrowIfNull(message);
+
         Colour clr = color;
         if (message.Length > 144)
         {
@@ -1308,6 +1321,7 @@ public class Player : WorldEntity
     /// <param name="reason">The reason for the ban.</param>
     public virtual void Ban(string reason)
     {
+        ArgumentNullException.ThrowIfNull(reason);
         _player.Ban(reason);
     }
 
@@ -1319,6 +1333,8 @@ public class Player : WorldEntity
     /// <param name="message">The message that will be sent.</param>
     public virtual void SendPlayerMessageToPlayer(Player sender, string message)
     {
+        ArgumentNullException.ThrowIfNull(sender);
+        ArgumentNullException.ThrowIfNull(message);
         _player.SendChatMessage(sender, message);
     }
 
@@ -1338,6 +1354,7 @@ public class Player : WorldEntity
     /// <param name="style">The style of text to be displayed.</param>
     public virtual void GameText(string text, TimeSpan time, int style)
     {
+        ArgumentNullException.ThrowIfNull(text);
         _player.SendGameText(text, time, style);
     }
 

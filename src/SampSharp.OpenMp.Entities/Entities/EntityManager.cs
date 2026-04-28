@@ -64,6 +64,8 @@ internal class EntityManager : IEntityManager
 
     public void Destroy(Component component)
     {
+        ArgumentNullException.ThrowIfNull(component);
+
         if (!component.IsComponentAlive)
         {
             return;

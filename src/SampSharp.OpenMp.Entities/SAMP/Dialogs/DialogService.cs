@@ -31,7 +31,9 @@ internal class DialogService : IDialogService
 
     public void Show<TResponse>(Player player, IDialog<TResponse> dialog, Action<TResponse> responseHandler) where TResponse : struct
     {
+        ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(dialog);
+        ArgumentNullException.ThrowIfNull(responseHandler);
 
         _entityManager.Destroy<VisibleDialog>(player);
 
@@ -59,6 +61,7 @@ internal class DialogService : IDialogService
     
     public Task<TResponse> ShowAsync<TResponse>(Player player, IDialog<TResponse> dialog) where TResponse : struct
     {
+        ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(dialog);
 
         var taskCompletionSource = new TaskCompletionSource<TResponse>();

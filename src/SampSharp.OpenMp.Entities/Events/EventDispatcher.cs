@@ -34,6 +34,9 @@ internal class EventDispatcher : IEventDispatcher, IEventService
 
     public void UseMiddleware(string name, Func<EventDelegate, EventDelegate> middleware)
     {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(middleware);
+
         var @event = GetOrCreateEvent(name);
         @event.ClearCache();
         @event.Middleware.Add(middleware);
@@ -41,6 +44,8 @@ internal class EventDispatcher : IEventDispatcher, IEventService
 
     public object? Invoke(string name, params ReadOnlySpan<object> arguments)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         if (!_events.TryGetValue(name, out var @event))
         {
             return null;
@@ -58,6 +63,8 @@ internal class EventDispatcher : IEventDispatcher, IEventService
     [return: NotNullIfNotNull(nameof(defaultValue))]
     public T? InvokeAs<T>(string name, T defaultValue, params ReadOnlySpan<object> arguments)
     {
+        ArgumentNullException.ThrowIfNull(name);
+
         if (!_events.TryGetValue(name, out var @event))
         {
             return defaultValue;

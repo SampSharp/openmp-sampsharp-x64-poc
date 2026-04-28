@@ -40,6 +40,8 @@ public readonly unsafe partial struct ILogger
     /// <param name="msg">The message to log.</param>
     public void LogLine(LogLevel level, string msg)
     {
+        ArgumentNullException.ThrowIfNull(msg);
+
         var arr = new byte[Encoding.UTF8.GetByteCount(msg) + 1];
         Encoding.UTF8.GetBytes(msg, arr);
 
@@ -55,6 +57,8 @@ public readonly unsafe partial struct ILogger
     /// <param name="msg">The message to log.</param>
     public void PrintLine(string msg)
     {
+        ArgumentNullException.ThrowIfNull(msg);
+
         var arr = new byte[Encoding.UTF8.GetByteCount(msg) + 1];
         Encoding.UTF8.GetBytes(msg, arr);
 
