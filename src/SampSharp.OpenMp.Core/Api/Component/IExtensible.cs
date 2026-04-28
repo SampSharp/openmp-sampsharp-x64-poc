@@ -15,13 +15,13 @@ public readonly partial struct IExtensible
     // ref: https://github.com/openmultiplayer/open.mp-sdk/issues/44
     [OpenMpApiOverload("_workaround")]
     public partial IExtension GetExtension(UID id);
-    
+
     private partial bool AddExtension(IExtension extension, bool autoDeleteExt);
 
     [OpenMpApiOverload("_uid")]
     [OpenMpApiFunction("removeExtension")]
     private partial bool RemoveExtensionInternal(UID id);
-    
+
     [OpenMpApiFunction("removeExtension")]
     private partial bool RemoveExtensionInternal(IExtension extension);
 
@@ -45,7 +45,11 @@ public readonly partial struct IExtensible
     /// <exception cref="ArgumentException">Thrown if the extension could not be found.</exception>
     public void RemoveExtension(IExtension extension)
     {
-        ArgumentNullException.ThrowIfNull(extension);
+        if (extension == null)
+        {
+            // Can't use ThrowIfNull - extension is not a reference type.
+            throw new ArgumentNullException(nameof(extension));
+        }
 
         if (!RemoveExtensionInternal(extension))
         {

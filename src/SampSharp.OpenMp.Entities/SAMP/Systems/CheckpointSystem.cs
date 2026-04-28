@@ -2,14 +2,6 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>
-/// Bridges open.mp's <see cref="IPlayerCheckpointEventHandler"/> into the ECS event
-/// dispatcher under the names <c>OnPlayerEnterCheckpoint</c>,
-/// <c>OnPlayerLeaveCheckpoint</c>, <c>OnPlayerEnterRaceCheckpoint</c>,
-/// <c>OnPlayerLeaveRaceCheckpoint</c>. Without this system, gamemodes that call
-/// <c>player.SetRaceCheckpoint(...)</c> never see the corresponding enter/leave
-/// event because the C++ proxy ships the dispatcher but no managed code subscribes.
-/// </summary>
 internal class CheckpointSystem : DisposableSystem, IPlayerCheckpointEventHandler
 {
     private readonly IOmpEntityProvider _entityProvider;

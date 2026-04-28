@@ -26,7 +26,7 @@ public class PlayerTests : TestBase
         Player.SetName("TestName");
         Player.Name.ShouldBe("TestName");
     }
-    
+
     [Fact]
     public void Interior_set_should_succeed()
     {
@@ -39,7 +39,7 @@ public class PlayerTests : TestBase
     {
         _ = Player.Interior;
     }
-    
+
     [Fact]
     public void Health_get_should_succeed()
     {
@@ -120,7 +120,7 @@ public class PlayerTests : TestBase
         Player.FightStyle = FightStyle.Boxing;
         Player.FightStyle.ShouldBe(FightStyle.Boxing);
     }
-    
+
     [Fact]
     public void Velocity_set_should_succeed()
     {
@@ -519,13 +519,13 @@ public class PlayerTests : TestBase
     [Fact]
     public void ApplyAnimation_with_forceSync_should_succeed()
     {
-        Player.ApplyAnimation("AIRPORT", "THRW_BARL_THRW", 4.1f, true, false, false, false, 0, true);
+        Player.ApplyAnimation("AIRPORT", "THRW_BARL_THRW", 4.1f, true, false, false, false, TimeSpan.Zero, true);
     }
 
     [Fact]
     public void ApplyAnimation_should_succeed()
     {
-        Player.ApplyAnimation("AIRPORT", "THRW_BARL_THRW", 4.1f, true, false, false, false, 0);
+        Player.ApplyAnimation("AIRPORT", "THRW_BARL_THRW", 4.1f, true, false, false, false, TimeSpan.Zero);
     }
 
     [Fact]
@@ -573,13 +573,13 @@ public class PlayerTests : TestBase
     [Fact]
     public void InterpolateCameraPosition_should_succeed()
     {
-        Player.InterpolateCameraPosition(new Vector3(1, 2, 3), new Vector3(4, 5, 6), 1000, CameraCut.Cut);
+        Player.InterpolateCameraPosition(new Vector3(1, 2, 3), new Vector3(4, 5, 6), TimeSpan.FromSeconds(1), CameraCut.Cut);
     }
 
     [Fact]
     public void InterpolateCameraLookAt_should_succeed()
     {
-        Player.InterpolateCameraLookAt(new Vector3(1, 2, 3), new Vector3(4, 5, 6), 1000, CameraCut.Cut);
+        Player.InterpolateCameraLookAt(new Vector3(1, 2, 3), new Vector3(4, 5, 6), TimeSpan.FromSeconds(1), CameraCut.Cut);
     }
 
     [Fact]

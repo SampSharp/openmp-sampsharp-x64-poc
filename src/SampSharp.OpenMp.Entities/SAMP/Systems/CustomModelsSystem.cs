@@ -2,9 +2,6 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>
-/// Bridges open.mp's <see cref="IPlayerModelsEventHandler"/> into the ECS event
-/// </summary>
 internal class CustomModelsSystem : DisposableSystem, IPlayerModelsEventHandler
 {
     private readonly IEventDispatcher _eventDispatcher;

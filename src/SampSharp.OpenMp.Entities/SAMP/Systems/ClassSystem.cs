@@ -2,9 +2,6 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-/// <summary>
-/// Bridges open.mp's <see cref="IClassEventHandler"/> into the ECS event dispatcher
-/// </summary>
 internal class ClassSystem : DisposableSystem, IClassEventHandler
 {
     private readonly IEventDispatcher _eventDispatcher;

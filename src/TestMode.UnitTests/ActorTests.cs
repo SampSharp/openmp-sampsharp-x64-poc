@@ -73,7 +73,7 @@ public class ActorTests : TestBase
     [Fact]
     public void ApplyAnim_should_succeed()
     {
-        _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, 830);
+        _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, TimeSpan.FromMilliseconds(830));
     }
 
     [Fact]
@@ -85,7 +85,7 @@ public class ActorTests : TestBase
     [Fact]
     public void ClearAnimations_should_succeed()
     {
-        _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, 830);
+        _actor.ApplyAnimation("BASEBALL", "Bat_Hit_1", 1, false, false, false, false, TimeSpan.FromMilliseconds(830));
         _actor.ClearAnimations();
     }
 }

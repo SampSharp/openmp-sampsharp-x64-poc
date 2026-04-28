@@ -13,15 +13,19 @@ public sealed class ClassScanner
     private List<Type> _memberAttributes = [];
     private bool _includeAbstract;
 
-    private BindingFlags MemberBindingFlags => 
+    private BindingFlags MemberBindingFlags =>
         BindingFlags.Instance |
-        BindingFlags.Public | 
+        BindingFlags.Public |
         (_includeNonPublicMembers ? BindingFlags.NonPublic : BindingFlags.Default);
 
     private ClassScanner()
     {
     }
 
+    /// <summary>
+    /// Creates a new <see cref="ClassScanner" /> instance.
+    /// </summary>
+    /// <returns>A new scanner instance.</returns>
     public static ClassScanner Create()
     {
         return new ClassScanner();
@@ -77,6 +81,11 @@ public sealed class ClassScanner
         }
     }
 
+    /// <summary>
+    /// Includes the specified <paramref name="types" /> in the scan. This can be used to include types from assemblies which are not directly referenced by the loaded assemblies, e.g. plugin assemblies.
+    /// </summary>
+    /// <param name="types">The types to include.</param>
+    /// <returns>An updated scanner.</returns>
     public ClassScanner IncludeTypes(ReadOnlySpan<Type> types)
     {
         var result = Clone();
@@ -141,8 +150,8 @@ public sealed class ClassScanner
 
     private bool ApplyTypeFilter(Type type)
     {
-        return type.IsClass && 
-               (_includeAbstract || !type.IsAbstract) && 
+        return type.IsClass &&
+               (_includeAbstract || !type.IsAbstract) &&
                _classImplements.All(i => i.IsAssignableFrom(type)) &&
                _classAttributes.All(a => type.GetCustomAttribute(a) != null);
     }
@@ -186,12 +195,12 @@ public sealed class ClassScanner
     {
         return new ClassScanner
         {
-            _assemblies = [.._assemblies],
+            _assemblies = [.. _assemblies],
             _classTypes = [.. _classTypes],
             _includeNonPublicMembers = _includeNonPublicMembers,
-            _classImplements = [.._classImplements],
-            _classAttributes = [.._classAttributes],
-            _memberAttributes = [.._memberAttributes],
+            _classImplements = [.. _classImplements],
+            _classAttributes = [.. _classAttributes],
+            _memberAttributes = [.. _memberAttributes],
             _includeAbstract = _includeAbstract
         };
     }
