@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.Entities;
 
-internal class EcsApplicationBuilder(IServiceProvider services) : IEcsApplicationBuilder
+internal class EcsBuilder(IServiceProvider services) : IEcsBuilder
 {
     public IServiceProvider Services { get; } = services;
 }

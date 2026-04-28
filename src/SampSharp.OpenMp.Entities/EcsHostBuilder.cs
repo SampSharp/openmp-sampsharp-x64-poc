@@ -6,7 +6,7 @@ namespace SampSharp.Entities;
 internal sealed class EcsHostBuilder : IEcsHostBuilder
 {
     private readonly List<Action<SampSharpEnvironment, IServiceCollection>> _serviceConfigurations = [];
-    private readonly List<Action<IEcsApplicationBuilder>> _ecsConfigurations = [];
+    private readonly List<Action<IEcsBuilder>> _ecsConfigurations = [];
     private readonly List<Action<ILoggingBuilder>> _loggerConfigurations = [];
 
     private bool _systemsLoadingDisabled = false;
@@ -14,7 +14,7 @@ internal sealed class EcsHostBuilder : IEcsHostBuilder
     internal UnhandledExceptionHandler? UnhandledExceptionHandler { get; private set; }
     internal Func<IServiceCollection, IServiceProvider>? ServiceProviderFactory { get; private set; }
     
-    public IEcsHostBuilder Configure(Action<IEcsApplicationBuilder> build)
+    public IEcsHostBuilder Configure(Action<IEcsBuilder> build)
     {
         ArgumentNullException.ThrowIfNull(build);
         _ecsConfigurations.Add(build);
@@ -62,7 +62,7 @@ internal sealed class EcsHostBuilder : IEcsHostBuilder
         return this;
     }
 
-    internal void Configure(IEcsApplicationBuilder builder)
+    internal void Configure(IEcsBuilder builder)
     {
         foreach (var configuration in _ecsConfigurations)
         {

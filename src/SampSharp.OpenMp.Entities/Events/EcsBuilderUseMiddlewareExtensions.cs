@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace SampSharp.Entities;
 
-/// <summary>Provides extended functionality for configuring a <see cref="IEcsApplicationBuilder" /> instance.</summary>
+/// <summary>Provides extended functionality for configuring a <see cref="IEcsBuilder" /> instance.</summary>
 public static class EcsBuilderUseMiddlewareExtensions
 {
     private static readonly MethodInfo _getServiceInfo =
@@ -15,7 +15,7 @@ public static class EcsBuilderUseMiddlewareExtensions
     /// <param name="name">The name of the event.</param>
     /// <param name="middleware">The middleware to add to the event.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IEcsApplicationBuilder UseMiddleware(this IEcsApplicationBuilder builder, string name, Func<EventDelegate, EventDelegate> middleware)
+    public static IEcsBuilder UseMiddleware(this IEcsBuilder builder, string name, Func<EventDelegate, EventDelegate> middleware)
     {
         builder.Services.GetRequiredService<IEventDispatcher>().UseMiddleware(name, middleware);
         return builder;
@@ -26,7 +26,7 @@ public static class EcsBuilderUseMiddlewareExtensions
     /// <param name="name">The name of the event.</param>
     /// <param name="middleware">The middleware to add to the event.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IEcsApplicationBuilder UseMiddleware(this IEcsApplicationBuilder builder, string name, Func<EventContext, Func<object?>, object?> middleware)
+    public static IEcsBuilder UseMiddleware(this IEcsBuilder builder, string name, Func<EventContext, Func<object?>, object?> middleware)
     {
         return builder.UseMiddleware(name, next =>
         {
@@ -49,7 +49,7 @@ public static class EcsBuilderUseMiddlewareExtensions
     /// <param name="name">The name of the event.</param>
     /// <param name="args">The arguments for the constructor of the event.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IEcsApplicationBuilder UseMiddleware<TMiddleware>(this IEcsApplicationBuilder builder, string name, params object[] args)
+    public static IEcsBuilder UseMiddleware<TMiddleware>(this IEcsBuilder builder, string name, params object[] args)
     {
         return builder.UseMiddleware(name, typeof(TMiddleware), args);
     }
@@ -61,7 +61,7 @@ public static class EcsBuilderUseMiddlewareExtensions
     /// <param name="middleware">The type of the middleware.</param>
     /// <param name="args">The arguments for the constructor of the event.</param>
     /// <returns>A reference to this instance after the operation has completed.</returns>
-    public static IEcsApplicationBuilder UseMiddleware(this IEcsApplicationBuilder builder, string name, Type middleware, params object[] args)
+    public static IEcsBuilder UseMiddleware(this IEcsBuilder builder, string name, Type middleware, params object[] args)
     {
         var applicationServices = builder.Services;
         return builder.UseMiddleware(name, next =>

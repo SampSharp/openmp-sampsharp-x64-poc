@@ -23,7 +23,7 @@ public static class EcsBuilderCommandsExtensions
     /// <c>OnPlayerCommandText</c>: any chat input not claimed by an
     /// <c>[Event]</c> listener gets forwarded to <see cref="IPlayerCommandService"/>.
     /// </summary>
-    public static IEcsApplicationBuilder UsePlayerCommands(this IEcsApplicationBuilder builder)
+    public static IEcsBuilder UsePlayerCommands(this IEcsBuilder builder)
     {
         return builder.UseMiddleware<PlayerCommandProcessingMiddleware>("OnPlayerCommandText");
     }

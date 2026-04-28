@@ -17,6 +17,6 @@ public interface IEcsStartup : IStartup
     /// <summary>
     /// Configures the application.
     /// </summary>
-    /// <param name="builder">An <see cref="IEcsApplicationBuilder" /> for the app to configure.</param>
-    void Configure(IEcsApplicationBuilder builder);
+    /// <param name="builder">An <see cref="IEcsBuilder" /> for the app to configure.</param>
+    void Configure(IEcsBuilder builder);
 }

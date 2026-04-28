@@ -42,7 +42,7 @@ internal class EcsHost(EcsHostBuilder hostBuilder) : Extension
         BuildServiceProvider(environment);
 
         context.UnhandledExceptionHandler = UnhandledExceptionHandler;
-        hostBuilder.Configure(new EcsApplicationBuilder(ServiceProvider));
+        hostBuilder.Configure(new EcsBuilder(ServiceProvider));
 
         LoadSystems();
 

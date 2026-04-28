@@ -14,7 +14,7 @@ public interface IEcsHostBuilder
     /// </summary>
     /// <param name="build">A delegate that configures the ECS builder.</param>
     /// <returns>The updated configuration.</returns>
-    IEcsHostBuilder Configure(Action<IEcsApplicationBuilder> build);
+    IEcsHostBuilder Configure(Action<IEcsBuilder> build);
 
     /// <summary>
     /// Configures the services used by the application.

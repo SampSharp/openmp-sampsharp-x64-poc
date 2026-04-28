@@ -21,7 +21,7 @@ public class Startup : IEcsStartup
     {
     }
 
-    public void Configure(IEcsApplicationBuilder builder)
+    public void Configure(IEcsBuilder builder)
     {
     }
 }
