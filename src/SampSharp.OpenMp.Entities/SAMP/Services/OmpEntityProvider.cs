@@ -236,7 +236,10 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerObjectData>();
+            if (!player.TryQueryExtension<IPlayerObjectData>(out var data))
+            {
+                return null;
+            }
 
             var component = entityManager.AddComponent<PlayerObject>(EntityId.NewEntityId(), data, playerObject);
             ext = new ComponentExtension(component);
@@ -263,7 +266,10 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerTextDrawData>();
+            if (!player.TryQueryExtension<IPlayerTextDrawData>(out var data))
+            {
+                return null;
+            }
 
             var component = entityManager.AddComponent<PlayerTextDraw>(EntityId.NewEntityId(), data, playerTextDraw);
             ext = new ComponentExtension(component);
@@ -290,7 +296,10 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
                 return null;
             }
 
-            var data = player.QueryExtension<IPlayerTextLabelData>();
+            if (!player.TryQueryExtension<IPlayerTextLabelData>(out var data))
+            {
+                return null;
+            }
 
             var component =
                 entityManager.AddComponent<PlayerTextLabel>(EntityId.NewEntityId(), this, data, playerTextLabel);
@@ -405,19 +414,28 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
 
     public PlayerObject? GetPlayerObject(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerObjectData>();
+        if (!player.TryQueryExtension<IPlayerObjectData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 
     public PlayerTextDraw? GetPlayerTextDraw(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerTextDrawData>();
+        if (!player.TryQueryExtension<IPlayerTextDrawData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 
     public PlayerTextLabel? GetPlayerTextLabel(IPlayer player, int id)
     {
-        var data = player.QueryExtension<IPlayerTextLabelData>();
+        if (!player.TryQueryExtension<IPlayerTextLabelData>(out var data))
+        {
+            return null;
+        }
         return GetComponent(data.Get(id), player);
     }
 

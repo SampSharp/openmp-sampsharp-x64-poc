@@ -36,7 +36,10 @@ internal class DialogService : IDialogService
         _entityManager.Destroy<VisibleDialog>(player);
 
         IPlayer native = player;
-        var dialogData = native.QueryExtension<IPlayerDialogData>();
+        if (!native.TryQueryExtension<IPlayerDialogData>(out var dialogData))
+        {
+            throw new InvalidOperationException("Missing dialog data");
+        }
 
         dialogData.Show(native, DialogId, (SampSharp.OpenMp.Core.Api.DialogStyle)dialog.Style, dialog.Caption ?? string.Empty, dialog.Content ?? string.Empty,
             dialog.Button1 ?? string.Empty, dialog.Button2 ?? string.Empty);

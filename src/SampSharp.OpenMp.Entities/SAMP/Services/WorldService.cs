@@ -102,7 +102,10 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     public PlayerObject CreatePlayerObject(Player player, int modelId, Vector3 position, Vector3 rotation, float drawDistance = 0, EntityId parent = default)
     {
         IPlayer nativePlayer = player;
-        var playerObjectData = nativePlayer.QueryExtension<IPlayerObjectData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerObjectData>(out var playerObjectData))
+        {
+            throw new InvalidOperationException("Missing object data");
+        }
 
         var native = playerObjectData.Create(modelId, position, rotation, drawDistance);
         var entityId = EntityId.NewEntityId();
@@ -130,7 +133,10 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
         EntityId parent = default)
     {
         IPlayer nativePlayer = player;
-        var playerTextLabels = nativePlayer.QueryExtension<IPlayerTextLabelData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerTextLabelData>(out var playerTextLabels))
+        {
+            throw new InvalidOperationException("Missing text label data");
+        }
 
         var native = playerTextLabels.Create(text, color, position, drawDistance, testLos);
         var entityId = EntityId.NewEntityId();
@@ -157,7 +163,10 @@ internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManag
     public PlayerTextDraw CreatePlayerTextDraw(Player player, Vector2 position, string text, EntityId parent = default)
     {
         IPlayer nativePlayer = player;
-        var playerTextDrawData = nativePlayer.QueryExtension<IPlayerTextDrawData>();
+        if (!nativePlayer.TryQueryExtension<IPlayerTextDrawData>(out var playerTextDrawData))
+        {
+            throw new InvalidOperationException("Missing text draw data");
+        }
 
         var native = playerTextDrawData.Create(position, text);
         var entityId = EntityId.NewEntityId();
