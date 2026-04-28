@@ -157,9 +157,9 @@ public interface IServerService
     /// <param name="password">The password, or null/empty to disable password auth.</param>
     void SetServerPassword(string? password);
 
-    /// <summary>Set the RCON admin password.</summary>
-    /// <param name="password">The RCON password.</param>
-    void SetAdminPassword(string password);
+    /// <summary>Set the RCON admin password. Pass <see langword="null"/> or empty string to clear.</summary>
+    /// <param name="password">The RCON password, or null/empty to disable.</param>
+    void SetAdminPassword(string? password);
 
     /// <summary>Set the maximum distance to display the names of players. The default draw distance is 70.0.</summary>
     /// <param name="distance">The distance to set.</param>

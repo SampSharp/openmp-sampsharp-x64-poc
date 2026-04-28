@@ -347,7 +347,7 @@ internal class ServerService : IServerService
         _core.SetData(SettableCoreDataType.Password, password ?? string.Empty);
     }
 
-    public void SetAdminPassword(string password)
+    public void SetAdminPassword(string? password)
     {
         _core.SetData(SettableCoreDataType.AdminPassword, password ?? string.Empty);
     }
