@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using SampSharp.Entities;
 using SampSharp.Entities.SAMP;
+using SampSharp.Entities.SAMP.Commands;
 using SampSharp.OpenMp.Core;
 using SampSharp.OpenMp.Core.Api;
 using PlayerRecordingType = SampSharp.Entities.SAMP.PlayerRecordingType;
@@ -63,74 +64,61 @@ public class MyFirstSystem : ISystem
         Console.WriteLine("sync context: " + SynchronizationContext.Current);
     }
 
-    [Event]
-    public bool OnPlayerCommandText(Player player, string cmdtext, IDialogService dialogService)
+    [PlayerCommand("dialog-input")]
+    public void DialogInputCommand(Player player, IDialogService dialogService)
     {
-        player.SendClientMessage(cmdtext);
+        var diag = new InputDialog("Input", "Enter your name", "OK", "Cancel");
 
-
-        if (cmdtext.StartsWith("/help"))
-        {
-            return true;
-        }
-
-        if (cmdtext == "/dialog-input")
-        {
-            var diag = new InputDialog("Input", "Enter your name", "OK", "Cancel");
-
-            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}, {r.InputText ?? "<<NULL>>"}"));
-            return true;
-        }
-
-        if (cmdtext == "/dialog-message")
-        {
-            var diag = new MessageDialog("Message", "This is a message dialog", "OK");
-
-            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}"));
-            return true;
-        }
-
-        if (cmdtext == "/dialog-list")
-        {
-            var diag = new ListDialog("List", "OK")
-            {
-                "A", "B", "C"
-            };
-
-            dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response} {r.ItemIndex} {r.Item?.Text ?? "<<NULL>>"}"));
-            return true;
-        }
-
-        if (cmdtext == "/net")
-        {
-            var n = player.GetNetworkStats();
-            player.SendClientMessage(n.MessagesSent.ToString());
-            return true;
-        }
-
-        if (cmdtext == "/ak")
-        {
-            player.GiveWeapon(Weapon.AK47, 200);
-            return true;
-        }
-
-        if (cmdtext == "/reftest")
-        {
-            var weaponState = player.WeaponState;
-            var anim = player.AnimationIndex;
-            var cfv = player.CameraFrontVector;
-            var cm = player.CameraMode;
-            player.GetKeys(out var keys, out var ud, out var lr);
-            player.PlaySound(5408); // 5408 - "No more bets please!"
-            player.GetAnimationName(out var lib, out var name);
-
-            player.SendClientMessage($"Weapon state: {weaponState}, anim: {anim}, cfv: {cfv}, cm: {cm}, keys: {keys}, ud: {ud}, lr: {lr}, lib: {lib}, name: {name}");
-            return true;
-        }
-
-        return false;
+        dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}, {r.InputText ?? "<<NULL>>"}"));
     }
 
+    [PlayerCommand("dialog-message")]
+    public void DialogMessageCommand(Player player, IDialogService dialogService)
+    {
+        var diag = new MessageDialog("Message", "This is a message dialog", "OK");
+
+        dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response}"));
+    }
+
+    [PlayerCommand("dialog-list")]
+    public void DialogListCommand(Player player, IDialogService dialogService)
+    {
+        var diag = new ListDialog("List", "OK")
+        {
+            "A", "B", "C"
+        };
+
+        dialogService.Show(player, diag, r => player.SendClientMessage($"response: {r.Response} {r.ItemIndex} {r.Item?.Text ?? "<<NULL>>"}"));
+    }
+
+    [PlayerCommand]
+    public void NetCommand(Player player)
+    {
+        var n = player.GetNetworkStats();
+        player.SendClientMessage(n.MessagesSent.ToString());
+    }
+
+    [PlayerCommand]
+    public void AkCommand(Player player)
+    {
+        player.GiveWeapon(Weapon.AK47, 200);
+    }
+
+
+    [PlayerCommand]
+    public void RefTestCommand(Player player)
+    {
+        var weaponState = player.WeaponState;
+        var anim = player.AnimationIndex;
+        var cfv = player.CameraFrontVector;
+        var cm = player.CameraMode;
+        player.GetKeys(out var keys, out var ud, out var lr);
+        player.PlaySound(5408); // 5408 - "No more bets please!"
+        player.GetAnimationName(out var lib, out var name);
+
+        player.SendClientMessage($"Weapon state: {weaponState}, anim: {anim}, cfv: {cfv}, cm: {cm}, keys: {keys}, ud: {ud}, lr: {lr}, lib: {lib}, name: {name}");
+    }
+    
     [Event]
     public void OnVehicleSpawn(Vehicle vehicle)
     {

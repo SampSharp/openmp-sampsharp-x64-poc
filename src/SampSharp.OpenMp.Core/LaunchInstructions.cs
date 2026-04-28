@@ -57,16 +57,16 @@ internal static partial class LaunchInstructions
             {
                 return;
             }
-                
+
             var props = dir.CreateSubdirectory("Properties");
 
             var serverDir = PromptServerDirectory();
-                
+
             var launchSettingsPath = Path.Combine(props.FullName, "launchSettings.json");
 
             serverDir = serverDir.Replace(@"\", @"\\");
 
-            File.WriteAllText(launchSettingsPath, 
+            File.WriteAllText(launchSettingsPath,
                 $$"""
                   {
                     "profiles": {
@@ -82,7 +82,7 @@ internal static partial class LaunchInstructions
 
             Console.WriteLine($"File written to {launchSettingsPath}");
             Console.WriteLine();
-                
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("You will find the 'open.mp' launch option in the dropdown next to the 'Start' button in Visual Studio.");
             Console.ResetColor();
@@ -95,7 +95,7 @@ internal static partial class LaunchInstructions
         while (true)
         {
             var key = Console.ReadKey();
-            
+
             switch (key.Key)
             {
                 case ConsoleKey.N:
@@ -116,7 +116,7 @@ internal static partial class LaunchInstructions
             Console.Write("Enter the path to your open.mp server directory: ");
 
             var dir = Console.ReadLine();
-            if(!Directory.Exists(dir))
+            if (!Directory.Exists(dir))
             {
                 Console.WriteLine("Directory not found.");
                 continue;
