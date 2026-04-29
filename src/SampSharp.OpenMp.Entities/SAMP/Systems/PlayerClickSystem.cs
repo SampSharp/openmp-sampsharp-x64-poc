@@ -12,8 +12,7 @@ internal class PlayerClickSystem : DisposableSystem, IPlayerClickEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerClickDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerClickDispatcher(), this));
     }
 
     public void OnPlayerClickMap(IPlayer player, Vector3 pos)

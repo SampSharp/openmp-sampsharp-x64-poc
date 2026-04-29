@@ -10,21 +10,12 @@ internal class NpcSystem : DisposableSystem, INPCEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public NpcSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
+    public NpcSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment environment)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;
 
-        // NPCs.dll may not be loaded in every server setup. Skip the handler
-        // registration silently — none of the OnNPC* events will fire, and
-        // INPCComponent calls from user code will simply no-op
-        var npcs = INPCComponent.FromIComponent(omp.Components.QueryComponent(INPCComponent.ComponentId));
-        if (!npcs.HasValue)
-        {
-            return;
-        }
-
-        AddDisposable(npcs.GetEventDispatcher().Add(this));
+        AddDisposable(environment.TryAddEventHandler<INPCComponent, INPCEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnNPCFinishMove(INPC npc)

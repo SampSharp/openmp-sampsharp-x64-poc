@@ -12,8 +12,7 @@ internal class PlayerUpdateSystem : DisposableSystem, IPlayerUpdateEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerUpdateDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerUpdateDispatcher(), this));
     }
 
     public bool OnPlayerUpdate(IPlayer player, TimePoint now)

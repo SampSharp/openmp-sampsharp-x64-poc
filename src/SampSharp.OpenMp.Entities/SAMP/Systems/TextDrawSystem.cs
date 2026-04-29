@@ -7,11 +7,11 @@ internal class TextDrawSystem : DisposableSystem, ITextDrawEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public TextDrawSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public TextDrawSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<ITextDrawsComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<ITextDrawsComponent, ITextDrawEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerClickTextDraw(IPlayer player, ITextDraw td)

@@ -7,11 +7,11 @@ internal class PickupSystem : DisposableSystem, IPickupEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public PickupSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public PickupSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<IPickupsComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IPickupsComponent, IPickupEventHandler>(x => x.GetEventDispatcher(), this));
     }
     
     public void OnPlayerPickUpPickup(IPlayer player, IPickup pickup)

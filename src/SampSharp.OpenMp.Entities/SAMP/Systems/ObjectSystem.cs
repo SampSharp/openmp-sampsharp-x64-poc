@@ -8,11 +8,11 @@ internal class ObjectSystem : DisposableSystem, IObjectEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public ObjectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public ObjectSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<IObjectsComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IObjectsComponent, IObjectEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnMoved(IObject objekt)

@@ -109,6 +109,11 @@ public static class Constants
     // SampSharp.OpenMp.Core.Api
 
     /// <summary>
+    /// SampSharp.OpenMp.Core.Api.IComponent
+    /// </summary>
+    public const string IComponentFQN = "SampSharp.OpenMp.Core.Api.IComponent";
+
+    /// <summary>
     /// SampSharp.OpenMp.Core.Api.IEventHandler{TEventHandler}
     /// </summary>
     public const string EventHandlerFQN = "SampSharp.OpenMp.Core.Api.IEventHandler";

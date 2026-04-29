@@ -8,11 +8,11 @@ internal class ConsoleSystem : DisposableSystem, IConsoleEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
+    public ConsoleSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment environment)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;
-        AddDisposable(omp.Components.QueryComponent<IConsoleComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IConsoleComponent, IConsoleEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public bool OnConsoleText(string command, string parameters, ref ConsoleCommandSenderData sender)

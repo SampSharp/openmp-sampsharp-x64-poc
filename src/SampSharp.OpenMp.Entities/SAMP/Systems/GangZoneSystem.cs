@@ -7,11 +7,11 @@ internal class GangZoneSystem : DisposableSystem, IGangZoneEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public GangZoneSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public GangZoneSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<IGangZonesComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IGangZonesComponent, IGangZoneEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerEnterGangZone(IPlayer player, IGangZone zone) =>

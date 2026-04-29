@@ -12,11 +12,14 @@ public abstract class DisposableSystem : ISystem, IDisposable
     /// Adds a disposable object to the list of objects to dispose when this system is disposed.
     /// </summary>
     /// <param name="disposable">The disposable object to add.</param>
-    protected void AddDisposable(IDisposable disposable)
+    protected void AddDisposable(IDisposable? disposable)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
-        _disposables.Add(disposable);
+        if (disposable is not null)
+        {
+            _disposables.Add(disposable);
+        }
     }
 
     /// <summary>

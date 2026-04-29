@@ -6,25 +6,12 @@ namespace SampSharp.OpenMp.Core.Api;
 /// <summary>
 /// This type represents a pointer to an unmanaged open.mp <see cref="INPCComponent" /> interface.
 /// </summary>
-[OpenMpApi(typeof(IPoolComponent<INPC>))]
+[OpenMpApi(typeof(IPool<INPC>), typeof(INetworkComponent))]
 public readonly partial struct INPCComponent
 {
     /// <inheritdoc />
     public static UID ComponentId => new(0x3D0E59E87F4E90BC);
-
-    /// <summary>
-    /// Casts an <see cref="IComponent" /> to an <see cref="INPCComponent" /> using
-    /// a runtime-checked cast on the C++ side.
-    /// </summary>
-    public static INPCComponent FromIComponent(IComponent component)
-    {
-        return !component.HasValue ? default : new INPCComponent(NativeCast(component.Handle));
-
-        [DllImport("SampSharp", EntryPoint = "cast_IComponent_to_INPCComponent",
-            CallingConvention = CallingConvention.Cdecl, ExactSpelling = true)]
-        static extern nint NativeCast(nint from);
-    }
-
+    
     /// <summary>
     /// Gets the event dispatcher for NPC-related events.
     /// </summary>

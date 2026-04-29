@@ -11,8 +11,7 @@ internal class PlayerStreamSystem : DisposableSystem, IPlayerStreamEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerStreamDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerStreamDispatcher(), this));
     }
 
     public void OnPlayerStreamIn(IPlayer player, IPlayer forPlayer)

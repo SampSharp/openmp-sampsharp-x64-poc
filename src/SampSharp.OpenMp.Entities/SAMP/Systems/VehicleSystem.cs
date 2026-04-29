@@ -7,11 +7,11 @@ internal class VehicleSystem : DisposableSystem, IVehicleEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public VehicleSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public VehicleSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<IVehiclesComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IVehiclesComponent, IVehicleEventHandler>(x => x.GetEventDispatcher(), this));
     }
     
     public void OnVehicleStreamIn(IVehicle vehicle, IPlayer player)

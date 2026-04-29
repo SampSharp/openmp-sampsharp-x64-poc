@@ -11,8 +11,7 @@ internal class PlayerChangeSystem : DisposableSystem, IPlayerChangeEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerChangeDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerChangeDispatcher(), this));
     }
 
     public void OnPlayerScoreChange(IPlayer player, int score)
