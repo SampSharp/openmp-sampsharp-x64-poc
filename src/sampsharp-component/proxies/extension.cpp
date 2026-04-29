@@ -28,7 +28,7 @@ public:
 
     void * getHandle() {return  handle_; }
 
-    void reset() { }
+    void reset() override { }
 };
 
 extern "C" SDK_EXPORT ManagedExtensionImpl * __CDECL ManagedExtensionImpl_create(UID a, free_fn b, void * c)

@@ -22,8 +22,8 @@
 #include "../proxy-api.hpp"
 
 #ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreturn-type-c-linkage" // <FUNC> has C-linkage specified, but returns user-defined type '<TYPE>' which is incompatible with C [-Wreturn-type-c-linkage]
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wreturn-type-c-linkage" // <FUNC> has C-linkage specified, but returns user-defined type '<TYPE>' which is incompatible with C [-Wreturn-type-c-linkage]
 
 #endif
 
@@ -646,11 +646,6 @@ PROXY(IConfig, bool, isBanned, BanEntry&);
 PROXY_PTR(IConfig, BoolStringPair, getNameFromAlias, StringView);
 PROXY(IConfig, void, enumOptions, OptionEnumeratorCallback&);
 PROXY(IConfig, bool *, getBool, StringView);
-
-PROXY(ILogger, void, printLn, const char *);
-PROXY(ILogger, void, logLn, LogLevel, const char *);
-PROXY(ILogger, void, printLnU8, const char *);
-PROXY(ILogger, void, logLnU8, LogLevel, const char *);
 
 PROXY(ICore, SemanticVersion, getVersion);
 PROXY(ICore, int, getNetworkBitStreamVersion);
