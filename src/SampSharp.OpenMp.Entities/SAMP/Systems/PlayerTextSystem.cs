@@ -11,7 +11,7 @@ internal class PlayerTextSystem : DisposableSystem, IPlayerTextEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(environment.Core.GetPlayers().GetPlayerTextDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerTextDispatcher(), this));
     }
 
     public bool OnPlayerText(IPlayer player, string message)

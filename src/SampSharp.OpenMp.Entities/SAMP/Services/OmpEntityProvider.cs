@@ -4,21 +4,18 @@ using INPCComponent = SampSharp.OpenMp.Core.Api.INPCComponent;
 
 namespace SampSharp.Entities.SAMP;
 
-internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entityManager) : IOmpEntityProvider
+internal class OmpEntityProvider(SampSharpEnvironment environment, IEntityManager entityManager) : IOmpEntityProvider
 {
-    private readonly IActorsComponent _actors = omp.Components.QueryComponent<IActorsComponent>();
-    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
-    private readonly IMenusComponent _menus = omp.Components.QueryComponent<IMenusComponent>();
-
-    private readonly INPCComponent _npcs =
-        INPCComponent.FromIComponent(omp.Components.QueryComponent(INPCComponent.ComponentId));
-
-    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
-    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
-    private readonly IPlayerPool _players = omp.Core.GetPlayers();
-    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
-    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
-    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
+    private readonly IActorsComponent _actors = environment.Components.QueryComponent<IActorsComponent>();
+    private readonly IGangZonesComponent _gangZones = environment.Components.QueryComponent<IGangZonesComponent>();
+    private readonly IMenusComponent _menus = environment.Components.QueryComponent<IMenusComponent>();
+    private readonly INPCComponent _npcs = environment.Components.QueryComponent<INPCComponent>();
+    private readonly IObjectsComponent _objects = environment.Components.QueryComponent<IObjectsComponent>();
+    private readonly IPickupsComponent _pickups = environment.Components.QueryComponent<IPickupsComponent>();
+    private readonly IPlayerPool _players = environment.Core.GetPlayers();
+    private readonly ITextDrawsComponent _textDraws = environment.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly ITextLabelsComponent _textLabels = environment.Components.QueryComponent<ITextLabelsComponent>();
+    private readonly IVehiclesComponent _vehicles = environment.Components.QueryComponent<IVehiclesComponent>();
 
     public EntityId GetEntity(IActor actor)
     {
@@ -384,7 +381,7 @@ internal class OmpEntityProvider(SampSharpEnvironment omp, IEntityManager entity
             return null;
         }
 
-        return GetComponent(_npcs.AsPool().Get(id));
+        return GetComponent(_npcs.Get(id));
     }
 
     public Npc? CreateNpc(string name)

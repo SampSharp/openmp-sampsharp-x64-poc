@@ -11,8 +11,7 @@ internal class PlayerDamageSystem : DisposableSystem, IPlayerDamageEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerDamageDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerDamageDispatcher(), this));
     }
 
     public void OnPlayerDeath(IPlayer player, IPlayer killer, int reason)

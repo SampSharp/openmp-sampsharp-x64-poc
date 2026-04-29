@@ -44,5 +44,12 @@ public readonly partial struct IComponent
         /// Gets the identifier of the component type.
         /// </summary>
         static abstract UID ComponentId { get; }
+
+        /// <summary>
+        /// Casts a handle from a IComponent handle to a handle of this type.
+        /// </summary>
+        /// <param name="handle">The IComponent handle.</param>
+        /// <returns>The handle of this type.</returns>
+        static abstract nint FromComponentHandle(nint handle);
     }
 }

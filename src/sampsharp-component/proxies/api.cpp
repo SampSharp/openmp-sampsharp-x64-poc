@@ -281,12 +281,6 @@ PROXY(INPC, void, clearAnimations);
 PROXY(INPC, void, applyAnimation, const AnimationData&);
 PROXY(INPC, bool, isStreamedInForPlayer, const IPlayer&);
 PROXY_CAST(INPC, IIDProvider);
-
-extern "C" SDK_EXPORT INPCComponent* __CDECL cast_IComponent_to_INPCComponent(IComponent* from)
-{
-    return dynamic_cast<INPCComponent*>(from);
-}
-
 PROXY(INPCComponent, INPC*, create, StringView);
 PROXY(INPCComponent, void, destroy, INPC&);
 PROXY(INPCComponent, int, createPath);
@@ -295,6 +289,7 @@ PROXY(INPCComponent, bool, addPointToPath, int, const Vector3&, float);
 PROXY(INPCComponent, bool, isValidPath, int);
 PROXY(INPCComponent, int, loadRecord, StringView);
 PROXY(INPCComponent, bool, unloadRecord, int);
+PROXY_CAST(INPCComponent, INetworkComponent);
 
 PROXY_EVENT_DISPATCHER(INPCComponent, NPCEventHandler, getEventDispatcher);
 PROXY_EVENT_HANDLER_BEGIN(NPCEventHandler)

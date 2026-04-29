@@ -7,11 +7,12 @@ internal class ActorSystem : DisposableSystem, IActorEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public ActorSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
+    public ActorSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment environment)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;
-        AddDisposable(omp.Components.QueryComponent<IActorsComponent>().GetEventDispatcher().Add(this));
+
+        AddDisposable(environment.AddEventHandler<IActorsComponent, IActorEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerGiveDamageActor(IPlayer player, IActor actor, float amount, uint weapon, SampSharp.OpenMp.Core.Api.BodyPart part)

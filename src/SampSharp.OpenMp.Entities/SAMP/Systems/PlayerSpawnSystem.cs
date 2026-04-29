@@ -11,8 +11,7 @@ internal class PlayerSpawnSystem : DisposableSystem, IPlayerSpawnEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerSpawnDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerSpawnDispatcher(), this));
     }
 
     public bool OnPlayerRequestSpawn(IPlayer player)

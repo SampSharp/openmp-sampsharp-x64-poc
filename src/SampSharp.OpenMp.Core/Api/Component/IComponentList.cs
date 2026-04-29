@@ -24,7 +24,11 @@ public readonly partial struct IComponentList
     [Pure]
     public T QueryComponent<T>() where T : unmanaged, IComponent.IManagedInterface
     {
-        var component = QueryComponent(T.ComponentId).Handle;
-        return StructPointer.AsStruct<T>(component);
+        var component = QueryComponent(T.ComponentId);
+
+        var componentHandle = component.Handle;
+
+        componentHandle = T.FromComponentHandle(componentHandle);
+        return StructPointer.AsStruct<T>(componentHandle);
     }
 }

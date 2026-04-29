@@ -8,14 +8,12 @@ internal class CustomModelsSystem : DisposableSystem, IPlayerModelsEventHandler
     private readonly IOmpEntityProvider _entityProvider;
 
     public CustomModelsSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider,
-        SampSharpEnvironment omp)
+        SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        var models = omp.Components.QueryComponent<ICustomModelsComponent>();
-        if (!models.HasValue) return;
-        AddDisposable(models.GetEventDispatcher().Add(this));
+        AddDisposable(environment.TryAddEventHandler<ICustomModelsComponent, IPlayerModelsEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerFinishedDownloading(IPlayer player)

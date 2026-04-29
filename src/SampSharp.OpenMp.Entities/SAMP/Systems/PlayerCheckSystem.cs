@@ -11,8 +11,7 @@ internal class PlayerCheckSystem : DisposableSystem, IPlayerCheckEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerCheckDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerCheckDispatcher(), this));
     }
 
     public void OnClientCheckResponse(IPlayer player, int actionType, int address, int results)

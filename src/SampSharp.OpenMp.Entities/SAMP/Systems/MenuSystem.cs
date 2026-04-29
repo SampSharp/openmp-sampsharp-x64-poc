@@ -7,11 +7,11 @@ internal class MenuSystem : DisposableSystem, IMenuEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public MenuSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public MenuSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-        AddDisposable(omp.Components.QueryComponent<IMenusComponent>().GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IMenusComponent, IMenuEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerSelectedMenuRow(IPlayer player, byte row)

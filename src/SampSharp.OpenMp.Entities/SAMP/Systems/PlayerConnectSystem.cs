@@ -11,8 +11,7 @@ internal class PlayerConnectSystem : DisposableSystem, IPlayerConnectEventHandle
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerConnectDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerConnectDispatcher(), this));
     }
 
     public void OnIncomingConnection(IPlayer player, string ipAddress, ushort port)

@@ -22,13 +22,11 @@ internal class DialogSystem : DisposableSystem, IPlayerDialogEventHandler
     private readonly IOmpEntityProvider _entityProvider;
     private readonly IEventDispatcher _eventDispatcher;
 
-    public DialogSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment omp)
+    public DialogSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher, SampSharpEnvironment environment)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;
-        var dialogs = omp.Components.QueryComponent<IDialogsComponent>();
-
-        AddDisposable(dialogs.GetEventDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler<IDialogsComponent, IPlayerDialogEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     [Event]

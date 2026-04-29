@@ -7,14 +7,12 @@ internal class ClassSystem : DisposableSystem, IClassEventHandler
     private readonly IEventDispatcher _eventDispatcher;
     private readonly IOmpEntityProvider _entityProvider;
 
-    public ClassSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment omp)
+    public ClassSystem(IEventDispatcher eventDispatcher, IOmpEntityProvider entityProvider, SampSharpEnvironment environment)
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
 
-        var classes = omp.Components.QueryComponent<IClassesComponent>();
-        if (!classes.HasValue) return;
-        AddDisposable(classes.GetEventDispatcher().Add(this));
+        AddDisposable(environment.TryAddEventHandler<IClassesComponent, IClassEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public bool OnPlayerRequestClass(IPlayer player, uint classId)

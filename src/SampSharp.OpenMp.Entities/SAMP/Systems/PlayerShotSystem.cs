@@ -11,8 +11,7 @@ internal class PlayerShotSystem : DisposableSystem, IPlayerShotEventHandler
     {
         _eventDispatcher = eventDispatcher;
         _entityProvider = entityProvider;
-
-        AddDisposable(environment.Core.GetPlayers().GetPlayerShotDispatcher().Add(this));
+        AddDisposable(environment.AddEventHandler(x => x.GetPlayers().GetPlayerShotDispatcher(), this));
     }
 
     public bool OnPlayerShotMissed(IPlayer player, ref PlayerBulletData bulletData)

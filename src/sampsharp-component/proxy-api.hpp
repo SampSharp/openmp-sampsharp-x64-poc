@@ -141,13 +141,18 @@ namespace sampsharp
 // macros for definition of exported proxy functions
 //
 
-/// proxy function for casting from one type to another e.g. PROXY_CAST_NAMED(IFoo, foo, IBar, bar) -> IBar * cast_foo_to_bar(IFoo * from) { return static_cast<IBar *>(from); }
-#define PROXY_CAST_NAMED(type_from, type_from_name, type_to, type_to_name) \
+
+#define __PROXY_CAST_NAMED(type_from, type_from_name, type_to, type_to_name) \
     extern "C" SDK_EXPORT type_to * __CDECL \
     cast_##type_from_name##_to_##type_to_name(type_from * from) \
     { \
         return static_cast<type_to *>(from); \
     }
+
+/// proxy function for casting from one type to another and vice versa e.g. PROXY_CAST_NAMED(IFoo, foo, IBar, bar) -> IBar * cast_foo_to_bar(IFoo * from) { return static_cast<IBar *>(from); }
+#define PROXY_CAST_NAMED(type_from, type_from_name, type_to, type_to_name) \
+    __PROXY_CAST_NAMED(type_from, type_from_name, type_to, type_to_name); \
+    __PROXY_CAST_NAMED(type_to, type_to_name, type_from, type_from_name)
 
 /// proxy function for casting from one type to another e.g. PROXY_CAST(IFoo, IBar) -> IBar * cast_IFoo_to_IBar(IFoo * from) { return static_cast<IBar *>(from); }
 #define PROXY_CAST(type_from, type_to) PROXY_CAST_NAMED(type_from, type_from, type_to, type_to)

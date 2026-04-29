@@ -8,14 +8,12 @@ internal class CheckpointSystem : DisposableSystem, IPlayerCheckpointEventHandle
     private readonly IEventDispatcher _eventDispatcher;
 
     public CheckpointSystem(IOmpEntityProvider entityProvider, IEventDispatcher eventDispatcher,
-        SampSharpEnvironment omp)
+        SampSharpEnvironment environment)
     {
         _entityProvider = entityProvider;
         _eventDispatcher = eventDispatcher;
 
-        var checkpoints = omp.Components.QueryComponent<ICheckpointsComponent>();
-        if (!checkpoints.HasValue) return;
-        AddDisposable(checkpoints.GetEventDispatcher().Add(this));
+        AddDisposable(environment.TryAddEventHandler<ICheckpointsComponent, IPlayerCheckpointEventHandler>(x => x.GetEventDispatcher(), this));
     }
 
     public void OnPlayerEnterCheckpoint(IPlayer player) =>

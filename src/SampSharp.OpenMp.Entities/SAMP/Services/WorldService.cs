@@ -3,18 +3,18 @@ using SampSharp.OpenMp.Core.Api;
 
 namespace SampSharp.Entities.SAMP;
 
-internal class WorldService(SampSharpEnvironment omp, IEntityManager entityManager, IOmpEntityProvider entityProvider) : IWorldService
+internal class WorldService(SampSharpEnvironment environment, IEntityManager entityManager, IOmpEntityProvider entityProvider) : IWorldService
 {
-    private readonly ICore _core = omp.Core;
-    private readonly IPlayerPool _players = omp.Core.GetPlayers();
-    private readonly IVehiclesComponent _vehicles = omp.Components.QueryComponent<IVehiclesComponent>();
-    private readonly IObjectsComponent _objects = omp.Components.QueryComponent<IObjectsComponent>();
-    private readonly IActorsComponent _actors = omp.Components.QueryComponent<IActorsComponent>();
-    private readonly IGangZonesComponent _gangZones = omp.Components.QueryComponent<IGangZonesComponent>();
-    private readonly IMenusComponent _menus = omp.Components.QueryComponent<IMenusComponent>();
-    private readonly IPickupsComponent _pickups = omp.Components.QueryComponent<IPickupsComponent>();
-    private readonly ITextDrawsComponent _textDraws = omp.Components.QueryComponent<ITextDrawsComponent>();
-    private readonly ITextLabelsComponent _textLabels = omp.Components.QueryComponent<ITextLabelsComponent>();
+    private readonly ICore _core = environment.Core;
+    private readonly IPlayerPool _players = environment.Core.GetPlayers();
+    private readonly IVehiclesComponent _vehicles = environment.Components.QueryComponent<IVehiclesComponent>();
+    private readonly IObjectsComponent _objects = environment.Components.QueryComponent<IObjectsComponent>();
+    private readonly IActorsComponent _actors = environment.Components.QueryComponent<IActorsComponent>();
+    private readonly IGangZonesComponent _gangZones = environment.Components.QueryComponent<IGangZonesComponent>();
+    private readonly IMenusComponent _menus = environment.Components.QueryComponent<IMenusComponent>();
+    private readonly IPickupsComponent _pickups = environment.Components.QueryComponent<IPickupsComponent>();
+    private readonly ITextDrawsComponent _textDraws = environment.Components.QueryComponent<ITextDrawsComponent>();
+    private readonly ITextLabelsComponent _textLabels = environment.Components.QueryComponent<ITextLabelsComponent>();
 
     public float Gravity
     {
