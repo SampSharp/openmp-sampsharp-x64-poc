@@ -4,7 +4,8 @@ project(sampsharp LANGUAGES CXX VERSION 1.0.0)
 set(CMAKE_CXX_STANDARD 17)
 
 add_subdirectory("../../external/sdk" "${CMAKE_BINARY_DIR}/external/sdk")
-include_directories("../../external/dotnet")
+include_directories(SYSTEM "../../external/dotnet")
+include_directories(SYSTEM "../../external/sdk/include")
 link_directories("../../external/dotnet")
 
 # can be specified as arugment cmake -DCOMPONENTS_DIR="path/to/x64/server/components"
