@@ -4,5 +4,5 @@
 
 COMPONENT_ENTRY_POINT()
 {
-	return SampSharpComponent::getInstance();
+    return SampSharpComponent::getInstance();
 }

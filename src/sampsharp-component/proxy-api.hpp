@@ -178,15 +178,15 @@ namespace sampsharp
 
 /// proxy for event dispatcher functions and function to get the event dispatcher
 #define PROXY_EVENT_DISPATCHER(type_subject, type_handler, method) \
-	PROXY(type_subject, IEventDispatcher<type_handler>&, method);
+    PROXY(type_subject, IEventDispatcher<type_handler>&, method);
 
 /// proxy for event dispatcher functions and function to get the event dispatcher wit specific handler name
 #define PROXY_EVENT_DISPATCHER_NAMED(type_subject, handler_type, handler_name, method) \
-	PROXY(type_subject, IEventDispatcher<handler_type>&, method);
+    PROXY(type_subject, IEventDispatcher<handler_type>&, method);
 
 /// proxy for event dispatcher functions and function to get the event dispatcher
 #define PROXY_INDEXED_EVENT_DISPATCHER(type_subject, type_handler, method) \
-	PROXY(type_subject, IIndexedEventDispatcher<type_handler>&, method);
+    PROXY(type_subject, IIndexedEventDispatcher<type_handler>&, method);
 
 /// start of event handler proxy class 
 #define PROXY_EVENT_HANDLER_BEGIN(handler_type) \

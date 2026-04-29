@@ -135,7 +135,7 @@ int ManagedHost::load_hostfxr(const char_t * assembly_path)
     // Load hostfxr and get desired exports
     void *lib = load_library(buffer);
     init_for_config_fptr = (hostfxr_initialize_for_runtime_config_fn)get_export(lib, "hostfxr_initialize_for_runtime_config");
-	get_delegate_fptr = (hostfxr_get_runtime_delegate_fn)get_export(lib, "hostfxr_get_runtime_delegate");
+    get_delegate_fptr = (hostfxr_get_runtime_delegate_fn)get_export(lib, "hostfxr_get_runtime_delegate");
     close_fptr = (hostfxr_close_fn)get_export(lib, "hostfxr_close");
  
     if (!init_for_config_fptr || !get_delegate_fptr || !close_fptr)
