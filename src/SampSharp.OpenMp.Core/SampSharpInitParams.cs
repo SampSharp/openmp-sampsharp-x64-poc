@@ -8,7 +8,7 @@ namespace SampSharp.OpenMp.Core;
 /// Provides the parameters for initializing the SampSharp application as provided by the SampSharp open.mp component.
 /// </summary>
 [StructLayout(LayoutKind.Sequential)]
-public readonly struct SampSharpInitParams
+public readonly ref struct SampSharpInitParams
 {
     /// <summary>
     /// The size of this structure. Can be used to check if the structure is the correct version.
