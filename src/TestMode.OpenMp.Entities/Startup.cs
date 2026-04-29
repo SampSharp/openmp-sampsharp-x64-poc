@@ -10,20 +10,16 @@ public class Startup : IEcsStartup
 {
     public void Initialize(IStartupContext context)
     {
-        context.UseEntities(cfg =>
-        {
-            cfg.ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Information));
-        });
+        context.UseEntities()
+            .UsePlayerCommands()
+            .ConfigureLogging(logging => logging.SetMinimumLevel(LogLevel.Information));
     }
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddPlayerCommands();
-        services.AddSystemsInAssembly();
     }
 
     public void Configure(IEcsBuilder builder)
     {
-        builder.UsePlayerCommands();
     }
 }

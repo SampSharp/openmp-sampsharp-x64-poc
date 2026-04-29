@@ -1,6 +1,6 @@
 ﻿namespace SampSharp.Entities;
 
-/// <summary>Provides functionality for configuring the SampSharp EntityComponentSystem.</summary>
+/// <summary>Provides functionality for configuring the SampSharp Entity Component System.</summary>
 public interface IEcsBuilder
 {
     /// <summary>Gets the service provider.</summary>

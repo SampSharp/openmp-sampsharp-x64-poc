@@ -24,5 +24,20 @@ public static class EcsBuilderCommandsExtensions
     /// <c>[Event]</c> listener gets forwarded to <see cref="IPlayerCommandService"/>.
     /// </summary>
     public static IEcsBuilder UsePlayerCommands(this IEcsBuilder builder)
-        => builder.UseMiddleware<PlayerCommandProcessingMiddleware>("OnPlayerCommandText");
+    {
+        return builder.UseMiddleware<PlayerCommandProcessingMiddleware>("OnPlayerCommandText");
+    }
+
+    /// <summary>
+    /// Registers the player-commands subsystem: adds the default
+    /// <see cref="IPlayerCommandService"/> implementation and wires up the
+    /// <see cref="PlayerCommandProcessingMiddleware"/> on <c>OnPlayerCommandText</c>.
+    /// </summary>
+    public static IEcsHostBuilder UsePlayerCommands(this IEcsHostBuilder hostBuilder)
+    {
+        hostBuilder.ConfigureServices(services => services.AddPlayerCommands());
+        hostBuilder.Configure(builder => builder.UsePlayerCommands());
+
+        return hostBuilder;
+    }
 }
