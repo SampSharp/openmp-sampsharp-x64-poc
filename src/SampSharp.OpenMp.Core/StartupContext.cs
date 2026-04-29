@@ -7,6 +7,11 @@ namespace SampSharp.OpenMp.Core;
 /// </summary>
 public sealed class StartupContext : IStartupContext
 {
+    /// <summary>
+    /// The API version of the native open.mp component which supports this version of the managed API. This is used to check for version mismatches between the managed and native components.
+    /// </summary>
+    private const int SupportedApiVersion = 1;
+
     private IStartup? _configurator;
     private ExceptionHandler _unhandledExceptionHandler;
 
@@ -16,6 +21,7 @@ public sealed class StartupContext : IStartupContext
     /// <param name="init">The initialization parameters.</param>
     public StartupContext(SampSharpInitParams init)
     {
+        VersionCheck(init);
         Core = init.Core;
         ComponentList = init.ComponentList;
         Info = init.Info;
@@ -81,5 +87,21 @@ public sealed class StartupContext : IStartupContext
     public static void MainInfoProvider()
     {
         LaunchInstructions.Write();
+    }
+
+    private static void VersionCheck(SampSharpInitParams init)
+    {
+        unsafe
+        {
+            if (init.Size.Value != sizeof(SampSharpInitParams) || 
+                init.Info.Size.Value != sizeof(SampSharpInfo) || 
+                init.Info.ApiVersion != SupportedApiVersion)
+            {
+                var version = typeof(StartupContext).Assembly.GetName().Version!.ToString(3);
+
+                // TODO: Write docs
+                throw new InvalidOperationException($"SampSharp version mismatch. The SampSharp open.mp component does not support SampSharp.OpenMp.Core v{version}. See https://sampsharp.net/version-mismatch.html for more details.");
+            }
+        }
     }
 }
