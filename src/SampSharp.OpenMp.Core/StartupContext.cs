@@ -93,15 +93,26 @@ public sealed class StartupContext : IStartupContext
     {
         unsafe
         {
-            if (init.Size.Value != sizeof(SampSharpInitParams) || 
-                init.Info.Size.Value != sizeof(SampSharpInfo) || 
-                init.Info.ApiVersion != SupportedApiVersion)
-            {
-                var version = typeof(StartupContext).Assembly.GetName().Version!.ToString(3);
+            var initParamsSizeMatches = init.Size.Value == sizeof(SampSharpInitParams);
+            var infoSizeMatches = init.Info.Size.Value == sizeof(SampSharpInfo);
+            var apiVersionMatches = init.Info.ApiVersion == SupportedApiVersion;
 
-                // TODO: Write docs
-                throw new InvalidOperationException($"SampSharp version mismatch. The SampSharp open.mp component does not support SampSharp.OpenMp.Core v{version}. See https://sampsharp.net/version-mismatch.html for more details.");
+            if (initParamsSizeMatches && infoSizeMatches && apiVersionMatches)
+            {
+                return;
             }
+
+            var version = typeof(StartupContext).Assembly.GetName().Version!.ToString(3);
+
+            // TODO: Write docs
+            var message = $"SampSharp version mismatch. The SampSharp open.mp component does not support SampSharp.OpenMp.Core v{version}. See https://sampsharp.net/version-mismatch.html for more details.";
+
+            if (initParamsSizeMatches && infoSizeMatches)
+            {
+                init.Core.LogLine(LogLevel.Error, message);
+            }
+
+            Environment.FailFast(message);
         }
     }
 }
