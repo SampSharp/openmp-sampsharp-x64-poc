@@ -7,6 +7,7 @@
 #define CFG_ENTRY_POINT_TYPE "sampsharp.entry_point_type"
 #define CFG_ENTRY_POINT_METHOD "sampsharp.entry_point_method"
 #define CFG_CLEANUP_METHOD "sampsharp.cleanup_method"
+#define CFG_DISABLE_CRASH_HANDLER "sampsharp.disable_crash_handler"
 
 StringView SampSharpComponent::componentName() const
 {
@@ -21,15 +22,17 @@ SemanticVersion SampSharpComponent::componentVersion() const
 void SampSharpComponent::onLoad(ICore* c)
 {
     core_ = c;
-    sampsharp::crash::install(c);
+
+    bool disableCrashHandler = *c->getConfig().getBool(CFG_DISABLE_CRASH_HANDLER);
+    if(!disableCrashHandler) {
+        sampsharp::crash::install(c);
+    }
 }
 
 void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& config, const bool defaults)
 {
     #define initConfigString(key, value) \
-        if(defaults) { \
-            config.setString(key, value); } \
-        else if (config.getType(key) == ConfigOptionType_None) { \
+        if(defaults || config.getType(key) == ConfigOptionType_None) { \
             config.setString(key, value); \
         }
     
@@ -38,6 +41,10 @@ void SampSharpComponent::provideConfiguration(ILogger& logger, IEarlyConfig& con
     initConfigString(CFG_ENTRY_POINT_TYPE, "SampSharp.Entrypoint");
     initConfigString(CFG_ENTRY_POINT_METHOD, "Initialize");
     initConfigString(CFG_CLEANUP_METHOD, "Cleanup");
+
+    if(defaults || config.getType(CFG_DISABLE_CRASH_HANDLER) == ConfigOptionType_None) {
+        config.setBool(CFG_DISABLE_CRASH_HANDLER, false);        
+    }
 }
 
 void SampSharpComponent::onInit(IComponentList* components)
