@@ -1,5 +1,9 @@
 # openmp-sampsharp-x64-poc
 
+> [!IMPORTANT]  
+> The code in this repo has been merged into the https://github.com/ikkentim/sampsharp repository. Further development continues there.
+
+
 proof-of-concept code. Attempt to run x64 .NET code with an up-to-date well supported runtime as an open.mp component.
 
 Goal
